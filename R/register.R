@@ -4,6 +4,7 @@ register_btw_tools <- function(chat) {
 
   tools <- list(
     tool_get_data_frame(),
+    tool_get_environment(),
     tool_get_installed_packages(),
     tool_get_package_help(),
     tool_get_help_page()

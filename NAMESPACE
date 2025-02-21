@@ -2,6 +2,7 @@
 
 export(btw)
 export(get_data_frame)
+export(get_environment)
 export(get_help_page)
 export(get_installed_packages)
 export(get_package_help)
