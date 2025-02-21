@@ -20,10 +20,10 @@ knitr::opts_chunk$set(
 [![CRAN status](https://www.r-pkg.org/badges/version/btw)](https://CRAN.R-project.org/package=btw)
 <!-- badges: end -->
 
-The goal of btw is to allow you to describe objects in your R environment in plain text.
+btw helps you describe your computational environment to LLMs.
 
 * When used **interactively**, `btw::btw()` assembles context on your global R environment as well as function or package documentation, copying the results to your clipboard for easy pasting into chat interfaces.
-* The `btw()` function wraps several lower-level functions that can be easily incorporated into **ellmer tool calls** for describing various kinds of objects in R.
+* The `btw()` function wraps several lower-level functions that can be easily incorporated into **ellmer tool calls** for describing various kinds of objects in R. To equip your ellmer chat with the ability to peruse documentation and check out the objects in your R environment, pass your chat to `register_btw_tools()`.
 
 ## Installation
 
@@ -49,18 +49,36 @@ btw()
 ✔ btw copied to the clipboard!
 ```
 
-The package allows you to describe all sorts of objects, though:
+The package allows you to describe all sorts of objects, though. For example, if you'd like to describe the mtcars dataset:
 
 ```{r}
 #| eval: false
-btw(
-  # this dataset in my global environment
-  "my_df",
-  # this package's documentation
-  this_pkg("tidyr")
-)
+btw(mtcars)
 ```
 
+The following would be attached to your clipboard:
+
+```{r}
+#| comment: ""
+#| echo: false
+res <- btw(mtcars)
+cat(res, sep = "\n")
 ```
-✔ btw copied to the clipboard!
+
+Or, to describe the `btw()` function:
+
+```{r}
+#| eval: false
+btw(btw::btw)
 ```
+
+The following would be attached to your clipboard:
+
+```{r}
+#| comment: ""
+#| echo: false
+res <- btw(btw::btw)
+cat(res)
+```
+
+

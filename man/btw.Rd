@@ -7,10 +7,11 @@
 btw(..., clipboard = interactive())
 }
 \arguments{
-\item{...}{Character vectors or, more likely, outputs of \verb{this_*()}
-functions like \code{\link[=this_env]{this_env()}}, \code{\link[=this_fn]{this_fn()}}, \code{\link[=this_pkg]{this_pkg()}}, or \code{\link[=this_df]{this_df()}}.
-If nothing is provided in this argument, \code{btw()} will just describe the
-objects in your global R environment.}
+\item{...}{Objects to describe from your R environment. You can pass objects
+themselves, like data frames or functions, or the function also accepts
+output from \verb{get_*()} functions like \code{\link[=get_package_help]{get_package_help()}}, \code{\link[=get_help_page]{get_help_page()}},
+etc. If omitted, this function will just describe the elements in your global
+R environment.}
 
 \item{clipboard}{Whether to write the results to the clipboard.
 A single logical value; will default to \code{TRUE} when run interactively.}
@@ -20,5 +21,15 @@ The combined elements as a string, invisibly. If \code{clipboard} is \code{TRUE}
 result is also written to the system clipboard.
 }
 \description{
-A short description...
+This function allows you to quickly describe your computational environment
+to a model by concatenating plain-text descriptions of "R stuff", from
+data frames to packages to function documentation.
+}
+\examples{
+btw()
+
+btw(mtcars)
+
+btw(btw::btw)
+
 }

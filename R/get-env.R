@@ -27,6 +27,13 @@ get_environment <- function(environment = global_env(), items = NULL) {
 
     if (inherits(item, "data.frame")) {
       item_desc <- get_data_frame(item)
+    } else if (inherits(item, "function")) {
+      # TODO: this should be a `get_function()` or something
+      package_topic <- strsplit(item_name, "::", fixed = TRUE)[[1]]
+      item_desc <- tryCatch(
+        get_help_page(package_topic[1], package_topic[2]),
+        error = function(e) capture.output(item)
+      )
     } else {
       item_desc <- capture.output(item)
     }
@@ -47,7 +54,7 @@ tool_get_environment <- function() {
        use this function to learn about the objects in the user's environment."
     ),
     items = ellmer::type_array(
-      "The names of items to retrieve from the environment. Defaults to `NULL`, indicating all 
+      "The names of items to retrieve from the environment. Defaults to `NULL`, indicating all
   items.",
       items = ellmer::type_string()
     )

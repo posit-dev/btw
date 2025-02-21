@@ -13,6 +13,13 @@
 #' @param clipboard Whether to write the results to the clipboard.
 #' A single logical value; will default to `TRUE` when run interactively.
 #'
+#' @examples
+#' btw()
+#'
+#' btw(mtcars)
+#'
+#' btw(btw::btw)
+#'
 #' @returns
 #' The combined elements as a string, invisibly. If `clipboard` is `TRUE`, the
 #' result is also written to the system clipboard.
