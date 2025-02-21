@@ -5,6 +5,7 @@ Authors@R: c(
     person("Simon", "Couch", , "simon.couch@posit.co", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5676-5107")),
     person("Garrick", "Aden-Buie", , "garrick@adenbuie.com", role = c("aut")),
+    person("Joe", "Cheng", , "joe@posit.co", role = c("aut", "cre")),
     person(given = "Posit Software, PBC", role = c("cph", "fnd"))
   )
 Description: Describes R objects in plain text.
@@ -18,6 +19,8 @@ RoxygenNote: 7.3.2
 Imports: 
     cli,
     clipr,
+    dplyr,
+    jsonlite,
     rlang (>= 1.1.0),
     withr
 URL: https://github.com/simonpcouch/btw
