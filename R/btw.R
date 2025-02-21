@@ -1,19 +1,15 @@
 #' Plain-text descriptions of R objects
 #'
 #' @description
-#' A short description...
+#' This function allows you to quickly describe your computational environment
+#' to a model by concatenating plain-text descriptions of "R stuff", from
+#' data frames to packages to function documentation.
 #'
-#' @param ... Objects to describe from your R environment. Character strings
-#' will be searched for on the search path, though the function also accepts
-#' output from `this_*()` functions like [this_env()], [this_fn()],
-#' [this_pkg()], or [this_df()].
-#'
-#' If omitted, this function will just describe the elements in your global
+#' @param ... Objects to describe from your R environment. You can pass objects
+#' themselves, like data frames or functions, or the function also accepts
+#' output from `get_*()` functions like [get_package_help()], [get_help_page()],
+#' etc. If omitted, this function will just describe the elements in your global
 #' R environment.
-#' @param ... Character vectors or, more likely, outputs of `this_*()`
-#' functions like [this_env()], [this_fn()], [this_pkg()], or [this_df()].
-#' If nothing is provided in this argument, `btw()` will just describe the
-#' objects in your global R environment.
 #' @param clipboard Whether to write the results to the clipboard.
 #' A single logical value; will default to `TRUE` when run interactively.
 #'
@@ -25,15 +21,12 @@
 btw <- function(..., clipboard = interactive()) {
   check_bool(clipboard)
 
-  elts <- list2(...)
+  elts <- dots_list(..., .named = TRUE)
 
   if (length(elts) == 0) {
-    # TODO: this_env() isn't actually implemented yet
-    # res <- this_env(global_env())
-    res <- "hey"
+    res <- get_environment()
   } else {
-    # TODO:: check that each element inherits from character or `this_*()` output class
-    res <- paste0(elts, collapse = "\n\n")
+    res <- get_environment(as.environment(elts))
   }
 
   if (clipboard) {

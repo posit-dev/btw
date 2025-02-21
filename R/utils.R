@@ -7,3 +7,5 @@ check_inherits <- function(x, class, x_arg = caller_arg(x), call = caller_env())
     )
   }
 }
+
+interactive <- NULL
