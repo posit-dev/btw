@@ -11,6 +11,7 @@ Describes R objects in plain text.
 Useful links:
 \itemize{
   \item \url{https://github.com/simonpcouch/btw}
+  \item \url{https://simonpcouch.github.io/btw/}
   \item Report bugs at \url{https://github.com/simonpcouch/btw/issues}
 }
 
