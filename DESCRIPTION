@@ -20,8 +20,10 @@ Imports:
     cli,
     clipr,
     dplyr,
+    ellmer,
     jsonlite,
     rlang (>= 1.1.0),
+    tibble,
     withr
 URL: https://github.com/simonpcouch/btw, https://simonpcouch.github.io/btw/
 BugReports: https://github.com/simonpcouch/btw/issues
