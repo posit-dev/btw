@@ -40,7 +40,7 @@ tool_get_installed_packages <- function() {
 #' or `"incProgress"`. Find `topic_id`s or `alias`es using `get_package_help()`.
 #' @param vignette The name (or index) of the vignette to retrieve. Defaults to
 #' the "intro" vignette to the package (by the same rules as pkgdown.)
-#' 
+#'
 #' @returns
 #' * `get_package_help()` returns the `topic_id`, `title`, and `aliases` fields
 #'   for every topic in a package's documentation as a json-formatted string.
@@ -52,16 +52,16 @@ tool_get_installed_packages <- function() {
 #' cat(get_package_help("btw"))
 #'
 #' cat(get_help_page("btw", "btw"))
-#' 
+#'
 #' # show the TOC of vignettes in the dplyr package
 #' cat(get_package_vignettes("dplyr"))
-#' 
+#'
 #' # returns a whole bunch of output and relies on
 #' # dplyr to have the mentioned vignettes available
 #' \dontrun{
 #' # grab the intro vignette
 #' cat(get_package_vignette("dplyr"))
-#' 
+#'
 #' # grab the programming vignette specifically
 #' cat(get_package_vignette("dplyr", "programming"))
 #' }
@@ -187,11 +187,15 @@ get_package_vignette <- function(package_name, vignette = package_name) {
     )
   }
 
+  tmp_file <- withr::local_tempfile(fileext = ".md")
   rmarkdown::pandoc_convert(
     file.path(vignette_info$Dir, "doc", vignette_info$PDF),
     from = "html",
-    to = "markdown"
+    to = "markdown",
+    output = tmp_file
   )
+
+  readLines(tmp_file)
 }
 
 tool_get_package_vignette <- function() {
