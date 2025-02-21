@@ -41,30 +41,11 @@ pak::pak("simonpcouch/btw")
 library(btw)
 ```
 
-`register_btw_tools()` equips LLM chats with the ability to peruse the documentation of your installed packages and check out objects in your R environment. Use it by calling the function on an existing ellmer chat:
+### Interactive use
 
-```{r}
-#| eval: false
-ch <- ellmer::chat_claude()
-ch <- register_btw_tools(ch)
+The `btw()` function allows you to compile information about R stuff--objects, documentation, etc--and copy it to your clipboard.
 
-ch$chat("Hey!")
-```
-
-```
-Hello! I'm here to help you work with R-related information and data. I can help 
-you:
-
-1. Look up information about installed R packages
-2. Get help documentation for specific R packages and functions
-3. Examine and manipulate data frames
-4. Check what's available in the current environment
-
-What would you like to know about? Feel free to ask a specific question, and I'll 
-use the available tools to help you find the information you need.
-```
-
-The easiest way to interact with btw is to just call `btw()` with no inputs, which will describe the objects in your global environment in a string attached to your clipboard:
+The easiest way to use btw interactively is to just call `btw()` with no inputs, which will describe the objects in your global environment in a string attached to your clipboard:
 
 ```{r}
 btw()
@@ -106,4 +87,27 @@ res <- btw(btw::btw)
 cat(res)
 ```
 
+### Supercharging assistants
 
+`register_btw_tools()` equips LLM chats with the ability to peruse the documentation of your installed packages and check out objects in your R environment. Use it by calling the function on an existing ellmer chat:
+
+```{r}
+#| eval: false
+ch <- ellmer::chat_claude()
+ch <- register_btw_tools(ch)
+
+ch$chat("Hey!")
+```
+
+```
+Hello! I'm here to help you work with R-related information and data. I can help 
+you:
+
+1. Look up information about installed R packages
+2. Get help documentation for specific R packages and functions
+3. Examine and manipulate data frames
+4. Check what's available in the current environment
+
+What would you like to know about? Feel free to ask a specific question, and I'll 
+use the available tools to help you find the information you need.
+```
