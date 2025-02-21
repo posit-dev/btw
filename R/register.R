@@ -33,5 +33,7 @@ btw_tools <- list(
   tool_get_environment(),
   tool_get_installed_packages(),
   tool_get_package_help(),
+  tool_get_package_vignette(),
+  tool_get_package_vignettes(),
   tool_get_help_page()
 )

@@ -22,6 +22,7 @@ Imports:
     dplyr,
     ellmer,
     jsonlite,
+    rmarkdown,
     rlang (>= 1.1.0),
     tibble,
     withr

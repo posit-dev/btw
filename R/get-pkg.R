@@ -38,7 +38,9 @@ tool_get_installed_packages <- function() {
 #' @param package_name The name of the package as a string, e.g. `"shiny"`.
 #' @param topic The `topic_id` or `alias` of the help page, e.g. `"withProgress"`
 #' or `"incProgress"`. Find `topic_id`s or `alias`es using `get_package_help()`.
-#'
+#' @param vignette The name (or index) of the vignette to retrieve. Defaults to
+#' the "intro" vignette to the package (by the same rules as pkgdown.)
+#' 
 #' @returns
 #' * `get_package_help()` returns the `topic_id`, `title`, and `aliases` fields
 #'   for every topic in a package's documentation as a json-formatted string.
@@ -50,13 +52,23 @@ tool_get_installed_packages <- function() {
 #' cat(get_package_help("btw"))
 #'
 #' cat(get_help_page("btw", "btw"))
-#'
+#' 
+#' # show the TOC of vignettes in the dplyr package
+#' cat(get_package_vignettes("dplyr"))
+#' 
+#' # returns a whole bunch of output and relies on
+#' # dplyr to have the mentioned vignettes available
+#' \dontrun{
+#' # grab the intro vignette
+#' cat(get_package_vignette("dplyr"))
+#' 
+#' # grab the programming vignette specifically
+#' cat(get_package_vignette("dplyr", "programming"))
+#' }
 #' @name get_pkg
 #' @export
 get_package_help <- function(package_name) {
-  if (!package_name %in% installed.packages()[,"Package"]) {
-    cli::cli_abort("Package {.pkg {package_name}} is not installed.")
-  }
+  check_installed(package_name)
 
   help_db <- help.search(
     "",
@@ -93,9 +105,7 @@ tool_get_package_help <- function() {
 #' @rdname get_pkg
 #' @export
 get_help_page <- function(package_name, topic) {
-  if (!package_name %in% installed.packages()[,"Package"]) {
-    cli::cli_abort("Package {.pkg {package_name}} is not installed.")
-  }
+  check_installed(package_name)
 
   help_page <- rlang::inject(help(
     package = !!package_name,
@@ -131,6 +141,69 @@ tool_get_help_page <- function() {
     ),
     topic = ellmer::type_string(
       "The topic_id or alias of the help page, e.g. 'withProgress' or 'incProgress'."
+    )
+  )
+}
+
+#' @rdname get_pkg
+#' @export
+get_package_vignettes <- function(package_name) {
+  check_installed(package_name)
+
+  vignettes <- as.data.frame(tools::getVignetteInfo(package = package_name))
+  if (nrow(vignettes) == 0) {
+    cli::cli_abort("Package {.pkg {package_name}} has no vignettes.")
+  }
+
+  df <- vignettes[, c("Topic", "Title")]
+  get_data_frame(df, format = "json", dims = c(Inf, 2))
+}
+
+tool_get_package_vignettes <- function() {
+  ellmer::tool(
+    get_package_vignettes,
+    "Get a table of available vignettes for an R package.",
+    package_name = ellmer::type_string(
+      "The exact name of the package, e.g. 'shiny'."
+    )
+  )
+}
+
+#' @rdname get_pkg
+#' @export
+get_package_vignette <- function(package_name, vignette = package_name) {
+  check_installed(package_name)
+  check_string(vignette, allow_null = TRUE)
+
+  vignettes <- as.data.frame(tools::getVignetteInfo(package = package_name))
+  if (nrow(vignettes) == 0) {
+    cli::cli_abort("Package {.pkg {package_name}} has no vignettes.")
+  }
+
+  vignette_info <- vignettes[vignettes$Topic == vignette, , drop = FALSE]
+  if (nrow(vignette_info) == 0) {
+    cli::cli_abort(
+      "No vignette {.val {vignette}} for package {.pkg {package_name}} found."
+    )
+  }
+
+  rmarkdown::pandoc_convert(
+    file.path(vignette_info$Dir, "doc", vignette_info$PDF),
+    from = "html",
+    to = "markdown"
+  )
+}
+
+tool_get_package_vignette <- function() {
+  ellmer::tool(
+    get_package_vignette,
+    "Get a package vignette in plain text.",
+    package_name = ellmer::type_string(
+      "The exact name of the package, e.g. 'shiny'."
+    ),
+    vignette = ellmer::type_string(
+      "The name or index of the vignette to retrieve. This is optional--leave
+      as default to retrieve the introductory vignette for the package."
     )
   )
 }
