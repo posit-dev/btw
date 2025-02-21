@@ -1,6 +1,6 @@
 Package: btw
-Title: Describe R Stuff in Plain Text
-Version: 0.0.0.9000
+Title: Describe R Stuff to Large Language Models
+Version: 0.0.0.9001
 Authors@R: c(
     person("Simon", "Couch", , "simon.couch@posit.co", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5676-5107")),
@@ -8,7 +8,12 @@ Authors@R: c(
     person("Joe", "Cheng", , "joe@posit.co", role = c("aut")),
     person(given = "Posit Software, PBC", role = c("cph", "fnd"))
   )
-Description: Describes R objects in plain text.
+Description: Provides a number of utilities for describing R objects and
+    package documentation in plain text. For interactive use, this is especially
+    powerful for describing relevant pieces of context to large language models.
+    When used programmatically, these utilities can be registered with 'ellmer'
+    chats as tool calls, enabling language models to peruse package 
+    documentation and explore your computational environment.
 License: MIT + file LICENSE
 Suggests: 
     testthat (>= 3.0.0)
