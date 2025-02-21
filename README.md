@@ -57,8 +57,6 @@ btw(mtcars)
 The following would be attached to your clipboard:
 
     mtcars
-    #> Rows: 5
-    #> Columns: 11
     #> $ mpg  <dbl> 21.0, 21.0, 22.8, 21.4, 18.7
     #> $ cyl  <dbl> 6, 6, 4, 6, 8
     #> $ disp <dbl> 160, 160, 108, 258, 360

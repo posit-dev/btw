@@ -74,13 +74,15 @@ tool_get_data_frame <- function() {
 }
 
 get_data_frame_glimpse <- function(x, x_name) {
-  cli::ansi_strip(capture.output(dplyr::glimpse(x)))
+  res <- cli::ansi_strip(capture.output(dplyr::glimpse(x)))
+  res[3:length(res)]
 }
 
 get_data_frame_print <- function(x) {
   withr::local_options(pillar.advice = FALSE, pillar.min_title_chars = Inf)
 
-  cli::ansi_strip(capture.output(tibble::as_tibble(x, width = 1000, n = Inf)))
+  res <- cli::ansi_strip(capture.output(tibble::as_tibble(x, width = 1000, n = Inf)))
+  res[2:length(res)]
 }
 
 get_data_frame_json <- function(x) {
