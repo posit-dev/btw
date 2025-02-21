@@ -21,6 +21,7 @@ Useful links:
 Authors:
 \itemize{
   \item Garrick Aden-Buie \email{garrick@adenbuie.com}
+  \item Joe Cheng \email{joe@posit.co}
 }
 
 Other contributors:
