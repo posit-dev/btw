@@ -77,7 +77,8 @@ btw(btw::btw)
 
 The following would be attached to your clipboard:
 
-    btw::btw #> btw                    package:btw                     R Documentation
+    btw::btw
+    #> btw                    package:btw                     R Documentation
 
     Plain-text descriptions of R objects
 
@@ -115,4 +116,4 @@ The following would be attached to your clipboard:
          btw(mtcars)
          
          btw(btw::btw)
-          
+         

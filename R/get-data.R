@@ -47,7 +47,7 @@ get_data_frame <- function(
     json = get_data_frame_json(x = data_frame_small)
   )
 
-  res
+  paste0(res, collapse = "\n")
 }
 
 tool_get_data_frame <- function() {

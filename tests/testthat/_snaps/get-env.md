@@ -1,59 +1,56 @@
 # get_environment works
 
     Code
-      get_environment(env)
+      cat(get_environment(env))
     Output
-       [1] "mtcars"                                           
-       [2] "#> Rows: 5"                                       
-       [3] "#> Columns: 11"                                   
-       [4] "#> $ mpg  <dbl> 21.0, 21.0, 22.8, 21.4, 18.7"     
-       [5] "#> $ cyl  <dbl> 6, 6, 4, 6, 8"                    
-       [6] "#> $ disp <dbl> 160, 160, 108, 258, 360"          
-       [7] "#> $ hp   <dbl> 110, 110, 93, 110, 175"           
-       [8] "#> $ drat <dbl> 3.90, 3.90, 3.85, 3.08, 3.15"     
-       [9] "#> $ wt   <dbl> 2.620, 2.875, 2.320, 3.215, 3.440"
-      [10] "#> $ qsec <dbl> 16.46, 17.02, 18.61, 19.44, 17.02"
-      [11] "#> $ vs   <dbl> 0, 0, 1, 1, 0"                    
-      [12] "#> $ am   <dbl> 1, 1, 1, 0, 0"                    
-      [13] "#> $ gear <dbl> 4, 4, 4, 3, 3"                    
-      [14] "#> $ carb <dbl> 4, 4, 1, 1, 2"                    
-      [15] "\n"                                               
-      [16] "boop"                                             
-      [17] "#> [1] \"bop\""                                   
-      [18] "\n"                                               
+      mtcars
+      #> $ mpg  <dbl> 21.0, 21.0, 22.8, 21.4, 18.7
+      #> $ cyl  <dbl> 6, 6, 4, 6, 8
+      #> $ disp <dbl> 160, 160, 108, 258, 360
+      #> $ hp   <dbl> 110, 110, 93, 110, 175
+      #> $ drat <dbl> 3.90, 3.90, 3.85, 3.08, 3.15
+      #> $ wt   <dbl> 2.620, 2.875, 2.320, 3.215, 3.440
+      #> $ qsec <dbl> 16.46, 17.02, 18.61, 19.44, 17.02
+      #> $ vs   <dbl> 0, 0, 1, 1, 0
+      #> $ am   <dbl> 1, 1, 1, 0, 0
+      #> $ gear <dbl> 4, 4, 4, 3, 3
+      #> $ carb <dbl> 4, 4, 1, 1, 2
+      
+      
+      boop
+      #> [1] "bop"
+      
 
 ---
 
     Code
-      get_environment(env, items = "mtcars")
+      cat(get_environment(env, items = "mtcars"))
     Output
-       [1] "mtcars"                                           
-       [2] "#> Rows: 5"                                       
-       [3] "#> Columns: 11"                                   
-       [4] "#> $ mpg  <dbl> 21.0, 21.0, 22.8, 21.4, 18.7"     
-       [5] "#> $ cyl  <dbl> 6, 6, 4, 6, 8"                    
-       [6] "#> $ disp <dbl> 160, 160, 108, 258, 360"          
-       [7] "#> $ hp   <dbl> 110, 110, 93, 110, 175"           
-       [8] "#> $ drat <dbl> 3.90, 3.90, 3.85, 3.08, 3.15"     
-       [9] "#> $ wt   <dbl> 2.620, 2.875, 2.320, 3.215, 3.440"
-      [10] "#> $ qsec <dbl> 16.46, 17.02, 18.61, 19.44, 17.02"
-      [11] "#> $ vs   <dbl> 0, 0, 1, 1, 0"                    
-      [12] "#> $ am   <dbl> 1, 1, 1, 0, 0"                    
-      [13] "#> $ gear <dbl> 4, 4, 4, 3, 3"                    
-      [14] "#> $ carb <dbl> 4, 4, 1, 1, 2"                    
-      [15] "\n"                                               
+      mtcars
+      #> $ mpg  <dbl> 21.0, 21.0, 22.8, 21.4, 18.7
+      #> $ cyl  <dbl> 6, 6, 4, 6, 8
+      #> $ disp <dbl> 160, 160, 108, 258, 360
+      #> $ hp   <dbl> 110, 110, 93, 110, 175
+      #> $ drat <dbl> 3.90, 3.90, 3.85, 3.08, 3.15
+      #> $ wt   <dbl> 2.620, 2.875, 2.320, 3.215, 3.440
+      #> $ qsec <dbl> 16.46, 17.02, 18.61, 19.44, 17.02
+      #> $ vs   <dbl> 0, 0, 1, 1, 0
+      #> $ am   <dbl> 1, 1, 1, 0, 0
+      #> $ gear <dbl> 4, 4, 4, 3, 3
+      #> $ carb <dbl> 4, 4, 1, 1, 2
+      
 
 ---
 
     Code
-      get_environment(env, items = "boop")
+      cat(get_environment(env, items = "boop"))
     Output
-      [1] "boop"           "#> [1] \"bop\"" "\n"            
+      boop
+      #> [1] "bop"
+      
 
 ---
 
     Code
-      get_environment(env, items = character(0))
-    Output
-      character(0)
+      cat(get_environment(env, items = character(0)))
 

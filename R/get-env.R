@@ -26,7 +26,7 @@ get_environment <- function(environment = global_env(), items = NULL) {
     item <- env_get(environment, item_name)
 
     if (inherits(item, "data.frame")) {
-      item_desc <- get_data_frame(item)
+      item_desc <- strsplit(get_data_frame(item), "\n")[[1]]
     } else if (inherits(item, "function")) {
       # TODO: this should be a `get_function()` or something
       package_topic <- strsplit(item_name, "::", fixed = TRUE)[[1]]
@@ -42,7 +42,7 @@ get_environment <- function(environment = global_env(), items = NULL) {
     res <- c(res, item_res)
   }
 
-  res
+  paste0(res, collapse = "\n")
 }
 
 tool_get_environment <- function() {
