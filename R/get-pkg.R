@@ -1,12 +1,20 @@
-#' Get installed R packages
-#' 
-#' @param pattern Optional regular expression (case insensitive, PCRE syntax)
-#'   to filter by. If not provided, all installed packages will be returned.
-#' 
-#' @return A dataframe of installed packages
-#' 
+#' Describe installed packages
+#'
+#' @description
+#' Displays the name and title of all installed R packages in json format.
+#'
+#' @section See Also:
+#' * [register_btw_tools()] registers this function as a tool for LLMs to call.
+#' * Other `get_*()` functions: `r paste0('[', purrr::map_chr(btw_tools, purrr::pluck, "name"), '()]')`
+#'
+#' @returns
+#' A single string describing installed packages in json.
+#'
+#' @examples
+#' cat(get_installed_packages())
+#'
 #' @export
-get_installed_packages <- function(pattern = NULL) {
+get_installed_packages <- function() {
   fields <- c("Package", "Title") # , "Description")
   df <- as.data.frame(installed.packages(fields = fields))[, fields]
 
@@ -18,24 +26,32 @@ get_installed_packages <- function(pattern = NULL) {
 tool_get_installed_packages <- function() {
   ellmer::tool(
     get_installed_packages,
-    "Get a dataframe of installed R packages. If a pattern is provided,
-  it filters the installed packages using a case insensitive regular
-  expression.",
-    pattern = ellmer::type_string(
-      "Optional regular expression (case insensitive, PCRE syntax) to
-  filter by. If not provided, all installed packages will be returned.
-  Defaults to `NULL`.",
-      required = FALSE
-    )
+    "Displays the name and title of all installed R packages in json format."
   )
 }
 
-#' Get available help topics for an R package
+#' Describe R package documentation
 #'
-#' @param package_name The exact name of the package, e.g. "shiny"
-#' 
-#' @return JSON data of help topics, along with their aliases
-#' 
+#' @description
+#' These functions describe package documentation in plain text:
+#'
+#' @param package_name The name of the package as a string, e.g. `"shiny"`.
+#' @param topic The `topic_id` or `alias` of the help page, e.g. `"withProgress"`
+#' or `"incProgress"`. Find `topic_id`s or `alias`es using `get_package_help()`.
+#'
+#' @returns
+#' * `get_package_help()` returns the `topic_id`, `title`, and `aliases` fields
+#'   for every topic in a package's documentation as a json-formatted string.
+#' * `get_help_page()` return the help-page for a package topic as a string.
+#'
+#' @inheritSection get_installed_packages See Also
+#'
+#' @examples
+#' cat(get_package_help("btw"))
+#'
+#' cat(get_help_page("btw", "btw"))
+#'
+#' @name get_pkg
 #' @export
 get_package_help <- function(package_name) {
   if (!package_name %in% installed.packages()[,"Package"]) {
@@ -72,16 +88,9 @@ tool_get_package_help <- function() {
   )
 }
 
-#' Get help page from package
 # TODO: should this run the examples so the model can see what it does?
-# TODO: should there just be a way to get examples? 
-# `get_function_help()` and `get_function_examples()`?
-#'
-#' @param package_name The exact name of the package, e.g. "shiny"
-#' @param topic The topic_id or alias of the help page, e.g. "withProgress" or
-#'   "incProgress"
-#' @return The help page, in plain text format
-#' 
+# TODO: should there just be a way to get examples?
+#' @rdname get_pkg
 #' @export
 get_help_page <- function(package_name, topic) {
   if (!package_name %in% installed.packages()[,"Package"]) {

@@ -5,8 +5,10 @@
 #' describe.
 #'
 #' @returns
-#' A character vector describing the environment contents with `#>` prefixing
+#' A string describing the environment contents with `#>` prefixing
 #' each object's printed representation.
+#'
+#' @inheritSection get_installed_packages See Also
 #'
 #' @export
 get_environment <- function(environment = global_env(), items = NULL) {

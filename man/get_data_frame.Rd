@@ -37,3 +37,19 @@ Will error if the named data frame is not found in the environment.
 \description{
 Describe a data frame in plain text
 }
+\section{See Also}{
+
+\itemize{
+\item \code{\link[=register_btw_tools]{register_btw_tools()}} registers this function as a tool for LLMs to call.
+\item Other \verb{get_*()} functions: \code{\link[=get_data_frame]{get_data_frame()}}, \code{\link[=get_environment]{get_environment()}}, \code{\link[=get_installed_packages]{get_installed_packages()}}, \code{\link[=get_package_help]{get_package_help()}}, \code{\link[=get_help_page]{get_help_page()}}
+}
+}
+
+\examples{
+get_data_frame(mtcars)
+
+get_data_frame(mtcars, format = "print")
+
+get_data_frame(mtcars, format = "json")
+
+}

@@ -2,3 +2,12 @@ url: https://simonpcouch.github.io/btw/
 template:
   bootstrap: 5
 
+reference:
+- title: Core functions
+  contents:
+  - btw
+  - register_btw_tools
+
+- title: Describe R stuff
+  contents:
+  - starts_with("get_")

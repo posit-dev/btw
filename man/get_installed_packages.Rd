@@ -2,17 +2,25 @@
 % Please edit documentation in R/get-pkg.R
 \name{get_installed_packages}
 \alias{get_installed_packages}
-\title{Get installed R packages}
+\title{Describe installed packages}
 \usage{
-get_installed_packages(pattern = NULL)
-}
-\arguments{
-\item{pattern}{Optional regular expression (case insensitive, PCRE syntax)
-to filter by. If not provided, all installed packages will be returned.}
+get_installed_packages()
 }
 \value{
-A dataframe of installed packages
+A single string describing installed packages in json.
 }
 \description{
-Get installed R packages
+Displays the name and title of all installed R packages in json format.
+}
+\section{See Also}{
+
+\itemize{
+\item \code{\link[=register_btw_tools]{register_btw_tools()}} registers this function as a tool for LLMs to call.
+\item Other \verb{get_*()} functions: \code{\link[=get_data_frame]{get_data_frame()}}, \code{\link[=get_environment]{get_environment()}}, \code{\link[=get_installed_packages]{get_installed_packages()}}, \code{\link[=get_package_help]{get_package_help()}}, \code{\link[=get_help_page]{get_help_page()}}
+}
+}
+
+\examples{
+cat(get_installed_packages())
+
 }

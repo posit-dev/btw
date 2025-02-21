@@ -13,9 +13,17 @@ get_environment(environment = global_env(), items = NULL)
 describe.}
 }
 \value{
-A character vector describing the environment contents with \verb{#>} prefixing
+A string describing the environment contents with \verb{#>} prefixing
 each object's printed representation.
 }
 \description{
 Describe the contents of an environment
 }
+\section{See Also}{
+
+\itemize{
+\item \code{\link[=register_btw_tools]{register_btw_tools()}} registers this function as a tool for LLMs to call.
+\item Other \verb{get_*()} functions: \code{\link[=get_data_frame]{get_data_frame()}}, \code{\link[=get_environment]{get_environment()}}, \code{\link[=get_installed_packages]{get_installed_packages()}}, \code{\link[=get_package_help]{get_package_help()}}, \code{\link[=get_help_page]{get_help_page()}}
+}
+}
+

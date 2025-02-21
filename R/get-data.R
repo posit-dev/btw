@@ -17,9 +17,18 @@
 #' length two. For example, the default `dims = c(5, 100)` shows the first 5
 #' rows and 100 columns, whereas `dims = c(Inf, Inf)` would show all of the data.
 #'
+#' @inheritSection get_installed_packages See Also
+#'
 #' @returns
 #' A character vector containing a representation of the data frame.
 #' Will error if the named data frame is not found in the environment.
+#'
+#' @examples
+#' get_data_frame(mtcars)
+#'
+#' get_data_frame(mtcars, format = "print")
+#'
+#' get_data_frame(mtcars, format = "json")
 #'
 #' @export
 get_data_frame <- function(
