@@ -77,7 +77,27 @@ rows and 100 columns, whereas <code>dims = c(Inf, Inf)</code> would show all of 
     <p>A character vector containing a representation of the data frame.
 Will error if the named data frame is not found in the environment.</p>
     </div>
+    <div class="section level2">
+    <h2 id="see-also">See Also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
 
+
+<ul><li><p><code><a href="register_btw_tools.html">register_btw_tools()</a></code> registers this function as a tool for LLMs to call.</p></li>
+<li><p>Other <code>get_*()</code> functions: <code>get_data_frame()</code>, <code><a href="get_environment.html">get_environment()</a></code>, <code><a href="get_installed_packages.html">get_installed_packages()</a></code>, <code><a href="get_pkg.html">get_package_help()</a></code>, <code><a href="get_pkg.html">get_help_page()</a></code></p></li>
+</ul></div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">get_data_frame</span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "$ mpg  &lt;dbl&gt; 21.0, 21.0, 22.8, 21.4, 18.7\n$ cyl  &lt;dbl&gt; 6, 6, 4, 6, 8\n$ disp &lt;dbl&gt; 160, 160, 108, 258, 360\n$ hp   &lt;dbl&gt; 110, 110, 93, 110, 175\n$ drat &lt;dbl&gt; 3.90, 3.90, 3.85, 3.08, 3.15\n$ wt   &lt;dbl&gt; 2.620, 2.875, 2.320, 3.215, 3.440\n$ qsec &lt;dbl&gt; 16.46, 17.02, 18.61, 19.44, 17.02\n$ vs   &lt;dbl&gt; 0, 0, 1, 1, 0\n$ am   &lt;dbl&gt; 1, 1, 1, 0, 0\n$ gear &lt;dbl&gt; 4, 4, 4, 3, 3\n$ carb &lt;dbl&gt; 4, 4, 1, 1, 2"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">get_data_frame</span><span class="op">(</span><span class="va">mtcars</span>, format <span class="op">=</span> <span class="st">"print"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "    mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb\n  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;\n1  21       6   160   110  3.9   2.62  16.5     0     1     4     4\n2  21       6   160   110  3.9   2.88  17.0     0     1     4     4\n3  22.8     4   108    93  3.85  2.32  18.6     1     1     4     1\n4  21.4     6   258   110  3.08  3.22  19.4     1     0     3     1\n5  18.7     8   360   175  3.15  3.44  17.0     0     0     3     2"</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">get_data_frame</span><span class="op">(</span><span class="va">mtcars</span>, format <span class="op">=</span> <span class="st">"json"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "[\n  {\n    \"mpg\": 21,\n    \"cyl\": 6,\n    \"disp\": 160,\n    \"hp\": 110,\n    \"drat\": 3.9,\n    \"wt\": 2.62,\n    \"qsec\": 16.46,\n    \"vs\": 0,\n    \"am\": 1,\n    \"gear\": 4,\n    \"carb\": 4,\n    \"_row\": \"Mazda RX4\"\n  },\n  {\n    \"mpg\": 21,\n    \"cyl\": 6,\n    \"disp\": 160,\n    \"hp\": 110,\n    \"drat\": 3.9,\n    \"wt\": 2.875,\n    \"qsec\": 17.02,\n    \"vs\": 0,\n    \"am\": 1,\n    \"gear\": 4,\n    \"carb\": 4,\n    \"_row\": \"Mazda RX4 Wag\"\n  },\n  {\n    \"mpg\": 22.8,\n    \"cyl\": 4,\n    \"disp\": 108,\n    \"hp\": 93,\n    \"drat\": 3.85,\n    \"wt\": 2.32,\n    \"qsec\": 18.61,\n    \"vs\": 1,\n    \"am\": 1,\n    \"gear\": 4,\n    \"carb\": 1,\n    \"_row\": \"Datsun 710\"\n  },\n  {\n    \"mpg\": 21.4,\n    \"cyl\": 6,\n    \"disp\": 258,\n    \"hp\": 110,\n    \"drat\": 3.08,\n    \"wt\": 3.215,\n    \"qsec\": 19.44,\n    \"vs\": 1,\n    \"am\": 0,\n    \"gear\": 3,\n    \"carb\": 1,\n    \"_row\": \"Hornet 4 Drive\"\n  },\n  {\n    \"mpg\": 18.7,\n    \"cyl\": 8,\n    \"disp\": 360,\n    \"hp\": 175,\n    \"drat\": 3.15,\n    \"wt\": 3.44,\n    \"qsec\": 17.02,\n    \"vs\": 0,\n    \"am\": 0,\n    \"gear\": 3,\n    \"carb\": 2,\n    \"_row\": \"Hornet Sportabout\"\n  }\n] "</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
