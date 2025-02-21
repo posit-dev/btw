@@ -49,10 +49,6 @@ tool_get_environment <- function() {
   ellmer::tool(
     get_environment,
     "Retrieve specified items from a given environment.",
-    environment = ellmer::type_unknown(
-      "The environment from which to retrieve items. Defaults to `global_env()`--
-       use this function to learn about the objects in the user's environment."
-    ),
     items = ellmer::type_array(
       "The names of items to retrieve from the environment. Defaults to `NULL`, indicating all
   items.",
