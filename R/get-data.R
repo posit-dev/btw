@@ -27,7 +27,7 @@ get_data_frame <- function(
     format = c("glimpse", "print", "json"),
     dims = c(5, 100)
 ) {
-  rlang::arg_match(format)
+  format <- rlang::arg_match(format)
   check_inherits(dims, "numeric")
 
   # models have likely the seen the "object ___ not found" quite a bit,
@@ -36,7 +36,9 @@ get_data_frame <- function(
     data_frame <- get(data_frame)
   }
 
-  data_frame_small <- data_frame[dims[[1]], dims[[2]]]
+  n_row <- min(dims[1], nrow(data_frame))
+  n_col <- min(dims[2], ncol(data_frame))
+  data_frame_small <- data_frame[seq_len(n_row), seq_len(n_col), drop = FALSE]
 
   res <- switch(
     format,
@@ -82,5 +84,5 @@ get_data_frame_print <- function(x) {
 }
 
 get_data_frame_json <- function(x) {
-  capture.output(jsonlite::toJSON(mtcars, auto_unbox = TRUE, pretty = TRUE))
+  capture.output(jsonlite::toJSON(x, auto_unbox = TRUE, pretty = TRUE))
 }
