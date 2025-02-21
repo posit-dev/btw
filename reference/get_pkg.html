@@ -40,7 +40,11 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_package_help</span><span class="op">(</span><span class="va">package_name</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">get_help_page</span><span class="op">(</span><span class="va">package_name</span>, <span class="va">topic</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">get_help_page</span><span class="op">(</span><span class="va">package_name</span>, <span class="va">topic</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_package_vignettes</span><span class="op">(</span><span class="va">package_name</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">get_package_vignette</span><span class="op">(</span><span class="va">package_name</span>, vignette <span class="op">=</span> <span class="va">package_name</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -55,6 +59,11 @@
 <dd><p>The <code>topic_id</code> or <code>alias</code> of the help page, e.g. <code>"withProgress"</code>
 or <code>"incProgress"</code>. Find <code>topic_id</code>s or <code>alias</code>es using <code>get_package_help()</code>.</p></dd>
 
+
+<dt id="arg-vignette">vignette<a class="anchor" aria-label="anchor" href="#arg-vignette"></a></dt>
+<dd><p>The name (or index) of the vignette to retrieve. Defaults to
+the "intro" vignette to the package (by the same rules as pkgdown.)</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -68,7 +77,7 @@ for every topic in a package's documentation as a json-formatted string.</p></li
 
 
 <ul><li><p><code><a href="register_btw_tools.html">register_btw_tools()</a></code> registers this function as a tool for LLMs to call.</p></li>
-<li><p>Other <code>get_*()</code> functions: <code><a href="get_data_frame.html">get_data_frame()</a></code>, <code><a href="get_environment.html">get_environment()</a></code>, <code><a href="get_installed_packages.html">get_installed_packages()</a></code>, <code>get_package_help()</code>, <code>get_help_page()</code></p></li>
+<li><p>Other <code>get_*()</code> functions: <code><a href="get_data_frame.html">get_data_frame()</a></code>, <code><a href="get_environment.html">get_environment()</a></code>, <code><a href="get_installed_packages.html">get_installed_packages()</a></code>, <code>get_package_help()</code>, <code>get_package_vignette()</code>, <code>get_package_vignettes()</code>, <code>get_help_page()</code></p></li>
 </ul></div>
 
     <div class="section level2">
@@ -103,7 +112,7 @@ for every topic in a package's documentation as a json-formatted string.</p></li
 <span class="r-out co"><span class="r-pr">#&gt;</span>   {</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     "topic_id": "get_pkg",</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     "title": "Describe R package documentation",</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     "aliases": ["get_pkg", "get_package_help", "get_help_page"]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "aliases": ["get_pkg", "get_package_help", "get_help_page", "get_package_vignettes", "get_package_vignette"]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   },</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   {</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     "topic_id": "register_btw_tools",</span>
@@ -153,6 +162,56 @@ for every topic in a package's documentation as a json-formatted string.</p></li
 <span class="r-out co"><span class="r-pr">#&gt;</span>      btw(btw::btw)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      </span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># show the TOC of vignettes in the dplyr package</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">get_package_vignettes</span><span class="op">(</span><span class="st">"dplyr"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "Topic": "colwise",</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "Title": "Column-wise operations"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   },</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "Topic": "grouping",</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "Title": "Grouped data"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   },</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "Topic": "dplyr",</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "Title": "Introduction to dplyr"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   },</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "Topic": "programming",</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "Title": "Programming with dplyr"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   },</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "Topic": "rowwise",</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "Title": "Row-wise operations"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   },</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "Topic": "two-table",</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "Title": "Two-table verbs"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   },</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "Topic": "in-packages",</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "Title": "Using dplyr in packages"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   },</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "Topic": "window-functions",</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "Title": "Window functions"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   },</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "Topic": "base",</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     "Title": "dplyr &lt;-&gt; base R"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   }</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ] </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># returns a whole bunch of output and relies on</span></span></span>
+<span class="r-in"><span><span class="co"># dplyr to have the mentioned vignettes available</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co"># grab the intro vignette</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">get_package_vignette</span><span class="op">(</span><span class="st">"dplyr"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># grab the programming vignette specifically</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">get_package_vignette</span><span class="op">(</span><span class="st">"dplyr"</span>, <span class="st">"programming"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
