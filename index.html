@@ -52,7 +52,7 @@
 
 <p>btw helps you describe your computational environment to LLMs.</p>
 <ul>
-<li>When used <strong>interactively</strong>, <code><a href="reference/btw.html">btw::btw()</a></code> assembles context on your global R environment as well as function or package documentation, copying the results to your clipboard for easy pasting into chat interfaces.</li>
+<li>When used <strong>interactively</strong>, <code><a href="reference/btw.html">btw()</a></code> assembles context on your global R environment as well as function or package documentation, copying the results to your clipboard for easy pasting into chat interfaces.</li>
 <li>The <code><a href="reference/btw.html">btw()</a></code> function wraps several lower-level functions that can be easily incorporated into <strong>ellmer tool calls</strong> for describing various kinds of objects in R. To equip your ellmer chat with the ability to peruse documentation and check out the objects in your R environment, pass your chat to <code><a href="reference/register_btw_tools.html">register_btw_tools()</a></code>.</li>
 </ul>
 <div class="section level2">
@@ -67,70 +67,86 @@
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/simonpcouch/btw" class="external-link">btw</a></span><span class="op">)</span></span></code></pre></div>
-<p>The easiest way to interact with btw is to just call <code><a href="reference/btw.html">btw()</a></code> with no inputs, which will describe the objects in your global environment in a string attached to your clipboard:</p>
+<p><code><a href="reference/register_btw_tools.html">register_btw_tools()</a></code> equips LLM chats with the ability to peruse the documentation of your installed packages and check out objects in your R environment. Use it by calling the function on an existing ellmer chat:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/btw.html">btw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>✔ btw copied to the clipboard<span class="sc">!</span></span></code></pre></div>
-<p>The package allows you to describe all sorts of objects, though. For example, if you’d like to describe the mtcars dataset:</p>
+<code class="sourceCode R"><span><span class="va">ch</span> <span class="op">&lt;-</span> <span class="fu">ellmer</span><span class="fu">::</span><span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">chat_claude</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">ch</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/register_btw_tools.html">register_btw_tools</a></span><span class="op">(</span><span class="va">ch</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ch</span><span class="op">$</span><span class="fu">chat</span><span class="op">(</span><span class="st">"Hey!"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>Hello<span class="sc">!</span> I<span class="st">'m here to help you work with R-related information and data. I can help </span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="st">you:</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="st">1. Look up information about installed R packages</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="st">2. Get help documentation for specific R packages and functions</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="st">3. Examine and manipulate data frames</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="st">4. Check what'</span>s available <span class="cf">in</span> the current environment</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>What would you like to know about? Feel free to ask a specific question, and I<span class="st">'ll </span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="st">use the available tools to help you find the information you need.</span></span></code></pre></div>
+<p>The easiest way to interact with btw is to just call <code><a href="reference/btw.html">btw()</a></code> with no inputs, which will describe the objects in your global environment in a string attached to your clipboard:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/btw.html">btw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>✔ btw copied to the clipboard<span class="sc">!</span></span></code></pre></div>
+<p>The package allows you to describe all sorts of objects, though. For example, if you’d like to describe the mtcars dataset:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/btw.html">btw</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span></span></code></pre></div>
 <p>The following would be attached to your clipboard:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>mtcars</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt; $ mpg  &lt;dbl&gt; 21.0, 21.0, 22.8, 21.4, 18.7</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt; $ cyl  &lt;dbl&gt; 6, 6, 4, 6, 8</span></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; $ disp &lt;dbl&gt; 160, 160, 108, 258, 360</span></span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; $ hp   &lt;dbl&gt; 110, 110, 93, 110, 175</span></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; $ drat &lt;dbl&gt; 3.90, 3.90, 3.85, 3.08, 3.15</span></span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt; $ wt   &lt;dbl&gt; 2.620, 2.875, 2.320, 3.215, 3.440</span></span>
-<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; $ qsec &lt;dbl&gt; 16.46, 17.02, 18.61, 19.44, 17.02</span></span>
-<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt; $ vs   &lt;dbl&gt; 0, 0, 1, 1, 0</span></span>
-<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt; $ am   &lt;dbl&gt; 1, 1, 1, 0, 0</span></span>
-<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; $ gear &lt;dbl&gt; 4, 4, 4, 3, 3</span></span>
-<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt; $ carb &lt;dbl&gt; 4, 4, 1, 1, 2</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>mtcars</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">#&gt; $ mpg  &lt;dbl&gt; 21.0, 21.0, 22.8, 21.4, 18.7</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#&gt; $ cyl  &lt;dbl&gt; 6, 6, 4, 6, 8</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt; $ disp &lt;dbl&gt; 160, 160, 108, 258, 360</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt; $ hp   &lt;dbl&gt; 110, 110, 93, 110, 175</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt; $ drat &lt;dbl&gt; 3.90, 3.90, 3.85, 3.08, 3.15</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt; $ wt   &lt;dbl&gt; 2.620, 2.875, 2.320, 3.215, 3.440</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; $ qsec &lt;dbl&gt; 16.46, 17.02, 18.61, 19.44, 17.02</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; $ vs   &lt;dbl&gt; 0, 0, 1, 1, 0</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; $ am   &lt;dbl&gt; 1, 1, 1, 0, 0</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt; $ gear &lt;dbl&gt; 4, 4, 4, 3, 3</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; $ carb &lt;dbl&gt; 4, 4, 1, 1, 2</span></span></code></pre></div>
 <p>Or, to describe the <code><a href="reference/btw.html">btw()</a></code> function:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/btw.html">btw</a></span><span class="op">(</span><span class="fu">btw</span><span class="fu">::</span><span class="va"><a href="reference/btw.html">btw</a></span><span class="op">)</span></span></code></pre></div>
 <p>The following would be attached to your clipboard:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>btw<span class="sc">::</span>btw</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">#&gt; btw                    package:btw                     R Documentation</span></span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>Plain<span class="sc">-</span>text descriptions of R objects</span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>Description<span class="sc">:</span></span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>     This <span class="cf">function</span> allows you to quickly describe your computational</span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>     environment to a model by concatenating plain<span class="sc">-</span>text descriptions of</span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>     <span class="st">"R stuff"</span>, from data frames to packages to <span class="cf">function</span> documentation.</span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a></span>
-<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>Usage<span class="sc">:</span></span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a></span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>     <span class="fu">btw</span>(..., <span class="at">clipboard =</span> <span class="fu">interactive</span>())</span>
-<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>     </span>
-<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>Arguments<span class="sc">:</span></span>
-<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a></span>
-<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>     ...<span class="sc">:</span> Objects to describe from your R environment. You can pass</span>
-<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>          objects themselves, like data frames or functions, or the</span>
-<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a>          <span class="cf">function</span> also accepts output from get_<span class="sc">*</span>() functions like</span>
-<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a>          <span class="st">'get_package_help()'</span>, <span class="st">'get_help_page()'</span>, etc. If omitted,</span>
-<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a>          this <span class="cf">function</span> will just describe the elements <span class="cf">in</span> your global</span>
-<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a>          R environment.</span>
-<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a></span>
-<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a>clipboard<span class="sc">:</span> Whether to write the results to the clipboard. A single</span>
-<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a>          logical value; will default to <span class="st">'TRUE'</span> when run interactively.</span>
-<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a></span>
-<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a>Value<span class="sc">:</span></span>
-<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a></span>
-<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a>     The combined elements as a string, invisibly. If <span class="st">'clipboard'</span> is</span>
-<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a>     <span class="st">'TRUE'</span>, the result is also written to the system clipboard.</span>
-<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a></span>
-<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a>Examples<span class="sc">:</span></span>
-<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a></span>
-<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a>     <span class="fu">btw</span>()</span>
-<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a>     </span>
-<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a>     <span class="fu">btw</span>(mtcars)</span>
-<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a>     </span>
-<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a>     <span class="fu">btw</span>(btw<span class="sc">::</span>btw)</span>
-<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a>     </span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>btw<span class="sc">::</span>btw</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">#&gt; btw                    package:btw                     R Documentation</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>Plain<span class="sc">-</span>text descriptions of R objects</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>Description<span class="sc">:</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>     This <span class="cf">function</span> allows you to quickly describe your computational</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>     environment to a model by concatenating plain<span class="sc">-</span>text descriptions of</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>     <span class="st">"R stuff"</span>, from data frames to packages to <span class="cf">function</span> documentation.</span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>Usage<span class="sc">:</span></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a>     <span class="fu">btw</span>(..., <span class="at">clipboard =</span> <span class="fu">interactive</span>())</span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a>     </span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a>Arguments<span class="sc">:</span></span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a></span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a>     ...<span class="sc">:</span> Objects to describe from your R environment. You can pass</span>
+<span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a>          objects themselves, like data frames or functions, or the</span>
+<span id="cb10-20"><a href="#cb10-20" tabindex="-1"></a>          <span class="cf">function</span> also accepts output from get_<span class="sc">*</span>() functions like</span>
+<span id="cb10-21"><a href="#cb10-21" tabindex="-1"></a>          <span class="st">'get_package_help()'</span>, <span class="st">'get_help_page()'</span>, etc. If omitted,</span>
+<span id="cb10-22"><a href="#cb10-22" tabindex="-1"></a>          this <span class="cf">function</span> will just describe the elements <span class="cf">in</span> your global</span>
+<span id="cb10-23"><a href="#cb10-23" tabindex="-1"></a>          R environment.</span>
+<span id="cb10-24"><a href="#cb10-24" tabindex="-1"></a></span>
+<span id="cb10-25"><a href="#cb10-25" tabindex="-1"></a>clipboard<span class="sc">:</span> Whether to write the results to the clipboard. A single</span>
+<span id="cb10-26"><a href="#cb10-26" tabindex="-1"></a>          logical value; will default to <span class="st">'TRUE'</span> when run interactively.</span>
+<span id="cb10-27"><a href="#cb10-27" tabindex="-1"></a></span>
+<span id="cb10-28"><a href="#cb10-28" tabindex="-1"></a>Value<span class="sc">:</span></span>
+<span id="cb10-29"><a href="#cb10-29" tabindex="-1"></a></span>
+<span id="cb10-30"><a href="#cb10-30" tabindex="-1"></a>     The combined elements as a string, invisibly. If <span class="st">'clipboard'</span> is</span>
+<span id="cb10-31"><a href="#cb10-31" tabindex="-1"></a>     <span class="st">'TRUE'</span>, the result is also written to the system clipboard.</span>
+<span id="cb10-32"><a href="#cb10-32" tabindex="-1"></a></span>
+<span id="cb10-33"><a href="#cb10-33" tabindex="-1"></a>Examples<span class="sc">:</span></span>
+<span id="cb10-34"><a href="#cb10-34" tabindex="-1"></a></span>
+<span id="cb10-35"><a href="#cb10-35" tabindex="-1"></a>     <span class="fu">btw</span>()</span>
+<span id="cb10-36"><a href="#cb10-36" tabindex="-1"></a>     </span>
+<span id="cb10-37"><a href="#cb10-37" tabindex="-1"></a>     <span class="fu">btw</span>(mtcars)</span>
+<span id="cb10-38"><a href="#cb10-38" tabindex="-1"></a>     </span>
+<span id="cb10-39"><a href="#cb10-39" tabindex="-1"></a>     <span class="fu">btw</span>(btw<span class="sc">::</span>btw)</span>
+<span id="cb10-40"><a href="#cb10-40" tabindex="-1"></a>     </span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
