@@ -16,10 +16,9 @@ coverage](https://codecov.io/gh/simonpcouch/btw/graph/badge.svg)](https://app.co
 
 btw helps you describe your computational environment to LLMs.
 
-- When used **interactively**, `btw::btw()` assembles context on your
-  global R environment as well as function or package documentation,
-  copying the results to your clipboard for easy pasting into chat
-  interfaces.
+- When used **interactively**, `btw()` assembles context on your global
+  R environment as well as function or package documentation, copying
+  the results to your clipboard for easy pasting into chat interfaces.
 - The `btw()` function wraps several lower-level functions that can be
   easily incorporated into **ellmer tool calls** for describing various
   kinds of objects in R. To equip your ellmer chat with the ability to
@@ -39,6 +38,28 @@ pak::pak("simonpcouch/btw")
 ``` r
 library(btw)
 ```
+
+`register_btw_tools()` equips LLM chats with the ability to peruse the
+documentation of your installed packages and check out objects in your R
+environment. Use it by calling the function on an existing ellmer chat:
+
+``` r
+ch <- ellmer::chat_claude()
+ch <- register_btw_tools(ch)
+
+ch$chat("Hey!")
+```
+
+    Hello! I'm here to help you work with R-related information and data. I can help 
+    you:
+
+    1. Look up information about installed R packages
+    2. Get help documentation for specific R packages and functions
+    3. Examine and manipulate data frames
+    4. Check what's available in the current environment
+
+    What would you like to know about? Feel free to ask a specific question, and I'll 
+    use the available tools to help you find the information you need.
 
 The easiest way to interact with btw is to just call `btw()` with no
 inputs, which will describe the objects in your global environment in a
