@@ -1,6 +1,9 @@
 #' Describe a data frame in plain text
 #'
-#' @param data_frame A single string naming a data frame.
+#' @param data_frame A single string naming a data frame or, alternatively,
+#' the data frame itself.
+# TODO: should it be a different function name when there's no `get()`ting
+# happening?
 #' @param format One of `"glimpse"`, `"print"`, or `"json"`.
 #' * To glimpse the data column-by-column, use `"glimpse"`. This is
 #'   particularly helpful for getting a sense of data frame column names,
@@ -13,9 +16,6 @@
 #' @param dims The number of rows and columns to show, as a numeric vector of
 #' length two. For example, the default `dims = c(5, 100)` shows the first 5
 #' rows and 100 columns, whereas `dims = c(Inf, Inf)` would show all of the data.
-#' @param ... Currently unused; must be empty.
-#' @param clipboard Optional. Whether to copy the output to the clipboard.
-#' Defaults to `interactive()`.
 #'
 #' @returns
 #' A character vector containing a representation of the data frame.
@@ -25,29 +25,25 @@
 get_data_frame <- function(
     data_frame,
     format = c("glimpse", "print", "json"),
-    dims = c(5, 100),
-    ...,
-    clipboard = interactive()
+    dims = c(5, 100)
 ) {
-  check_bool(clipboard)
   rlang::arg_match(format)
   check_inherits(dims, "numeric")
 
   # models have likely the seen the "object ___ not found" quite a bit,
   # so no need to rethrow / handle errors nicely
-  d <- get(data_frame)
-  d_small <- d[dims[[1]], dims[[2]]]
+  if (!inherits(data_frame, "data.frame")) {
+    data_frame <- get(data_frame)
+  }
+
+  data_frame_small <- data_frame[dims[[1]], dims[[2]]]
 
   res <- switch(
     format,
-    glimpse = get_data_frame_glimpse(x = d_small),
-    print = get_data_frame_print(x = d_small),
-    json = get_data_frame_json(x = d_small)
+    glimpse = get_data_frame_glimpse(x = data_frame_small),
+    print = get_data_frame_print(x = data_frame_small),
+    json = get_data_frame_json(x = data_frame_small)
   )
-
-  if (clipboard && !in_btw()) {
-    write_to_clipboard(res)
-  }
 
   res
 }
@@ -70,11 +66,6 @@ tool_get_data_frame <- function() {
   2, where the first element represents the number of rows and the second
   the number of columns. Defaults to `c(5, 100)`.",
       items = ellmer::type_integer(),
-      required = FALSE
-    ),
-    clipboard = ellmer::type_boolean(
-      "Logical value. If `TRUE`, stores the result in the clipboard.
-       Always leave this as FALSE.",
       required = FALSE
     )
   )

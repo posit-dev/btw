@@ -7,13 +7,12 @@
 get_data_frame(
   data_frame,
   format = c("glimpse", "print", "json"),
-  dims = c(5, 100),
-  ...,
-  clipboard = interactive()
+  dims = c(5, 100)
 )
 }
 \arguments{
-\item{data_frame}{A single string naming a data frame.}
+\item{data_frame}{A single string naming a data frame or, alternatively,
+the data frame itself.}
 
 \item{format}{One of \code{"glimpse"}, \code{"print"}, or \code{"json"}.
 \itemize{
@@ -30,11 +29,6 @@ are important to demonstrate.
 \item{dims}{The number of rows and columns to show, as a numeric vector of
 length two. For example, the default \code{dims = c(5, 100)} shows the first 5
 rows and 100 columns, whereas \code{dims = c(Inf, Inf)} would show all of the data.}
-
-\item{...}{Currently unused; must be empty.}
-
-\item{clipboard}{Optional. Whether to copy the output to the clipboard.
-Defaults to \code{interactive()}.}
 }
 \value{
 A character vector containing a representation of the data frame.

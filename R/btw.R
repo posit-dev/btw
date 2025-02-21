@@ -23,7 +23,6 @@
 #'
 #' @export
 btw <- function(..., clipboard = interactive()) {
-  withr::local_options(in_btw = "true")
   check_bool(clipboard)
 
   elts <- list2(...)
@@ -42,8 +41,4 @@ btw <- function(..., clipboard = interactive()) {
   }
 
   invisible(res)
-}
-
-in_btw <- function() {
-  identical(getOption("in_btw"), "true")
 }
