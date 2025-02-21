@@ -6,6 +6,17 @@ check_inherits <- function(x, class, x_arg = caller_arg(x), call = caller_env())
       call = call
     )
   }
+
+  invisible(NULL)
+}
+
+# rlang's version prompts when interactive
+check_installed <- function(x, call = caller_env()) {
+  if (!is_installed(x)) {
+    cli::cli_abort("Package {.pkg {x}} is not installed.", call = call)
+  }
+
+  invisible(NULL)
 }
 
 interactive <- NULL
