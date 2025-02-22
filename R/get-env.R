@@ -39,7 +39,7 @@ get_environment <- function(environment = global_env(), items = NULL) {
         error = function(e) capture.output(item)
       )
     } else {
-      item_desc <- capture.output(item)
+      item_desc <- capture_print(item)
     }
 
     item_res <- c(item_name, paste0("#> ", item_desc), "\n")
@@ -59,4 +59,11 @@ tool_get_environment <- function() {
       items = ellmer::type_string()
     )
   )
+}
+
+capture_print <- function(item) {
+  out <- capture.output(print(item))
+  if (length(out) && nzchar(out)) return(out)
+
+  capture.output(print(item), type = "message")
 }
