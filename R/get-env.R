@@ -19,7 +19,7 @@ get_environment <- function(environment = global_env(), items = NULL) {
   }
 
   res <- character()
-  env_item_names <- names(environment)
+  env_item_names <- ls(environment)
   if (!is.null(items)) {
     env_item_names <- env_item_names[env_item_names %in% items]
   }
