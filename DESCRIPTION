@@ -4,34 +4,36 @@ Version: 0.0.0.9001
 Authors@R: c(
     person("Simon", "Couch", , "simon.couch@posit.co", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5676-5107")),
-    person("Garrick", "Aden-Buie", , "garrick@adenbuie.com", role = c("aut")),
-    person("Joe", "Cheng", , "joe@posit.co", role = c("aut")),
-    person(given = "Posit Software, PBC", role = c("cph", "fnd"))
+    person("Garrick", "Aden-Buie", , "garrick@adenbuie.com", role = "aut"),
+    person("Joe", "Cheng", , "joe@posit.co", role = "aut"),
+    person("Posit Software, PBC", role = c("cph", "fnd"))
   )
 Description: Provides a number of utilities for describing R objects and
-    package documentation in plain text. For interactive use, this is especially
-    powerful for describing relevant pieces of context to large language models.
-    When used programmatically, these utilities can be registered with 'ellmer'
-    chats as tool calls, enabling language models to peruse package 
-    documentation and explore your computational environment.
+    package documentation in plain text. For interactive use, this is
+    especially powerful for describing relevant pieces of context to large
+    language models.  When used programmatically, these utilities can be
+    registered with 'ellmer' chats as tool calls, enabling language models
+    to peruse package documentation and explore your computational
+    environment.
 License: MIT + file LICENSE
-Suggests: 
-    testthat (>= 3.0.0)
-Config/testthat/edition: 3
-Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
-Imports: 
+URL: https://github.com/simonpcouch/btw,
+    https://simonpcouch.github.io/btw/
+BugReports: https://github.com/simonpcouch/btw/issues
+Imports:
     cli,
     clipr,
     dplyr,
     ellmer,
     jsonlite,
-    rmarkdown,
     rlang (>= 1.1.0),
+    rmarkdown,
+    skimr,
     tibble,
-    withr,
-    skimr
-URL: https://github.com/simonpcouch/btw, https://simonpcouch.github.io/btw/
-BugReports: https://github.com/simonpcouch/btw/issues
+    withr
+Suggests:
+    testthat (>= 3.0.0)
 Config/Needs/website: tidyverse/tidytemplate
+Config/testthat/edition: 3
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
