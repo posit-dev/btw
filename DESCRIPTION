@@ -30,7 +30,8 @@ Imports:
     rmarkdown,
     rlang (>= 1.1.0),
     tibble,
-    withr
+    withr,
+    skimr
 URL: https://github.com/simonpcouch/btw, https://simonpcouch.github.io/btw/
 BugReports: https://github.com/simonpcouch/btw/issues
 Config/Needs/website: tidyverse/tidytemplate

@@ -6,7 +6,7 @@
 \usage{
 get_data_frame(
   data_frame,
-  format = c("glimpse", "print", "json"),
+  format = c("skim", "glimpse", "print", "json"),
   dims = c(5, 100)
 )
 }
@@ -14,8 +14,11 @@ get_data_frame(
 \item{data_frame}{A single string naming a data frame or, alternatively,
 the data frame itself.}
 
-\item{format}{One of \code{"glimpse"}, \code{"print"}, or \code{"json"}.
+\item{format}{One of \code{"skim"}, \code{"glimpse"}, \code{"print"}, or \code{"json"}.
 \itemize{
+\item \code{"skim"} is the most information-dense format for describing the data. It
+uses and returns the same information as \code{\link[skimr:skim]{skimr::skim()}} but formatting as
+a JSON object that describes the dataset.
 \item To glimpse the data column-by-column, use \code{"glimpse"}. This is
 particularly helpful for getting a sense of data frame column names,
 types, and distributions, when pairings of entries in individual rows

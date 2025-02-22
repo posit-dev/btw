@@ -27,7 +27,7 @@ get_environment <- function(environment = global_env(), items = NULL) {
   for (item_name in env_item_names) {
     item <- env_get(environment, item_name)
 
-    if (inherits(item, "data.frame")) {
+    if (inherits(item, c("data.frame", "tbl"))) {
       item_desc <- strsplit(get_data_frame(item), "\n")[[1]]
     } else if (inherits(item, "function")) {
       # TODO: this should be a `get_function()` or something
