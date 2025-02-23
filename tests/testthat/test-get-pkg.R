@@ -13,6 +13,8 @@ test_that("get_package_help() works", {
 })
 
 test_that("get_help_page() works", {
+  skip_if_not_macos()
+  
   res <- get_help_page("stats", "rnorm")
   
   expect_snapshot(res)

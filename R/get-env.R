@@ -19,7 +19,7 @@ get_environment <- function(environment = global_env(), items = NULL) {
   }
 
   res <- character()
-  env_item_names <- names(environment)
+  env_item_names <- ls(environment)
   if (!is.null(items)) {
     env_item_names <- env_item_names[env_item_names %in% items]
   }
@@ -27,7 +27,9 @@ get_environment <- function(environment = global_env(), items = NULL) {
   for (item_name in env_item_names) {
     item <- env_get(environment, item_name)
 
-    if (inherits(item, "data.frame")) {
+    if (inherits(item, "Chat")) next
+
+    if (inherits(item, c("data.frame", "tbl"))) {
       item_desc <- strsplit(get_data_frame(item), "\n")[[1]]
     } else if (inherits(item, "function")) {
       # TODO: this should be a `get_function()` or something
@@ -37,7 +39,7 @@ get_environment <- function(environment = global_env(), items = NULL) {
         error = function(e) capture.output(item)
       )
     } else {
-      item_desc <- capture.output(item)
+      item_desc <- capture_print(item)
     }
 
     item_res <- c(item_name, paste0("#> ", item_desc), "\n")
@@ -57,4 +59,11 @@ tool_get_environment <- function() {
       items = ellmer::type_string()
     )
   )
+}
+
+capture_print <- function(item) {
+  out <- capture.output(print(item))
+  if (length(out) && nzchar(out)) return(out)
+
+  capture.output(print(item), type = "message")
 }

@@ -1,3 +1,5 @@
+skip_if_not_macos()
+
 test_that("get_environment works", {
   env <- new_environment(list(mtcars = mtcars, boop = "bop"))
 

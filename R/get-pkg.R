@@ -77,15 +77,16 @@ get_package_help <- function(package_name) {
     ignore.case = TRUE
   )
 
-  res <- help_db$matches |>
-    dplyr::group_by(Name) |>
-    dplyr::summarize(
-      topic_id = dplyr::first(Name),
-      title = dplyr::first(Entry[Field == "Title"]),
-      aliases = list(I(Entry[Field == "alias"]))
-    ) |>
-    dplyr::ungroup() |>
-    dplyr::select(topic_id, title, aliases)
+  res <- help_db$matches
+  res <- dplyr::group_by(res, Name)
+  res <- dplyr::summarize(
+    res,
+    topic_id = dplyr::first(Name),
+    title = dplyr::first(Entry[Field == "Title"]),
+    aliases = list(I(Entry[Field == "alias"]))
+  )
+  res <- dplyr::ungroup(res)
+  res <- dplyr::select(res, topic_id, title, aliases)
 
   get_data_frame(res, format = "json", dims = c(Inf, Inf))
 }
