@@ -40,7 +40,7 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get_data_frame</span><span class="op">(</span></span>
 <span>  <span class="va">data_frame</span>,</span>
-<span>  format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"glimpse"</span>, <span class="st">"print"</span>, <span class="st">"json"</span><span class="op">)</span>,</span>
+<span>  format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"skim"</span>, <span class="st">"glimpse"</span>, <span class="st">"print"</span>, <span class="st">"json"</span><span class="op">)</span>,</span>
 <span>  dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">100</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -55,7 +55,10 @@ the data frame itself.</p></dd>
 
 
 <dt id="arg-format">format<a class="anchor" aria-label="anchor" href="#arg-format"></a></dt>
-<dd><p>One of <code>"glimpse"</code>, <code>"print"</code>, or <code>"json"</code>.</p><ul><li><p>To glimpse the data column-by-column, use <code>"glimpse"</code>. This is
+<dd><p>One of <code>"skim"</code>, <code>"glimpse"</code>, <code>"print"</code>, or <code>"json"</code>.</p><ul><li><p><code>"skim"</code> is the most information-dense format for describing the data. It
+uses and returns the same information as <code><a href="https://docs.ropensci.org/skimr/reference/skim.html" class="external-link">skimr::skim()</a></code> but formatting as
+a JSON object that describes the dataset.</p></li>
+<li><p>To glimpse the data column-by-column, use <code>"glimpse"</code>. This is
 particularly helpful for getting a sense of data frame column names,
 types, and distributions, when pairings of entries in individual rows
 aren't particularly important.</p></li>
@@ -88,7 +91,7 @@ Will error if the named data frame is not found in the environment.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">get_data_frame</span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "$ mpg  &lt;dbl&gt; 21.0, 21.0, 22.8, 21.4, 18.7\n$ cyl  &lt;dbl&gt; 6, 6, 4, 6, 8\n$ disp &lt;dbl&gt; 160, 160, 108, 258, 360\n$ hp   &lt;dbl&gt; 110, 110, 93, 110, 175\n$ drat &lt;dbl&gt; 3.90, 3.90, 3.85, 3.08, 3.15\n$ wt   &lt;dbl&gt; 2.620, 2.875, 2.320, 3.215, 3.440\n$ qsec &lt;dbl&gt; 16.46, 17.02, 18.61, 19.44, 17.02\n$ vs   &lt;dbl&gt; 0, 0, 1, 1, 0\n$ am   &lt;dbl&gt; 1, 1, 1, 0, 0\n$ gear &lt;dbl&gt; 4, 4, 4, 3, 3\n$ carb &lt;dbl&gt; 4, 4, 1, 1, 2"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "{\"name\":\"mtcars\",\"n_cols\":11,\"n_rows\":32,\"groups\":[],\"class\":\"data.frame\",\"columns\":{\"mpg\":{\"variable\":\"mpg\",\"type\":\"numeric\",\"mean\":20.0906,\"sd\":6.0269,\"p0\":10.4,\"p25\":15.425,\"p50\":19.2,\"p75\":22.8,\"p100\":33.9},\"cyl\":{\"variable\":\"cyl\",\"type\":\"numeric\",\"mean\":6.1875,\"sd\":1.7859,\"p0\":4,\"p25\":4,\"p50\":6,\"p75\":8,\"p100\":8},\"disp\":{\"variable\":\"disp\",\"type\":\"numeric\",\"mean\":230.7219,\"sd\":123.9387,\"p0\":71.1,\"p25\":120.825,\"p50\":196.3,\"p75\":326,\"p100\":472},\"hp\":{\"variable\":\"hp\",\"type\":\"numeric\",\"mean\":146.6875,\"sd\":68.5629,\"p0\":52,\"p25\":96.5,\"p50\":123,\"p75\":180,\"p100\":335},\"drat\":{\"variable\":\"drat\",\"type\":\"numeric\",\"mean\":3.5966,\"sd\":0.5347,\"p0\":2.76,\"p25\":3.08,\"p50\":3.695,\"p75\":3.92,\"p100\":4.93},\"wt\":{\"variable\":\"wt\",\"type\":\"numeric\",\"mean\":3.2172,\"sd\":0.9785,\"p0\":1.513,\"p25\":2.5812,\"p50\":3.325,\"p75\":3.61,\"p100\":5.424},\"qsec\":{\"variable\":\"qsec\",\"type\":\"numeric\",\"mean\":17.8487,\"sd\":1.7869,\"p0\":14.5,\"p25\":16.8925,\"p50\":17.71,\"p75\":18.9,\"p100\":22.9},\"vs\":{\"variable\":\"vs\",\"type\":\"numeric\",\"mean\":0.4375,\"sd\":0.504,\"p0\":0,\"p25\":0,\"p50\":0,\"p75\":1,\"p100\":1},\"am\":{\"variable\":\"am\",\"type\":\"numeric\",\"mean\":0.4062,\"sd\":0.499,\"p0\":0,\"p25\":0,\"p50\":0,\"p75\":1,\"p100\":1},\"gear\":{\"variable\":\"gear\",\"type\":\"numeric\",\"mean\":3.6875,\"sd\":0.7378,\"p0\":3,\"p25\":3,\"p50\":4,\"p75\":4,\"p100\":5},\"carb\":{\"variable\":\"carb\",\"type\":\"numeric\",\"mean\":2.8125,\"sd\":1.6152,\"p0\":1,\"p25\":2,\"p50\":2,\"p75\":4,\"p100\":8}}}"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">get_data_frame</span><span class="op">(</span><span class="va">mtcars</span>, format <span class="op">=</span> <span class="st">"print"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "    mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb\n  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;\n1  21       6   160   110  3.9   2.62  16.5     0     1     4     4\n2  21       6   160   110  3.9   2.88  17.0     0     1     4     4\n3  22.8     4   108    93  3.85  2.32  18.6     1     1     4     1\n4  21.4     6   258   110  3.08  3.22  19.4     1     0     3     1\n5  18.7     8   360   175  3.15  3.44  17.0     0     0     3     2"</span>
