@@ -110,7 +110,7 @@ get_data_frame_json <- function(x) {
 
 get_data_frame_skim <- function(df, .data_name = NULL) {
   if (is.null(.data_name)) {
-    data_name <- deparse(substitute(df))
+    .data_name <- deparse(substitute(df))
   }
   cols <- skimr::skim(df, .data_name = .data_name)
 
