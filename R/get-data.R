@@ -70,20 +70,27 @@ get_data_frame <- function(
 tool_get_data_frame <- function() {
   ellmer::tool(
     get_data_frame,
-    "Function to extract or manipulate a data frame with various formatting
-  options.",
+    "Function to extract or manipulate a data frame with various formatting options.",
     data_frame = ellmer::type_string(
       "The name of the data frame to be described."
     ),
     format = ellmer::type_string(
-      "The output format of the data frame. Options are \"skim\", \"glimpse\",
-  \"print\", or \"json\". Defaults to \"glimpse\".",
+      paste(
+        "The output format of the data frame: 'skim', 'glimpse', 'print', or 'json'. Default 'skim'.",
+        "",
+        "* skim: Returns a JSON object with information about every column in the table.",
+        "* glimpse: Returns the number of rows, columns, column names and types and the first values of each column",
+        "* print: Prints the data frame",
+        "* json: Returns the data frame as JSON",
+        sep = "\n"
+      ),
       required = FALSE
     ),
     dims = ellmer::type_array(
-      "Dimensions for printing the data frame. A numeric vector of length
-  2, where the first element represents the number of rows and the second
-  the number of columns. Defaults to `c(5, 100)`.",
+      paste(
+        'Dimensions of the data frame to use for the "print" or "json" format.',
+        "A numeric vector of length 2 as number of rows and columns. Default `c(5, 100)`."
+      ),
       items = ellmer::type_integer(),
       required = FALSE
     )
