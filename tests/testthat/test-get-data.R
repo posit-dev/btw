@@ -1,3 +1,5 @@
+skip_if_not_macos()
+
 test_that("get_data_frame works", {
   expect_snapshot(cat(get_data_frame(mtcars)))
   expect_snapshot(cat(get_data_frame(mtcars, dims = c(Inf, Inf))))
