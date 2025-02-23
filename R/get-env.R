@@ -11,7 +11,11 @@
 #' @inheritSection get_installed_packages See Also
 #'
 #' @export
-get_environment <- function(environment = global_env(), items = NULL) {
+btw_this.env <- function(x, ..., items = NULL) {
+  btw_describe_environment(environment = x, items = items)
+}
+
+btw_describe_environment <- function(environment = global_env(), items = NULL) {
   if (!is.environment(environment)) {
     # TODO: does the env name live in the global env?
     # is it in `search_envs`?
@@ -27,7 +31,9 @@ get_environment <- function(environment = global_env(), items = NULL) {
   for (item_name in env_item_names) {
     item <- env_get(environment, item_name)
 
-    if (inherits(item, "Chat")) next
+    res <- c(res, btw_item_with_description(item_name, btw_this(item)))
+    # TODO: Move code below into `btw_this` generics
+    next
 
     if (inherits(item, c("data.frame", "tbl"))) {
       item_desc <- strsplit(get_data_frame(item), "\n")[[1]]
@@ -51,19 +57,20 @@ get_environment <- function(environment = global_env(), items = NULL) {
 
 tool_get_environment <- function() {
   ellmer::tool(
-    get_environment,
-    "Retrieve specified items from a given environment.",
+    btw_describe_environment,
+    "Describe specified items from a given environment.",
     items = ellmer::type_array(
-      "The names of items to retrieve from the environment. Defaults to `NULL`, indicating all
-  items.",
+      "The names of items to describe from the environment. Defaults to `NULL`, indicating all items.",
       items = ellmer::type_string()
     )
   )
 }
 
-capture_print <- function(item) {
-  out <- capture.output(print(item))
-  if (length(out) && nzchar(out)) return(out)
-
-  capture.output(print(item), type = "message")
+btw_item_with_description <- function(item_name, description) {
+  if (inherits(description, "btw_ignore")) {
+    return(invisible())
+  }
+  # assuming the new contract is that `btw_this()` returns `description` as
+  # lines of text. (Alternative: btw_this() always returns a single character.)
+  c(item_name, paste0("#> ", description), "\n")
 }
