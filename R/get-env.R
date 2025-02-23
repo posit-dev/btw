@@ -11,7 +11,7 @@
 #' @inheritSection get_installed_packages See Also
 #'
 #' @export
-btw_this.env <- function(x, ..., items = NULL) {
+btw_this.environment <- function(x, ..., items = NULL) {
   btw_describe_environment(environment = x, items = items)
 }
 
