@@ -20,7 +20,7 @@ get_installed_packages <- function() {
 
   # show every installed package, along with a description of what
   # it does, in json format
-  get_data_frame(df, format = "json", dims = c(Inf, 2))
+  describe_data_frame(df, format = "json", dims = c(Inf, 2))
 }
 
 tool_get_installed_packages <- function() {
@@ -88,7 +88,7 @@ get_package_help <- function(package_name) {
   res <- dplyr::ungroup(res)
   res <- dplyr::select(res, topic_id, title, aliases)
 
-  get_data_frame(res, format = "json", dims = c(Inf, Inf))
+  describe_data_frame(res, format = "json", dims = c(Inf, Inf))
 }
 
 tool_get_package_help <- function() {
@@ -157,7 +157,7 @@ get_package_vignettes <- function(package_name) {
   }
 
   df <- vignettes[, c("Topic", "Title")]
-  get_data_frame(df, format = "json", dims = c(Inf, 2))
+  describe_data_frame(df, format = "json", dims = c(Inf, 2))
 }
 
 tool_get_package_vignettes <- function() {

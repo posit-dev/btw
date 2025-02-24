@@ -29,7 +29,7 @@ register_btw_tools <- function(chat) {
 }
 
 btw_tools <- list(
-  tool_get_data_frame(),
+  tool_describe_data_frame(),
   tool_get_environment(),
   tool_get_installed_packages(),
   tool_get_package_help(),

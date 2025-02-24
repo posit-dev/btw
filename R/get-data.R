@@ -41,7 +41,7 @@ btw_this.data.frame <- function(
   format = c("skim", "glimpse", "print", "json"),
   dims = c(5, 100)
 ) {
-  get_data_frame(x, format = format, dims = dims)
+  describe_data_frame(x, format = format, dims = dims)
 }
 
 #' @describeIn btw_this.data.frame Summarize a `tbl`.
@@ -52,17 +52,16 @@ btw_this.tbl <- function(
   format = c("skim", "glimpse", "print", "json"),
   dims = c(5, 100)
 ) {
-  get_data_frame(x, format = format, dims = dims)
+  describe_data_frame(x, format = format, dims = dims)
 }
 
-get_data_frame <- function(
+describe_data_frame <- function(
   data_frame,
   format = c("skim", "glimpse", "print", "json"),
   dims = c(5, 100)
 ) {
   format <- rlang::arg_match(format)
   check_inherits(dims, "numeric")
-  .data_name <- deparse(substitute(data_frame))
 
   # models have likely the seen the "object ___ not found" quite a bit,
   # so no need to rethrow / handle errors nicely
@@ -79,21 +78,22 @@ get_data_frame <- function(
 
   res <- switch(
     format,
-    glimpse = get_data_frame_glimpse(x = data_frame),
-    print = get_data_frame_print(x = data_frame_small),
-    json = get_data_frame_json(x = data_frame_small),
-    skim = get_data_frame_skim(data_frame, .data_name)
+    glimpse = describe_data_frame_glimpse(x = data_frame),
+    print = describe_data_frame_print(x = data_frame_small),
+    json = describe_data_frame_json(x = data_frame_small),
+    skim = describe_data_frame_skim(data_frame)
   )
 
   res
 }
 
-tool_get_data_frame <- function() {
+tool_describe_data_frame <- function() {
   ellmer::tool(
-    get_data_frame,
-    "Function to extract or manipulate a data frame with various formatting options.",
+    describe_data_frame,
+    .name = "btw_show_data_frame_structure",
+    .description = "Show the data frame or table or get information about the structure of a data frame or table.",
     data_frame = ellmer::type_string(
-      "The name of the data frame to be described."
+      "The name of the data frame."
     ),
     format = ellmer::type_string(
       paste(
@@ -118,12 +118,12 @@ tool_get_data_frame <- function() {
   )
 }
 
-get_data_frame_glimpse <- function(x, x_name) {
+describe_data_frame_glimpse <- function(x, x_name) {
   res <- cli::ansi_strip(capture.output(dplyr::glimpse(x)))
   res
 }
 
-get_data_frame_print <- function(x) {
+describe_data_frame_print <- function(x) {
   withr::local_options(pillar.advice = FALSE, pillar.min_title_chars = Inf)
 
   res <- cli::ansi_strip(
@@ -132,18 +132,15 @@ get_data_frame_print <- function(x) {
   res[2:length(res)]
 }
 
-get_data_frame_json <- function(x) {
+describe_data_frame_json <- function(x) {
   capture.output(jsonlite::toJSON(x, auto_unbox = TRUE, pretty = TRUE))
 }
 
-get_data_frame_skim <- function(df, .data_name = NULL) {
-  if (is.null(.data_name)) {
-    .data_name <- deparse(substitute(df))
-  }
-  cols <- skimr::skim(df, .data_name = .data_name)
+describe_data_frame_skim <- function(df) {
+  cols <- skimr::skim(df, .data_name = "")
 
-  attrs <- attributes(cols)[c("df_name", "data_cols", "data_rows", "groups")]
-  names(attrs) <- c("name", "n_cols", "n_rows", "groups")
+  attrs <- attributes(cols)[c("data_cols", "data_rows", "groups")]
+  names(attrs) <- c("n_cols", "n_rows", "groups")
   attrs[["class"]] <- class(df)
 
   # Move variable to the front

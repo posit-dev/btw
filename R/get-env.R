@@ -36,7 +36,7 @@ btw_describe_environment <- function(environment = global_env(), items = NULL) {
     next
 
     if (inherits(item, c("data.frame", "tbl"))) {
-      item_desc <- strsplit(get_data_frame(item), "\n")[[1]]
+      item_desc <- strsplit(describe_data_frame(item), "\n")[[1]]
     } else if (inherits(item, "function")) {
       # TODO: this should be a `get_function()` or something
       package_topic <- strsplit(item_name, "::", fixed = TRUE)[[1]]
