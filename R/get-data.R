@@ -87,7 +87,7 @@ describe_data_frame <- function(
   res
 }
 
-tool_describe_data_frame <- function() {
+tool_describe_data_frame <- .btw_add_to_tools(function() {
   ellmer::tool(
     describe_data_frame,
     .name = "btw_show_data_frame_structure",
@@ -116,7 +116,7 @@ tool_describe_data_frame <- function() {
       required = FALSE
     )
   )
-}
+})
 
 describe_data_frame_glimpse <- function(x, x_name) {
   res <- cli::ansi_strip(capture.output(dplyr::glimpse(x)))

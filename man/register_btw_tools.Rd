@@ -15,7 +15,7 @@ The chat object with tools registered.
 \description{
 The \code{register_btw_tools()} function equips an ellmer chat to interface with
 your computational environment. Chats returned by this function have access
-to the tools \code{\link[=btw_show_data_frame_structure]{btw_show_data_frame_structure()}}, \code{\link[=btw_list_and_describe_environment]{btw_list_and_describe_environment()}}, \code{\link[=get_installed_packages]{get_installed_packages()}}, \code{\link[=get_package_help]{get_package_help()}}, \code{\link[=get_package_vignette]{get_package_vignette()}}, \code{\link[=get_package_vignettes]{get_package_vignettes()}}, \code{\link[=get_help_page]{get_help_page()}}.
+to the tools \code{\link[=]{()}}.
 }
 \examples{
 # requires an ANTHROPIC_API_KEY

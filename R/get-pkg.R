@@ -22,12 +22,13 @@ get_installed_packages <- function() {
   describe_data_frame(df, format = "json", dims = c(Inf, 2))
 }
 
-tool_get_installed_packages <- function() {
+tool_get_installed_packages <- .btw_add_to_tools(function() {
   ellmer::tool(
     get_installed_packages,
-    "Displays the name and title of all installed R packages in json format."
+    .name = "btw_get_installed_packages",
+    .description = "Displays the name and title of all installed R packages in json format."
   )
-}
+})
 
 #' Describe R package documentation
 #'
@@ -90,7 +91,8 @@ get_package_help <- function(package_name) {
   describe_data_frame(res, format = "json", dims = c(Inf, Inf))
 }
 
-tool_get_package_help <- function() {
+
+tool_get_package_help <- .btw_add_to_tools(function() {
   ellmer::tool(
     get_package_help,
     "Get available help topics for an R package.",
@@ -98,7 +100,7 @@ tool_get_package_help <- function() {
       "The exact name of the package, e.g. \"shiny\"."
     )
   )
-}
+})
 
 # TODO: should this run the examples so the model can see what it does?
 # TODO: should there just be a way to get examples?
@@ -132,7 +134,7 @@ get_help_page <- function(package_name, topic) {
   return(pager_result)
 }
 
-tool_get_help_page <- function() {
+tool_get_help_page <- .btw_add_to_tools(function() {
   ellmer::tool(
     get_help_page,
     "Get help page from package.",
@@ -143,7 +145,7 @@ tool_get_help_page <- function() {
       "The topic_id or alias of the help page, e.g. 'withProgress' or 'incProgress'."
     )
   )
-}
+})
 
 #' @rdname get_pkg
 #' @export
@@ -159,7 +161,7 @@ get_package_vignettes <- function(package_name) {
   describe_data_frame(df, format = "json", dims = c(Inf, 2))
 }
 
-tool_get_package_vignettes <- function() {
+tool_get_package_vignettes <- .btw_add_to_tools(function() {
   ellmer::tool(
     get_package_vignettes,
     "Get a table of available vignettes for an R package.",
@@ -167,7 +169,7 @@ tool_get_package_vignettes <- function() {
       "The exact name of the package, e.g. 'shiny'."
     )
   )
-}
+})
 
 #' @rdname get_pkg
 #' @export
@@ -198,7 +200,7 @@ get_package_vignette <- function(package_name, vignette = package_name) {
   readLines(tmp_file)
 }
 
-tool_get_package_vignette <- function() {
+tool_get_package_vignette <- .btw_add_to_tools(function() {
   ellmer::tool(
     get_package_vignette,
     "Get a package vignette in plain text.",
@@ -210,4 +212,4 @@ tool_get_package_vignette <- function() {
       as default to retrieve the introductory vignette for the package."
     )
   )
-}
+})

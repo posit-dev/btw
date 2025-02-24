@@ -55,7 +55,7 @@ btw_describe_environment <- function(environment = global_env(), items = NULL) {
   paste0(res, collapse = "\n")
 }
 
-tool_describe_environment <- function() {
+tool_describe_environment <- .btw_add_to_tools(function() {
   ellmer::tool(
     btw_describe_environment,
     .name = "btw_list_and_describe_environment",
@@ -65,7 +65,7 @@ tool_describe_environment <- function() {
       items = ellmer::type_string()
     )
   )
-}
+})
 
 btw_item_with_description <- function(item_name, description) {
   if (inherits(description, "btw_ignore")) {
