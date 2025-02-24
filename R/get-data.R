@@ -27,13 +27,34 @@
 #' Will error if the named data frame is not found in the environment.
 #'
 #' @examples
-#' get_data_frame(mtcars)
+#' btw_this(mtcars)
 #'
-#' get_data_frame(mtcars, format = "print")
+#' btw_this(mtcars, format = "print")
 #'
-#' get_data_frame(mtcars, format = "json")
+#' btw_this(mtcars, format = "json")
 #'
+#' @describeIn btw_this.data.frame Summarize a data frame.
 #' @export
+btw_this.data.frame <- function(
+  x,
+  ...,
+  format = c("skim", "glimpse", "print", "json"),
+  dims = c(5, 100)
+) {
+  get_data_frame(x, format = format, dims = dims)
+}
+
+#' @describeIn btw_this.data.frame Summarize a `tbl`.
+#' @export
+btw_this.tbl <- function(
+  x,
+  ...,
+  format = c("skim", "glimpse", "print", "json"),
+  dims = c(5, 100)
+) {
+  get_data_frame(x, format = format, dims = dims)
+}
+
 get_data_frame <- function(
   data_frame,
   format = c("skim", "glimpse", "print", "json"),
@@ -64,7 +85,7 @@ get_data_frame <- function(
     skim = get_data_frame_skim(data_frame, .data_name)
   )
 
-  paste0(res, collapse = "\n")
+  res
 }
 
 tool_get_data_frame <- function() {
@@ -99,7 +120,7 @@ tool_get_data_frame <- function() {
 
 get_data_frame_glimpse <- function(x, x_name) {
   res <- cli::ansi_strip(capture.output(dplyr::glimpse(x)))
-  res[3:length(res)]
+  res
 }
 
 get_data_frame_print <- function(x) {

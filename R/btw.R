@@ -31,9 +31,9 @@ btw <- function(..., clipboard = interactive()) {
   elts <- dots_list(..., .named = TRUE)
 
   if (length(elts) == 0) {
-    res <- get_environment()
+    res <- btw_this(globalenv())
   } else {
-    res <- get_environment(as.environment(elts))
+    res <- btw_this(as.environment(elts))
   }
 
   if (clipboard) {

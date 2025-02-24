@@ -12,16 +12,6 @@ btw_this.default <- function(x, ...) {
 }
 
 #' @export
-btw_this.data.frame <- function(x, ...) {
-  # Implementation for the data.frame method
-}
-
-#' @export
-btw_this.tbl <- function(x, ...) {
-  # Implementation for the tbl method (same as data.frame)
-}
-
-#' @export
 btw_this.Chat <- function(x, ...) {
   btw_ignore()
 }
