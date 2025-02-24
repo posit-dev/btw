@@ -5,7 +5,6 @@
 #'
 #' @section See Also:
 #' * [register_btw_tools()] registers this function as a tool for LLMs to call.
-#' * Other `get_*()` functions: `r paste0('[', purrr::map_chr(btw_tools, purrr::pluck, "name"), '()]')`
 #'
 #' @returns
 #' A single string describing installed packages in json.

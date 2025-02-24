@@ -16,7 +16,6 @@ Displays the name and title of all installed R packages in json format.
 
 \itemize{
 \item \code{\link[=register_btw_tools]{register_btw_tools()}} registers this function as a tool for LLMs to call.
-\item Other \verb{get_*()} functions: \code{\link[=get_data_frame]{get_data_frame()}}, \code{\link[=btw_describe_environment]{btw_describe_environment()}}, \code{\link[=get_installed_packages]{get_installed_packages()}}, \code{\link[=get_package_help]{get_package_help()}}, \code{\link[=get_package_vignette]{get_package_vignette()}}, \code{\link[=get_package_vignettes]{get_package_vignettes()}}, \code{\link[=get_help_page]{get_help_page()}}
 }
 }
 
