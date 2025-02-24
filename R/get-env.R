@@ -55,10 +55,11 @@ btw_describe_environment <- function(environment = global_env(), items = NULL) {
   paste0(res, collapse = "\n")
 }
 
-tool_get_environment <- function() {
+tool_describe_environment <- function() {
   ellmer::tool(
     btw_describe_environment,
-    "Describe specified items from a given environment.",
+    .name = "btw_list_and_describe_environment",
+    .description = "List and describe items in an environment.",
     items = ellmer::type_array(
       "The names of items to describe from the environment. Defaults to `NULL`, indicating all items.",
       items = ellmer::type_string()

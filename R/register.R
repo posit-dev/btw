@@ -30,7 +30,7 @@ register_btw_tools <- function(chat) {
 
 btw_tools <- list(
   tool_describe_data_frame(),
-  tool_get_environment(),
+  tool_describe_environment(),
   tool_get_installed_packages(),
   tool_get_package_help(),
   tool_get_package_vignette(),
