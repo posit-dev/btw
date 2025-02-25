@@ -1,6 +1,9 @@
 #' Describe the contents of an environment
 #'
-#' @param environment An environment. Optional, defaults to global environment.
+#' @examples
+#' btw_this(globalenv())
+#'
+#' @param x An environment.
 #' @param items Optional. A character vector of objects in the environment to
 #'   describe.
 #' @param ... Additional arguments are silently ignored.

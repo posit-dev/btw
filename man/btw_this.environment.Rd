@@ -7,12 +7,12 @@
 \method{btw_this}{environment}(x, ..., items = NULL)
 }
 \arguments{
+\item{x}{An environment.}
+
 \item{...}{Additional arguments are silently ignored.}
 
 \item{items}{Optional. A character vector of objects in the environment to
 describe.}
-
-\item{environment}{An environment. Optional, defaults to global environment.}
 }
 \value{
 A string describing the environment contents with \verb{#>} prefixing
@@ -28,3 +28,7 @@ Describe the contents of an environment
 }
 }
 
+\examples{
+btw_this(globalenv())
+
+}
