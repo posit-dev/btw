@@ -15,7 +15,16 @@ The chat object with tools registered.
 \description{
 The \code{register_btw_tools()} function equips an ellmer chat to interface with
 your computational environment. Chats returned by this function have access
-to the tools \code{\link[=]{()}}.
+to the tools:
+\itemize{
+\item \strong{btw_show_data_frame_structure}: Show the data frame or table or get information about the structure of a data frame or table.
+\item \strong{btw_list_and_describe_environment}: List and describe items in an environment.
+\item \strong{btw_get_installed_packages}: Displays the name and title of all installed R packages in json format.
+\item \strong{get_package_help}: Get available help topics for an R package.
+\item \strong{get_help_page}: Get help page from package.
+\item \strong{get_package_vignettes}: Get a table of available vignettes for an R package.
+\item \strong{get_package_vignette}: Get a package vignette in plain text..
+}
 }
 \examples{
 # requires an ANTHROPIC_API_KEY

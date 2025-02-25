@@ -3,7 +3,9 @@
 #' @description
 #' The `register_btw_tools()` function equips an ellmer chat to interface with
 #' your computational environment. Chats returned by this function have access
-#' to the tools `r paste0('[', purrr::map_chr(.btw_tools, purrr::pluck, "name"), '()]')`.
+#' to the tools:
+#'
+#' `r .docs_list_tools()`.
 #'
 #' @param chat An ellmer `Chat` object.
 #'
@@ -26,4 +28,11 @@ register_btw_tools <- function(chat) {
   }
 
   chat
+}
+
+.docs_list_tools <- function() {
+  x <- vapply(.btw_tools, FUN.VALUE = character(1), function(tool) {
+    sprintf("- **%s**: %s", tool()@name, tool()@description)
+  })
+  paste(x, collapse = "\n")
 }
