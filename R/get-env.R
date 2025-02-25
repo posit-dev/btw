@@ -2,7 +2,8 @@
 #'
 #' @param environment An environment. Optional, defaults to global environment.
 #' @param items Optional. A character vector of objects in the environment to
-#' describe.
+#'   describe.
+#' @param ... Additional arguments are silently ignored.
 #'
 #' @returns
 #' A string describing the environment contents with `#>` prefixing

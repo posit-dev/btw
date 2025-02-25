@@ -7,6 +7,8 @@
 \method{btw_this}{environment}(x, ..., items = NULL)
 }
 \arguments{
+\item{...}{Additional arguments are silently ignored.}
+
 \item{items}{Optional. A character vector of objects in the environment to
 describe.}
 

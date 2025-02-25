@@ -1,9 +1,6 @@
 #' Describe a data frame in plain text
 #'
-#' @param data_frame A single string naming a data frame or, alternatively,
-#' the data frame itself.
-# TODO: should it be a different function name when there's no `get()`ting
-# happening?
+#' @param x A data frame or tibble.
 #' @param format One of `"skim"`, `"glimpse"`, `"print"`, or `"json"`.
 #' * `"skim"` is the most information-dense format for describing the data. It
 #'   uses and returns the same information as [skimr::skim()] but formatting as
@@ -19,6 +16,7 @@
 #' @param dims The number of rows and columns to show, as a numeric vector of
 #' length two. For example, the default `dims = c(5, 100)` shows the first 5
 #' rows and 100 columns, whereas `dims = c(Inf, Inf)` would show all of the data.
+#' @param ... Additional arguments are silently ignored.
 #'
 #' @inheritSection get_installed_packages See Also
 #'

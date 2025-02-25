@@ -20,6 +20,10 @@
 )
 }
 \arguments{
+\item{x}{A data frame or tibble.}
+
+\item{...}{Additional arguments are silently ignored.}
+
 \item{format}{One of \code{"skim"}, \code{"glimpse"}, \code{"print"}, or \code{"json"}.
 \itemize{
 \item \code{"skim"} is the most information-dense format for describing the data. It
@@ -38,9 +42,6 @@ are important to demonstrate.
 \item{dims}{The number of rows and columns to show, as a numeric vector of
 length two. For example, the default \code{dims = c(5, 100)} shows the first 5
 rows and 100 columns, whereas \code{dims = c(Inf, Inf)} would show all of the data.}
-
-\item{data_frame}{A single string naming a data frame or, alternatively,
-the data frame itself.}
 }
 \value{
 A character vector containing a representation of the data frame.
