@@ -31,6 +31,19 @@ capture_print <- function(x) {
 
 #' @export
 btw_this.character <- function(x, ..., caller_env = parent.frame()) {
+  check_string(x)
+  x <- trimws(x)
+
+  if (grepl("^\\{[a-zA-Z][a-zA-Z0-9.]+\\}$", x)) {
+    # Catch R packages in the form: {dplyr} or {btw}
+    # R packages must:
+    # * start with a letter
+    # * use only letters, numbers or .
+    # * be two or more characters long
+    x <- substring(x, 2, nchar(x) - 1)
+    return(btw_this(as_btw_docs_package(x)))
+  }
+
   x_expr <- parse_expr(x)
   tryCatch(
     inject(btw_this(!!x_expr), env = caller_env),
@@ -77,7 +90,14 @@ as_btw_docs_topic <- function(package, topic) {
 
 #' @export
 btw_this.btw_docs_package <- function(x, ...) {
-  get_package_help(x$package)
+  c(
+    sprintf("Documented functions and help topics in package %s:", x$package),
+    get_package_help(x$package)
+  )
+}
+
+as_btw_docs_package <- function(package) {
+  structure(list(package = package), class = "btw_docs_package")
 }
 
 #' @export
