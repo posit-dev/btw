@@ -45,6 +45,16 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
     return(btw_this(as_btw_docs_package(x)))
   }
 
+  if (substring(x, 1, 1) == "?") {
+    x <- substring(x, 2, nchar(x))
+    x <- strsplit(x, "::", fixed = TRUE)[[1]]
+    if (length(x) == 2) {
+      return(btw_this(as_btw_docs_topic(x[1], x[2])))
+    } else {
+      return(btw_this(as_btw_docs_topic(NULL, x[1])))
+    }
+  }
+
   x_expr <- parse_expr(x)
   tryCatch(
     inject(btw_this(!!x_expr), env = caller_env),
@@ -80,6 +90,12 @@ btw_this.function <- function(x, ...) {
 #' @export
 btw_this.btw_docs_topic <- function(x, ...) {
   get_help_page(x$package, x$topic)
+}
+
+#' @export
+btw_this.help_files_with_topic <- function(x, ...) {
+  args <- call_args(attr(x, "call")) # help(topic = {topic}, package = {package})
+  get_help_page(args$package, args$topic)
 }
 
 as_btw_docs_topic <- function(package, topic) {

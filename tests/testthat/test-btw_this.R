@@ -14,3 +14,10 @@ test_that("btw_this.btw_docs_package()", {
     btw_this(as_btw_docs_package("dplyr"))
   )
 })
+
+test_that("btw_this.btw_docs_topic()", {
+  expect_equal(
+    btw_this(?dplyr::mutate),
+    btw_this("?dplyr::mutate")
+  )
+})
