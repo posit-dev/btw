@@ -60,7 +60,7 @@ describe_data_frame <- function(
   format = c("skim", "glimpse", "print", "json"),
   dims = c(5, 100)
 ) {
-  format <- rlang::arg_match(format)
+  format <- arg_match(format)
   check_inherits(dims, "numeric")
 
   # models have likely the seen the "object ___ not found" quite a bit,
@@ -160,7 +160,7 @@ describe_data_frame_skim <- function(df) {
     names(col) <- sub(paste0(col$type, "."), "", names(col), fixed = TRUE)
 
     if (col$type == "character") {
-      var <- rlang::sym(col$variable)
+      var <- sym(col$variable)
 
       if (col$n_unique <= 10) {
         col$values <- dplyr::pull(dplyr::distinct(df, !!var))

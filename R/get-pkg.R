@@ -110,7 +110,7 @@ tool_get_package_help <- .btw_add_to_tools(function() {
 get_help_page <- function(package_name, topic) {
   check_installed(package_name)
 
-  help_page <- rlang::inject(help(
+  help_page <- inject(help(
     package = !!package_name,
     topic = !!topic,
     help_type = "text",
