@@ -31,25 +31,13 @@ btw_describe_environment <- function(environment = global_env(), items = NULL) {
   for (item_name in env_item_names) {
     item <- env_get(environment, item_name)
 
-    res <- c(res, btw_item_with_description(item_name, btw_this(item)))
-    # TODO: Move code below into `btw_this` generics
-    next
-
-    if (inherits(item, c("data.frame", "tbl"))) {
-      item_desc <- strsplit(describe_data_frame(item), "\n")[[1]]
-    } else if (inherits(item, "function")) {
-      # TODO: this should be a `get_function()` or something
-      package_topic <- strsplit(item_name, "::", fixed = TRUE)[[1]]
-      item_desc <- tryCatch(
-        get_help_page(package_topic[1], package_topic[2]),
-        error = function(e) capture.output(item)
+    res <- c(
+      res,
+      btw_item_with_description(
+        item_name,
+        btw_this(item, caller_env = environment)
       )
-    } else {
-      item_desc <- capture_print(item)
-    }
-
-    item_res <- c(item_name, paste0("#> ", item_desc), "\n")
-    res <- c(res, item_res)
+    )
   }
 
   paste0(res, collapse = "\n")

@@ -33,7 +33,7 @@ btw <- function(..., clipboard = interactive()) {
   if (length(elts) == 0) {
     res <- btw_this(globalenv())
   } else {
-    res <- btw_this(as.environment(elts))
+    res <- btw_this(new_environment(elts, parent = parent.frame()))
   }
 
   if (clipboard) {
