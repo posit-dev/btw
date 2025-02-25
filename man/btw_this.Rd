@@ -21,5 +21,6 @@ A generic function used to describe an object for use by LLM.
 \examples{
 btw_this(mtcars)
 btw_this(dplyr::mutate)
+btw_this("{dplyr}")
 
 }
