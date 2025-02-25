@@ -1,3 +1,17 @@
+#' Describe something for use by an LLM
+#'
+#' A generic function used to describe an object for use by LLM.
+#'
+#' @examples
+#' btw_this(mtcars)
+#' btw_this(dplyr::mutate)
+#'
+#' @param x The thing to describe.
+#' @param ... Additional arguments passed down to underlying methods. Unused
+#'   arguments are silently ignored.
+#'
+#' @return A character vector of lines describing the object.
+#' @export
 btw_this <- function(x, ...) {
   UseMethod("btw_this")
 }
