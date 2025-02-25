@@ -42,6 +42,10 @@ btw_describe_environment <- function(environment = global_env(), items = NULL) {
   for (item_name in env_item_names) {
     item <- env_get(environment, item_name)
 
+    if (is_function(item) && is_namespace(fn_env(item))) {
+      item <- item_name
+    }
+
     res <- c(
       res,
       btw_item_with_description(
@@ -51,7 +55,7 @@ btw_describe_environment <- function(environment = global_env(), items = NULL) {
     )
   }
 
-  paste0(res, collapse = "\n")
+  res
 }
 
 tool_describe_environment <- .btw_add_to_tools(function() {
