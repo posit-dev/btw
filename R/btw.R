@@ -38,6 +38,8 @@ btw <- function(..., clipboard = is_interactive()) {
 
   if (clipboard) {
     write_to_clipboard(res)
+  } else {
+    cli::cat_line(res)
   }
 
   invisible(res)
