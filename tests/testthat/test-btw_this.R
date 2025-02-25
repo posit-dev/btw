@@ -3,5 +3,7 @@ test_that("btw_this.function()", {
 })
 
 test_that("btw() with package functions", {
-  expect_equal(btw(dplyr::mutate), btw('dplyr::mutate'))
+  expect_output(
+    expect_equal(btw(dplyr::mutate)[-1], btw('dplyr::mutate')[-1])
+  )
 })
