@@ -6,8 +6,13 @@ reference:
 - title: Core functions
   contents:
   - btw
+  - btw_this
   - register_btw_tools
 
 - title: Describe R stuff
   contents:
+  - btw_this
+  - btw_this.environment
+  - btw_this.data.frame
+  - btw_this.tbl
   - starts_with("get_")
