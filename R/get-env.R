@@ -26,6 +26,13 @@ btw_describe_environment <- function(environment = global_env(), items = NULL) {
     cli::cli_abort("Not implemented yet.")
   }
 
+  if (is_namespace(environment)) {
+    cli::cli_abort(c(
+      "Describing an entire package namespace is not supported",
+      "i" = "Try choosing specific functions to describe: {.code btw('dplyr::mutate', 'dplyr::across')}."
+    ))
+  }
+
   res <- character()
   env_item_names <- ls(environment)
   if (!is.null(items)) {
