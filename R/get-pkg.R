@@ -124,7 +124,7 @@ get_help_page <- function(package_name, topic) {
     if (isTRUE(delete.file)) {
       unlink(files)
     }
-    pager_result <<- paste(str, collapse = "\n")
+    pager_result <<- str
     invisible()
   }
 
