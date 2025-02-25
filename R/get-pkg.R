@@ -95,7 +95,8 @@ get_package_help <- function(package_name) {
 tool_get_package_help <- .btw_add_to_tools(function() {
   ellmer::tool(
     get_package_help,
-    "Get available help topics for an R package.",
+    .name = "btw_get_package_help_topics",
+    .description = "Get available help topics for an R package.",
     package_name = ellmer::type_string(
       "The exact name of the package, e.g. \"shiny\"."
     )
@@ -137,7 +138,8 @@ get_help_page <- function(package_name, topic) {
 tool_get_help_page <- .btw_add_to_tools(function() {
   ellmer::tool(
     get_help_page,
-    "Get help page from package.",
+    .name = "btw_get_help_page_from_package",
+    .description = "Get help page from package.",
     package_name = ellmer::type_string(
       "The exact name of the package, e.g. 'shiny'."
     ),
@@ -164,7 +166,8 @@ get_package_vignettes <- function(package_name) {
 tool_get_package_vignettes <- .btw_add_to_tools(function() {
   ellmer::tool(
     get_package_vignettes,
-    "Get a table of available vignettes for an R package.",
+    .name = "btw_get_available_vignettes_in_package",
+    .description = "Get a table of available vignettes for an R package.",
     package_name = ellmer::type_string(
       "The exact name of the package, e.g. 'shiny'."
     )
@@ -203,7 +206,8 @@ get_package_vignette <- function(package_name, vignette = package_name) {
 tool_get_package_vignette <- .btw_add_to_tools(function() {
   ellmer::tool(
     get_package_vignette,
-    "Get a package vignette in plain text.",
+    .name = "btw_get_vignette_from_package",
+    .description = "Get a package vignette in plain text.",
     package_name = ellmer::type_string(
       "The exact name of the package, e.g. 'shiny'."
     ),

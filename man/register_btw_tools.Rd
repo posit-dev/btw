@@ -20,10 +20,10 @@ to the tools:
 \item \strong{btw_show_data_frame_structure}: Show the data frame or table or get information about the structure of a data frame or table.
 \item \strong{btw_list_and_describe_environment}: List and describe items in an environment.
 \item \strong{btw_get_installed_packages}: Displays the name and title of all installed R packages in json format.
-\item \strong{get_package_help}: Get available help topics for an R package.
-\item \strong{get_help_page}: Get help page from package.
-\item \strong{get_package_vignettes}: Get a table of available vignettes for an R package.
-\item \strong{get_package_vignette}: Get a package vignette in plain text..
+\item \strong{btw_get_package_help_topics}: Get available help topics for an R package.
+\item \strong{btw_get_help_page_from_package}: Get help page from package.
+\item \strong{btw_get_available_vignettes_in_package}: Get a table of available vignettes for an R package.
+\item \strong{btw_get_vignette_from_package}: Get a package vignette in plain text..
 }
 }
 \examples{
