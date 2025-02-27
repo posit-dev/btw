@@ -6,12 +6,13 @@
 #' data frames to packages to function documentation.
 #'
 #' @param ... Objects to describe from your R environment. You can pass objects
-#' themselves, like data frames or functions, or the function also accepts
-#' output from `get_*()` functions like [get_package_help()], [get_help_page()],
-#' etc. If omitted, this function will just describe the elements in your global
-#' R environment.
+#'   themselves, like data frames or functions, or the function also accepts
+#'   output from `btw_tool_*()` functions like
+#'   [btw_tool_get_package_help_topics()], [btw_tool_get_help_page()], etc. If
+#'   omitted, this function will just describe the elements in your global R
+#'   environment.
 #' @param clipboard Whether to write the results to the clipboard.
-#' A single logical value; will default to `TRUE` when run interactively.
+#'   A single logical value; will default to `TRUE` when run interactively.
 #'
 #' @examples
 #' btw()

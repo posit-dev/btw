@@ -15,4 +15,13 @@ reference:
   - btw_this.environment
   - btw_this.data.frame
   - btw_this.tbl
-  - starts_with("get_")
+
+- title: Tools
+  desc: |
+    Register all of these tools with an `{ellmer}` chat using 
+    `btw_register_tools(chat)`. These tools generally all have counterparts
+    available via `btw()` and `btw_this()` for interactive use. The long and
+    awkward function names are for LLMs and to avoid name clashes with other
+    tools.
+  contents:
+  - starts_with("btw_tool_")

@@ -9,9 +9,10 @@ btw(..., clipboard = is_interactive())
 \arguments{
 \item{...}{Objects to describe from your R environment. You can pass objects
 themselves, like data frames or functions, or the function also accepts
-output from \verb{get_*()} functions like \code{\link[=get_package_help]{get_package_help()}}, \code{\link[=get_help_page]{get_help_page()}},
-etc. If omitted, this function will just describe the elements in your global
-R environment.}
+output from \verb{btw_tool_*()} functions like
+\code{\link[=btw_tool_get_package_help_topics]{btw_tool_get_package_help_topics()}}, \code{\link[=btw_tool_get_help_page]{btw_tool_get_help_page()}}, etc. If
+omitted, this function will just describe the elements in your global R
+environment.}
 
 \item{clipboard}{Whether to write the results to the clipboard.
 A single logical value; will default to \code{TRUE} when run interactively.}

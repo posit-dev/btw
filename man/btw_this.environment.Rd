@@ -21,14 +21,10 @@ each object's printed representation.
 \description{
 Describe the contents of an environment
 }
-\section{See Also}{
-
-\itemize{
-\item \code{\link[=register_btw_tools]{register_btw_tools()}} registers this function as a tool for LLMs to call.
-}
-}
-
 \examples{
 btw_this(globalenv())
 
+}
+\seealso{
+\code{\link[=btw_tool_describe_environment]{btw_tool_describe_environment()}}
 }

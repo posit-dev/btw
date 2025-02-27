@@ -18,3 +18,7 @@ utils::globalVariables(c(
   "title",
   "topic_id"
 ))
+
+.yes_we_use_ellmer <- function() {
+  ellmer::tool()
+}

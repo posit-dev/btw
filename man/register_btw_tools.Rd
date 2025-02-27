@@ -2,7 +2,7 @@
 % Please edit documentation in R/register.R
 \name{register_btw_tools}
 \alias{register_btw_tools}
-\title{Register tools from btw}
+\title{Tools: Register tools from btw}
 \usage{
 register_btw_tools(chat)
 }
@@ -17,13 +17,13 @@ The \code{register_btw_tools()} function equips an ellmer chat to interface with
 your computational environment. Chats returned by this function have access
 to the tools:
 \itemize{
-\item \strong{btw_show_data_frame_structure}: Show the data frame or table or get information about the structure of a data frame or table.
-\item \strong{btw_list_and_describe_environment}: List and describe items in an environment.
-\item \strong{btw_get_installed_packages}: Displays the name and title of all installed R packages in json format.
-\item \strong{btw_get_package_help_topics}: Get available help topics for an R package.
-\item \strong{btw_get_help_page_from_package}: Get help page from package.
-\item \strong{btw_get_available_vignettes_in_package}: Get a table of available vignettes for an R package.
-\item \strong{btw_get_vignette_from_package}: Get a package vignette in plain text..
+\item \strong{btw_tool_describe_data_frame}: Show the data frame or table or get information about the structure of a data frame or table.
+\item \strong{btw_tool_describe_environment}: List and describe items in an environment.
+\item \strong{btw_tool_get_installed_packages}: Displays the name and title of all installed R packages in json format.
+\item \strong{btw_tool_get_package_help_topics}: Get available help topics for an R package.
+\item \strong{btw_tool_get_help_page}: Get help page from package.
+\item \strong{btw_tool_get_available_vignettes_in_package}: Get a table of available vignettes for an R package.
+\item \strong{btw_tool_get_vignette_from_package}: Get a package vignette in plain text..
 }
 }
 \examples{
@@ -33,4 +33,13 @@ ch <- ellmer::chat_claude()
 
 register_btw_tools(ch)
 }
+
 }
+\seealso{
+Other Tools: 
+\code{\link{btw_tool_describe_data_frame}()},
+\code{\link{btw_tool_describe_environment}()},
+\code{\link{btw_tool_get_installed_packages}()},
+\code{\link{btw_tool_package_docs}}
+}
+\concept{Tools}

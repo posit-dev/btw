@@ -1,4 +1,4 @@
-#' Register tools from btw
+#' Tools: Register tools from btw
 #'
 #' @description
 #' The `register_btw_tools()` function equips an ellmer chat to interface with
@@ -19,6 +19,8 @@
 #'
 #' register_btw_tools(ch)
 #' }
+#'
+#' @family Tools
 #' @export
 register_btw_tools <- function(chat) {
   check_inherits(chat, "Chat")

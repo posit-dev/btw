@@ -12,14 +12,26 @@
 #' A string describing the environment contents with `#>` prefixing
 #' each object's printed representation.
 #'
-#' @inheritSection get_installed_packages See Also
-#'
+#' @seealso [btw_tool_describe_environment()]
 #' @export
 btw_this.environment <- function(x, ..., items = NULL) {
-  btw_describe_environment(environment = x, items = items)
+  btw_tool_describe_environment(environment = x, items = items)
 }
 
-btw_describe_environment <- function(environment = global_env(), items = NULL) {
+#' Tool: Describe an environment
+#'
+#' @param environment An environment to describe.
+#' @inheritParams btw_this.environment
+#'
+#' @inherit btw_this.environment return
+#'
+#' @seealso [btw_this.environment()], [register_btw_tools()]
+#' @family Tools
+#' @export
+btw_tool_describe_environment <- function(
+  environment = global_env(),
+  items = NULL
+) {
   if (!is.environment(environment)) {
     # TODO: does the env name live in the global env?
     # is it in `search_envs`?
@@ -58,10 +70,9 @@ btw_describe_environment <- function(environment = global_env(), items = NULL) {
   res
 }
 
-tool_describe_environment <- .btw_add_to_tools(function() {
+.btw_add_to_tools(function() {
   ellmer::tool(
-    btw_describe_environment,
-    .name = "btw_list_and_describe_environment",
+    btw_tool_describe_environment,
     .description = "List and describe items in an environment.",
     items = ellmer::type_array(
       "The names of items to describe from the environment. Defaults to `NULL`, indicating all items.",

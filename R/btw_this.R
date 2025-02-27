@@ -89,13 +89,13 @@ btw_this.function <- function(x, ...) {
 
 #' @export
 btw_this.btw_docs_topic <- function(x, ...) {
-  get_help_page(x$package, x$topic)
+  btw_tool_get_help_page(x$package, x$topic)
 }
 
 #' @export
 btw_this.help_files_with_topic <- function(x, ...) {
   args <- call_args(attr(x, "call")) # help(topic = {topic}, package = {package})
-  get_help_page(args$package, args$topic)
+  btw_tool_get_help_page(args$package, args$topic)
 }
 
 as_btw_docs_topic <- function(package, topic) {
@@ -109,7 +109,7 @@ as_btw_docs_topic <- function(package, topic) {
 btw_this.btw_docs_package <- function(x, ...) {
   c(
     sprintf("Documented functions and help topics in package %s:", x$package),
-    get_package_help(x$package)
+    btw_tool_get_package_help_topics(x$package)
   )
 }
 
@@ -119,12 +119,12 @@ as_btw_docs_package <- function(package) {
 
 #' @export
 btw_this.btw_docs_vignettes <- function(x, ...) {
-  get_package_vignettes(package_name = x$package)
+  btw_tool_get_available_vignettes_in_package(package_name = x$package)
 }
 
 #' @export
 btw_this.btw_docs_vignette <- function(x, ...) {
-  get_package_vignette(
+  btw_tool_get_vignette_from_package(
     package_name = x$package,
     vignette = x$vignette %||% x$package
   )

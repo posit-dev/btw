@@ -18,8 +18,6 @@
 #' rows and 100 columns, whereas `dims = c(Inf, Inf)` would show all of the data.
 #' @param ... Additional arguments are silently ignored.
 #'
-#' @inheritSection get_installed_packages See Also
-#'
 #' @returns
 #' A character vector containing a representation of the data frame.
 #' Will error if the named data frame is not found in the environment.
@@ -31,6 +29,8 @@
 #'
 #' btw_this(mtcars, format = "json")
 #'
+#' @seealso [btw_tool_describe_data_frame()]
+#'
 #' @describeIn btw_this.data.frame Summarize a data frame.
 #' @export
 btw_this.data.frame <- function(
@@ -39,7 +39,7 @@ btw_this.data.frame <- function(
   format = c("skim", "glimpse", "print", "json"),
   dims = c(5, 100)
 ) {
-  describe_data_frame(x, format = format, dims = dims)
+  btw_tool_describe_data_frame(x, format = format, dims = dims)
 }
 
 #' @describeIn btw_this.data.frame Summarize a `tbl`.
@@ -50,10 +50,23 @@ btw_this.tbl <- function(
   format = c("skim", "glimpse", "print", "json"),
   dims = c(5, 100)
 ) {
-  describe_data_frame(x, format = format, dims = dims)
+  btw_tool_describe_data_frame(x, format = format, dims = dims)
 }
 
-describe_data_frame <- function(
+#' Tool: Describe data frame
+#'
+#' @examples
+#' btw_tool_describe_data_frame(mtcars)
+#'
+#' @param data_frame The data frame to describe
+#' @inheritParams btw_this.data.frame
+#'
+#' @inherit btw_this.data.frame return
+#'
+#' @seealso [btw_this.data.frame()], [register_btw_tools()]
+#' @family Tools
+#' @export
+btw_tool_describe_data_frame <- function(
   data_frame,
   format = c("skim", "glimpse", "print", "json"),
   dims = c(5, 100)
@@ -85,10 +98,10 @@ describe_data_frame <- function(
   res
 }
 
-tool_describe_data_frame <- .btw_add_to_tools(function() {
+.btw_add_to_tools(function() {
   ellmer::tool(
-    describe_data_frame,
-    .name = "btw_show_data_frame_structure",
+    btw_tool_describe_data_frame,
+    .name = "btw_tool_describe_data_frame",
     .description = "Show the data frame or table or get information about the structure of a data frame or table.",
     data_frame = ellmer::type_string(
       "The name of the data frame."
