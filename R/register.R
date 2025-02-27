@@ -9,8 +9,8 @@
 #'
 #' @param chat An ellmer `Chat` object.
 #'
-#' @returns
-#' The chat object with tools registered.
+#' @returns Registers the tools with `chat`, updating the `chat` object in
+#'   place. The `chat` input is returned invisibly.
 #'
 #' @examples
 #' # requires an ANTHROPIC_API_KEY
@@ -29,7 +29,7 @@ btw_register_tools <- function(chat) {
     chat$register_tool(tool())
   }
 
-  chat
+  invisible(chat)
 }
 
 .docs_list_tools <- function() {

@@ -10,7 +10,8 @@ btw_register_tools(chat)
 \item{chat}{An ellmer \code{Chat} object.}
 }
 \value{
-The chat object with tools registered.
+Registers the tools with \code{chat}, updating the \code{chat} object in
+place. The \code{chat} input is returned invisibly.
 }
 \description{
 The \code{btw_register_tools()} function equips an ellmer chat to interface with
