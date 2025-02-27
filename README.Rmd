@@ -67,8 +67,7 @@ The following would be attached to your clipboard:
 ```{r}
 #| comment: ""
 #| echo: false
-res <- btw(mtcars)
-cat(res, sep = "\n")
+btw(mtcars)
 ```
 
 Or, to describe the `btw()` function:
@@ -83,8 +82,7 @@ The following would be attached to your clipboard:
 ```{r}
 #| comment: ""
 #| echo: false
-res <- btw(btw::btw)
-cat(res)
+btw(btw::btw)
 ```
 
 ### Supercharging assistants
