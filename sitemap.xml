@@ -9,11 +9,14 @@
 <url><loc>https://simonpcouch.github.io/btw/index.html</loc></url>
 <url><loc>https://simonpcouch.github.io/btw/reference/btw-package.html</loc></url>
 <url><loc>https://simonpcouch.github.io/btw/reference/btw.html</loc></url>
-<url><loc>https://simonpcouch.github.io/btw/reference/get_data_frame.html</loc></url>
-<url><loc>https://simonpcouch.github.io/btw/reference/get_environment.html</loc></url>
-<url><loc>https://simonpcouch.github.io/btw/reference/get_installed_packages.html</loc></url>
-<url><loc>https://simonpcouch.github.io/btw/reference/get_pkg.html</loc></url>
+<url><loc>https://simonpcouch.github.io/btw/reference/btw_register_tools.html</loc></url>
+<url><loc>https://simonpcouch.github.io/btw/reference/btw_this.data.frame.html</loc></url>
+<url><loc>https://simonpcouch.github.io/btw/reference/btw_this.environment.html</loc></url>
+<url><loc>https://simonpcouch.github.io/btw/reference/btw_this.html</loc></url>
+<url><loc>https://simonpcouch.github.io/btw/reference/btw_tool_describe_data_frame.html</loc></url>
+<url><loc>https://simonpcouch.github.io/btw/reference/btw_tool_describe_environment.html</loc></url>
+<url><loc>https://simonpcouch.github.io/btw/reference/btw_tool_get_installed_packages.html</loc></url>
+<url><loc>https://simonpcouch.github.io/btw/reference/btw_tool_package_docs.html</loc></url>
 <url><loc>https://simonpcouch.github.io/btw/reference/index.html</loc></url>
-<url><loc>https://simonpcouch.github.io/btw/reference/register_btw_tools.html</loc></url>
 </urlset>
 

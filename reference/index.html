@@ -49,10 +49,16 @@
         <dd>Plain-text descriptions of R objects</dd>
       </dl><dl><dt>
 
-          <code><a href="register_btw_tools.html">register_btw_tools()</a></code>
+          <code><a href="btw_this.html">btw_this()</a></code>
 
         </dt>
-        <dd>Register tools from btw</dd>
+        <dd>Describe something for use by an LLM</dd>
+      </dl><dl><dt>
+
+          <code><a href="btw_register_tools.html">btw_register_tools()</a></code>
+
+        </dt>
+        <dd>Tools: Register tools from btw</dd>
       </dl></div><div class="section level2">
       <h2 id="describe-r-stuff">Describe R stuff<a class="anchor" aria-label="anchor" href="#describe-r-stuff"></a></h2>
 
@@ -66,28 +72,57 @@
 
       <dl><dt>
 
-          <code><a href="get_data_frame.html">get_data_frame()</a></code>
+          <code><a href="btw_this.html">btw_this()</a></code>
 
         </dt>
-        <dd>Describe a data frame in plain text</dd>
+        <dd>Describe something for use by an LLM</dd>
       </dl><dl><dt>
 
-          <code><a href="get_environment.html">get_environment()</a></code>
+          <code><a href="btw_this.environment.html">btw_this(<i>&lt;environment&gt;</i>)</a></code>
 
         </dt>
         <dd>Describe the contents of an environment</dd>
       </dl><dl><dt>
 
-          <code><a href="get_installed_packages.html">get_installed_packages()</a></code>
+          <code><a href="btw_this.data.frame.html">btw_this(<i>&lt;data.frame&gt;</i>)</a></code> <code><a href="btw_this.data.frame.html">btw_this(<i>&lt;tbl&gt;</i>)</a></code>
 
         </dt>
-        <dd>Describe installed packages</dd>
+        <dd>Describe a data frame in plain text</dd>
+      </dl></div><div class="section level2">
+      <h2 id="tools">Tools<a class="anchor" aria-label="anchor" href="#tools"></a></h2>
+
+      <div class="section-desc"><p>Register all of these tools with an <a href="https://ellmer.tidyverse.org" class="external-link">ellmer</a> chat using <code>btw_register_tools(chat)</code>. These tools generally all have counterparts available via <code><a href="../reference/btw.html">btw()</a></code> and <code><a href="../reference/btw_this.html">btw_this()</a></code> for interactive use. The long and awkward function names are for LLMs and to avoid name clashes with other tools.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="btw_tool_describe_data_frame.html">btw_tool_describe_data_frame()</a></code>
+
+        </dt>
+        <dd>Tool: Describe data frame</dd>
       </dl><dl><dt>
 
-          <code><a href="get_pkg.html">get_package_help()</a></code> <code><a href="get_pkg.html">get_help_page()</a></code> <code><a href="get_pkg.html">get_package_vignettes()</a></code> <code><a href="get_pkg.html">get_package_vignette()</a></code>
+          <code><a href="btw_tool_describe_environment.html">btw_tool_describe_environment()</a></code>
 
         </dt>
-        <dd>Describe R package documentation</dd>
+        <dd>Tool: Describe an environment</dd>
+      </dl><dl><dt>
+
+          <code><a href="btw_tool_get_installed_packages.html">btw_tool_get_installed_packages()</a></code>
+
+        </dt>
+        <dd>Tool: Describe installed packages</dd>
+      </dl><dl><dt>
+
+          <code><a href="btw_tool_package_docs.html">btw_tool_get_package_help_topics()</a></code> <code><a href="btw_tool_package_docs.html">btw_tool_get_help_page()</a></code> <code><a href="btw_tool_package_docs.html">btw_tool_get_available_vignettes_in_package()</a></code> <code><a href="btw_tool_package_docs.html">btw_tool_get_vignette_from_package()</a></code>
+
+        </dt>
+        <dd>Tool: Describe R package documentation</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

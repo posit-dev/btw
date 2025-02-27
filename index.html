@@ -53,7 +53,7 @@
 <p>btw helps you describe your computational environment to LLMs.</p>
 <ul>
 <li>When used <strong>interactively</strong>, <code><a href="reference/btw.html">btw()</a></code> assembles context on your global R environment as well as function or package documentation, copying the results to your clipboard for easy pasting into chat interfaces.</li>
-<li>The <code><a href="reference/btw.html">btw()</a></code> function wraps several lower-level functions that can be easily incorporated into <strong>ellmer tool calls</strong> for describing various kinds of objects in R. To equip your ellmer chat with the ability to peruse documentation and check out the objects in your R environment, pass your chat to <code><a href="reference/register_btw_tools.html">register_btw_tools()</a></code>.</li>
+<li>The <code><a href="reference/btw.html">btw()</a></code> function wraps several lower-level functions that can be easily incorporated into <strong>ellmer tool calls</strong> for describing various kinds of objects in R. To equip your ellmer chat with the ability to peruse documentation and check out the objects in your R environment, pass your chat to <code><a href="reference/btw_register_tools.html">btw_register_tools()</a></code>.</li>
 </ul>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -139,10 +139,10 @@
 <div class="section level3">
 <h3 id="supercharging-assistants">Supercharging assistants<a class="anchor" aria-label="anchor" href="#supercharging-assistants"></a>
 </h3>
-<p><code><a href="reference/register_btw_tools.html">register_btw_tools()</a></code> equips LLM chats with the ability to peruse the documentation of your installed packages and check out objects in your R environment. Use it by calling the function on an existing ellmer chat:</p>
+<p><code><a href="reference/btw_register_tools.html">btw_register_tools()</a></code> equips LLM chats with the ability to peruse the documentation of your installed packages and check out objects in your R environment. Use it by calling the function on an existing ellmer chat:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ch</span> <span class="op">&lt;-</span> <span class="fu">ellmer</span><span class="fu">::</span><span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">chat_claude</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">ch</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/register_btw_tools.html">register_btw_tools</a></span><span class="op">(</span><span class="va">ch</span><span class="op">)</span></span>
+<span><span class="va">ch</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/btw_register_tools.html">btw_register_tools</a></span><span class="op">(</span><span class="va">ch</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">ch</span><span class="op">$</span><span class="fu">chat</span><span class="op">(</span><span class="st">"Hey!"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>Hello<span class="sc">!</span> I<span class="st">'m here to help you work with R-related information and data. I can help </span></span>
