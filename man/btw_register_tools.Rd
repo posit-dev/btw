@@ -25,6 +25,15 @@ to the tools:
 \item \strong{btw_tool_get_available_vignettes_in_package}: Get a table of available vignettes for an R package.
 \item \strong{btw_tool_get_vignette_from_package}: Get a package vignette in plain text.
 \item \strong{btw_tool_describe_environment}: List and describe items in an environment.
+\item \strong{btw_tool_list_files}: List files in the current working directory or in subfolders in the current project directory. Examples:
+}
+\itemize{
+\item \code{btw_tool_list_files()}: List all files and directories in the current working directory.
+\item \code{btw_tool_list_files("data")}: List all files in the \verb{data/} directory.
+\item \verb{btw_tool_list_files("data", type = "file", regexp = "csv$"): List all }.csv\verb{files in the}data/` directory.
+}
+\itemize{
+\item \strong{btw_tool_read_text_file}: Read an entire text file.
 }
 }
 \examples{
@@ -41,6 +50,8 @@ Other Tools:
 \code{\link{btw_tool_describe_data_frame}()},
 \code{\link{btw_tool_describe_environment}()},
 \code{\link{btw_tool_get_installed_packages}()},
-\code{\link{btw_tool_package_docs}}
+\code{\link{btw_tool_list_files}()},
+\code{\link{btw_tool_package_docs}},
+\code{\link{btw_tool_read_text_file}()}
 }
 \concept{Tools}

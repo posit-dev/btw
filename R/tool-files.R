@@ -1,0 +1,174 @@
+#' Tool: List files
+#'
+#' @param path Path to a directory or file for which to get information. The
+#'   `path` must be in the current working directory. If `path` is a directory,
+#'   we use [fs::dir_info()] to list information about files and directories in
+#'   `path` (use `type` to pick only one or the other). If `path` is a file, we
+#'   show information about that file.
+#' @param type File type(s) to return, one of `"any"` or `"file"` or
+#'   `"directory"`.
+#' @inheritParams fs::dir_ls
+#'
+#' @return Returns a character table of file information.
+#'
+#' @family Tools
+#' @export
+btw_tool_list_files <- function(
+  path = getwd(),
+  type = c("any", "file", "directory"),
+  regexp = ""
+) {
+  check_string(path) # one path a time, please
+
+  if (identical(type, "any")) {
+    type <- c("file", "directory", "symlink")
+  }
+
+  type <- arg_match(type, multiple = TRUE)
+  regexp <- if (nzchar(regexp)) regexp
+
+  # Disallow listing files outside of the project directory
+  check_path_within_current_wd(path)
+
+  info <-
+    if (fs::is_file(path)) {
+      fs::file_info(path)
+    } else {
+      # TODO: What about recurse?
+      fs::dir_info(path, type = type, regexp = regexp)
+    }
+  info$path <- fs::path_rel(info$path)
+
+  fields <- c("path", "type", "size", "modification_time")
+
+  res <- describe_data_frame_print(info[fields])
+  res[2] <- gsub("[^ ]", "-", res[1])
+  res
+}
+
+.btw_add_to_tools(function() {
+  ellmer::tool(
+    btw_tool_list_files,
+    .description = paste0(
+      "List files in the current working directory or in subfolders in the current project directory. ",
+      "Examples:\n\n",
+      "* `btw_tool_list_files()`: List all files and directories in the current working directory.\n",
+      "* `btw_tool_list_files(\"data\")`: List all files in the `data/` directory.\n",
+      "* `btw_tool_list_files(\"data\", type = \"file\", regexp = \"csv$\"): List all `.csv` files in the `data/` directory."
+    ),
+    path = ellmer::type_string(
+      "The relative path to a folder or file. If `path` is a directory, all files or directories (see `type`) are listed. If `path` is a file, information for just the selected file is listed.",
+      required = FALSE
+    ),
+    type = ellmer::type_enum(
+      "Whether to list files, directories or any file type.",
+      values = c("any", "file", "directory"),
+      required = FALSE
+    ),
+    regexp = ellmer::type_string(
+      'A regular expression to use to identify files, e.g. `regexp="[.]csv"` to find files with a `.csv` extension.',
+      required = FALSE
+    )
+  )
+})
+
+#' Tool: Read a file
+#'
+#' @param path Path to a file for which to get information. The `path` must be
+#'   in the current working directory.
+#' @param max_lines Number of lines to include. Defaults to 1,000 lines.
+#'
+#' @return Returns a character vector of lines from the file.
+#'
+#' @family Tools
+#' @export
+btw_tool_read_text_file <- function(path, max_lines = 1000) {
+  check_path_within_current_wd(path)
+
+  if (!fs::is_file(path) || !fs::file_exists(path)) {
+    cli::cli_abort(
+      "Path {.path {path}} is not a file or does not exist. Check the path and ensure that it is provided as a relative path."
+    )
+  }
+
+  if (!isTRUE(is_text_file(path))) {
+    cli::cli_abort(
+      "Path {.path {path}} is not a path to a text file."
+    )
+  }
+
+  head(readLines(path, warn = FALSE), n = max_lines)
+}
+
+.btw_add_to_tools(function() {
+  ellmer::tool(
+    btw_tool_read_text_file,
+    .description = "Read an entire text file.",
+    path = ellmer::type_string(
+      "The relative path to a file that can be read as text, such as a CSV, JSON, HTML, markdown file, etc.",
+    ),
+    max_lines = ellmer::type_number(
+      "How many lines to include from the file? The default is 100 and is likely already too high.",
+      required = FALSE
+    )
+  )
+})
+
+is_text_file <- function(file_path) {
+  # Note: this function was written by claude-3.7-sonnet.
+  # Try to read the first chunk of the file as binary
+  tryCatch(
+    {
+      # Read first 8KB of the file
+      con <- file(file_path, "rb")
+      bytes <- readBin(con, what = "raw", n = 8192)
+      close(con)
+
+      # If file is empty, consider it text
+      if (length(bytes) == 0) {
+        return(TRUE)
+      }
+
+      # Check for NULL bytes (common in binary files)
+      if (any(bytes == as.raw(0))) {
+        return(FALSE)
+      }
+
+      # Count control characters (excluding common text file control chars)
+      # Allow: tab (9), newline (10), carriage return (13)
+      allowed_control <- as.raw(c(9, 10, 13))
+      control_chars <- bytes[bytes < as.raw(32) & !(bytes %in% allowed_control)]
+
+      # If more than 10% of the first 8KB are control characters, likely binary
+      if (length(control_chars) / length(bytes) > 0.1) {
+        return(FALSE)
+      }
+
+      # Check for high proportion of extended ASCII or non-UTF8 characters
+      extended_chars <- bytes[bytes > as.raw(127)]
+      if (length(extended_chars) / length(bytes) > 0.3) {
+        # Try to interpret as UTF-8
+        text <- rawToChar(bytes)
+        if (Encoding(text) == "unknown" || !validUTF8(text)) {
+          return(FALSE)
+        }
+      }
+
+      # If we've made it this far, it's likely a text file
+      return(TRUE)
+    },
+    error = function(e) {
+      warning("Error reading file: ", e$message)
+      return(NA)
+    }
+  )
+}
+
+
+check_path_within_current_wd <- function(path) {
+  if (!fs::path_has_parent(path, getwd())) {
+    cli::cli_abort(
+      "You are not allowed to list or read files outside of the project directory. Make sure that `path` is relative to the current working directory."
+    )
+  }
+}

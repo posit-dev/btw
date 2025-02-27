@@ -7,6 +7,9 @@
 #' btw_this(dplyr::mutate)
 #' btw_this("{dplyr}")
 #'
+#' # Files ----
+#' btw_this("./") # list files in the current working directory
+#'
 #' @param x The thing to describe.
 #' @param ... Additional arguments passed down to underlying methods. Unused
 #'   arguments are silently ignored.
@@ -34,6 +37,18 @@ capture_print <- function(x) {
 btw_this.character <- function(x, ..., caller_env = parent.frame()) {
   check_string(x)
   x <- trimws(x)
+
+  if (grepl("^\\./", x)) {
+    path <- substring(x, 3, nchar(x))
+    if (!nzchar(path)) {
+      path <- "."
+    }
+    if (fs::is_file(path)) {
+      return(btw_tool_read_text_file(path))
+    } else {
+      return(btw_tool_list_files(path))
+    }
+  }
 
   if (grepl("^\\{[a-zA-Z][a-zA-Z0-9.]+\\}$", x)) {
     # Catch R packages in the form: {dplyr} or {btw}

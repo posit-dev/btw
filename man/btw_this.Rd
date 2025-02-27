@@ -23,4 +23,7 @@ btw_this(mtcars)
 btw_this(dplyr::mutate)
 btw_this("{dplyr}")
 
+# Files ----
+btw_this("./") # list files in the current working directory
+
 }
