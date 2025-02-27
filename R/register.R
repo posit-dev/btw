@@ -5,7 +5,7 @@
 #' your computational environment. Chats returned by this function have access
 #' to the tools:
 #'
-#' `r .docs_list_tools()`.
+#' `r .docs_list_tools()`
 #'
 #' @param chat An ellmer `Chat` object.
 #'
