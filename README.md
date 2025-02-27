@@ -23,7 +23,7 @@ btw helps you describe your computational environment to LLMs.
   easily incorporated into **ellmer tool calls** for describing various
   kinds of objects in R. To equip your ellmer chat with the ability to
   peruse documentation and check out the objects in your R environment,
-  pass your chat to `register_btw_tools()`.
+  pass your chat to `btw_register_tools()`.
 
 ## Installation
 
@@ -127,13 +127,13 @@ The following would be attached to your clipboard:
 
 ### Supercharging assistants
 
-`register_btw_tools()` equips LLM chats with the ability to peruse the
+`btw_register_tools()` equips LLM chats with the ability to peruse the
 documentation of your installed packages and check out objects in your R
 environment. Use it by calling the function on an existing ellmer chat:
 
 ``` r
 ch <- ellmer::chat_claude()
-ch <- register_btw_tools(ch)
+ch <- btw_register_tools(ch)
 
 ch$chat("Hey!")
 ```

@@ -1,36 +1,33 @@
-#' Describe installed packages
+#' Tool: Describe installed packages
 #'
-#' @description
-#' Displays the name and title of all installed R packages in json format.
+#' Displays the name and title of all installed R packages in JSON format.
 #'
-#' @section See Also:
-#' * [register_btw_tools()] registers this function as a tool for LLMs to call.
-#' * Other `get_*()` functions: `r paste0('[', purrr::map_chr(btw_tools, purrr::pluck, "name"), '()]')`
+#' @seealso [btw_register_tools()]
 #'
-#' @returns
-#' A single string describing installed packages in json.
+#' @returns Returns a single string describing installed packages as JSON.
 #'
 #' @examples
-#' cat(get_installed_packages())
+#' cat(btw_tool_get_installed_packages())
 #'
+#' @family Tools
 #' @export
-get_installed_packages <- function() {
+btw_tool_get_installed_packages <- function() {
   fields <- c("Package", "Title") # , "Description")
   df <- as.data.frame(installed.packages(fields = fields))[, fields]
 
   # show every installed package, along with a description of what
   # it does, in json format
-  get_data_frame(df, format = "json", dims = c(Inf, 2))
+  btw_tool_describe_data_frame(df, format = "json", dims = c(Inf, 2))
 }
 
-tool_get_installed_packages <- function() {
+.btw_add_to_tools(function() {
   ellmer::tool(
-    get_installed_packages,
-    "Displays the name and title of all installed R packages in json format."
+    btw_tool_get_installed_packages,
+    .description = "Displays the name and title of all installed R packages in json format."
   )
-}
+})
 
-#' Describe R package documentation
+#' Tool: Describe R package documentation
 #'
 #' @description
 #' These functions describe package documentation in plain text:
@@ -42,32 +39,36 @@ tool_get_installed_packages <- function() {
 #' the "intro" vignette to the package (by the same rules as pkgdown.)
 #'
 #' @returns
-#' * `get_package_help()` returns the `topic_id`, `title`, and `aliases` fields
-#'   for every topic in a package's documentation as a json-formatted string.
-#' * `get_help_page()` return the help-page for a package topic as a string.
+#' * `btw_tool_get_package_help_topics()` returns the `topic_id`, `title`, and
+#'   `aliases` fields for every topic in a package's documentation as a
+#'   json-formatted string.
+#' * `btw_tool_get_help_page()` return the help-page for a package topic as a
+#'   string.
 #'
-#' @inheritSection get_installed_packages See Also
+#' @seealso [btw_register_tools()]
 #'
 #' @examples
-#' cat(get_package_help("btw"))
+#' cat(btw_tool_get_package_help_topics("btw"))
 #'
-#' cat(get_help_page("btw", "btw"))
+#' cat(btw_tool_get_help_page("btw", "btw"))
 #'
 #' # show the TOC of vignettes in the dplyr package
-#' cat(get_package_vignettes("dplyr"))
+#' cat(btw_tool_get_available_vignettes_in_package("dplyr"))
 #'
 #' # returns a whole bunch of output and relies on
 #' # dplyr to have the mentioned vignettes available
 #' \dontrun{
 #' # grab the intro vignette
-#' cat(get_package_vignette("dplyr"))
+#' cat(btw_tool_get_vignette_from_package("dplyr"))
 #'
 #' # grab the programming vignette specifically
-#' cat(get_package_vignette("dplyr", "programming"))
+#' cat(btw_tool_get_vignette_from_package("dplyr", "programming"))
 #' }
-#' @name get_pkg
+#'
+#' @family Tools
+#' @name btw_tool_package_docs
 #' @export
-get_package_help <- function(package_name) {
+btw_tool_get_package_help_topics <- function(package_name) {
   check_installed(package_name)
 
   help_db <- help.search(
@@ -88,27 +89,28 @@ get_package_help <- function(package_name) {
   res <- dplyr::ungroup(res)
   res <- dplyr::select(res, topic_id, title, aliases)
 
-  get_data_frame(res, format = "json", dims = c(Inf, Inf))
+  btw_tool_describe_data_frame(res, format = "json", dims = c(Inf, Inf))
 }
 
-tool_get_package_help <- function() {
+
+.btw_add_to_tools(function() {
   ellmer::tool(
-    get_package_help,
-    "Get available help topics for an R package.",
+    btw_tool_get_package_help_topics,
+    .description = "Get available help topics for an R package.",
     package_name = ellmer::type_string(
       "The exact name of the package, e.g. \"shiny\"."
     )
   )
-}
+})
 
 # TODO: should this run the examples so the model can see what it does?
 # TODO: should there just be a way to get examples?
-#' @rdname get_pkg
+#' @name btw_tool_package_docs
 #' @export
-get_help_page <- function(package_name, topic) {
+btw_tool_get_help_page <- function(package_name, topic) {
   check_installed(package_name)
 
-  help_page <- rlang::inject(help(
+  help_page <- inject(help(
     package = !!package_name,
     topic = !!topic,
     help_type = "text",
@@ -122,7 +124,7 @@ get_help_page <- function(package_name, topic) {
     if (isTRUE(delete.file)) {
       unlink(files)
     }
-    pager_result <<- paste(str, collapse = "\n")
+    pager_result <<- str
     invisible()
   }
 
@@ -133,10 +135,10 @@ get_help_page <- function(package_name, topic) {
   return(pager_result)
 }
 
-tool_get_help_page <- function() {
+.btw_add_to_tools(function() {
   ellmer::tool(
-    get_help_page,
-    "Get help page from package.",
+    btw_tool_get_help_page,
+    .description = "Get help page from package.",
     package_name = ellmer::type_string(
       "The exact name of the package, e.g. 'shiny'."
     ),
@@ -144,11 +146,11 @@ tool_get_help_page <- function() {
       "The topic_id or alias of the help page, e.g. 'withProgress' or 'incProgress'."
     )
   )
-}
+})
 
-#' @rdname get_pkg
+#' @name btw_tool_package_docs
 #' @export
-get_package_vignettes <- function(package_name) {
+btw_tool_get_available_vignettes_in_package <- function(package_name) {
   check_installed(package_name)
 
   vignettes <- as.data.frame(tools::getVignetteInfo(package = package_name))
@@ -157,22 +159,25 @@ get_package_vignettes <- function(package_name) {
   }
 
   df <- vignettes[, c("Topic", "Title")]
-  get_data_frame(df, format = "json", dims = c(Inf, 2))
+  btw_tool_describe_data_frame(df, format = "json", dims = c(Inf, 2))
 }
 
-tool_get_package_vignettes <- function() {
+.btw_add_to_tools(function() {
   ellmer::tool(
-    get_package_vignettes,
-    "Get a table of available vignettes for an R package.",
+    btw_tool_get_available_vignettes_in_package,
+    .description = "Get a table of available vignettes for an R package.",
     package_name = ellmer::type_string(
       "The exact name of the package, e.g. 'shiny'."
     )
   )
-}
+})
 
-#' @rdname get_pkg
+#' @name btw_tool_package_docs
 #' @export
-get_package_vignette <- function(package_name, vignette = package_name) {
+btw_tool_get_vignette_from_package <- function(
+  package_name,
+  vignette = package_name
+) {
   check_installed(package_name)
   check_string(vignette, allow_null = TRUE)
 
@@ -199,16 +204,18 @@ get_package_vignette <- function(package_name, vignette = package_name) {
   readLines(tmp_file)
 }
 
-tool_get_package_vignette <- function() {
+.btw_add_to_tools(function() {
   ellmer::tool(
-    get_package_vignette,
-    "Get a package vignette in plain text.",
+    btw_tool_get_vignette_from_package,
+    .description = "Get a package vignette in plain text.",
     package_name = ellmer::type_string(
       "The exact name of the package, e.g. 'shiny'."
     ),
     vignette = ellmer::type_string(
-      "The name or index of the vignette to retrieve. This is optional--leave
-      as default to retrieve the introductory vignette for the package."
+      "The name or index of the vignette to retrieve. This is optional; if you
+      do not provide a value, the function retrieves the introductory vignette 
+      for the package.",
+      required = FALSE
     )
   )
-}
+})

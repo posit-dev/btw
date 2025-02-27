@@ -1,39 +1,40 @@
-#' Register tools from btw
+#' Tools: Register tools from btw
 #'
 #' @description
-#' The `register_btw_tools()` function equips an ellmer chat to interface with
+#' The `btw_register_tools()` function equips an ellmer chat to interface with
 #' your computational environment. Chats returned by this function have access
-#' to the tools `r paste0('[', purrr::map_chr(btw_tools, purrr::pluck, "name"), '()]')`.
+#' to the tools:
+#'
+#' `r .docs_list_tools()`
 #'
 #' @param chat An ellmer `Chat` object.
 #'
-#' @returns
-#' The chat object with tools registered.
+#' @returns Registers the tools with `chat`, updating the `chat` object in
+#'   place. The `chat` input is returned invisibly.
 #'
 #' @examples
 #' # requires an ANTHROPIC_API_KEY
 #' \dontrun{
 #' ch <- ellmer::chat_claude()
 #'
-#' register_btw_tools(ch)
+#' btw_register_tools(ch)
 #' }
+#'
+#' @family Tools
 #' @export
-register_btw_tools <- function(chat) {
+btw_register_tools <- function(chat) {
   check_inherits(chat, "Chat")
 
-  for (tool in btw_tools) {
-    chat$register_tool(tool)
+  for (tool in .btw_tools) {
+    chat$register_tool(tool())
   }
 
-  chat
+  invisible(chat)
 }
 
-btw_tools <- list(
-  tool_get_data_frame(),
-  tool_get_environment(),
-  tool_get_installed_packages(),
-  tool_get_package_help(),
-  tool_get_package_vignette(),
-  tool_get_package_vignettes(),
-  tool_get_help_page()
-)
+.docs_list_tools <- function() {
+  x <- vapply(.btw_tools, FUN.VALUE = character(1), function(tool) {
+    sprintf("- **%s**: %s", tool()@name, tool()@description)
+  })
+  paste(x, collapse = "\n")
+}
