@@ -1,7 +1,7 @@
 #' Tools: Register tools from btw
 #'
 #' @description
-#' The `register_btw_tools()` function equips an ellmer chat to interface with
+#' The `btw_register_tools()` function equips an ellmer chat to interface with
 #' your computational environment. Chats returned by this function have access
 #' to the tools:
 #'
@@ -17,12 +17,12 @@
 #' \dontrun{
 #' ch <- ellmer::chat_claude()
 #'
-#' register_btw_tools(ch)
+#' btw_register_tools(ch)
 #' }
 #'
 #' @family Tools
 #' @export
-register_btw_tools <- function(chat) {
+btw_register_tools <- function(chat) {
   check_inherits(chat, "Chat")
 
   for (tool in .btw_tools) {

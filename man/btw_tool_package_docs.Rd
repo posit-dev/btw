@@ -57,12 +57,12 @@ cat(btw_tool_get_vignette_from_package("dplyr", "programming"))
 
 }
 \seealso{
-\code{\link[=register_btw_tools]{register_btw_tools()}}
+\code{\link[=btw_register_tools]{btw_register_tools()}}
 
 Other Tools: 
+\code{\link{btw_register_tools}()},
 \code{\link{btw_tool_describe_data_frame}()},
 \code{\link{btw_tool_describe_environment}()},
-\code{\link{btw_tool_get_installed_packages}()},
-\code{\link{register_btw_tools}()}
+\code{\link{btw_tool_get_installed_packages}()}
 }
 \concept{Tools}

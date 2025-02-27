@@ -63,7 +63,7 @@ btw_this.tbl <- function(
 #'
 #' @inherit btw_this.data.frame return
 #'
-#' @seealso [btw_this.data.frame()], [register_btw_tools()]
+#' @seealso [btw_this.data.frame()], [btw_register_tools()]
 #' @family Tools
 #' @export
 btw_tool_describe_data_frame <- function(

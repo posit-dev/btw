@@ -2,7 +2,7 @@
 #'
 #' Displays the name and title of all installed R packages in JSON format.
 #'
-#' @seealso [register_btw_tools()]
+#' @seealso [btw_register_tools()]
 #'
 #' @returns Returns a single string describing installed packages as JSON.
 #'
@@ -45,7 +45,7 @@ btw_tool_get_installed_packages <- function() {
 #' * `btw_tool_get_help_page()` return the help-page for a package topic as a
 #'   string.
 #'
-#' @seealso [register_btw_tools()]
+#' @seealso [btw_register_tools()]
 #'
 #' @examples
 #' cat(btw_tool_get_package_help_topics("btw"))

@@ -7,7 +7,7 @@ reference:
   contents:
   - btw
   - btw_this
-  - register_btw_tools
+  - btw_register_tools
 
 - title: Describe R stuff
   contents:

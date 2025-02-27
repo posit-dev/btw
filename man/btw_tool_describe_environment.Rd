@@ -20,12 +20,12 @@ each object's printed representation.
 Tool: Describe an environment
 }
 \seealso{
-\code{\link[=btw_this.environment]{btw_this.environment()}}, \code{\link[=register_btw_tools]{register_btw_tools()}}
+\code{\link[=btw_this.environment]{btw_this.environment()}}, \code{\link[=btw_register_tools]{btw_register_tools()}}
 
 Other Tools: 
+\code{\link{btw_register_tools}()},
 \code{\link{btw_tool_describe_data_frame}()},
 \code{\link{btw_tool_get_installed_packages}()},
-\code{\link{btw_tool_package_docs}},
-\code{\link{register_btw_tools}()}
+\code{\link{btw_tool_package_docs}}
 }
 \concept{Tools}
