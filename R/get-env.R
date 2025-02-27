@@ -1,7 +1,9 @@
 #' Describe the contents of an environment
 #'
 #' @examples
-#' btw_this(globalenv())
+#' cyl_6 <- mtcars[mtcars$cyl == 6, ]
+#' gear_5 <- mtcars[mtcars$gear == 5, ]
+#' btw_this(environment())
 #'
 #' @param x An environment.
 #' @param items Optional. A character vector of objects in the environment to
