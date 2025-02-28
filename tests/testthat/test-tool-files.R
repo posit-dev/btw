@@ -4,13 +4,6 @@ test_that("btw_tool_list_files() works", {
   writeLines("test", "test.csv")
   writeLines("test", "test.R")
 
-  expect_snapshot(
-    btw_tool_list_files(),
-    transform = function(x) {
-      sub("\\d{4}-[0-9-]+ [0-9:]+", "MODIFIED TIME", x)
-    }
-  )
-
   expect_equal(
     btw_tool_list_files(),
     btw_this("./")
@@ -19,6 +12,15 @@ test_that("btw_tool_list_files() works", {
   expect_no_match(
     btw_tool_list_files(regexp = "[.]R$"),
     "test\\.csv"
+  )
+
+  skip_if_not_macos()
+
+  expect_snapshot(
+    btw_tool_list_files(),
+    transform = function(x) {
+      sub("\\d{4}-[0-9-]+ [0-9:]+", "MODIFIED TIME", x)
+    }
   )
 
   expect_snapshot(
@@ -42,6 +44,8 @@ test_that("btw_tool_read_text_file() works", {
     btw_tool_read_text_file("mtcars.csv"),
     btw_this("./mtcars.csv")
   )
+
+  skip_if_not_macos()
 
   expect_snapshot(
     btw_tool_read_text_file("mtcars.rds"),
