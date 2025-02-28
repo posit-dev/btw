@@ -51,9 +51,11 @@ test_that("btw_tool_get_vignette_from_package() works", {
 
   expect_type(res, "character")
   expect_match(res, "Introduction to dplyr", fixed = TRUE, all = FALSE)
+  expect_equal(btw_this(vignette("dplyr", "dplyr")), res)
 
   res <- btw_tool_get_vignette_from_package("dplyr", "programming")
 
   expect_type(res, "character")
   expect_match(res, "Programming", fixed = TRUE, all = FALSE)
+  expect_equal(btw_this(vignette("programming", "dplyr")), res)
 })

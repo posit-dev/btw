@@ -204,6 +204,14 @@ btw_this.btw_docs_vignette <- function(x, ...) {
   )
 }
 
+#' @export
+btw_this.vignette <- function(x, ...) {
+  btw_tool_get_vignette_from_package(
+    package_name = x$Package,
+    vignette = x$Topic
+  )
+}
+
 btw_ignore <- function() {
   structure(list(), class = "btw_ignore")
 }
