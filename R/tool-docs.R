@@ -160,7 +160,7 @@ btw_tool_get_available_vignettes_in_package <- function(package_name) {
 
   df <- vignettes[, c("Topic", "Title")]
   names(df) <- c("vignette", "title") # Named to match vignette tool
-  as_json_rowwise(df)
+  strsplit(as_json_rowwise(df), "\n")[[1]]
 }
 
 .btw_add_to_tools(function() {
