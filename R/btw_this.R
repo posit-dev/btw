@@ -185,6 +185,13 @@ as_btw_docs_package <- function(package) {
 }
 
 #' @export
+btw_this.packageIQR <- function(x, ...) {
+  # vignette(package = "btw")
+  package_name <- unique(x$results[, "Package"])
+  btw_tool_get_available_vignettes_in_package(package_name)
+}
+
+#' @export
 btw_this.btw_docs_vignettes <- function(x, ...) {
   btw_tool_get_available_vignettes_in_package(package_name = x$package)
 }

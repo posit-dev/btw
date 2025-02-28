@@ -33,6 +33,15 @@ test_that("btw_tool_get_available_vignettes_in_package() works", {
     fixed = TRUE,
     all = FALSE
   )
+
+  expect_equal(
+    btw_tool_get_available_vignettes_in_package("dplyr"),
+    btw_this(vignette(package = "dplyr"))
+  )
+
+  expect_true(
+    jsonlite::validate(btw_tool_get_available_vignettes_in_package("dplyr"))
+  )
 })
 
 test_that("btw_tool_get_vignette_from_package() works", {
