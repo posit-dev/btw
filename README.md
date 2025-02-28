@@ -9,9 +9,9 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/btw)](https://CRAN.R-project.org/package=btw)
-[![R-CMD-check](https://github.com/simonpcouch/btw/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/simonpcouch/btw/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/posit-dev/btw/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/posit-dev/btw/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
-coverage](https://codecov.io/gh/simonpcouch/btw/graph/badge.svg)](https://app.codecov.io/gh/simonpcouch/btw)
+coverage](https://codecov.io/gh/posit-dev/btw/graph/badge.svg)](https://app.codecov.io/gh/posit-dev/btw)
 <!-- badges: end -->
 
 btw helps you describe your computational environment to LLMs.
@@ -30,7 +30,7 @@ btw helps you describe your computational environment to LLMs.
 You can install the development version of btw like so:
 
 ``` r
-pak::pak("simonpcouch/btw")
+pak::pak("posit-dev/btw")
 ```
 
 ## Example

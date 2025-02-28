@@ -10,9 +10,9 @@ Provides a number of utilities for describing R objects and package documentatio
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/simonpcouch/btw}
-  \item \url{https://simonpcouch.github.io/btw/}
-  \item Report bugs at \url{https://github.com/simonpcouch/btw/issues}
+  \item \url{https://github.com/posit-dev/btw}
+  \item \url{https://posit-dev.github.io/btw/}
+  \item Report bugs at \url{https://github.com/posit-dev/btw/issues}
 }
 
 }
