@@ -34,7 +34,12 @@ btw_register_tools <- function(chat) {
 
 .docs_list_tools <- function() {
   x <- vapply(.btw_tools, FUN.VALUE = character(1), function(tool) {
-    sprintf("- **%s**: %s", tool()@name, tool()@description)
+    tool <- tool()
+    desc <- strsplit(tool@description, ". ", fixed = TRUE)[[1]][1]
+    if (!grepl("[.]$", desc)) {
+      desc <- paste0(desc, ".")
+    }
+    sprintf("- **%s**: %s", tool@name, desc)
   })
   paste(x, collapse = "\n")
 }
