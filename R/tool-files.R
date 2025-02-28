@@ -106,7 +106,7 @@ btw_tool_read_text_file <- function(path, max_lines = 1000) {
     )
   }
 
-  head(readLines(path, warn = FALSE), n = max_lines)
+  readLines(path, warn = FALSE, n = max_lines)
 }
 
 .btw_add_to_tools(function() {
