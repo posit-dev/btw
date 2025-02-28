@@ -1,5 +1,5 @@
 test_that("btw_tool_list_files() works", {
-  withr::local_dir(withr::local_tempdir())
+  withr::local_dir(withr::local_tempdir("btw_tool_list_files"))
 
   writeLines("test", "test.csv")
   writeLines("test", "test.R")
@@ -33,7 +33,7 @@ test_that("btw_tool_list_files() works", {
 })
 
 test_that("btw_tool_read_text_file() works", {
-  withr::local_dir(withr::local_tempdir())
+  withr::local_dir(withr::local_tempdir("btw_tool_read_text_file"))
 
   write.csv(mtcars, "mtcars.csv")
   saveRDS(mtcars, "mtcars.rds")
