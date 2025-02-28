@@ -20,11 +20,11 @@ btw_tool_list_files <- function(
 ) {
   check_string(path) # one path a time, please
 
-  if (identical(type, "any")) {
+  type <- arg_match(type, multiple = TRUE)
+  if (identical(type, c("any", "file", "directory"))) {
     type <- c("file", "directory", "symlink")
   }
 
-  type <- arg_match(type, multiple = TRUE)
   regexp <- if (nzchar(regexp)) regexp
 
   # Disallow listing files outside of the project directory
@@ -32,11 +32,20 @@ btw_tool_list_files <- function(
 
   info <-
     if (fs::is_file(path)) {
+      if (!fs::file_exists(path)) {
+        cli::cli_abort(
+          "The path {.path {path}} does not exist. Did you use a relative path?"
+        )
+      }
       fs::file_info(path)
     } else {
-      # TODO: What about recurse?
-      fs::dir_info(path, type = type, regexp = regexp)
+      fs::dir_info(path, type = type, regexp = regexp, recurse = TRUE)
     }
+
+  if (nrow(info) == 0) {
+    return(sprintf("No %s found in %s", paste(type, collapse = "/"), path))
+  }
+
   info$path <- fs::path_rel(info$path)
 
   fields <- c("path", "type", "size", "modification_time")
