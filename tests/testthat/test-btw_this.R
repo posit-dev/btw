@@ -8,10 +8,17 @@ test_that("btw() with package functions", {
   )
 })
 
-test_that("btw_this.btw_docs_package()", {
+test_that("btw_this('{pkg}')", {
+  # Gets the intro vignette if one is available
   expect_equal(
     btw_this("{dplyr}"),
-    btw_this(as_btw_docs_package("dplyr"))
+    btw_tool_get_vignette_from_package("dplyr")
+  )
+
+  # Otherwise returns the help index
+  expect_equal(
+    btw_this("{cli}"),
+    btw_tool_get_package_help_topics("cli")
   )
 })
 
