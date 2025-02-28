@@ -29,4 +29,10 @@ btw_this(environment())
 }
 \seealso{
 \code{\link[=btw_tool_describe_environment]{btw_tool_describe_environment()}}
+
+Other \code{btw_this()} methods: 
+\code{\link{btw_this}()},
+\code{\link{btw_this.character}()},
+\code{\link{btw_this.data.frame}()}
 }
+\concept{\code{btw_this()} methods}

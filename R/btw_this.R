@@ -15,6 +15,7 @@
 #'   arguments are silently ignored.
 #'
 #' @return A character vector of lines describing the object.
+#' @family `btw_this()` methods
 #' @export
 btw_this <- function(x, ...) {
   UseMethod("btw_this")
@@ -33,6 +34,49 @@ capture_print <- function(x) {
   capture.output(print(x), type = "message")
 }
 
+#' Describe objects
+#'
+#' @description
+#' Character strings in `btw_this()` are used as shortcuts to many underlying
+#' methods. `btw_this()` detects specific formats in the input string to
+#' determine which method to call, or by default it will try to evaluate the
+#' character string as R code and return the appropriate object description.
+#'
+#' `btw_this()` knows about the following special character string formats:
+#'
+#' * `"./path"` \cr
+#'   Any string starting with `./` is treated as a relative path.
+#'   If the path is a file, we call [btw_tool_read_text_file()] and if the path
+#'   is a directory we call [btw_tool_list_files()] on the path.
+#'
+#'   * `btw_this("./data")` lists the files in `data/`.
+#'   * `btw_this("./R/load_data.R")` reads the source of the `R/load_data.R`
+#'     file.
+#'
+#' * `"{pkgName}"` \cr
+#'   A package name wrapped in braces. Returns either the
+#'   introductory vignette for the package
+#'   ([btw_tool_get_vignette_from_package()]) or a list of help topics if no
+#'   such vignette exists ([btw_tool_get_package_help_topics()]).
+#'
+#'   * `btw_this("{dplyr}")` includes dplyr's introductory vignette.
+#'   * `btw_this("{btw}")` returns the package help index (because `btw`
+#'     doesn't have an intro vignette, yet).
+#'
+#' * `"?help_topic"` \cr
+#'   When the string starts with `?`, btw searches R's help
+#'   topics using [btw_tool_get_help_page()].
+#'
+#'   * `btw_this("?dplyr::across")` includes the reference page for
+#'     `dplyr::across`.
+#'
+#' @param x A character string
+#' @param ... Ignored.
+#' @param caller_env The caller environment.
+#'
+#' @inherit btw_this return
+#'
+#' @family `btw_this()` methods
 #' @export
 btw_this.character <- function(x, ..., caller_env = parent.frame()) {
   check_string(x)
@@ -56,8 +100,16 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
     # * start with a letter
     # * use only letters, numbers or .
     # * be two or more characters long
-    x <- substring(x, 2, nchar(x) - 1)
-    return(btw_this(as_btw_docs_package(x)))
+    pkg <- substring(x, 2, nchar(x) - 1)
+    res <- tryCatch(
+      # Get the package vignette
+      btw_tool_get_vignette_from_package(pkg),
+      error = function(err) {
+        # or list help topics
+        btw_tool_get_package_help_topics(pkg)
+      }
+    )
+    return(res)
   }
 
   if (substring(x, 1, 1) == "?") {

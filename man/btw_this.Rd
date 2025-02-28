@@ -27,3 +27,10 @@ btw_this("{dplyr}")
 btw_this("./") # list files in the current working directory
 
 }
+\seealso{
+Other \code{btw_this()} methods: 
+\code{\link{btw_this.character}()},
+\code{\link{btw_this.data.frame}()},
+\code{\link{btw_this.environment}()}
+}
+\concept{\code{btw_this()} methods}
