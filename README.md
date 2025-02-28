@@ -45,14 +45,12 @@ library(btw)
 The `btw()` function allows you to compile information about all sorts
 of R stuff and copy it to your clipboard.
 
-- Pass any R object to `btw()`, like `btw(mtcars)` or
-  `btw(globalenv())`. Strings will be evaluated as R code and dispatched
-  to the appropriate method unless they match a shortcut described
-  below.
+- Pass any R object to `btw()`, like `btw(mtcars)`, `btw(dplyr::across)`
+  or `btw(globalenv())`. Strings will be evaluated as R code and
+  dispatched to the appropriate method unless they match a shortcut
+  described below.
 - `btw("{dplyr}")` will describe the dplyr package via the function
   reference and (if available) introductory vignette.
-- `btw("?dplyr::across")` will return the help-file for
-  `dplyr::across()`.
 - `btw("./path")` will read the lines of the file at that path (or list
   the files at that path if it’s a directory).
 
