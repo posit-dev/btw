@@ -9,4 +9,6 @@
 library(testthat)
 library(btw)
 
+local_reproducible_output()
+
 test_check("btw")
