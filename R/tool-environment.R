@@ -15,6 +15,8 @@
 #' each object's printed representation.
 #'
 #' @seealso [btw_tool_describe_environment()]
+#'
+#' @family `btw_this()` methods
 #' @export
 btw_this.environment <- function(x, ..., items = NULL) {
   btw_tool_describe_environment(environment = x, items = items)

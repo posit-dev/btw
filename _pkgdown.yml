@@ -12,6 +12,7 @@ reference:
 - title: Describe R stuff
   contents:
   - btw_this
+  - btw_this.character
   - btw_this.environment
   - btw_this.data.frame
   - btw_this.tbl
