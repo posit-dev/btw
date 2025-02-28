@@ -159,13 +159,19 @@ btw_tool_get_available_vignettes_in_package <- function(package_name) {
   }
 
   df <- vignettes[, c("Topic", "Title")]
-  btw_tool_describe_data_frame(df, format = "json", dims = c(Inf, 2))
+  names(df) <- c("vignette", "title") # Named to match vignette tool
+  as_json_rowwise(df)
 }
 
 .btw_add_to_tools(function() {
   ellmer::tool(
     btw_tool_get_available_vignettes_in_package,
-    .description = "Get a table of available vignettes for an R package.",
+    .description = paste(
+      "List available vignettes for an R package.",
+      "Vignettes are articles describing key concepts or features of an R package.",
+      "Returns the listing as a JSON array of `vignette` and `title`.",
+      "To read a vignette, use `btw_tool_get_vignette_from_package(package_name, vignette)`."
+    ),
     package_name = ellmer::type_string(
       "The exact name of the package, e.g. 'shiny'."
     )
