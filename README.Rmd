@@ -24,8 +24,8 @@ knitr::opts_chunk$set(
 
 btw helps you describe your computational environment to LLMs.
 
-* When used **interactively**, `btw()` assembles context on your global R environment as well as function or package documentation, copying the results to your clipboard for easy pasting into chat interfaces.
-* The `btw()` function wraps several lower-level functions that can be easily incorporated into **ellmer tool calls** for describing various kinds of objects in R. To equip your ellmer chat with the ability to peruse documentation and check out the objects in your R environment, pass your chat to `btw_register_tools()`.
+* When used **interactively**, `btw()` assembles context on your R environment, package documentation, and working directory, copying the results to your clipboard for easy pasting into chat interfaces.
+* The `btw()` function wraps methods that can be easily incorporated into **ellmer tool calls** for describing various kinds of objects in R. To equip your ellmer chat with the ability to peruse documentation, check out the objects in your R environment, and explore your working directory, pass your chat to `btw_register_tools()`.
 
 ## Installation
 
@@ -43,51 +43,40 @@ library(btw)
 
 ### Interactive use
 
-The `btw()` function allows you to compile information about R stuff--objects, documentation, etc--and copy it to your clipboard.
+The `btw()` function allows you to compile information about all sorts of R stuff and copy it to your clipboard.
 
-The easiest way to use btw interactively is to just call `btw()` with no inputs, which will describe the objects in your global environment in a string attached to your clipboard:
+* Pass any R object to `btw()`, like `btw(mtcars)` or `btw(globalenv())`. Strings will be evaluated as R code and dispatched to the appropriate method unless they match a shortcut described below.
+* `btw("{dplyr}")` will describe the dplyr package via the function reference and (if available) introductory vignette.
+* `btw("?dplyr::across")` will return the help-file for `dplyr::across()`.
+* `btw("./path")` will read the lines of the file at that path (or list the files at that path if it's a directory).
+    
+When passed multiple arguments, `btw()` will concatenate each description. For example, you could run:
 
 ```{r}
-btw()
+#| eval: false
+btw(mtcars, "{btw}", btw::btw)
 ```
 
 ```
 ✔ btw copied to the clipboard!
 ```
 
-The package allows you to describe all sorts of objects, though. For example, if you'd like to describe the mtcars dataset:
-
-```{r}
-#| eval: false
-btw(mtcars)
-```
-
 The following would be attached to your clipboard:
 
 ```{r}
 #| comment: ""
 #| echo: false
-btw(mtcars)
+btw(mtcars, "{btw}", btw::btw)
 ```
 
-Or, to describe the `btw()` function:
-
-```{r}
-#| eval: false
-btw(btw::btw)
-```
-
-The following would be attached to your clipboard:
-
-```{r}
-#| comment: ""
-#| echo: false
-btw(btw::btw)
-```
+You can also just call `btw()` with no inputs, which will describe the objects in your global environment.
 
 ### Supercharging assistants
 
-`btw_register_tools()` equips LLM chats with the ability to peruse the documentation of your installed packages and check out objects in your R environment. Use it by calling the function on an existing ellmer chat:
+`btw_register_tools()` equips LLM chats with all of the same capabilities: peruse
+documentation, check out objects in your R environment, and explore your
+working directory. Use it by calling the function on an existing ellmer
+chat:
 
 ```{r}
 #| eval: false
@@ -109,3 +98,5 @@ you:
 What would you like to know about? Feel free to ask a specific question, and I'll 
 use the available tools to help you find the information you need.
 ```
+
+Each of the individual tools registered by `btw_register_tools()` are themselves exported if you want to pick and choose which ones to use.
