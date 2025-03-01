@@ -34,13 +34,16 @@ btw <- function(..., clipboard = is_interactive()) {
   if (length(elts) == 0) {
     res <- btw_this(globalenv())
   } else {
-    res <- btw_this(new_environment(elts, parent = parent.frame()))
+    res <- btw_this(
+      new_environment(elts, parent = parent.frame()),
+      items = names(elts)
+    )
   }
+
+  res <- paste(res, collapse = "\n")
 
   if (clipboard) {
     write_to_clipboard(res)
-  } else {
-    cli::cat_line(res)
   }
 
   invisible(res)
