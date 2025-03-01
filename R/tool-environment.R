@@ -52,7 +52,8 @@ btw_tool_describe_environment <- function(
   res <- character()
   env_item_names <- ls(environment)
   if (!is.null(items)) {
-    env_item_names <- env_item_names[env_item_names %in% items]
+    # Subset to `items`, keeping the order of `items`
+    env_item_names <- intersect(items, env_item_names)
   }
 
   for (item_name in env_item_names) {
@@ -86,6 +87,9 @@ btw_tool_describe_environment <- function(
 })
 
 btw_item_with_description <- function(item_name, description) {
+  if (inherits(description, "btw_prompt_text")) {
+    return(description)
+  }
   if (inherits(description, "btw_ignore")) {
     return(invisible())
   }
