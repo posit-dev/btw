@@ -70,6 +70,12 @@ capture_print <- function(x) {
 #'   * `btw_this("?dplyr::across")` includes the reference page for
 #'     `dplyr::across`.
 #'
+#' * `"@current_file"` \cr
+#'   When used in RStudio or Positron, or anywhere else that the
+#'   \pkg{rstudioapi} is supported, `btw("@current_file")` includes the contents
+#'   of the file currently open in the editor using
+#'   [rstudioapi::getSourceEditorContext()].
+#'
 #' @param x A character string
 #' @param ... Ignored.
 #' @param caller_env The caller environment.
@@ -81,6 +87,10 @@ capture_print <- function(x) {
 btw_this.character <- function(x, ..., caller_env = parent.frame()) {
   check_string(x)
   x <- trimws(x)
+
+  if (identical(x, "@current_file")) {
+    return(btw_tool_read_current_editor(TRUE))
+  }
 
   if (grepl("^\\./", x)) {
     path <- substring(x, 3, nchar(x))

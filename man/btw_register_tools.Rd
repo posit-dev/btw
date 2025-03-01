@@ -27,6 +27,7 @@ to the tools:
 \item \strong{btw_tool_describe_environment}: List and describe items in an environment.
 \item \strong{btw_tool_list_files}: List files in the current working directory or in subfolders in the current project directory.
 \item \strong{btw_tool_read_text_file}: Read an entire text file.
+\item \strong{btw_tool_read_current_editor}: Read the contents of the editor that is currently open in the user's IDE.
 }
 }
 \examples{
@@ -45,6 +46,7 @@ Other Tools:
 \code{\link{btw_tool_get_installed_packages}()},
 \code{\link{btw_tool_list_files}()},
 \code{\link{btw_tool_package_docs}},
+\code{\link{btw_tool_read_current_editor}()},
 \code{\link{btw_tool_read_text_file}()}
 }
 \concept{Tools}

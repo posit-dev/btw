@@ -26,7 +26,13 @@ btw_register_tools <- function(chat) {
   check_inherits(chat, "Chat")
 
   for (tool in .btw_tools) {
-    chat$register_tool(tool())
+    # .btw_tools is a list of functions that create tools (at runtime not build)
+    tool <- tool()
+
+    # and some may return `NULL` if disabled or contextually unavailable
+    if (is.null(tool)) next
+
+    chat$register_tool(tool)
   }
 
   invisible(chat)
