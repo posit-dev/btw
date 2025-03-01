@@ -74,16 +74,20 @@ btw_tool_describe_environment <- function(
   res
 }
 
-.btw_add_to_tools(function() {
-  ellmer::tool(
-    btw_tool_describe_environment,
-    .description = "List and describe items in an environment.",
-    items = ellmer::type_array(
-      "The names of items to describe from the environment. Defaults to `NULL`, indicating all items.",
-      items = ellmer::type_string()
+.btw_add_to_tools(
+  "btw_tool_describe_environment",
+  "environment",
+  function() {
+    ellmer::tool(
+      btw_tool_describe_environment,
+      .description = "List and describe items in an environment.",
+      items = ellmer::type_array(
+        "The names of items to describe from the environment. Defaults to `NULL`, indicating all items.",
+        items = ellmer::type_string()
+      )
     )
-  )
-})
+  }
+)
 
 btw_item_with_description <- function(item_name, description) {
   if (inherits(description, "btw_ignore")) {

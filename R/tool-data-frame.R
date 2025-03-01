@@ -100,36 +100,40 @@ btw_tool_describe_data_frame <- function(
   res
 }
 
-.btw_add_to_tools(function() {
-  ellmer::tool(
-    btw_tool_describe_data_frame,
-    .name = "btw_tool_describe_data_frame",
-    .description = "Show the data frame or table or get information about the structure of a data frame or table.",
-    data_frame = ellmer::type_string(
-      "The name of the data frame."
-    ),
-    format = ellmer::type_string(
-      paste(
-        "The output format of the data frame: 'skim', 'glimpse', 'print', or 'json'. Default 'skim'.",
-        "",
-        "* skim: Returns a JSON object with information about every column in the table.",
-        "* glimpse: Returns the number of rows, columns, column names and types and the first values of each column",
-        "* print: Prints the data frame",
-        "* json: Returns the data frame as JSON",
-        sep = "\n"
+.btw_add_to_tools(
+  "btw_tool_describe_data_frame",
+  "data",
+  function() {
+    ellmer::tool(
+      btw_tool_describe_data_frame,
+      .name = "btw_tool_describe_data_frame",
+      .description = "Show the data frame or table or get information about the structure of a data frame or table.",
+      data_frame = ellmer::type_string(
+        "The name of the data frame."
       ),
-      required = FALSE
-    ),
-    dims = ellmer::type_array(
-      paste(
-        'Dimensions of the data frame to use for the "print" or "json" format.',
-        "A numeric vector of length 2 as number of rows and columns. Default `c(5, 100)`."
+      format = ellmer::type_string(
+        paste(
+          "The output format of the data frame: 'skim', 'glimpse', 'print', or 'json'. Default 'skim'.",
+          "",
+          "* skim: Returns a JSON object with information about every column in the table.",
+          "* glimpse: Returns the number of rows, columns, column names and types and the first values of each column",
+          "* print: Prints the data frame",
+          "* json: Returns the data frame as JSON",
+          sep = "\n"
+        ),
+        required = FALSE
       ),
-      items = ellmer::type_integer(),
-      required = FALSE
+      dims = ellmer::type_array(
+        paste(
+          'Dimensions of the data frame to use for the "print" or "json" format.',
+          "A numeric vector of length 2 as number of rows and columns. Default `c(5, 100)`."
+        ),
+        items = ellmer::type_integer(),
+        required = FALSE
+      )
     )
-  )
-})
+  }
+)
 
 describe_data_frame_glimpse <- function(x, x_name) {
   res <- cli::ansi_strip(capture.output(dplyr::glimpse(x)))

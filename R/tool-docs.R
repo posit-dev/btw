@@ -20,12 +20,16 @@ btw_tool_get_installed_packages <- function() {
   btw_tool_describe_data_frame(df, format = "json", dims = c(Inf, 2))
 }
 
-.btw_add_to_tools(function() {
-  ellmer::tool(
-    btw_tool_get_installed_packages,
-    .description = "Displays the name and title of all installed R packages in json format."
-  )
-})
+.btw_add_to_tools(
+  "btw_tool_get_installed_packages",
+  "docs",
+  function() {
+    ellmer::tool(
+      btw_tool_get_installed_packages,
+      .description = "Displays the name and title of all installed R packages in json format."
+    )
+  }
+)
 
 #' Tool: Describe R package documentation
 #'
@@ -93,15 +97,19 @@ btw_tool_get_package_help_topics <- function(package_name) {
 }
 
 
-.btw_add_to_tools(function() {
-  ellmer::tool(
-    btw_tool_get_package_help_topics,
-    .description = "Get available help topics for an R package.",
-    package_name = ellmer::type_string(
-      "The exact name of the package, e.g. \"shiny\"."
+.btw_add_to_tools(
+  "btw_tool_get_package_help_topics",
+  "docs",
+  function() {
+    ellmer::tool(
+      btw_tool_get_package_help_topics,
+      .description = "Get available help topics for an R package.",
+      package_name = ellmer::type_string(
+        "The exact name of the package, e.g. \"shiny\"."
+      )
     )
-  )
-})
+  }
+)
 
 # TODO: should this run the examples so the model can see what it does?
 # TODO: should there just be a way to get examples?
@@ -135,18 +143,22 @@ btw_tool_get_help_page <- function(package_name, topic) {
   return(pager_result)
 }
 
-.btw_add_to_tools(function() {
-  ellmer::tool(
-    btw_tool_get_help_page,
-    .description = "Get help page from package.",
-    package_name = ellmer::type_string(
-      "The exact name of the package, e.g. 'shiny'."
-    ),
-    topic = ellmer::type_string(
-      "The topic_id or alias of the help page, e.g. 'withProgress' or 'incProgress'."
+.btw_add_to_tools(
+  "btw_tool_get_help_page",
+  "docs",
+  function() {
+    ellmer::tool(
+      btw_tool_get_help_page,
+      .description = "Get help page from package.",
+      package_name = ellmer::type_string(
+        "The exact name of the package, e.g. 'shiny'."
+      ),
+      topic = ellmer::type_string(
+        "The topic_id or alias of the help page, e.g. 'withProgress' or 'incProgress'."
+      )
     )
-  )
-})
+  }
+)
 
 #' @name btw_tool_package_docs
 #' @export
@@ -163,20 +175,24 @@ btw_tool_get_available_vignettes_in_package <- function(package_name) {
   strsplit(as_json_rowwise(df), "\n")[[1]]
 }
 
-.btw_add_to_tools(function() {
-  ellmer::tool(
-    btw_tool_get_available_vignettes_in_package,
-    .description = paste(
-      "List available vignettes for an R package.",
-      "Vignettes are articles describing key concepts or features of an R package.",
-      "Returns the listing as a JSON array of `vignette` and `title`.",
-      "To read a vignette, use `btw_tool_get_vignette_from_package(package_name, vignette)`."
-    ),
-    package_name = ellmer::type_string(
-      "The exact name of the package, e.g. 'shiny'."
+.btw_add_to_tools(
+  "btw_tool_get_available_vignettes_in_package",
+  "docs",
+  function() {
+    ellmer::tool(
+      btw_tool_get_available_vignettes_in_package,
+      .description = paste(
+        "List available vignettes for an R package.",
+        "Vignettes are articles describing key concepts or features of an R package.",
+        "Returns the listing as a JSON array of `vignette` and `title`.",
+        "To read a vignette, use `btw_tool_get_vignette_from_package(package_name, vignette)`."
+      ),
+      package_name = ellmer::type_string(
+        "The exact name of the package, e.g. 'shiny'."
+      )
     )
-  )
-})
+  }
+)
 
 #' @name btw_tool_package_docs
 #' @export
@@ -210,18 +226,22 @@ btw_tool_get_vignette_from_package <- function(
   readLines(tmp_file)
 }
 
-.btw_add_to_tools(function() {
-  ellmer::tool(
-    btw_tool_get_vignette_from_package,
-    .description = "Get a package vignette in plain text.",
-    package_name = ellmer::type_string(
-      "The exact name of the package, e.g. 'shiny'."
-    ),
-    vignette = ellmer::type_string(
-      "The name or index of the vignette to retrieve. This is optional; if you
-      do not provide a value, the function retrieves the introductory vignette 
+.btw_add_to_tools(
+  "btw_tool_get_vignette_from_package",
+  "docs",
+  function() {
+    ellmer::tool(
+      btw_tool_get_vignette_from_package,
+      .description = "Get a package vignette in plain text.",
+      package_name = ellmer::type_string(
+        "The exact name of the package, e.g. 'shiny'."
+      ),
+      vignette = ellmer::type_string(
+        "The name or index of the vignette to retrieve. This is optional; if you
+      do not provide a value, the function retrieves the introductory vignette
       for the package.",
-      required = FALSE
+        required = FALSE
+      )
     )
-  )
-})
+  }
+)
