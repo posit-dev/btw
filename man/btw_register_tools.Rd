@@ -4,10 +4,14 @@
 \alias{btw_register_tools}
 \title{Tools: Register tools from btw}
 \usage{
-btw_register_tools(chat)
+btw_register_tools(chat, include = NULL)
 }
 \arguments{
 \item{chat}{An ellmer \code{Chat} object.}
+
+\item{include}{Names of tools or tool groups to include when registering
+tools, e.g. \code{include = "docs"} to include only the documentation related
+tools, or \code{include = c("data", "docs", "environment")}, etc.}
 }
 \value{
 Registers the tools with \code{chat}, updating the \code{chat} object in
@@ -16,17 +20,17 @@ place. The \code{chat} input is returned invisibly.
 \description{
 The \code{btw_register_tools()} function equips an ellmer chat to interface with
 your computational environment. Chats returned by this function have access
-to the tools:
-\itemize{
-\item \strong{btw_tool_describe_data_frame}: Show the data frame or table or get information about the structure of a data frame or table.
-\item \strong{btw_tool_get_installed_packages}: Displays the name and title of all installed R packages in json format.
-\item \strong{btw_tool_get_package_help_topics}: Get available help topics for an R package.
-\item \strong{btw_tool_get_help_page}: Get help page from package.
-\item \strong{btw_tool_get_available_vignettes_in_package}: List available vignettes for an R package.
-\item \strong{btw_tool_get_vignette_from_package}: Get a package vignette in plain text.
-\item \strong{btw_tool_describe_environment}: List and describe items in an environment.
-\item \strong{btw_tool_list_files}: List files in the current working directory or in subfolders in the current project directory.
-\item \strong{btw_tool_read_text_file}: Read an entire text file.
+to the tools:\tabular{lll}{
+   Name \tab Group \tab Description \cr
+   btw_tool_describe_data_frame \tab data \tab Show the data frame or table or get information about the structure of a data frame or table. \cr
+   btw_tool_get_available_vignettes_in_package \tab docs \tab List available vignettes for an R package. \cr
+   btw_tool_get_help_page \tab docs \tab Get help page from package. \cr
+   btw_tool_get_installed_packages \tab docs \tab Displays the name and title of all installed R packages in json format. \cr
+   btw_tool_get_package_help_topics \tab docs \tab Get available help topics for an R package. \cr
+   btw_tool_get_vignette_from_package \tab docs \tab Get a package vignette in plain text. \cr
+   btw_tool_describe_environment \tab environment \tab List and describe items in an environment. \cr
+   btw_tool_list_files \tab files \tab List files in the current working directory or in subfolders in the current project directory. \cr
+   btw_tool_read_text_file \tab files \tab Read an entire text file. \cr
 }
 }
 \examples{
