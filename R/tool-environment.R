@@ -75,9 +75,9 @@ btw_tool_describe_environment <- function(
 }
 
 .btw_add_to_tools(
-  "btw_tool_describe_environment",
-  "environment",
-  function() {
+  name = "btw_tool_describe_environment",
+  group = "environment",
+  tool = function() {
     ellmer::tool(
       btw_tool_describe_environment,
       .description = "List and describe items in an environment.",

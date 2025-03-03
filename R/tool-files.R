@@ -56,9 +56,9 @@ btw_tool_list_files <- function(
 }
 
 .btw_add_to_tools(
-  "btw_tool_list_files",
-  "files",
-  function() {
+  name = "btw_tool_list_files",
+  group = "files",
+  tool = function() {
     ellmer::tool(
       btw_tool_list_files,
       .description = paste0(
@@ -114,9 +114,9 @@ btw_tool_read_text_file <- function(path, max_lines = 1000) {
 }
 
 .btw_add_to_tools(
-  "btw_tool_read_text_file",
-  "files",
-  function() {
+  name = "btw_tool_read_text_file",
+  group = "files",
+  tool = function() {
     ellmer::tool(
       btw_tool_read_text_file,
       .description = "Read an entire text file.",

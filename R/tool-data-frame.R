@@ -101,9 +101,9 @@ btw_tool_describe_data_frame <- function(
 }
 
 .btw_add_to_tools(
-  "btw_tool_describe_data_frame",
-  "data",
-  function() {
+  name = "btw_tool_describe_data_frame",
+  group = "data",
+  tool = function() {
     ellmer::tool(
       btw_tool_describe_data_frame,
       .name = "btw_tool_describe_data_frame",

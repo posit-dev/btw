@@ -21,9 +21,9 @@ btw_tool_get_installed_packages <- function() {
 }
 
 .btw_add_to_tools(
-  "btw_tool_get_installed_packages",
-  "docs",
-  function() {
+  name = "btw_tool_get_installed_packages",
+  group = "docs",
+  tool = function() {
     ellmer::tool(
       btw_tool_get_installed_packages,
       .description = "Displays the name and title of all installed R packages in json format."
@@ -98,9 +98,9 @@ btw_tool_get_package_help_topics <- function(package_name) {
 
 
 .btw_add_to_tools(
-  "btw_tool_get_package_help_topics",
-  "docs",
-  function() {
+  name = "btw_tool_get_package_help_topics",
+  group = "docs",
+  tool = function() {
     ellmer::tool(
       btw_tool_get_package_help_topics,
       .description = "Get available help topics for an R package.",
@@ -144,9 +144,9 @@ btw_tool_get_help_page <- function(package_name, topic) {
 }
 
 .btw_add_to_tools(
-  "btw_tool_get_help_page",
-  "docs",
-  function() {
+  name = "btw_tool_get_help_page",
+  group = "docs",
+  tool = function() {
     ellmer::tool(
       btw_tool_get_help_page,
       .description = "Get help page from package.",
@@ -176,9 +176,9 @@ btw_tool_get_available_vignettes_in_package <- function(package_name) {
 }
 
 .btw_add_to_tools(
-  "btw_tool_get_available_vignettes_in_package",
-  "docs",
-  function() {
+  name = "btw_tool_get_available_vignettes_in_package",
+  group = "docs",
+  tool = function() {
     ellmer::tool(
       btw_tool_get_available_vignettes_in_package,
       .description = paste(
@@ -227,9 +227,9 @@ btw_tool_get_vignette_from_package <- function(
 }
 
 .btw_add_to_tools(
-  "btw_tool_get_vignette_from_package",
-  "docs",
-  function() {
+  name = "btw_tool_get_vignette_from_package",
+  group = "docs",
+  tool = function() {
     ellmer::tool(
       btw_tool_get_vignette_from_package,
       .description = "Get a package vignette in plain text.",
