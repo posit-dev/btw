@@ -17,11 +17,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Simon Couch \email{simon.couch@posit.co} (\href{https://orcid.org/0000-0001-5676-5107}{ORCID})
+\strong{Maintainer}: Garrick Aden-Buie \email{garrick@adenbuie.com}
 
 Authors:
 \itemize{
-  \item Garrick Aden-Buie \email{garrick@adenbuie.com}
+  \item Simon Couch \email{simon.couch@posit.co} (\href{https://orcid.org/0000-0001-5676-5107}{ORCID})
   \item Joe Cheng \email{joe@posit.co}
 }
 

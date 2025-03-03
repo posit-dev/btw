@@ -2,9 +2,10 @@ Package: btw
 Title: Describe R Stuff to Large Language Models
 Version: 0.0.0.9001
 Authors@R: c(
-    person("Simon", "Couch", , "simon.couch@posit.co", role = c("aut", "cre"),
+    person("Garrick", "Aden-Buie", , "garrick@adenbuie.com", 
+           role = c("aut", "cre")),
+    person("Simon", "Couch", , "simon.couch@posit.co", role = "aut",
            comment = c(ORCID = "0000-0001-5676-5107")),
-    person("Garrick", "Aden-Buie", , "garrick@adenbuie.com", role = "aut"),
     person("Joe", "Cheng", , "joe@posit.co", role = "aut"),
     person("Posit Software, PBC", role = c("cph", "fnd"))
   )
