@@ -56,6 +56,8 @@ btw_tool_describe_environment <- function(
     env_item_names <- intersect(items, env_item_names)
   }
 
+  item_desc_prev <- NULL
+
   for (item_name in env_item_names) {
     item <- env_get(environment, item_name)
 
@@ -63,13 +65,19 @@ btw_tool_describe_environment <- function(
       item <- item_name
     }
 
+    item_desc <- btw_this(item, caller_env = environment)
+    is_adjacent_prompt_text <-
+      inherits(item_desc, "btw_prompt_text") &&
+      inherits(item_desc_prev, "btw_prompt_text")
+
     res <- c(
       res,
-      btw_item_with_description(
-        item_name,
-        btw_this(item, caller_env = environment)
-      )
+      # Insert a new line between items unless between prompt text sections
+      if (length(res) && !is_adjacent_prompt_text) "",
+      btw_item_with_description(item_name, item_desc)
     )
+
+    item_desc_prev <- item_desc
   }
 
   res
@@ -95,5 +103,5 @@ btw_item_with_description <- function(item_name, description) {
   }
   # assuming the new contract is that `btw_this()` returns `description` as
   # lines of text. (Alternative: btw_this() always returns a single character.)
-  c(item_name, paste0("#> ", description), "\n")
+  c(item_name, paste0("#> ", description))
 }
