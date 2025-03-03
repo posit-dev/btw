@@ -55,31 +55,35 @@ btw_tool_list_files <- function(
   res
 }
 
-.btw_add_to_tools(function() {
-  ellmer::tool(
-    btw_tool_list_files,
-    .description = paste0(
-      "List files in the current working directory or in subfolders in the current project directory. ",
-      "Examples:\n\n",
-      "* `btw_tool_list_files()`: List all files and directories in the current working directory.\n",
-      "* `btw_tool_list_files(\"data\")`: List all files in the `data/` directory.\n",
-      "* `btw_tool_list_files(\"data\", type = \"file\", regexp = \"csv$\"): List all `.csv` files in the `data/` directory."
-    ),
-    path = ellmer::type_string(
-      "The relative path to a folder or file. If `path` is a directory, all files or directories (see `type`) are listed. If `path` is a file, information for just the selected file is listed.",
-      required = FALSE
-    ),
-    type = ellmer::type_enum(
-      "Whether to list files, directories or any file type.",
-      values = c("any", "file", "directory"),
-      required = FALSE
-    ),
-    regexp = ellmer::type_string(
-      'A regular expression to use to identify files, e.g. `regexp="[.]csv"` to find files with a `.csv` extension.',
-      required = FALSE
+.btw_add_to_tools(
+  name = "btw_tool_list_files",
+  group = "files",
+  tool = function() {
+    ellmer::tool(
+      btw_tool_list_files,
+      .description = paste0(
+        "List files in the current working directory or in subfolders in the current project directory. ",
+        "Examples:\n\n",
+        "* `btw_tool_list_files()`: List all files and directories in the current working directory.\n",
+        "* `btw_tool_list_files(\"data\")`: List all files in the `data/` directory.\n",
+        "* `btw_tool_list_files(\"data\", type = \"file\", regexp = \"csv$\"): List all `.csv` files in the `data/` directory."
+      ),
+      path = ellmer::type_string(
+        "The relative path to a folder or file. If `path` is a directory, all files or directories (see `type`) are listed. If `path` is a file, information for just the selected file is listed.",
+        required = FALSE
+      ),
+      type = ellmer::type_enum(
+        "Whether to list files, directories or any file type.",
+        values = c("any", "file", "directory"),
+        required = FALSE
+      ),
+      regexp = ellmer::type_string(
+        'A regular expression to use to identify files, e.g. `regexp="[.]csv"` to find files with a `.csv` extension.',
+        required = FALSE
+      )
     )
-  )
-})
+  }
+)
 
 #' Tool: Read a file
 #'
@@ -109,19 +113,23 @@ btw_tool_read_text_file <- function(path, max_lines = 1000) {
   readLines(path, warn = FALSE, n = max_lines)
 }
 
-.btw_add_to_tools(function() {
-  ellmer::tool(
-    btw_tool_read_text_file,
-    .description = "Read an entire text file.",
-    path = ellmer::type_string(
-      "The relative path to a file that can be read as text, such as a CSV, JSON, HTML, markdown file, etc.",
-    ),
-    max_lines = ellmer::type_number(
-      "How many lines to include from the file? The default is 100 and is likely already too high.",
-      required = FALSE
+.btw_add_to_tools(
+  name = "btw_tool_read_text_file",
+  group = "files",
+  tool = function() {
+    ellmer::tool(
+      btw_tool_read_text_file,
+      .description = "Read an entire text file.",
+      path = ellmer::type_string(
+        "The relative path to a file that can be read as text, such as a CSV, JSON, HTML, markdown file, etc.",
+      ),
+      max_lines = ellmer::type_number(
+        "How many lines to include from the file? The default is 100 and is likely already too high.",
+        required = FALSE
+      )
     )
-  )
-})
+  }
+)
 
 is_text_file <- function(file_path) {
   # Note: this function was written by claude-3.7-sonnet.
