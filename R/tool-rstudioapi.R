@@ -14,7 +14,7 @@
 #'
 #' @family Tools
 #' @export
-btw_tool_read_current_editor <- function(consent = FALSE) {
+btw_tool_read_current_editor <- function(selection = TRUE, consent = FALSE) {
   if (!isTRUE(consent)) {
     cli::cli_abort(
       "Please ask the user for consent before reading from the editor."
@@ -28,11 +28,45 @@ btw_tool_read_current_editor <- function(consent = FALSE) {
   }
 
   cf <- rstudioapi::getSourceEditorContext()
+  path <- fs::path_rel(cf$path)
 
-  return(c(
-    paste0("> ./", fs::path_rel(cf$path)),
-    cf$contents
-  ))
+  if (length(cf$selection) == 1 && !nzchar(cf$selection[[1]]$text)) {
+    return(
+      c(
+        sprintf('FILE: %s', path),
+        "```",
+        cf$contents,
+        "```\n"
+      )
+    )
+  }
+
+  res <- c()
+  for (selection in cf$selection) {
+    if (!nzchar(selection$text)) next
+
+    line_column <- function(range) {
+      sprintf("L%dC%d", range[1], range[2])
+    }
+
+    line_range <- c(selection$range$start[1], selection$range$end[1])
+    lines <- paste0("L", unique(line_range), collapse = "-")
+    res <- c(
+      res,
+      if (length(res)) "",
+      sprintf(
+        'FILE: %s:%s-%s',
+        path,
+        line_column(selection$range$start),
+        line_column(selection$range$end)
+      ),
+      "```",
+      strsplit(selection$text, "\n")[[1]],
+      "```\n"
+    )
+  }
+
+  res
 }
 
 .btw_add_to_tools(
@@ -45,7 +79,15 @@ btw_tool_read_current_editor <- function(consent = FALSE) {
       paste(
         "Read the contents of the editor that is currently open in the user's IDE.",
         "Only use this tool when specifically asked to do so by the user.",
-        "'@current_file' is considered explicit consent."
+        "'@current_file' and '@current_selection' are considered explicit consent."
+      ),
+      selection = ellmer::type_boolean(
+        paste(
+          "Include only the selected region(s) of the current file?",
+          "Default is `true`; set to `false` to retrieve the entire file contents.",
+          "Always use `true` when the user requests '@current_selection'."
+        ),
+        required = FALSE
       ),
       consent = ellmer::type_boolean(
         "Did the user specifically request you read from their current file or editor?",

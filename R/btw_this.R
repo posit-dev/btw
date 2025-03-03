@@ -89,7 +89,10 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
   x <- trimws(x)
 
   if (identical(x, "@current_file")) {
-    return(btw_tool_read_current_editor(TRUE))
+    return(btw_tool_read_current_editor(consent = TRUE))
+  }
+  if (identical(x, "@current_selection")) {
+    return(btw_tool_read_current_editor(selection = TRUE, consent = TRUE))
   }
 
   if (grepl("^\\./", x)) {
@@ -229,8 +232,8 @@ btw_ignore <- function() {
   structure(list(), class = "btw_ignore")
 }
 
-btw_prompt_text <- function(x) {
-  structure(x, class = c("btw_prompt_text", "btw_ignore"))
+btw_prompt_text <- function(...) {
+  structure(c(...), class = c("btw_prompt_text", "btw_ignore"))
 }
 
 #' @export
