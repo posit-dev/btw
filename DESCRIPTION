@@ -17,8 +17,7 @@ Description: Provides a number of utilities for describing R objects and
     to peruse package documentation and explore your computational
     environment.
 License: MIT + file LICENSE
-URL: https://github.com/posit-dev/btw,
-    https://posit-dev.github.io/btw/
+URL: https://github.com/posit-dev/btw, https://posit-dev.github.io/btw/
 BugReports: https://github.com/posit-dev/btw/issues
 Imports:
     cli,
