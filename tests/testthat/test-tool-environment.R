@@ -11,3 +11,20 @@ test_that("btw_this.environment() works", {
 test_that("btw_this.environment() does not support entire namespaces (yet)", {
   expect_error(btw_this(asNamespace("dplyr")))
 })
+
+test_that("btw_this.environment() correctly separates items", {
+  expect_snapshot(
+    cat(
+      btw(
+        letters[1],
+        "one thing",
+        "two thing",
+        letters[2],
+        "red thing",
+        letters[4],
+        "blue thing",
+        clipboard = FALSE
+      )
+    )
+  )
+})
