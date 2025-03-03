@@ -35,18 +35,22 @@ btw_tool_read_current_editor <- function(consent = FALSE) {
   ))
 }
 
-.btw_add_to_tools(function() {
-  if (!rstudioapi::hasFun("getSourceEditorContext")) return(NULL)
-  ellmer::tool(
-    btw_tool_read_current_editor,
-    paste(
-      "Read the contents of the editor that is currently open in the user's IDE.",
-      "Only use this tool when specifically asked to do so by the user.",
-      "'@current_file' is considered explicit consent."
-    ),
-    consent = ellmer::type_boolean(
-      "Did the user specifically request you read from their current file or editor?",
-      required = FALSE
+.btw_add_to_tools(
+  name = "btw_tool_read_current_editor",
+  group = "ide",
+  tool = function() {
+    if (!rstudioapi::hasFun("getSourceEditorContext")) return(NULL)
+    ellmer::tool(
+      btw_tool_read_current_editor,
+      paste(
+        "Read the contents of the editor that is currently open in the user's IDE.",
+        "Only use this tool when specifically asked to do so by the user.",
+        "'@current_file' is considered explicit consent."
+      ),
+      consent = ellmer::type_boolean(
+        "Did the user specifically request you read from their current file or editor?",
+        required = FALSE
+      )
     )
-  )
-})
+  }
+)

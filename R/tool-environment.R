@@ -52,8 +52,11 @@ btw_tool_describe_environment <- function(
   res <- character()
   env_item_names <- ls(environment)
   if (!is.null(items)) {
-    env_item_names <- env_item_names[env_item_names %in% items]
+    # Subset to `items`, keeping the order of `items`
+    env_item_names <- intersect(items, env_item_names)
   }
+
+  item_desc_prev <- NULL
 
   for (item_name in env_item_names) {
     item <- env_get(environment, item_name)
@@ -62,34 +65,47 @@ btw_tool_describe_environment <- function(
       item <- item_name
     }
 
+    item_desc <- btw_this(item, caller_env = environment)
+    is_adjacent_prompt_text <-
+      inherits(item_desc, "btw_prompt_text") &&
+      inherits(item_desc_prev, "btw_prompt_text")
+
     res <- c(
       res,
-      btw_item_with_description(
-        item_name,
-        btw_this(item, caller_env = environment)
-      )
+      # Insert a new line between items unless between prompt text sections
+      if (length(res) && !is_adjacent_prompt_text) "",
+      btw_item_with_description(item_name, item_desc)
     )
+
+    item_desc_prev <- item_desc
   }
 
   res
 }
 
-.btw_add_to_tools(function() {
-  ellmer::tool(
-    btw_tool_describe_environment,
-    .description = "List and describe items in an environment.",
-    items = ellmer::type_array(
-      "The names of items to describe from the environment. Defaults to `NULL`, indicating all items.",
-      items = ellmer::type_string()
+.btw_add_to_tools(
+  name = "btw_tool_describe_environment",
+  group = "environment",
+  tool = function() {
+    ellmer::tool(
+      btw_tool_describe_environment,
+      .description = "List and describe items in an environment.",
+      items = ellmer::type_array(
+        "The names of items to describe from the environment. Defaults to `NULL`, indicating all items.",
+        items = ellmer::type_string()
+      )
     )
-  )
-})
+  }
+)
 
 btw_item_with_description <- function(item_name, description) {
+  if (inherits(description, "btw_prompt_text")) {
+    return(description)
+  }
   if (inherits(description, "btw_ignore")) {
     return(invisible())
   }
   # assuming the new contract is that `btw_this()` returns `description` as
   # lines of text. (Alternative: btw_this() always returns a single character.)
-  c(item_name, paste0("#> ", description), "\n")
+  c(item_name, paste0("#> ", description))
 }

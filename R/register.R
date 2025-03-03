@@ -8,6 +8,9 @@
 #' `r .docs_list_tools()`
 #'
 #' @param chat An ellmer `Chat` object.
+#' @param include Names of tools or tool groups to include when registering
+#'   tools, e.g. `include = "docs"` to include only the documentation related
+#'   tools, or `include = c("data", "docs", "environment")`, etc.
 #'
 #' @returns Registers the tools with `chat`, updating the `chat` object in
 #'   place. The `chat` input is returned invisibly.
@@ -22,12 +25,32 @@
 #'
 #' @family Tools
 #' @export
-btw_register_tools <- function(chat) {
+btw_register_tools <- function(chat, include = NULL) {
   check_inherits(chat, "Chat")
 
+  tool_names <- map_chr(.btw_tools, function(x) x$name)
+  tool_groups <- map_chr(.btw_tools, function(x) x$group)
+
+  allowed <- c(
+    tool_names,
+    tool_groups,
+    sub("btw_tool_", "", tool_names, fixed = TRUE)
+  )
+
+  has_include <- !is.null(include)
+
+  if (has_include) {
+    include <- arg_match(include, allowed, multiple = TRUE)
+  }
+
   for (tool in .btw_tools) {
-    # .btw_tools is a list of functions that create tools (at runtime not build)
-    tool <- tool()
+    if (has_include && !tool_matches(tool, include)) next
+    if (has_include) {
+      cli::cli_alert_success("Registered tool {.field {tool$name}}")
+    }
+
+    # Tools are stored as functions to avoid creating them at build-time
+    tool <- tool$tool()
 
     # and some may return `NULL` if disabled or contextually unavailable
     if (is.null(tool)) next
@@ -38,14 +61,29 @@ btw_register_tools <- function(chat) {
   invisible(chat)
 }
 
+tool_matches <- function(tool, labels = NULL) {
+  if (is.null(labels)) return(TRUE)
+  if (tool$name %in% labels) return(TRUE)
+  if (tool$group %in% labels) return(TRUE)
+  if (sub("btw_tool_", "", tool$name) %in% labels) return(TRUE)
+  FALSE
+}
+
 .docs_list_tools <- function() {
-  x <- vapply(.btw_tools, FUN.VALUE = character(1), function(tool) {
-    tool <- tool()
-    desc <- strsplit(tool@description, ". ", fixed = TRUE)[[1]][1]
+  x <- map(.btw_tools, function(tool) {
+    desc <- strsplit(tool$tool()@description, ". ", fixed = TRUE)[[1]][1]
     if (!grepl("[.]$", desc)) {
       desc <- paste0(desc, ".")
     }
-    sprintf("- **%s**: %s", tool@name, desc)
+    data.frame(
+      Name = tool$name,
+      Group = tool$group,
+      Description = desc,
+      stringsAsFactors = FALSE,
+      row.names = FALSE
+    )
   })
-  paste(x, collapse = "\n")
+  x <- do.call(rbind, x)
+  x <- x[order(x$Group, x$Name), ]
+  md_table(x)
 }
