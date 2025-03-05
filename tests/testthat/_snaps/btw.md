@@ -1,7 +1,7 @@
 # btw works
 
     Code
-      writeLines(btw(mtcars))
+      cli::cat_line(btw(mtcars))
     Output
       ## Context
       
@@ -13,7 +13,7 @@
 # btw() preserves order
 
     Code
-      writeLines(btw(two, one))
+      cli::cat_line(btw(two, one))
     Output
       ## Context
       

@@ -10,7 +10,7 @@ test_that("write_to_clipboard() works", {
   # Unless, clipboard is FALSE
   expect_silent(
     expect_equal(
-      btw("Hello world", clipboard = FALSE),
+      format(btw("Hello world", clipboard = FALSE)),
       "## User\nHello world"
     )
   )

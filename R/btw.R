@@ -42,5 +42,32 @@ btw <- function(..., clipboard = TRUE) {
 
   res <- paste(res, collapse = "\n")
 
-  if (clipboard) write_to_clipboard(res) else res
+  BTW(text = res, settings = env(clipboard = clipboard))
+}
+
+BTW <- S7::new_class(
+  "btw",
+  parent = ellmer::ContentText,
+  package = "btw",
+  properties = list(
+    text = S7::class_character,
+    settings = S7::class_environment
+  )
+)
+
+S7::method(print, BTW) <- function(x, ...) {
+  if (!x@settings$clipboard) {
+    writeLines(x@text)
+    return(invisible(x))
+  }
+
+  x@settings$clipboard <- FALSE
+
+  write_to_clipboard(x@text)
+
+  invisible(x)
+}
+
+S7::method(as.character, BTW) <- function(x, ...) {
+  x@text
 }

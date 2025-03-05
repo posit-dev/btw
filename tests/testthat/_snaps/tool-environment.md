@@ -49,8 +49,8 @@
 # btw_this.environment() correctly separates items
 
     Code
-      cat(btw(letters[1], "one thing", "two thing", letters[2], "red thing", letters[
-        4], "blue thing", clipboard = FALSE))
+      cli::cat_line(btw(letters[1], "one thing", "two thing", letters[2], "red thing",
+      letters[4], "blue thing", clipboard = FALSE))
     Output
       ## Context
       

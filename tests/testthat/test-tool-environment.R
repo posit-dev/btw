@@ -14,7 +14,7 @@ test_that("btw_this.environment() does not support entire namespaces (yet)", {
 
 test_that("btw_this.environment() correctly separates items", {
   expect_snapshot(
-    cat(
+    cli::cat_line(
       btw(
         letters[1],
         "one thing",

@@ -4,7 +4,7 @@
 \alias{btw}
 \title{Plain-text descriptions of R objects}
 \usage{
-btw(..., clipboard = is_interactive())
+btw(..., clipboard = TRUE)
 }
 \arguments{
 \item{...}{Objects to describe from your R environment. You can pass objects
