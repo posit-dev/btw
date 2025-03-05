@@ -83,120 +83,72 @@
 <code class="sourceCode R"><span><span class="fu"><a href="reference/btw.html">btw</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"{btw}"</span>, <span class="fu">btw</span><span class="fu">::</span><span class="va"><a href="reference/btw.html">btw</a></span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>✔ btw copied to the clipboard<span class="sc">!</span></span></code></pre></div>
 <p>The following would be attached to your clipboard:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>mtcars</span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">#&gt; {"n_cols":11,"n_rows":32,"groups":[],"class":"data.frame","columns":{"mpg":{"variable":"mpg","type":"numeric","mean":20.0906,"sd":6.0269,"p0":10.4,"p25":15.425,"p50":19.2,"p75":22.8,"p100":33.9},"cyl":{"variable":"cyl","type":"numeric","mean":6.1875,"sd":1.7859,"p0":4,"p25":4,"p50":6,"p75":8,"p100":8},"disp":{"variable":"disp","type":"numeric","mean":230.7219,"sd":123.9387,"p0":71.1,"p25":120.825,"p50":196.3,"p75":326,"p100":472},"hp":{"variable":"hp","type":"numeric","mean":146.6875,"sd":68.5629,"p0":52,"p25":96.5,"p50":123,"p75":180,"p100":335},"drat":{"variable":"drat","type":"numeric","mean":3.5966,"sd":0.5347,"p0":2.76,"p25":3.08,"p50":3.695,"p75":3.92,"p100":4.93},"wt":{"variable":"wt","type":"numeric","mean":3.2172,"sd":0.9785,"p0":1.513,"p25":2.5812,"p50":3.325,"p75":3.61,"p100":5.424},"qsec":{"variable":"qsec","type":"numeric","mean":17.8487,"sd":1.7869,"p0":14.5,"p25":16.8925,"p50":17.71,"p75":18.9,"p100":22.9},"vs":{"variable":"vs","type":"numeric","mean":0.4375,"sd":0.504,"p0":0,"p25":0,"p50":0,"p75":1,"p100":1},"am":{"variable":"am","type":"numeric","mean":0.4062,"sd":0.499,"p0":0,"p25":0,"p50":0,"p75":1,"p100":1},"gear":{"variable":"gear","type":"numeric","mean":3.6875,"sd":0.7378,"p0":3,"p25":3,"p50":4,"p75":4,"p100":5},"carb":{"variable":"carb","type":"numeric","mean":2.8125,"sd":1.6152,"p0":1,"p25":2,"p50":2,"p75":4,"p100":8</span><span class="re">}}}</span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="st">"{btw}"</span></span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; [</span></span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt;   {</span></span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt;     "topic_id": "btw",</span></span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt;     "title": "Plain-text descriptions of R objects",</span></span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt;     "aliases": ["btw"]</span></span>
-<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt;   },</span></span>
-<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt;   {</span></span>
-<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt;     "topic_id": "btw-package",</span></span>
-<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt;     "title": "btw: Describe R Stuff to Large Language Models",</span></span>
-<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt;     "aliases": ["btw-package"]</span></span>
-<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt;   },</span></span>
-<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt;   {</span></span>
-<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt;     "topic_id": "btw_register_tools",</span></span>
-<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co">#&gt;     "title": "Tools: Register tools from btw",</span></span>
-<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="co">#&gt;     "aliases": ["btw_register_tools"]</span></span>
-<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="co">#&gt;   },</span></span>
-<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="co">#&gt;   {</span></span>
-<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a><span class="co">#&gt;     "topic_id": "btw_this",</span></span>
-<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a><span class="co">#&gt;     "title": "Describe something for use by an LLM",</span></span>
-<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a><span class="co">#&gt;     "aliases": ["btw_this"]</span></span>
-<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a><span class="co">#&gt;   },</span></span>
-<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a><span class="co">#&gt;   {</span></span>
-<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a><span class="co">#&gt;     "topic_id": "btw_this.character",</span></span>
-<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a><span class="co">#&gt;     "title": "Describe objects",</span></span>
-<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a><span class="co">#&gt;     "aliases": ["btw_this.character"]</span></span>
-<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a><span class="co">#&gt;   },</span></span>
-<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a><span class="co">#&gt;   {</span></span>
-<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a><span class="co">#&gt;     "topic_id": "btw_this.data.frame",</span></span>
-<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a><span class="co">#&gt;     "title": "Describe a data frame in plain text",</span></span>
-<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a><span class="co">#&gt;     "aliases": ["btw_this.data.frame", "btw_this.tbl"]</span></span>
-<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a><span class="co">#&gt;   },</span></span>
-<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a><span class="co">#&gt;   {</span></span>
-<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a><span class="co">#&gt;     "topic_id": "btw_this.environment",</span></span>
-<span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a><span class="co">#&gt;     "title": "Describe the contents of an environment",</span></span>
-<span id="cb5-40"><a href="#cb5-40" tabindex="-1"></a><span class="co">#&gt;     "aliases": ["btw_this.environment"]</span></span>
-<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a><span class="co">#&gt;   },</span></span>
-<span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a><span class="co">#&gt;   {</span></span>
-<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a><span class="co">#&gt;     "topic_id": "btw_tool_describe_data_frame",</span></span>
-<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a><span class="co">#&gt;     "title": "Tool: Describe data frame",</span></span>
-<span id="cb5-45"><a href="#cb5-45" tabindex="-1"></a><span class="co">#&gt;     "aliases": ["btw_tool_describe_data_frame"]</span></span>
-<span id="cb5-46"><a href="#cb5-46" tabindex="-1"></a><span class="co">#&gt;   },</span></span>
-<span id="cb5-47"><a href="#cb5-47" tabindex="-1"></a><span class="co">#&gt;   {</span></span>
-<span id="cb5-48"><a href="#cb5-48" tabindex="-1"></a><span class="co">#&gt;     "topic_id": "btw_tool_describe_environment",</span></span>
-<span id="cb5-49"><a href="#cb5-49" tabindex="-1"></a><span class="co">#&gt;     "title": "Tool: Describe an environment",</span></span>
-<span id="cb5-50"><a href="#cb5-50" tabindex="-1"></a><span class="co">#&gt;     "aliases": ["btw_tool_describe_environment"]</span></span>
-<span id="cb5-51"><a href="#cb5-51" tabindex="-1"></a><span class="co">#&gt;   },</span></span>
-<span id="cb5-52"><a href="#cb5-52" tabindex="-1"></a><span class="co">#&gt;   {</span></span>
-<span id="cb5-53"><a href="#cb5-53" tabindex="-1"></a><span class="co">#&gt;     "topic_id": "btw_tool_get_installed_packages",</span></span>
-<span id="cb5-54"><a href="#cb5-54" tabindex="-1"></a><span class="co">#&gt;     "title": "Tool: Describe installed packages",</span></span>
-<span id="cb5-55"><a href="#cb5-55" tabindex="-1"></a><span class="co">#&gt;     "aliases": ["btw_tool_get_installed_packages"]</span></span>
-<span id="cb5-56"><a href="#cb5-56" tabindex="-1"></a><span class="co">#&gt;   },</span></span>
-<span id="cb5-57"><a href="#cb5-57" tabindex="-1"></a><span class="co">#&gt;   {</span></span>
-<span id="cb5-58"><a href="#cb5-58" tabindex="-1"></a><span class="co">#&gt;     "topic_id": "btw_tool_list_files",</span></span>
-<span id="cb5-59"><a href="#cb5-59" tabindex="-1"></a><span class="co">#&gt;     "title": "Tool: List files",</span></span>
-<span id="cb5-60"><a href="#cb5-60" tabindex="-1"></a><span class="co">#&gt;     "aliases": ["btw_tool_list_files"]</span></span>
-<span id="cb5-61"><a href="#cb5-61" tabindex="-1"></a><span class="co">#&gt;   },</span></span>
-<span id="cb5-62"><a href="#cb5-62" tabindex="-1"></a><span class="co">#&gt;   {</span></span>
-<span id="cb5-63"><a href="#cb5-63" tabindex="-1"></a><span class="co">#&gt;     "topic_id": "btw_tool_package_docs",</span></span>
-<span id="cb5-64"><a href="#cb5-64" tabindex="-1"></a><span class="co">#&gt;     "title": "Tool: Describe R package documentation",</span></span>
-<span id="cb5-65"><a href="#cb5-65" tabindex="-1"></a><span class="co">#&gt;     "aliases": ["btw_tool_package_docs", "btw_tool_get_package_help_topics", "btw_tool_get_help_page", "btw_tool_get_available_vignettes_in_package", "btw_tool_get_vignette_from_package"]</span></span>
-<span id="cb5-66"><a href="#cb5-66" tabindex="-1"></a><span class="co">#&gt;   },</span></span>
-<span id="cb5-67"><a href="#cb5-67" tabindex="-1"></a><span class="co">#&gt;   {</span></span>
-<span id="cb5-68"><a href="#cb5-68" tabindex="-1"></a><span class="co">#&gt;     "topic_id": "btw_tool_read_text_file",</span></span>
-<span id="cb5-69"><a href="#cb5-69" tabindex="-1"></a><span class="co">#&gt;     "title": "Tool: Read a file",</span></span>
-<span id="cb5-70"><a href="#cb5-70" tabindex="-1"></a><span class="co">#&gt;     "aliases": ["btw_tool_read_text_file"]</span></span>
-<span id="cb5-71"><a href="#cb5-71" tabindex="-1"></a><span class="co">#&gt;   }</span></span>
-<span id="cb5-72"><a href="#cb5-72" tabindex="-1"></a><span class="co">#&gt; ] </span></span>
-<span id="cb5-73"><a href="#cb5-73" tabindex="-1"></a></span>
-<span id="cb5-74"><a href="#cb5-74" tabindex="-1"></a></span>
-<span id="cb5-75"><a href="#cb5-75" tabindex="-1"></a>btw<span class="sc">::</span>btw</span>
-<span id="cb5-76"><a href="#cb5-76" tabindex="-1"></a><span class="co">#&gt; btw                    package:btw                     R Documentation</span></span>
-<span id="cb5-77"><a href="#cb5-77" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-78"><a href="#cb5-78" tabindex="-1"></a><span class="co">#&gt; Plain-text descriptions of R objects</span></span>
-<span id="cb5-79"><a href="#cb5-79" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-80"><a href="#cb5-80" tabindex="-1"></a><span class="co">#&gt; Description:</span></span>
-<span id="cb5-81"><a href="#cb5-81" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-82"><a href="#cb5-82" tabindex="-1"></a><span class="co">#&gt;      This function allows you to quickly describe your computational</span></span>
-<span id="cb5-83"><a href="#cb5-83" tabindex="-1"></a><span class="co">#&gt;      environment to a model by concatenating plain-text descriptions of</span></span>
-<span id="cb5-84"><a href="#cb5-84" tabindex="-1"></a><span class="co">#&gt;      "R stuff", from data frames to packages to function documentation.</span></span>
-<span id="cb5-85"><a href="#cb5-85" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-86"><a href="#cb5-86" tabindex="-1"></a><span class="co">#&gt; Usage:</span></span>
-<span id="cb5-87"><a href="#cb5-87" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-88"><a href="#cb5-88" tabindex="-1"></a><span class="co">#&gt;      btw(..., clipboard = is_interactive())</span></span>
-<span id="cb5-89"><a href="#cb5-89" tabindex="-1"></a><span class="co">#&gt;      </span></span>
-<span id="cb5-90"><a href="#cb5-90" tabindex="-1"></a><span class="co">#&gt; Arguments:</span></span>
-<span id="cb5-91"><a href="#cb5-91" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-92"><a href="#cb5-92" tabindex="-1"></a><span class="co">#&gt;      ...: Objects to describe from your R environment. You can pass</span></span>
-<span id="cb5-93"><a href="#cb5-93" tabindex="-1"></a><span class="co">#&gt;           objects themselves, like data frames or functions, or the</span></span>
-<span id="cb5-94"><a href="#cb5-94" tabindex="-1"></a><span class="co">#&gt;           function also accepts output from btw_tool_*() functions like</span></span>
-<span id="cb5-95"><a href="#cb5-95" tabindex="-1"></a><span class="co">#&gt;           'btw_tool_get_package_help_topics()',</span></span>
-<span id="cb5-96"><a href="#cb5-96" tabindex="-1"></a><span class="co">#&gt;           'btw_tool_get_help_page()', etc. If omitted, this function</span></span>
-<span id="cb5-97"><a href="#cb5-97" tabindex="-1"></a><span class="co">#&gt;           will just describe the elements in your global R environment.</span></span>
-<span id="cb5-98"><a href="#cb5-98" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-99"><a href="#cb5-99" tabindex="-1"></a><span class="co">#&gt; clipboard: Whether to write the results to the clipboard. A single</span></span>
-<span id="cb5-100"><a href="#cb5-100" tabindex="-1"></a><span class="co">#&gt;           logical value; will default to 'TRUE' when run interactively.</span></span>
-<span id="cb5-101"><a href="#cb5-101" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-102"><a href="#cb5-102" tabindex="-1"></a><span class="co">#&gt; Value:</span></span>
-<span id="cb5-103"><a href="#cb5-103" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-104"><a href="#cb5-104" tabindex="-1"></a><span class="co">#&gt;      The combined elements as a string, invisibly. If 'clipboard' is</span></span>
-<span id="cb5-105"><a href="#cb5-105" tabindex="-1"></a><span class="co">#&gt;      'TRUE', the result is also written to the system clipboard.</span></span>
-<span id="cb5-106"><a href="#cb5-106" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-107"><a href="#cb5-107" tabindex="-1"></a><span class="co">#&gt; Examples:</span></span>
-<span id="cb5-108"><a href="#cb5-108" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-109"><a href="#cb5-109" tabindex="-1"></a><span class="co">#&gt;      btw()</span></span>
-<span id="cb5-110"><a href="#cb5-110" tabindex="-1"></a><span class="co">#&gt;      </span></span>
-<span id="cb5-111"><a href="#cb5-111" tabindex="-1"></a><span class="co">#&gt;      btw(mtcars)</span></span>
-<span id="cb5-112"><a href="#cb5-112" tabindex="-1"></a><span class="co">#&gt;      </span></span>
-<span id="cb5-113"><a href="#cb5-113" tabindex="-1"></a><span class="co">#&gt;      btw(btw::btw)</span></span>
-<span id="cb5-114"><a href="#cb5-114" tabindex="-1"></a><span class="co">#&gt;      </span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="do">## Context</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>mtcars</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="st">```</span><span class="at">json</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="at">{"n_cols":11,"n_rows":32,"groups":[],"class":"data.frame","columns":{"mpg":{"variable":"mpg","type":"numeric","mean":20.0906,"sd":6.0269,"p0":10.4,"p25":15.425,"p50":19.2,"p75":22.8,"p100":33.9},"cyl":{"variable":"cyl","type":"numeric","mean":6.1875,"sd":1.7859,"p0":4,"p25":4,"p50":6,"p75":8,"p100":8},"disp":{"variable":"disp","type":"numeric","mean":230.7219,"sd":123.9387,"p0":71.1,"p25":120.825,"p50":196.3,"p75":326,"p100":472},"hp":{"variable":"hp","type":"numeric","mean":146.6875,"sd":68.5629,"p0":52,"p25":96.5,"p50":123,"p75":180,"p100":335},"drat":{"variable":"drat","type":"numeric","mean":3.5966,"sd":0.5347,"p0":2.76,"p25":3.08,"p50":3.695,"p75":3.92,"p100":4.93},"wt":{"variable":"wt","type":"numeric","mean":3.2172,"sd":0.9785,"p0":1.513,"p25":2.5812,"p50":3.325,"p75":3.61,"p100":5.424},"qsec":{"variable":"qsec","type":"numeric","mean":17.8487,"sd":1.7869,"p0":14.5,"p25":16.8925,"p50":17.71,"p75":18.9,"p100":22.9},"vs":{"variable":"vs","type":"numeric","mean":0.4375,"sd":0.504,"p0":0,"p25":0,"p50":0,"p75":1,"p100":1},"am":{"variable":"am","type":"numeric","mean":0.4062,"sd":0.499,"p0":0,"p25":0,"p50":0,"p75":1,"p100":1},"gear":{"variable":"gear","type":"numeric","mean":3.6875,"sd":0.7378,"p0":3,"p25":3,"p50":4,"p75":4,"p100":5},"carb":{"variable":"carb","type":"numeric","mean":2.8125,"sd":1.6152,"p0":1,"p25":2,"p50":2,"p75":4,"p100":8}}}</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="st">```</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="st">"{btw}"</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="st">```</span><span class="at">json</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="at">[</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="at">  {"topic_id":"btw","title":"Plain-text descriptions of R objects","aliases":["btw"]},</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="at">  {"topic_id":"btw-package","title":"btw: Describe R Stuff to Large Language Models","aliases":["btw-package"]},</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="at">  {"topic_id":"btw_register_tools","title":"Tools: Register tools from btw","aliases":["btw_register_tools"]},</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="at">  {"topic_id":"btw_this","title":"Describe something for use by an LLM","aliases":["btw_this"]},</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="at">  {"topic_id":"btw_this.character","title":"Describe objects","aliases":["btw_this.character"]},</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="at">  {"topic_id":"btw_this.data.frame","title":"Describe a data frame in plain text","aliases":["btw_this.data.frame","btw_this.tbl"]},</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="at">  {"topic_id":"btw_this.environment","title":"Describe the contents of an environment","aliases":["btw_this.environment"]},</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_describe_data_frame","title":"Tool: Describe data frame","aliases":["btw_tool_describe_data_frame"]},</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_describe_environment","title":"Tool: Describe an environment","aliases":["btw_tool_describe_environment"]},</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_get_installed_packages","title":"Tool: Describe installed packages","aliases":["btw_tool_get_installed_packages"]},</span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_list_files","title":"Tool: List files","aliases":["btw_tool_list_files"]},</span></span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_package_docs","title":"Tool: Describe R package documentation","aliases":["btw_tool_package_docs","btw_tool_get_package_help_topics","btw_tool_get_help_page","btw_tool_get_available_vignettes_in_package","btw_tool_get_vignette_from_package"]},</span></span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_read_text_file","title":"Tool: Read a file","aliases":["btw_tool_read_text_file"]}</span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a><span class="at">]</span></span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a><span class="st">```</span></span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a></span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a>btw<span class="sc">::</span>btw</span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a>btw                    package<span class="sc">:</span>btw                     R Documentation</span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a></span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a>Plain<span class="sc">-</span>text descriptions of R objects</span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a></span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a>Description<span class="sc">:</span></span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a></span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a>     This <span class="cf">function</span> allows you to quickly describe your computational</span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a>     environment to a model by concatenating plain<span class="sc">-</span>text descriptions of</span>
+<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a>     <span class="st">"R stuff"</span>, from data frames to packages to <span class="cf">function</span> documentation.</span>
+<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a></span>
+<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a>Usage<span class="sc">:</span></span>
+<span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a></span>
+<span id="cb5-40"><a href="#cb5-40" tabindex="-1"></a>     <span class="fu">btw</span>(..., <span class="at">clipboard =</span> <span class="fu">is_interactive</span>())</span>
+<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a>     </span>
+<span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a>Arguments<span class="sc">:</span></span>
+<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a></span>
+<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a>     ...<span class="sc">:</span> Objects to describe from your R environment. You can pass</span>
+<span id="cb5-45"><a href="#cb5-45" tabindex="-1"></a>          objects themselves, like data frames or functions, or the</span>
+<span id="cb5-46"><a href="#cb5-46" tabindex="-1"></a>          <span class="cf">function</span> also accepts output from btw_tool_<span class="sc">*</span>() functions like</span>
+<span id="cb5-47"><a href="#cb5-47" tabindex="-1"></a>          <span class="st">'btw_tool_get_package_help_topics()'</span>,</span>
+<span id="cb5-48"><a href="#cb5-48" tabindex="-1"></a>          <span class="st">'btw_tool_get_help_page()'</span>, etc. If omitted, this <span class="cf">function</span></span>
+<span id="cb5-49"><a href="#cb5-49" tabindex="-1"></a>          will just describe the elements <span class="cf">in</span> your global R environment.</span>
+<span id="cb5-50"><a href="#cb5-50" tabindex="-1"></a></span>
+<span id="cb5-51"><a href="#cb5-51" tabindex="-1"></a>clipboard<span class="sc">:</span> Whether to write the results to the clipboard. A single</span>
+<span id="cb5-52"><a href="#cb5-52" tabindex="-1"></a>          logical value; will default to <span class="st">'TRUE'</span> when run interactively.</span>
+<span id="cb5-53"><a href="#cb5-53" tabindex="-1"></a></span>
+<span id="cb5-54"><a href="#cb5-54" tabindex="-1"></a>Value<span class="sc">:</span></span>
+<span id="cb5-55"><a href="#cb5-55" tabindex="-1"></a></span>
+<span id="cb5-56"><a href="#cb5-56" tabindex="-1"></a>     The combined elements as a string, invisibly. If <span class="st">'clipboard'</span> is</span>
+<span id="cb5-57"><a href="#cb5-57" tabindex="-1"></a>     <span class="st">'TRUE'</span>, the result is also written to the system clipboard.</span>
+<span id="cb5-58"><a href="#cb5-58" tabindex="-1"></a></span>
+<span id="cb5-59"><a href="#cb5-59" tabindex="-1"></a>Examples<span class="sc">:</span></span>
+<span id="cb5-60"><a href="#cb5-60" tabindex="-1"></a></span>
+<span id="cb5-61"><a href="#cb5-61" tabindex="-1"></a>     <span class="fu">btw</span>()</span>
+<span id="cb5-62"><a href="#cb5-62" tabindex="-1"></a>     </span>
+<span id="cb5-63"><a href="#cb5-63" tabindex="-1"></a>     <span class="fu">btw</span>(mtcars)</span>
+<span id="cb5-64"><a href="#cb5-64" tabindex="-1"></a>     </span>
+<span id="cb5-65"><a href="#cb5-65" tabindex="-1"></a>     <span class="fu">btw</span>(btw<span class="sc">::</span>btw)</span>
+<span id="cb5-66"><a href="#cb5-66" tabindex="-1"></a>     </span></code></pre></div>
 <p>You can also just call <code><a href="reference/btw.html">btw()</a></code> with no inputs, which will describe the objects in your global environment.</p>
 </div>
 <div class="section level3">
