@@ -130,7 +130,7 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
 
   x_expr <- tryCatch(parse_expr(x), error = function(err) NULL)
 
-  if (is.null(x_expr)) return(btw_prompt_text(x))
+  if (is.null(x_expr)) return(btw_user_prompt(x))
 
   tryCatch(
     inject(btw_this(!!x_expr), env = caller_env),
@@ -225,8 +225,8 @@ btw_ignore <- function() {
   structure(list(), class = "btw_ignore")
 }
 
-btw_prompt_text <- function(x) {
-  structure(x, class = c("btw_prompt_text", "btw_ignore"))
+btw_user_prompt <- function(x) {
+  structure(x, class = c("btw_user_prompt", "btw_ignore"))
 }
 
 #' @export
