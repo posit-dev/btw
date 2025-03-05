@@ -65,7 +65,7 @@ The following would be attached to your clipboard:
 ```{r}
 #| comment: ""
 #| echo: false
-cat(btw(mtcars, "{btw}", btw::btw))
+cli::cat_line(btw(mtcars, "{btw}", btw::btw))
 ```
 
 You can also just call `btw()` with no inputs, which will describe the objects in your global environment.
