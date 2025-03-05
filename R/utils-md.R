@@ -14,3 +14,7 @@ md_table <- function(df) {
 
   paste(c(header_row, separator_row, data_rows), collapse = "\n")
 }
+
+md_code_block <- function(type = "", ...) {
+  c(paste0("```", type), ..., "```")
+}

@@ -29,9 +29,15 @@ btw_this.default <- function(x, ...) {
 capture_print <- function(x) {
   # TODO: Replace with {evaluate}
   out <- capture.output(print(x))
-  if (length(out) && nzchar(out)) return(out)
+  if (length(out) == 0 || !any(nzchar(out))) {
+    out <- capture.output(print(x), type = "message")
+  }
 
-  capture.output(print(x), type = "message")
+  as_btw_capture(out)
+}
+
+as_btw_capture <- function(x) {
+  structure(x, class = c("btw_captured", "character"))
 }
 
 #' Describe objects

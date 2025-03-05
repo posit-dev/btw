@@ -105,7 +105,13 @@ btw_item_with_description <- function(item_name, description) {
   if (inherits(description, "btw_ignore")) {
     return(invisible())
   }
-  # assuming the new contract is that `btw_this()` returns `description` as
-  # lines of text. (Alternative: btw_this() always returns a single character.)
-  c(item_name, paste0("#> ", description))
+  if (inherits(description, "btw_captured")) {
+    description <- md_code_block(
+      "r",
+      gsub('^"|"$', '', item_name),
+      paste("#>", description)
+    )
+    item_name <- NULL
+  }
+
 }

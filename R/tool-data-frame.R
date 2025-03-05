@@ -142,7 +142,7 @@ btw_tool_describe_data_frame <- function(
 
 describe_data_frame_glimpse <- function(x, x_name) {
   res <- cli::ansi_strip(capture.output(dplyr::glimpse(x)))
-  res
+  as_btw_capture(res)
 }
 
 describe_data_frame_print <- function(x) {
@@ -151,7 +151,7 @@ describe_data_frame_print <- function(x) {
   res <- cli::ansi_strip(
     capture.output(tibble::as_tibble(x, width = 1000, n = Inf))
   )
-  res[2:length(res)]
+  as_btw_capture(res[2:length(res)])
 }
 
 describe_data_frame_json <- function(x) {
