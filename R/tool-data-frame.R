@@ -155,7 +155,7 @@ describe_data_frame_print <- function(x) {
 }
 
 describe_data_frame_json <- function(x) {
-  capture.output(jsonlite::toJSON(x, auto_unbox = TRUE, pretty = TRUE))
+  md_code_block("json", as_json_rowwise(x))
 }
 
 describe_data_frame_skim <- function(df) {
@@ -206,5 +206,5 @@ describe_data_frame_skim <- function(df) {
 
   attrs$columns <- cols
 
-  jsonlite::toJSON(attrs, auto_unbox = TRUE)
+  md_code_block("json", jsonlite::toJSON(attrs, auto_unbox = TRUE))
 }

@@ -2,14 +2,14 @@ test_that("btw_tool_get_installed_packages() works", {
   res <- btw_tool_get_installed_packages()
 
   expect_type(res, "character")
-  expect_match(res, '"Package": "utils"', fixed = TRUE, all = FALSE)
+  expect_match(res, '"Package":"utils"', fixed = TRUE, all = FALSE)
 })
 
 test_that("btw_tool_get_package_help_topics() works", {
   res <- btw_tool_get_package_help_topics("stats")
 
   expect_type(res, "character")
-  expect_match(res, '"topic_id": "Normal"', fixed = TRUE, all = FALSE)
+  expect_match(res, '"topic_id":"Normal"', fixed = TRUE, all = FALSE)
 })
 
 test_that("btw_tool_get_help_page() works", {
