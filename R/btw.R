@@ -26,7 +26,7 @@
 #' result is also written to the system clipboard.
 #'
 #' @export
-btw <- function(..., clipboard = is_interactive()) {
+btw <- function(..., clipboard = TRUE) {
   check_bool(clipboard)
 
   elts <- dots_list(..., .named = TRUE)
@@ -42,9 +42,5 @@ btw <- function(..., clipboard = is_interactive()) {
 
   res <- paste(res, collapse = "\n")
 
-  if (clipboard) {
-    write_to_clipboard(res)
-  }
-
-  invisible(res)
+  if (clipboard) write_to_clipboard(res) else res
 }
