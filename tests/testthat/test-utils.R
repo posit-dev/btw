@@ -10,3 +10,9 @@ test_that("check_installed() works", {
   testthat::local_mocked_bindings(is_installed = function(x) FALSE)
   expect_snapshot(check_installed("somepackage"), error = TRUE)
 })
+
+test_that("check_inherits() works", {
+  expect_null(check_inherits("true", "character"))
+  expect_null(check_inherits(as_btw_capture("foo"), "btw_captured"))
+  expect_error(check_inherits(as_btw_docs_package("btw"), "not_this_class"))
+})
