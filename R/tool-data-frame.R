@@ -83,6 +83,11 @@ btw_tool_describe_data_frame <- function(
     data_frame <- get(data_frame)
   }
 
+  if (format != "json" && ncol(data_frame) <= 10 && nrow(data_frame) <= 30) {
+    # Small data frames can just be in-lined directly as a markdown tables
+    md_table(data_frame)
+  }
+
   if (format %in% c("print", "json")) {
     n_row <- min(dims[1], nrow(data_frame))
     n_col <- min(dims[2], ncol(data_frame))
