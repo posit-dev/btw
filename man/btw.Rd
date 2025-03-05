@@ -4,7 +4,7 @@
 \alias{btw}
 \title{Plain-text descriptions of R objects}
 \usage{
-btw(..., clipboard = is_interactive())
+btw(..., clipboard = TRUE)
 }
 \arguments{
 \item{...}{Objects to describe from your R environment. You can pass objects
@@ -18,13 +18,44 @@ environment.}
 A single logical value; will default to \code{TRUE} when run interactively.}
 }
 \value{
-The combined elements as a string, invisibly. If \code{clipboard} is \code{TRUE}, the
-result is also written to the system clipboard.
+Returns an \link[ellmer:Content]{ellmer::ContentText} object with the collected prompt. If
+\code{clipboard = TRUE}, the prompt text is copied to the clipboard when the
+returned object is printed for the first time (e.g. calling \code{btw()} without
+assignment).
 }
 \description{
 This function allows you to quickly describe your computational environment
 to a model by concatenating plain-text descriptions of "R stuff", from
 data frames to packages to function documentation.
+
+There are two key ways to use \code{btw()}:
+\enumerate{
+\item Use it interactively at the console to gather information about your
+environment into prompt text that you can paste into the chat interface of
+an LLM, like ChatGPT or Claude. By default, \code{btw()} copies the prompt to
+the clipboard for you.
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{btw(vignette("colwise", "dplyr"), dplyr::across, dplyr::starwars)
+#> ✔ btw copied to the clipboard!
+}\if{html}{\out{</div>}}
+\item Pair \code{btw()} with \link[ellmer:Chat]{ellmer::Chat} during a chat session to create a prompt
+that includes additional context drawn from your environment and help
+pages.
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{library(ellmer)
+
+chat <- chat_claude() # requires an Anthropic API key
+chat <- chat_ollama(model = "llama3.1:8b") # requires ollama and a local model
+
+chat$chat(btw(
+  vignette("colwise", "dplyr"),
+  dplyr::across,
+  dplyr::starwars,
+  "Create a few interesting examples that use `dplyr::across()`",
+  "with the `starwars` data set."
+))
+}\if{html}{\out{</div>}}
+}
 }
 \examples{
 btw()
@@ -32,5 +63,15 @@ btw()
 btw(mtcars)
 
 btw(btw::btw)
+
+if (FALSE) {
+  # btw() can also be used directly in {ellmer} chats
+  library(ellmer)
+
+  chat <- chat_ollama(model = "llama3.1:8b")
+  chat$chat(
+    btw(mtcars, "Are there cars with 8 cylinders in this dataset?")
+  )
+}
 
 }

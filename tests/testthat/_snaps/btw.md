@@ -1,7 +1,7 @@
 # btw works
 
     Code
-      cat(btw(mtcars))
+      cli::cat_line(btw(mtcars))
     Output
       ## Context
       
@@ -13,5 +13,17 @@
 # btw() preserves order
 
     Code
-      btw(two, one)
+      cli::cat_line(btw(two, one))
+    Output
+      ## Context
+      
+      ```r
+      two
+      #> [1] "banana"
+      ```
+      
+      ```r
+      one
+      #> [1] "apple"
+      ```
 

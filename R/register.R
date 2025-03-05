@@ -65,7 +65,9 @@ tool_matches <- function(tool, labels = NULL) {
 # nocov start
 .docs_list_tools <- function() {
   x <- map(.btw_tools, function(tool) {
-    desc <- strsplit(tool$tool()@description, ". ", fixed = TRUE)[[1]][1]
+    desc <- strsplit(S7::prop(tool$tool(), "description"), ". ", fixed = TRUE)
+    desc <- desc[[1]][1]
+
     if (!grepl("[.]$", desc)) {
       desc <- paste0(desc, ".")
     }
