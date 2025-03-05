@@ -26,8 +26,14 @@ check_installed <- function(x, call = caller_env()) {
 
 interactive <- NULL
 
-as_json_rowwise <- function(x) {
-  json <- jsonlite::toJSON(x, auto_unbox = TRUE, null = "null", na = "null")
+as_json_rowwise <- function(x, ...) {
+  json <- jsonlite::toJSON(
+    x,
+    auto_unbox = TRUE,
+    null = "null",
+    na = "null",
+    rownames = FALSE
+  )
 
   json <- sub("^\\[\\{", "[\n  {", json)
   json <- sub("\\}\\]$", "}\n]", json)

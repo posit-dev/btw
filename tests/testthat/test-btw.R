@@ -14,6 +14,6 @@ test_that("btw() preserves order", {
 test_that("btw() with prompt stings", {
   expect_equal(
     btw("first thing", "second thing"),
-    "first thing\nsecond thing"
+    "## User\nfirst thing\nsecond thing"
   )
 })

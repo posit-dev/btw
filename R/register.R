@@ -62,6 +62,7 @@ tool_matches <- function(tool, labels = NULL) {
   FALSE
 }
 
+# nocov start
 .docs_list_tools <- function() {
   x <- map(.btw_tools, function(tool) {
     desc <- strsplit(tool$tool()@description, ". ", fixed = TRUE)[[1]][1]
@@ -80,3 +81,4 @@ tool_matches <- function(tool, labels = NULL) {
   x <- x[order(x$Group, x$Name), ]
   md_table(x)
 }
+# nocov end

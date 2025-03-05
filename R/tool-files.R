@@ -50,9 +50,7 @@ btw_tool_list_files <- function(
 
   fields <- c("path", "type", "size", "modification_time")
 
-  res <- describe_data_frame_print(info[fields])
-  res[2] <- gsub("[^ ]", "-", res[1])
-  res
+  md_table(info[fields])
 }
 
 .btw_add_to_tools(

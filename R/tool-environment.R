@@ -58,26 +58,52 @@ btw_tool_describe_environment <- function(
 
   item_desc_prev <- NULL
 
-  for (item_name in env_item_names) {
+  item_desc <- map(env_item_names, function(item_name) {
     item <- env_get(environment, item_name)
 
     if (is_function(item) && is_namespace(fn_env(item))) {
       item <- item_name
     }
 
-    item_desc <- btw_this(item, caller_env = environment)
-    is_adjacent_prompt_text <-
-      inherits(item_desc, "btw_prompt_text") &&
-      inherits(item_desc_prev, "btw_prompt_text")
+    btw_this(item, caller_env = environment)
+  })
 
-    res <- c(
-      res,
-      # Insert a new line between items unless between prompt text sections
-      if (length(res) && !is_adjacent_prompt_text) "",
-      btw_item_with_description(item_name, item_desc)
-    )
+  res <- c()
+  for (i in seq_along(item_desc)) {
+    desc <- item_desc[[i]]
+    name <- env_item_names[[i]]
+    is_user_prompt <- inherits(desc, "btw_user_prompt")
 
-    item_desc_prev <- item_desc
+    if (i == 1) {
+      res <- c(
+        if (!is_user_prompt) c("## Context", ""),
+        btw_item_with_description(name, desc)
+      )
+      next
+    }
+
+    is_adjacent_user_prompt <-
+      is_user_prompt &&
+      inherits(item_desc[[i - 1]], "btw_user_prompt")
+
+    is_adjacent_user_context <-
+      !is_user_prompt &&
+      inherits(item_desc[[i - 1]], "btw_user_prompt")
+
+    if (is_adjacent_user_prompt) {
+      # Append text to previous prompt text
+      res[length(res)] <- paste0(res[length(res)], "\n", desc)
+    } else {
+      res <- c(
+        res,
+        "",
+        btw_item_with_description(
+          name,
+          desc,
+          header = if (is_adjacent_user_context) "## Context"
+        )
+      )
+    }
   }
 
   res
@@ -98,14 +124,22 @@ btw_tool_describe_environment <- function(
   }
 )
 
-btw_item_with_description <- function(item_name, description) {
-  if (inherits(description, "btw_prompt_text")) {
-    return(description)
+btw_item_with_description <- function(item_name, description, header = NULL) {
+  if (inherits(description, "btw_user_prompt")) {
+    return(c("## User", description))
   }
   if (inherits(description, "btw_ignore")) {
     return(invisible())
   }
-  # assuming the new contract is that `btw_this()` returns `description` as
-  # lines of text. (Alternative: btw_this() always returns a single character.)
-  c(item_name, paste0("#> ", description))
+  if (inherits(description, "btw_captured")) {
+    description <- md_code_block(
+      "r",
+      gsub('^"|"$', '', item_name),
+      paste("#>", description)
+    )
+    item_name <- NULL
+  }
+
+  if (!is.null(header)) header <- c(header, "")
+  paste(c(header, item_name, description), collapse = "\n")
 }
