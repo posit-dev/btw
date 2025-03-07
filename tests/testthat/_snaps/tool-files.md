@@ -1,12 +1,12 @@
 # btw_tool_list_files() works
 
     Code
-      btw_tool_list_files()
+      writeLines(btw_tool_list_files())
     Output
-      [1] "  path       type         size modification_time  "
-      [2] "  ----       ----         ---- -----------------  "
-      [3] "1 test.R     file            5 MODIFIED TIME"
-      [4] "2 test.csv   file            5 MODIFIED TIME"
+      | path | type | size | modification_time |
+      |------|------|------|-------------------|
+      | test.R | file | 5 | MODIFIED TIME |
+      | test.csv | file | 5 | MODIFIED TIME |
 
 ---
 

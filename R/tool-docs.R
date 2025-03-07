@@ -17,7 +17,11 @@ btw_tool_get_installed_packages <- function() {
 
   # show every installed package, along with a description of what
   # it does, in json format
-  btw_tool_describe_data_frame(df, format = "json", dims = c(Inf, 2))
+  btw_tool_describe_data_frame(
+    df,
+    format = if (nrow(df) <= 30) "print" else "json",
+    dims = c(Inf, 2)
+  )
 }
 
 .btw_add_to_tools(

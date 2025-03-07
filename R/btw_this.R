@@ -29,9 +29,15 @@ btw_this.default <- function(x, ...) {
 capture_print <- function(x) {
   # TODO: Replace with {evaluate}
   out <- capture.output(print(x))
-  if (length(out) && nzchar(out)) return(out)
+  if (length(out) == 0 || !any(nzchar(out))) {
+    out <- capture.output(print(x), type = "message")
+  }
 
-  capture.output(print(x), type = "message")
+  as_btw_capture(out)
+}
+
+as_btw_capture <- function(x) {
+  structure(x, class = c("btw_captured", "character"))
 }
 
 #' Describe objects
@@ -137,7 +143,7 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
 
   x_expr <- tryCatch(parse_expr(x), error = function(err) NULL)
 
-  if (is.null(x_expr)) return(btw_prompt_text(x))
+  if (is.null(x_expr)) return(btw_user_prompt(x))
 
   tryCatch(
     inject(btw_this(!!x_expr), env = caller_env),
@@ -232,11 +238,12 @@ btw_ignore <- function() {
   structure(list(), class = "btw_ignore")
 }
 
-btw_prompt_text <- function(...) {
-  structure(c(...), class = c("btw_prompt_text", "btw_ignore"))
+btw_user_prompt <- function(...) {
+  structure(c(...), class = c("btw_user_prompt", "btw_ignore"))
 }
 
-#' @export
+# https://github.com/RConsortium/S7/issues/501#issuecomment-2494609728
+#' @rawNamespace S3method(base::print, btw_ignore)
 print.btw_ignore <- function(x, ...) {
   invisible(x)
 }

@@ -1,5 +1,15 @@
-# largely copied from reprex ---------------------------------------------------
 write_to_clipboard <- function(x) {
+  if (!is_interactive() || !clipr::clipr_available()) {
+    if (is_interactive()) {
+      cli::cli_alert_warning(
+        "Clipboard is not available, copy prompt below..."
+      )
+      cli::cat_line(x)
+    }
+    return(invisible(x))
+  }
+
+  # nocov start
   tryCatch(
     {
       clipr::write_clip(x)
@@ -7,5 +17,7 @@ write_to_clipboard <- function(x) {
     },
     error = function(e) e
   )
-  return(invisible())
+  # nocov end
+
+  invisible(x)
 }

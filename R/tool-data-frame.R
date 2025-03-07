@@ -83,6 +83,11 @@ btw_tool_describe_data_frame <- function(
     data_frame <- get(data_frame)
   }
 
+  if (format != "json" && ncol(data_frame) <= 10 && nrow(data_frame) <= 30) {
+    # Small data frames can just be in-lined directly as a markdown tables
+    md_table(data_frame)
+  }
+
   if (format %in% c("print", "json")) {
     n_row <- min(dims[1], nrow(data_frame))
     n_col <- min(dims[2], ncol(data_frame))
@@ -137,7 +142,7 @@ btw_tool_describe_data_frame <- function(
 
 describe_data_frame_glimpse <- function(x, x_name) {
   res <- cli::ansi_strip(capture.output(dplyr::glimpse(x)))
-  res
+  as_btw_capture(res)
 }
 
 describe_data_frame_print <- function(x) {
@@ -146,11 +151,11 @@ describe_data_frame_print <- function(x) {
   res <- cli::ansi_strip(
     capture.output(tibble::as_tibble(x, width = 1000, n = Inf))
   )
-  res[2:length(res)]
+  as_btw_capture(res[2:length(res)])
 }
 
 describe_data_frame_json <- function(x) {
-  capture.output(jsonlite::toJSON(x, auto_unbox = TRUE, pretty = TRUE))
+  md_code_block("json", as_json_rowwise(x))
 }
 
 describe_data_frame_skim <- function(df) {
@@ -201,5 +206,5 @@ describe_data_frame_skim <- function(df) {
 
   attrs$columns <- cols
 
-  jsonlite::toJSON(attrs, auto_unbox = TRUE)
+  md_code_block("json", jsonlite::toJSON(attrs, auto_unbox = TRUE))
 }

@@ -17,7 +17,7 @@ test_that("btw_tool_list_files() works", {
   skip_if_not_macos()
 
   expect_snapshot(
-    btw_tool_list_files(),
+    writeLines(btw_tool_list_files()),
     transform = function(x) {
       sub("\\d{4}-[0-9-]+ [0-9:]+", "MODIFIED TIME", x)
     }
