@@ -58,7 +58,7 @@ btw_client <- function(..., client = NULL) {
 #' @describeIn btw_client Create a btw-enhanced client and launch a Shiny app to
 #'   chat
 #' @export
-btw_app <- function(..., client = getOption("btw.chat_client")) {
+btw_app <- function(..., client = NULL) {
   client <- btw_client(client = client, ...)
 
   shiny::onStop(function() client)
