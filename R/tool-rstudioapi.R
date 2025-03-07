@@ -20,7 +20,7 @@ btw_tool_read_current_editor <- function(selection = TRUE, consent = FALSE) {
   check_bool(selection)
   check_bool(consent)
 
-  if (!isTRUE(consent)) {
+  if (!consent) {
     cli::cli_abort(
       "Please ask the user for consent before reading from the editor."
     )
