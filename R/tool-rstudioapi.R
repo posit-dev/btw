@@ -4,6 +4,8 @@
 #' Reads the current file using the \pkg{rstudioapi}, which works in RStudio,
 #' Positron and VS Code (with the vscode-r extension).
 #'
+#' @param selection Should only the selected text be included? If no text is
+#'   selected, the full file contents are returned.
 #' @param consent Boolean indicating whether the user has consented to reading
 #'   the current file. The tool definition includes language to induce LLMs to
 #'   confirm with the user before calling the tool. Not all models will follow
