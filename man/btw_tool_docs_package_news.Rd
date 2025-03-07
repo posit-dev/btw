@@ -47,6 +47,7 @@ btw_tool_docs_package_news("dplyr", "join_by")
 Other Tools: 
 \code{\link{btw_tool_env_describe_data_frame}()},
 \code{\link{btw_tool_env_describe_environment}()},
+\code{\link{btw_tool_files_code_search}()},
 \code{\link{btw_tool_files_list_files}()},
 \code{\link{btw_tool_files_read_text_file}()},
 \code{\link{btw_tool_files_write_text_file}()},
