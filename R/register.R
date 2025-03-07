@@ -48,7 +48,14 @@ btw_register_tools <- function(chat, include = NULL) {
     if (has_include) {
       cli::cli_alert_success("Registered tool {.field {tool$name}}")
     }
-    chat$register_tool(tool$tool())
+
+    # Tools are stored as functions to avoid creating them at build-time
+    tool <- tool$tool()
+
+    # and some may return `NULL` if disabled or contextually unavailable
+    if (is.null(tool)) next
+
+    chat$register_tool(tool)
   }
 
   invisible(chat)

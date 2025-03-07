@@ -76,6 +76,12 @@ as_btw_capture <- function(x) {
 #'   * `btw_this("?dplyr::across")` includes the reference page for
 #'     `dplyr::across`.
 #'
+#' * `"@current_file"` or `"@current_selection"` \cr
+#'   When used in RStudio or Positron, or anywhere else that the
+#'   \pkg{rstudioapi} is supported, `btw("@current_file")` includes the contents
+#'   of the file currently open in the editor using
+#'   [rstudioapi::getSourceEditorContext()].
+#'
 #' @param x A character string
 #' @param ... Ignored.
 #' @param caller_env The caller environment.
@@ -87,6 +93,13 @@ as_btw_capture <- function(x) {
 btw_this.character <- function(x, ..., caller_env = parent.frame()) {
   check_string(x)
   x <- trimws(x)
+
+  if (identical(x, "@current_file")) {
+    return(btw_tool_read_current_editor(consent = TRUE))
+  }
+  if (identical(x, "@current_selection")) {
+    return(btw_tool_read_current_editor(selection = TRUE, consent = TRUE))
+  }
 
   if (grepl("^\\./", x)) {
     path <- substring(x, 3, nchar(x))
@@ -225,8 +238,8 @@ btw_ignore <- function() {
   structure(list(), class = "btw_ignore")
 }
 
-btw_user_prompt <- function(x) {
-  structure(x, class = c("btw_user_prompt", "btw_ignore"))
+btw_user_prompt <- function(...) {
+  structure(c(...), class = c("btw_user_prompt", "btw_ignore"))
 }
 
 # https://github.com/RConsortium/S7/issues/501#issuecomment-2494609728

@@ -31,6 +31,7 @@ to the tools:\tabular{lll}{
    btw_tool_describe_environment \tab environment \tab List and describe items in an environment. \cr
    btw_tool_list_files \tab files \tab List files in the current working directory or in subfolders in the current project directory. \cr
    btw_tool_read_text_file \tab files \tab Read an entire text file. \cr
+   btw_tool_read_current_editor \tab ide \tab Read the contents of the editor that is currently open in the user's IDE. \cr
 }
 }
 \examples{
@@ -49,6 +50,7 @@ Other Tools:
 \code{\link{btw_tool_get_installed_packages}()},
 \code{\link{btw_tool_list_files}()},
 \code{\link{btw_tool_package_docs}},
+\code{\link{btw_tool_read_current_editor}()},
 \code{\link{btw_tool_read_text_file}()}
 }
 \concept{Tools}

@@ -125,6 +125,9 @@ btw_tool_describe_environment <- function(
 )
 
 btw_item_with_description <- function(item_name, description, header = NULL) {
+  if (inherits(description, "AsIs")) {
+    return(description)
+  }
   if (inherits(description, "btw_user_prompt")) {
     return(c("## User", description))
   }

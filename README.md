@@ -53,6 +53,10 @@ of R stuff and copy it to your clipboard.
   reference and (if available) introductory vignette.
 - `btw("./path")` will read the lines of the file at that path (or list
   the files at that path if it’s a directory).
+- `btw("@current_file")` and `btw("@current_selection")` reads the
+  contents of the current editor or selection in RStudio, Positron, or
+  anywhere the [rstudioapi](https://rstudio.github.io/rstudioapi) is
+  supported.
 
 When passed multiple arguments, `btw()` will concatenate each
 description. For example, you could run:
@@ -87,6 +91,7 @@ The following would be attached to your clipboard:
       {"topic_id":"btw_tool_get_installed_packages","title":"Tool: Describe installed packages","aliases":["btw_tool_get_installed_packages"]},
       {"topic_id":"btw_tool_list_files","title":"Tool: List files","aliases":["btw_tool_list_files"]},
       {"topic_id":"btw_tool_package_docs","title":"Tool: Describe R package documentation","aliases":["btw_tool_package_docs","btw_tool_get_package_help_topics","btw_tool_get_help_page","btw_tool_get_available_vignettes_in_package","btw_tool_get_vignette_from_package"]},
+      {"topic_id":"btw_tool_read_current_editor","title":"Tool: Read current file","aliases":["btw_tool_read_current_editor"]},
       {"topic_id":"btw_tool_read_text_file","title":"Tool: Read a file","aliases":["btw_tool_read_text_file"]}
     ]
     ```
