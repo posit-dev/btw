@@ -27,6 +27,11 @@ topics using btw_tool_get_help_page().
 btw_this(&quot;?dplyr::across&quot;) includes the reference page for
 dplyr::across.
 
+&quot;@current_file&quot; or &quot;@current_selection&quot;
+When used in RStudio or Positron, or anywhere else that the
+rstudioapi is supported, btw(&quot;@current_file&quot;) includes the contents
+of the file currently open in the editor using
+rstudioapi::getSourceEditorContext().
 
 "><meta property="og:description" content="Character strings in btw_this() are used as shortcuts to many underlying
 methods. btw_this() detects specific formats in the input string to
@@ -56,6 +61,11 @@ topics using btw_tool_get_help_page().
 btw_this(&quot;?dplyr::across&quot;) includes the reference page for
 dplyr::across.
 
+&quot;@current_file&quot; or &quot;@current_selection&quot;
+When used in RStudio or Positron, or anywhere else that the
+rstudioapi is supported, btw(&quot;@current_file&quot;) includes the contents
+of the file currently open in the editor using
+rstudioapi::getSourceEditorContext().
 
 "></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -115,6 +125,11 @@ When the string starts with <code>?</code>, btw searches R's help
 topics using <code><a href="btw_tool_package_docs.html">btw_tool_get_help_page()</a></code>.</p><ul><li><p><code>btw_this("?dplyr::across")</code> includes the reference page for
 <code><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">dplyr::across</a></code>.</p></li>
 </ul></li>
+<li><p><code>"@current_file"</code> or <code>"@current_selection"</code> <br>
+When used in RStudio or Positron, or anywhere else that the
+<span class="pkg">rstudioapi</span> is supported, <code>btw("@current_file")</code> includes the contents
+of the file currently open in the editor using
+<code><a href="https://rstudio.github.io/rstudioapi/reference/rstudio-editors.html" class="external-link">rstudioapi::getSourceEditorContext()</a></code>.</p></li>
 </ul></div>
 
     <div class="section level2">

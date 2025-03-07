@@ -12,6 +12,7 @@ btw_tool_get_vignette_from_packagedocsGet a package vignette in plain text.
 btw_tool_describe_environmentenvironmentList and describe items in an environment.
 btw_tool_list_filesfilesList files in the current working directory or in subfolders in the current project directory.
 btw_tool_read_text_filefilesRead an entire text file.
+btw_tool_read_current_editorideRead the contents of the editor that is currently open in the user's IDE.
 
 
 "><meta property="og:description" content="The btw_register_tools() function equips an ellmer chat to interface with
@@ -27,6 +28,7 @@ btw_tool_get_vignette_from_packagedocsGet a package vignette in plain text.
 btw_tool_describe_environmentenvironmentList and describe items in an environment.
 btw_tool_list_filesfilesList files in the current working directory or in subfolders in the current project directory.
 btw_tool_read_text_filefilesRead an entire text file.
+btw_tool_read_current_editorideRead the contents of the editor that is currently open in the user's IDE.
 
 
 "></head><body>
@@ -65,7 +67,7 @@ btw_tool_read_text_filefilesRead an entire text file.
     <div class="ref-description section level2">
     <p>The <code>btw_register_tools()</code> function equips an ellmer chat to interface with
 your computational environment. Chats returned by this function have access
-to the tools:</p><table class="table table"><tr><td>Name</td><td>Group</td><td>Description</td></tr><tr><td>btw_tool_describe_data_frame</td><td>data</td><td>Show the data frame or table or get information about the structure of a data frame or table.</td></tr><tr><td>btw_tool_get_available_vignettes_in_package</td><td>docs</td><td>List available vignettes for an R package.</td></tr><tr><td>btw_tool_get_help_page</td><td>docs</td><td>Get help page from package.</td></tr><tr><td>btw_tool_get_installed_packages</td><td>docs</td><td>Displays the name and title of all installed R packages in json format.</td></tr><tr><td>btw_tool_get_package_help_topics</td><td>docs</td><td>Get available help topics for an R package.</td></tr><tr><td>btw_tool_get_vignette_from_package</td><td>docs</td><td>Get a package vignette in plain text.</td></tr><tr><td>btw_tool_describe_environment</td><td>environment</td><td>List and describe items in an environment.</td></tr><tr><td>btw_tool_list_files</td><td>files</td><td>List files in the current working directory or in subfolders in the current project directory.</td></tr><tr><td>btw_tool_read_text_file</td><td>files</td><td>Read an entire text file.</td></tr></table></div>
+to the tools:</p><table class="table table"><tr><td>Name</td><td>Group</td><td>Description</td></tr><tr><td>btw_tool_describe_data_frame</td><td>data</td><td>Show the data frame or table or get information about the structure of a data frame or table.</td></tr><tr><td>btw_tool_get_available_vignettes_in_package</td><td>docs</td><td>List available vignettes for an R package.</td></tr><tr><td>btw_tool_get_help_page</td><td>docs</td><td>Get help page from package.</td></tr><tr><td>btw_tool_get_installed_packages</td><td>docs</td><td>Displays the name and title of all installed R packages in json format.</td></tr><tr><td>btw_tool_get_package_help_topics</td><td>docs</td><td>Get available help topics for an R package.</td></tr><tr><td>btw_tool_get_vignette_from_package</td><td>docs</td><td>Get a package vignette in plain text.</td></tr><tr><td>btw_tool_describe_environment</td><td>environment</td><td>List and describe items in an environment.</td></tr><tr><td>btw_tool_list_files</td><td>files</td><td>List files in the current working directory or in subfolders in the current project directory.</td></tr><tr><td>btw_tool_read_text_file</td><td>files</td><td>Read an entire text file.</td></tr><tr><td>btw_tool_read_current_editor</td><td>ide</td><td>Read the contents of the editor that is currently open in the user's IDE.</td></tr></table></div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
@@ -99,6 +101,7 @@ place. The <code>chat</code> input is returned invisibly.</p>
 <code><a href="btw_tool_get_installed_packages.html">btw_tool_get_installed_packages</a>()</code>,
 <code><a href="btw_tool_list_files.html">btw_tool_list_files</a>()</code>,
 <code><a href="btw_tool_package_docs.html">btw_tool_package_docs</a></code>,
+<code><a href="btw_tool_read_current_editor.html">btw_tool_read_current_editor</a>()</code>,
 <code><a href="btw_tool_read_text_file.html">btw_tool_read_text_file</a>()</code></p></div>
     </div>
 
