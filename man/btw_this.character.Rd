@@ -50,7 +50,7 @@ topics using \code{\link[=btw_tool_get_help_page]{btw_tool_get_help_page()}}.
 \item \code{btw_this("?dplyr::across")} includes the reference page for
 \code{dplyr::across}.
 }
-\item \code{"@current_file"} \cr
+\item \code{"@current_file"} or \code{"@current_selection"} \cr
 When used in RStudio or Positron, or anywhere else that the
 \pkg{rstudioapi} is supported, \code{btw("@current_file")} includes the contents
 of the file currently open in the editor using

@@ -76,7 +76,7 @@ as_btw_capture <- function(x) {
 #'   * `btw_this("?dplyr::across")` includes the reference page for
 #'     `dplyr::across`.
 #'
-#' * `"@current_file"` \cr
+#' * `"@current_file"` or `"@current_selection"` \cr
 #'   When used in RStudio or Positron, or anywhere else that the
 #'   \pkg{rstudioapi} is supported, `btw("@current_file")` includes the contents
 #'   of the file currently open in the editor using

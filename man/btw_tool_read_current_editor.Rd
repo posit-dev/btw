@@ -4,7 +4,7 @@
 \alias{btw_tool_read_current_editor}
 \title{Tool: Read current file}
 \usage{
-btw_tool_read_current_editor(consent = FALSE)
+btw_tool_read_current_editor(selection = TRUE, consent = FALSE)
 }
 \arguments{
 \item{consent}{Boolean indicating whether the user has consented to reading
