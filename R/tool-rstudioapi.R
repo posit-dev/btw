@@ -31,14 +31,14 @@ btw_tool_read_current_editor <- function(selection = TRUE, consent = FALSE) {
   path <- fs::path_rel(cf$path)
 
   if (length(cf$selection) == 1 && !nzchar(cf$selection[[1]]$text)) {
-    return(
-      c(
-        sprintf('FILE: %s', path),
-        "```",
-        cf$contents,
-        "```\n"
+    res <- c(
+      sprintf('FILE: `%s`', path),
+      md_code_block(
+        type = fs::path_ext(path),
+        cf$contents
       )
     )
+    return(I(res))
   }
 
   res <- c()
@@ -60,13 +60,14 @@ btw_tool_read_current_editor <- function(selection = TRUE, consent = FALSE) {
         line_column(selection$range$start),
         line_column(selection$range$end)
       ),
-      "```",
-      strsplit(selection$text, "\n")[[1]],
-      "```\n"
+      md_code_block(
+        type = fs::path_ext(path),
+        strsplit(selection$text, "\n")[[1]]
+      )
     )
   }
 
-  res
+  I(res)
 }
 
 .btw_add_to_tools(
