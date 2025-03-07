@@ -26,13 +26,13 @@ btw_tool_read_current_editor <- function(selection = TRUE, consent = FALSE) {
     )
   }
 
-  if (!rstudioapi::hasFun("getSourceEditorContext")) {
+  if (!rstudioapi_has_source_editor_context()) {
     cli::cli_abort(
       "{.field @current_file} only works in an IDE where the {.pkg rstudioapi} is available."
     )
   }
 
-  cf <- rstudioapi::getSourceEditorContext()
+  cf <- rstudioapi_get_source_editor_context()
   path <- fs::path_rel(cf$path)
 
   has_no_selection <-
@@ -82,7 +82,7 @@ btw_tool_read_current_editor <- function(selection = TRUE, consent = FALSE) {
   name = "btw_tool_read_current_editor",
   group = "ide",
   tool = function() {
-    if (!rstudioapi::hasFun("getSourceEditorContext")) return(NULL)
+    if (!rstudioapi_has_source_editor_context()) return(NULL)
     ellmer::tool(
       btw_tool_read_current_editor,
       paste(
@@ -105,3 +105,13 @@ btw_tool_read_current_editor <- function(selection = TRUE, consent = FALSE) {
     )
   }
 )
+
+# nocov start (wrappers for testing)
+rstudioapi_has_source_editor_context <- function() {
+  rstudioapi::hasFun("getSourceEditorContext")
+}
+
+rstudioapi_get_source_editor_context <- function() {
+  rstudioapi::getSourceEditorContext()
+}
+# nocov end
