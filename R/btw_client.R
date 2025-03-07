@@ -60,7 +60,5 @@ btw_client <- function(..., client = NULL) {
 #' @export
 btw_app <- function(..., client = NULL) {
   client <- btw_client(client = client, ...)
-
-  shiny::onStop(function() client)
   ellmer::live_browser(client)
 }
