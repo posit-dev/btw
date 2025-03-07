@@ -17,6 +17,9 @@
 #' @family Tools
 #' @export
 btw_tool_read_current_editor <- function(selection = TRUE, consent = FALSE) {
+  check_bool(selection)
+  check_bool(consent)
+
   if (!isTRUE(consent)) {
     cli::cli_abort(
       "Please ask the user for consent before reading from the editor."
@@ -32,7 +35,10 @@ btw_tool_read_current_editor <- function(selection = TRUE, consent = FALSE) {
   cf <- rstudioapi::getSourceEditorContext()
   path <- fs::path_rel(cf$path)
 
-  if (length(cf$selection) == 1 && !nzchar(cf$selection[[1]]$text)) {
+  has_no_selection <-
+    length(cf$selection) == 1 && !nzchar(cf$selection[[1]]$text)
+
+  if (!selection || has_no_selection) {
     res <- c(
       sprintf('FILE: `%s`', path),
       md_code_block(
