@@ -73,15 +73,14 @@ You can also just call `btw()` with no inputs, which will describe the objects i
 
 ### Supercharging assistants
 
-`btw_register_tools()` equips LLM chats with all of the same capabilities: peruse
+`btw_client()` equips LLM chats with all of the same capabilities: peruse
 documentation, check out objects in your R environment, and explore your
 working directory. Use it by calling the function on an existing ellmer
 chat:
 
 ```{r}
 #| eval: false
-ch <- ellmer::chat_claude()
-ch <- btw_register_tools(ch)
+ch <- btw_client()
 
 ch$chat("Hey!")
 ```
@@ -99,4 +98,16 @@ What would you like to know about? Feel free to ask a specific question, and I'l
 use the available tools to help you find the information you need.
 ```
 
-Each of the individual tools registered by `btw_register_tools()` are themselves exported if you want to pick and choose which ones to use.
+`btw_client()` uses `ellmer::chat_claude()` by default, or you can provide your own chat object via the `client` argument or by setting the `btw.chat_client` option:
+
+```{r}
+#| eval: false
+
+ch <- btw_client(client = ellmer::chat_ollama(model = "llama3.1:8b"))
+
+# same as above
+options(btw.chat_client = ellmer::chat_ollama(model = "llama3.1:8b"))
+ch <- btw_client()
+```
+
+Alternatively, you can call `btw_app()` to jump straight into a Shiny chat app, or you can use `btw_register_tools()` to add btw tools to an existing chat interface. Each of the individual tools registered by `btw_register_tools()` are themselves exported, and can be selected via the `include` argument of `btw_register_tools()` (which can also be passed through `btw_client()` or `btw_app()`).
