@@ -1,7 +1,10 @@
-#' Create an btw-enhanced ellmer chat client
+#' Create a btw-enhanced ellmer chat client
 #'
 #' Creates an [ellmer::Chat] client, enhanced with the tools from
-#' [btw_register_tools()].
+#' [btw_register_tools()]. Use `btw_chat()` to create the chat client for
+#' general or interactive use at the console, or `btw_app()` to create a chat
+#' client and launch a Shiny app for chatting with a btw-enhanced LLM in your
+#' local workspace.
 #'
 #' @examples
 #' if (interactive()) {

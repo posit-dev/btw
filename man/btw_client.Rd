@@ -3,7 +3,7 @@
 \name{btw_client}
 \alias{btw_client}
 \alias{btw_app}
-\title{Create an btw-enhanced ellmer chat client}
+\title{Create a btw-enhanced ellmer chat client}
 \usage{
 btw_client(..., client = NULL)
 
@@ -24,7 +24,10 @@ the chat object with the messages added during the chat session.
 }
 \description{
 Creates an \link[ellmer:Chat]{ellmer::Chat} client, enhanced with the tools from
-\code{\link[=btw_register_tools]{btw_register_tools()}}.
+\code{\link[=btw_register_tools]{btw_register_tools()}}. Use \code{btw_chat()} to create the chat client for
+general or interactive use at the console, or \code{btw_app()} to create a chat
+client and launch a Shiny app for chatting with a btw-enhanced LLM in your
+local workspace.
 }
 \section{Functions}{
 \itemize{
