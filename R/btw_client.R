@@ -16,11 +16,12 @@
 #'   chat$chat("How can I replace `stop()` calls with functions from the cli package?")
 #' }
 #'
-#' @param ... Additional arguments passed to [btw_register_tools()] to control
-#'   which tools are added to the chat client.
+#' @param ... Objects and documentation to be included as context in the chat,
+#'   via [btw()].
 #' @param client An [ellmer::Chat] client, defaults to [ellmer::chat_claude()].
 #'   You can use the `btw.chat_client` option to set a default client for new
 #'   `btw_client()` calls.
+#' @inheritParams btw_register_tools
 #'
 #' @return Returns an [ellmer::Chat] object with additional tools registered by
 #'   [btw_register_tools()]. `btw_app()` returns the chat object invisibly, and
@@ -28,7 +29,7 @@
 #'
 #' @describeIn btw_client Create a btw-enhanced [ellmer::Chat] client
 #' @export
-btw_client <- function(..., client = NULL) {
+btw_client <- function(..., client = NULL, include = NULL) {
   if (is.null(client)) {
     default <- getOption("btw.chat_client")
     if (is.null(default)) {
@@ -44,6 +45,7 @@ btw_client <- function(..., client = NULL) {
   sys_prompt <- client$get_system_prompt()
   sys_prompt <- c(
     sys_prompt,
+    "",
     paste(
       "You have access to tools that help you interact with the user's R session and workspace.",
       "Use these tools when they are helpful and appropriate to complete the user's request.",
@@ -52,8 +54,22 @@ btw_client <- function(..., client = NULL) {
       "It is okay to answer the user without relying on these tools."
     )
   )
-  client$set_system_prompt(sys_prompt)
-  btw_register_tools(client, ...)
+  client$set_system_prompt(paste(sys_prompt, collapse = "\n"))
+  btw_register_tools(client, include = include)
+
+  dots <- dots_list(..., .named = TRUE)
+
+  if (length(dots)) {
+    turns <- client$get_turns()
+    turns <- c(
+      turns,
+      ellmer::Turn(
+        "user",
+        contents = list(btw(!!!dots))
+      )
+    )
+    client$set_turns(turns)
+  }
 
   client
 }
@@ -61,7 +77,7 @@ btw_client <- function(..., client = NULL) {
 #' @describeIn btw_client Create a btw-enhanced client and launch a Shiny app to
 #'   chat
 #' @export
-btw_app <- function(..., client = NULL) {
-  client <- btw_client(client = client, ...)
+btw_app <- function(..., client = NULL, include = NULL) {
+  client <- btw_client(client = client, ..., include = include)
   ellmer::live_browser(client)
 }
