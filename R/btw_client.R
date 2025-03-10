@@ -6,6 +6,13 @@
 #' client and launch a Shiny app for chatting with a btw-enhanced LLM in your
 #' local workspace.
 #'
+#' ## Client Options
+#'
+#' * `btw.chat_client`: The [ellmer::Chat] client to use as the basis for new
+#'   `btw_client()` or `btw_app()` chats.
+#' * `btw.chat_include`: The btw tools to include by default when starting a new
+#'   btw chat, see [btw_register_tools()] for details.
+#'
 #' @examples
 #' if (interactive()) {
 #'   withr::local_options(list(
@@ -41,6 +48,8 @@ btw_client <- function(..., client = NULL, include = NULL) {
   } else {
     check_inherits(client, "Chat")
   }
+
+  include <- if (is.null(include)) getOption("btw.chat_include")
 
   sys_prompt <- client$get_system_prompt()
   sys_prompt <- c(

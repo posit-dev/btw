@@ -33,6 +33,16 @@ general or interactive use at the console, or \code{btw_app()} to create a chat
 client and launch a Shiny app for chatting with a btw-enhanced LLM in your
 local workspace.
 }
+\details{
+\subsection{Client Options}{
+\itemize{
+\item \code{btw.chat_client}: The \link[ellmer:Chat]{ellmer::Chat} client to use as the basis for new
+\code{btw_client()} or \code{btw_app()} chats.
+\item \code{btw.chat_include}: The btw tools to include by default when starting a new
+btw chat, see \code{\link[=btw_register_tools]{btw_register_tools()}} for details.
+}
+}
+}
 \section{Functions}{
 \itemize{
 \item \code{btw_client()}: Create a btw-enhanced \link[ellmer:Chat]{ellmer::Chat} client

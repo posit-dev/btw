@@ -184,8 +184,7 @@ objects in your global environment.
 
 `btw_client()` equips LLM chats with all of the same capabilities:
 peruse documentation, check out objects in your R environment, and
-explore your working directory. Use it by calling the function on an
-existing ellmer chat:
+explore your working directory.
 
 ``` r
 ch <- btw_client()
@@ -204,21 +203,53 @@ ch$chat("Hey!")
     What would you like to know about? Feel free to ask a specific question, and I'll
     use the available tools to help you find the information you need.
 
-`btw_client()` uses `ellmer::chat_claude()` by default, or you can
-provide your own chat object via the `client` argument or by setting the
-`btw.chat_client` option:
+You can also provide `btw_client()` with objects and documentation to
+include as context in the chat:
 
 ``` r
-ch <- btw_client(client = ellmer::chat_ollama(model = "llama3.1:8b"))
+ch <- btw_client(mtcars)
+ch$chat("Write base R code to summarize average mpg of cars with 4-6 cylinders.")
+```
 
-# same as above
+    I'll help you write base R code to calculate the average MPG for cars with 4-6
+    cylinders using the mtcars dataset.
+
+    Here's the code:
+
+    ```R
+    mean(mtcars$mpg[mtcars$cyl >= 4 & mtcars$cyl <= 6])
+    ```
+
+    Alternatively, you could also write it with `subset()` from base R:
+
+    ```R
+    mean(subset(mtcars, cyl >= 4 & cyl <= 6)$mpg)
+    ```
+
+    Both approaches will give you the average MPG for cars with 4-6 cylinders.
+    Given the data shown in the context, this will include cars with 4 and 6
+    cylinders (as the `cyl` column only contains values 4, 6, and 8).
+
+`btw_client()` uses `ellmer::chat_claude()` by default, or you can
+customize the chat client used in one of two ways:
+
+- Set the `btw.chat_client` option (possibly in your `.Rprofile` with
+  `usethis::edit_r_profile()`), or
+- Provide your own chat object via the `client` argument.
+
+``` r
 options(btw.chat_client = ellmer::chat_ollama(model = "llama3.1:8b"))
 ch <- btw_client()
+
+# same as above
+ch <- btw_client(client = ellmer::chat_ollama(model = "llama3.1:8b"))
 ```
 
 Alternatively, you can call `btw_app()` to jump straight into a Shiny
-chat app, or you can use `btw_register_tools()` to add btw tools to an
-existing chat interface. Each of the individual tools registered by
-`btw_register_tools()` are themselves exported, and can be selected via
-the `include` argument of `btw_register_tools()` (which can also be
-passed through `btw_client()` or `btw_app()`).
+chat app.
+
+For fully customized chat clients, you can use `btw_register_tools()` to
+add btw tools to an existing chat interface. Each of the individual
+tools registered by `btw_register_tools()` are themselves exported, and
+can be selected via the `include` argument of `btw_register_tools()`
+(`include` is also available in `btw_client()` or `btw_app()`).
