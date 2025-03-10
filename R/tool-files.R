@@ -108,7 +108,10 @@ btw_tool_read_text_file <- function(path, max_lines = 1000) {
     )
   }
 
-  readLines(path, warn = FALSE, n = max_lines)
+  md_code_block(
+    fs::path_ext(path),
+    readLines(path, warn = FALSE, n = max_lines)
+  )
 }
 
 .btw_add_to_tools(
