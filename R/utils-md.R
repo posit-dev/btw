@@ -16,5 +16,12 @@ md_table <- function(df) {
 }
 
 md_code_block <- function(type = "", ...) {
-  c(paste0("```", type), ..., "```")
+  for (n_ticks in 3:20) {
+    ticks <- paste(rep("`", n_ticks), collapse = "")
+    if (any(grepl(ticks, c(...), fixed = TRUE))) {
+      next
+    }
+    break
+  }
+  c(paste0(ticks, type), ..., ticks)
 }
