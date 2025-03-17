@@ -141,16 +141,7 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
     }
   }
 
-  x_expr <- tryCatch(parse_expr(x), error = function(err) NULL)
-
-  if (is.null(x_expr)) return(btw_user_prompt(x))
-
-  tryCatch(
-    inject(btw_this(!!x_expr), env = caller_env),
-    error = function(err) {
-      inject(capture_print(!!x))
-    }
-  )
+  btw_user_prompt(x)
 }
 
 #' @export
@@ -239,11 +230,20 @@ btw_ignore <- function() {
 }
 
 btw_user_prompt <- function(...) {
-  structure(c(...), class = c("btw_user_prompt", "btw_ignore"))
+  structure(c(...), class = c("btw_user_prompt"))
 }
 
 # https://github.com/RConsortium/S7/issues/501#issuecomment-2494609728
 #' @rawNamespace S3method(base::print, btw_ignore)
 print.btw_ignore <- function(x, ...) {
   invisible(x)
+}
+
+btw_returns_character <- function(...) {
+  structure(c(...), class = c("btw_returns_character", "character"))
+}
+
+#' @export
+btw_this.btw_returns_character <- function(x, ...) {
+  capture_print(unclass(x))
 }

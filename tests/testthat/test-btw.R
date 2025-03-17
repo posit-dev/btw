@@ -16,3 +16,11 @@ test_that("btw() with prompt stings", {
     "## User\nfirst thing\nsecond thing"
   )
 })
+
+test_that("btw() works with vars that return characters of the same name", {
+  beep <- "beep"
+  expect_equal(
+    format(btw(beep)),
+    "## Context\n\n```r\nbeep\n#> [1] \"beep\"\n```"
+  )
+})
