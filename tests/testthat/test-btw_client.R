@@ -32,7 +32,7 @@ test_that("btw_client() works basic case", {
   )
 })
 
-test_that("btw_client() works with `btw.chat_client` option", {
+test_that("btw_client() modifies `client` argument in place", {
   withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
 
   client <- ellmer::chat_claude(
@@ -42,4 +42,37 @@ test_that("btw_client() works with `btw.chat_client` option", {
   chat <- btw_client(client = client)
   # Modifies in place
   expect_identical(chat, client)
+})
+
+test_that("btw_client() adds `.btw` context file to system prompt", {
+  withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
+  wd <- withr::local_tempdir(
+    tmpdir = file.path(tempdir(), "btw-proj", "subtask")
+  )
+  withr::local_dir(wd)
+
+  writeLines(
+    con = file.path(wd, "..", ".btw"),
+    c(
+      "* Prefer solutions that use {tidyverse}",
+      "* Always use `=` for assignment",
+      "* Always use the native base-R pipe `|>` for piped expressions"
+    )
+  )
+
+  chat <- btw_client(
+    client = ellmer::chat_claude(
+      system_prompt = "I like to have my own system prompt."
+    )
+  )
+
+  expect_match(chat$get_system_prompt(), "# Project Context", fixed = TRUE)
+  expect_match(
+    chat$get_system_prompt(),
+    "Always use `=` for assignment",
+    fixed = TRUE
+  )
+
+  skip_if_not_macos()
+  expect_snapshot(print(chat))
 })

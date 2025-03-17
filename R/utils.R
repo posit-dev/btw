@@ -39,3 +39,16 @@ as_json_rowwise <- function(x, ...) {
   json <- sub("\\}\\]$", "}\n]", json)
   gsub("\\},\\{", "},\n  {", json)
 }
+
+path_find_in_project <- function(filename, dir = getwd()) {
+  if (file.exists(file.path(dir, filename))) {
+    return(normalizePath(file.path(dir, filename)))
+  }
+
+  root_files <- c("DESCRIPTION", ".git", ".Rbuildignore", ".vscode", ".here")
+
+  if (any(file.exists(file.path(dir, root_files)))) return(NULL)
+  if (dirname(dir) == dir) return(NULL)
+
+  path_find_in_project(filename, dirname(dir))
+}

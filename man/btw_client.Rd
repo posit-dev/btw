@@ -32,8 +32,24 @@ Creates an \link[ellmer:Chat]{ellmer::Chat} client, enhanced with the tools from
 general or interactive use at the console, or \code{btw_app()} to create a chat
 client and launch a Shiny app for chatting with a btw-enhanced LLM in your
 local workspace.
+\subsection{Project Context}{
+
+You can keep track of project-specific rules, guidance and context by adding
+a \code{.btw} file in your project directory. Any time you start a chat client
+with \code{btw_client()} or launch a chat session with \code{btw_app()}, btw will
+automatically find and include the contents of the \code{.btw} file in your chat.
+
+Use the \code{.btw} file to inform the LLM of your preferred code style, to
+provide domain-specific terminology or definitions, to establish project
+documentation, goals and constraints, to include reference materials such or
+technical specifications, or more. Storing this kind of information in the
+\code{.btw} file may help you avoid repeating yourself and can be used to maintain
+coherence across many chat sessions.
+
+The \code{.btw} file, when present, is included as part of the system prompt for
+your chat conversation. You can structure the file in any way you wish.
 }
-\details{
+
 \subsection{Client Options}{
 \itemize{
 \item \code{btw.chat_client}: The \link[ellmer:Chat]{ellmer::Chat} client to use as the basis for new
