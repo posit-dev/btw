@@ -62,7 +62,7 @@ btw_tool_describe_environment <- function(
     item <- env_get(environment, item_name)
 
     if (identical(class(item), "character")) {
-      # Only string literals passed through btw() hit `btw_this.character().
+      # Only string literals passed through btw() hit `btw_this.character()`.
       # We rely on `dots_list()` turning `"foo"` into `list('"foo"' = "foo")`.
       if (!identical(item_name, sprintf('"%s"', item))) {
         item <- btw_returns_character(item)
