@@ -251,5 +251,6 @@ chat app.
 For fully customized chat clients, you can use `btw_register_tools()` to
 add btw tools to an existing chat interface. Each of the individual
 tools registered by `btw_register_tools()` are themselves exported, and
-can be selected via the `include` argument of `btw_register_tools()`
-(`include` is also available in `btw_client()` or `btw_app()`).
+can be selected via the `include` argument of `btw_register_tools()` (or
+the `tools` argument of `btw_client()` or `btw_app()`, which is
+equivalent to `include`).

@@ -91,7 +91,7 @@ test_that("btw_client() uses `.btw` context file for client settings", {
       "provider: openai",
       "model: gpt-4o",
       "system_prompt: I like to have my own system prompt",
-      "include: docs",
+      "tools: docs",
       "---",
       "",
       "* Prefer solutions that use {tidyverse}",

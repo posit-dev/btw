@@ -46,10 +46,13 @@
 #' @param client An [ellmer::Chat] client, defaults to [ellmer::chat_claude()].
 #'   You can use the `btw.chat_client` option to set a default client for new
 #'   `btw_client()` calls.
+#' @param tools Names of tools or tool groups to include when registering
+#'   tools, e.g. `include = "docs"` to include only the documentation related
+#'   tools, or `include = c("data", "docs", "environment")`, etc. Equivalent to
+#'   the `include` argument of [btw_register_tools()].
 #' @param path_btw A path to a `.btw` project context file. If `NULL`, btw will
 #'   find a project-specific `.btw` file in the parents of the current working
 #'   directory.
-#' @inheritParams btw_register_tools
 #'
 #' @return Returns an [ellmer::Chat] object with additional tools registered by
 #'   [btw_register_tools()]. `btw_app()` returns the chat object invisibly, and
@@ -57,8 +60,8 @@
 #'
 #' @describeIn btw_client Create a btw-enhanced [ellmer::Chat] client
 #' @export
-btw_client <- function(..., client = NULL, include = NULL, path_btw = NULL) {
-  config <- btw_client_config(client, include, config = read_btw_file(path_btw))
+btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
+  config <- btw_client_config(client, tools, config = read_btw_file(path_btw))
 
   client <- config$client
 
@@ -86,8 +89,8 @@ btw_client <- function(..., client = NULL, include = NULL, path_btw = NULL) {
   )
   client$set_system_prompt(paste(sys_prompt, collapse = "\n"))
 
-  maybe_quiet <- if (is.null(include)) suppressMessages else I
-  maybe_quiet(btw_register_tools(client, include = config$include))
+  maybe_quiet <- if (is.null(tools)) suppressMessages else I
+  maybe_quiet(btw_register_tools(client, include = config$tools))
 
   dots <- dots_list(..., .named = TRUE)
 
@@ -109,21 +112,21 @@ btw_client <- function(..., client = NULL, include = NULL, path_btw = NULL) {
 #' @describeIn btw_client Create a btw-enhanced client and launch a Shiny app to
 #'   chat
 #' @export
-btw_app <- function(..., client = NULL, include = NULL, path_btw = NULL) {
+btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
   client <- btw_client(
     client = client,
     ...,
-    include = include,
+    tools = tools,
     path_btw = path_btw
   )
   ellmer::live_browser(client)
 }
 
-btw_client_config <- function(client = NULL, include = NULL, config = list()) {
+btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
   config$include <-
-    include %||%
-    getOption("btw.chat_include") %||%
-    config$include
+    tools %||%
+    getOption("btw.chat_tools") %||%
+    config$tools
 
   if (!is.null(client)) {
     check_inherits(client, "Chat")
@@ -141,7 +144,7 @@ btw_client_config <- function(client = NULL, include = NULL, config = list()) {
   if (!is.null(config$provider)) {
     chat_args <- config[setdiff(
       names(config),
-      c("include", "provider", "btw_context")
+      c("tools", "provider", "btw_context")
     )]
     chat_fn <- gsub(" ", "_", tolower(config$provider))
     if (!grepl("^chat_", chat_fn)) {
