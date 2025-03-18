@@ -1,11 +1,11 @@
 test_that("btw_this.function()", {
-  expect_equal(btw_this('dplyr::mutate'), btw_this(dplyr::mutate))
+  expect_equal(btw_this('?dplyr::mutate'), btw_this(dplyr::mutate))
 })
 
 test_that("btw() with package functions", {
   expect_equal(
-    format(btw(dplyr::mutate))[-1],
-    format(btw('dplyr::mutate'))[-1]
+    sub("dplyr::mutate", '"?dplyr::mutate"', format(btw(dplyr::mutate))),
+    format(btw('?dplyr::mutate'))
   )
 })
 
@@ -27,5 +27,12 @@ test_that("btw_this.btw_docs_topic()", {
   expect_equal(
     btw_this(?dplyr::mutate),
     btw_this("?dplyr::mutate")
+  )
+})
+
+test_that("btw_this() handles literal strings", {
+  expect_equal(
+    as.character(btw_this("letters[3]")),
+    "letters[3]"
   )
 })
