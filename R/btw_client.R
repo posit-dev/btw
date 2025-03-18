@@ -24,6 +24,32 @@
 #' The `.btw` file, when present, is included as part of the system prompt for
 #' your chat conversation. You can structure the file in any way you wish.
 #'
+#' You can also use the `.btw` file to choose default chat settings for your
+#' project in a YAML block at the top of the file. In this YAML block you can
+#' choose the default `provider`, `model` and `tools` for `btw_client()` or
+#' `btw_app()`. `provider` chooses the `ellmer::chat_*()` function, e.g.
+#' `provider: openai` or `provider: chat_openai` to use [ellmer::chat_openai()].
+#' `tools` chooses which btw tools are included in the chat, and all other
+#' values are passed to the `ellmer::chat_*()` constructor, e.g.
+#' `model: gpt-4o`, `seed: 42`, or `echo: all``.
+#'
+#' Here's an example `.btw` file:
+#'
+#' ````
+#' ---
+#' provider: claude
+#' model: claude-3-7-sonnet-20250219
+#' tools: [data, docs, environment]
+#' ---
+#'
+#' Follow these important style rules for any R code in this project:
+#'
+#' * Prefer solutions that use {tidyverse}
+#' * Always use `<-` for assignment
+#' * Always use the native base-R pipe `|>` for piped expressions
+#'
+#' ````
+#'
 #' ## Client Options
 #'
 #' * `btw.chat_client`: The [ellmer::Chat] client to use as the basis for new
@@ -67,7 +93,15 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
 
   sys_prompt <- client$get_system_prompt()
   sys_prompt <- c(
-    sys_prompt,
+    "# Tools",
+    "",
+    paste(
+      "You have access to tools that help you interact with the user's R session and workspace.",
+      "Use these tools when they are helpful and appropriate to complete the user's request.",
+      "These tools are available to augment your ability to help the user,",
+      "but you are smart and capable and can answer many things on your own.",
+      "It is okay to answer the user without relying on these tools."
+    ),
     "",
     if (!is.null(config$btw_context)) {
       c(
@@ -77,15 +111,7 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
         ""
       )
     },
-    "# Tools",
-    "",
-    paste(
-      "You have access to tools that help you interact with the user's R session and workspace.",
-      "Use these tools when they are helpful and appropriate to complete the user's request.",
-      "These tools are available to augment your ability to help the user,",
-      "but you are smart and capable and can answer many things on your own.",
-      "It is okay to answer the user without relying on these tools."
-    )
+    sys_prompt
   )
   client$set_system_prompt(paste(sys_prompt, collapse = "\n"))
 

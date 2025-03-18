@@ -53,6 +53,31 @@ coherence across many chat sessions.
 
 The \code{.btw} file, when present, is included as part of the system prompt for
 your chat conversation. You can structure the file in any way you wish.
+
+You can also use the \code{.btw} file to choose default chat settings for your
+project in a YAML block at the top of the file. In this YAML block you can
+choose the default \code{provider}, \code{model} and \code{tools} for \code{btw_client()} or
+\code{btw_app()}. \code{provider} chooses the \verb{ellmer::chat_*()} function, e.g.
+\code{provider: openai} or \code{provider: chat_openai} to use \code{\link[ellmer:chat_openai]{ellmer::chat_openai()}}.
+\code{tools} chooses which btw tools are included in the chat, and all other
+values are passed to the \verb{ellmer::chat_*()} constructor, e.g.
+\verb{model: gpt-4o}, \code{seed: 42}, or `echo: all``.
+
+Here's an example \code{.btw} file:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{---
+provider: claude
+model: claude-3-7-sonnet-20250219
+tools: [data, docs, environment]
+---
+
+Follow these important style rules for any R code in this project:
+
+* Prefer solutions that use \{tidyverse\}
+* Always use `<-` for assignment
+* Always use the native base-R pipe `|>` for piped expressions
+
+}\if{html}{\out{</div>}}
 }
 
 \subsection{Client Options}{
