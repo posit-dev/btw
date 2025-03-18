@@ -151,20 +151,11 @@ btw_this.Chat <- function(x, ...) {
 
 #' @export
 btw_this.function <- function(x, ...) {
-  x_text <- deparse(substitute(x))
-  if (is_namespace(fn_env(x))) {
-    # packaged function
-    package <- sub(
-      "namespace:",
-      "",
-      env_name(fn_env(x)),
-      fixed = TRUE
-    )
-    fn_name <- sub("^([^:]*::)?", "", x_text)
-    return(btw_this(as_btw_docs_topic(package, fn_name)))
-  }
+  fn_def <- capture.output(print(x))
 
-  strsplit(expr_text(fn_body(x), width = 80), "\n")[[1]]
+  fn_def <- fn_def[!grepl("^<(bytecode|environment): ", fn_def)]
+
+  md_code_block("r", fn_def)
 }
 
 #' @export
