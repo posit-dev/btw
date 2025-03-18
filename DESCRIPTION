@@ -30,6 +30,7 @@ Imports:
     rmarkdown,
     rstudioapi,
     S7,
+    sessioninfo,
     skimr,
     tibble,
     withr

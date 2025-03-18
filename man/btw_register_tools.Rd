@@ -32,6 +32,7 @@ to the tools:\tabular{lll}{
    btw_tool_list_files \tab files \tab List files in the current working directory or in subfolders in the current project directory. \cr
    btw_tool_read_text_file \tab files \tab Read an entire text file. \cr
    btw_tool_read_current_editor \tab ide \tab Read the contents of the editor that is currently open in the user's IDE. \cr
+   btw_tool_describe_platform \tab session \tab Describes the R version, operating system, language and locale settings for the user's system. \cr
 }
 }
 \examples{
@@ -47,6 +48,7 @@ btw_register_tools(ch)
 Other Tools: 
 \code{\link{btw_tool_describe_data_frame}()},
 \code{\link{btw_tool_describe_environment}()},
+\code{\link{btw_tool_describe_platform}()},
 \code{\link{btw_tool_get_installed_packages}()},
 \code{\link{btw_tool_list_files}()},
 \code{\link{btw_tool_package_docs}},

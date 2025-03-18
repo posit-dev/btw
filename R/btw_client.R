@@ -94,6 +94,10 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
 
   sys_prompt <- client$get_system_prompt()
   sys_prompt <- c(
+    "# User System",
+    "",
+    btw_tool_describe_platform(),
+    "",
     if (!identical(config$tools, "none")) {
       c(
         "# Tools",

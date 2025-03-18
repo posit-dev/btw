@@ -5,6 +5,16 @@
     Output
       <Chat turns=1 tokens=0/0>
       -- system ----------------------------------------------------------------------
+      # User System
+      
+      The user is running R VERSION on a OPERATING SYSTEM system 
+      (SYSTEM VERSION). The user interface being used is RStudio. The system's 
+      language setting is C, with locale collation rules set to 'C' and character 
+      encoding set to 'en_US.UTF-8'. The system is configured to use the 
+      'TIMEZONE' timezone. The current date is DAY OF WEEK, MONTH DAY, YEAR 
+      (YYYY-MM-DD). When processing date-related queries or timezone-specific 
+      information, please account for these system settings.
+      
       # Tools
       
       You have access to tools that help you interact with the user's R session and 
@@ -24,6 +34,16 @@
     Output
       <Chat turns=1 tokens=0/0>
       -- system ----------------------------------------------------------------------
+      # User System
+      
+      The user is running R VERSION on a OPERATING SYSTEM system 
+      (SYSTEM VERSION). The user interface being used is RStudio. The system's 
+      language setting is C, with locale collation rules set to 'C' and character 
+      encoding set to 'en_US.UTF-8'. The system is configured to use the 
+      'TIMEZONE' timezone. The current date is DAY OF WEEK, MONTH DAY, YEAR 
+      (YYYY-MM-DD). When processing date-related queries or timezone-specific 
+      information, please account for these system settings.
+      
       # Tools
       
       You have access to tools that help you interact with the user's R session and 
@@ -49,6 +69,16 @@
     Output
       <Chat turns=1 tokens=0/0>
       -- system ----------------------------------------------------------------------
+      # User System
+      
+      The user is running R VERSION on a OPERATING SYSTEM system 
+      (SYSTEM VERSION). The user interface being used is RStudio. The system's 
+      language setting is C, with locale collation rules set to 'C' and character 
+      encoding set to 'en_US.UTF-8'. The system is configured to use the 
+      'TIMEZONE' timezone. The current date is DAY OF WEEK, MONTH DAY, YEAR 
+      (YYYY-MM-DD). When processing date-related queries or timezone-specific 
+      information, please account for these system settings.
+      
       # Tools
       
       You have access to tools that help you interact with the user's R session and 

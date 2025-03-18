@@ -1,5 +1,7 @@
 test_that("btw_client() works with `btw.chat_client` option", {
+  withr::local_envvar(list(POSITRON = "", RSTUDIO = "1"))
   withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
+  mock_platform_date()
 
   local_options(
     btw.chat_client = ellmer::chat_claude(
@@ -16,7 +18,7 @@ test_that("btw_client() works with `btw.chat_client` option", {
   )
 
   skip_if_not_macos()
-  expect_snapshot(print(chat))
+  expect_snapshot(print(chat), transform = scrub_system_info)
 })
 
 test_that("btw_client() works basic case", {
@@ -45,7 +47,10 @@ test_that("btw_client() modifies `client` argument in place", {
 })
 
 test_that("btw_client() adds `.btw` context file to system prompt", {
+  withr::local_envvar(list(POSITRON = "", RSTUDIO = "1"))
   withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
+  mock_platform_date()
+
   wd <- withr::local_tempdir(
     tmpdir = file.path(tempdir(), "btw-proj", "subtask")
   )
@@ -74,11 +79,14 @@ test_that("btw_client() adds `.btw` context file to system prompt", {
   )
 
   skip_if_not_macos()
-  expect_snapshot(print(chat))
+  expect_snapshot(print(chat), transform = scrub_system_info)
 })
 
 test_that("btw_client() uses `.btw` context file for client settings", {
+  withr::local_envvar(list(POSITRON = "", RSTUDIO = "1"))
   withr::local_envvar(list(OPENAI_API_KEY = "beep"))
+  mock_platform_date()
+
   wd <- withr::local_tempdir(
     tmpdir = file.path(tempdir(), "btw-proj", "subtask")
   )
@@ -122,7 +130,7 @@ test_that("btw_client() uses `.btw` context file for client settings", {
   )
 
   skip_if_not_macos()
-  expect_snapshot(print(chat))
+  expect_snapshot(print(chat), transform = scrub_system_info)
 })
 
 test_that("btw_client() throws if `path_btw` is provided but doesn't exist", {
