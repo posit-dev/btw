@@ -45,10 +45,14 @@ path_find_in_project <- function(filename, dir = getwd()) {
     return(normalizePath(file.path(dir, filename)))
   }
 
-  root_files <- c("DESCRIPTION", ".git", ".Rbuildignore", ".vscode", ".here")
+  root_files <- c("DESCRIPTION", ".git", ".vscode", ".here")
 
-  if (any(file.exists(file.path(dir, root_files)))) return(NULL)
-  if (dirname(dir) == dir) return(NULL)
+  at_project_root <-
+    any(file.exists(file.path(dir, root_files))) ||
+    length(dir(pattern = ".[.]Rproj$")) > 0 ||
+    dirname(dir) == dir
+
+  if (at_project_root) return(NULL)
 
   path_find_in_project(filename, dirname(dir))
 }
