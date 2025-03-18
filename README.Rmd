@@ -49,6 +49,7 @@ The `btw()` function allows you to compile information about all sorts of R stuf
 * `btw("{dplyr}")` will describe the dplyr package via the function reference and (if available) introductory vignette.
 * `btw("./path")` will read the lines of the file at that path (or list the files at that path if it's a directory).
 * `btw("@current_file")` and `btw("@current_selection")` reads the contents of the current editor or selection in RStudio, Positron, or anywhere the [rstudioapi](https://rstudio.github.io/rstudioapi) is supported.
+* `btw("@platform_info")` describes your R version, operating system, and locale information.
 
 When passed multiple arguments, `btw()` will concatenate each description. For example, you could run:
 
@@ -126,7 +127,7 @@ Given the data shown in the context, this will include cars with 4 and 6
 cylinders (as the `cyl` column only contains values 4, 6, and 8).
 ````
 
-`btw_client()` uses `ellmer::chat_claude()` by default, or you can customize the chat client used in one of two ways: 
+`btw_client()` uses `ellmer::chat_claude()` by default, or you can customize the chat client used in one of two ways:
 
 * Set the `btw.chat_client` option (possibly in your `.Rprofile` with `usethis::edit_r_profile()`), or
 * Provide your own chat object via the `client` argument.
@@ -141,6 +142,6 @@ ch <- btw_client()
 ch <- btw_client(client = ellmer::chat_ollama(model = "llama3.1:8b"))
 ```
 
-Alternatively, you can call `btw_app()` to jump straight into a Shiny chat app. 
+Alternatively, you can call `btw_app()` to jump straight into a Shiny chat app.
 
 For fully customized chat clients, you can use `btw_register_tools()` to add btw tools to an existing chat interface. Each of the individual tools registered by `btw_register_tools()` are themselves exported, and can be selected via the `include` argument of `btw_register_tools()` (or the `tools` argument of `btw_client()` or `btw_app()`, which is equivalent to `include`).
