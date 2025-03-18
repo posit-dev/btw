@@ -82,6 +82,11 @@ as_btw_capture <- function(x) {
 #'   of the file currently open in the editor using
 #'   [rstudioapi::getSourceEditorContext()].
 #'
+#' * `"@platform_info"` \cr
+#'   Includes information about the current platform, such as the R version,
+#'   operating system, IDE or UI being used, as well as language, locale,
+#'   timezone and current date.
+#'
 #' @param x A character string
 #' @param ... Ignored.
 #' @param caller_env The caller environment.
@@ -99,6 +104,9 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
   }
   if (identical(x, "@current_selection")) {
     return(btw_tool_read_current_editor(selection = TRUE, consent = TRUE))
+  }
+  if (identical(x, "@platform_info")) {
+    return(btw_tool_describe_platform())
   }
 
   if (grepl("^\\./", x)) {
