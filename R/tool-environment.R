@@ -61,8 +61,16 @@ btw_tool_describe_environment <- function(
   item_desc <- map(env_item_names, function(item_name) {
     item <- env_get(environment, item_name)
 
+    if (identical(class(item), "character")) {
+      # Only string literals passed through btw() hit `btw_this.character()`.
+      # We rely on `dots_list()` turning `"foo"` into `list('"foo"' = "foo")`.
+      if (!identical(item_name, sprintf('"%s"', item))) {
+        item <- btw_returns_character(item)
+      }
+    }
+
     if (is_function(item) && is_namespace(fn_env(item))) {
-      item <- item_name
+      item <- paste0("?", item_name)
     }
 
     btw_this(item, caller_env = environment)
