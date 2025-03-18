@@ -15,7 +15,8 @@ via \code{\link[=btw]{btw()}}.}
 
 \item{client}{An \link[ellmer:Chat]{ellmer::Chat} client, defaults to \code{\link[ellmer:chat_claude]{ellmer::chat_claude()}}.
 You can use the \code{btw.chat_client} option to set a default client for new
-\code{btw_client()} calls.}
+\code{btw_client()} calls, or use a \code{.btw} project file for default chat client
+settings, like provider and model.}
 
 \item{tools}{Names of tools or tool groups to include when registering
 tools, e.g. \code{include = "docs"} to include only the documentation related
