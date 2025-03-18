@@ -115,6 +115,18 @@ test_that("btw_client() uses `.btw` context file for client settings", {
     fixed = TRUE
   )
 
+  fs::file_move("../.btw", "../btw-context.md")
+  expect_equal(
+    btw_client(path_btw = "../btw-context.md")$get_system_prompt(),
+    chat$get_system_prompt()
+  )
+
   skip_if_not_macos()
   expect_snapshot(print(chat))
+})
+
+test_that("btw_client() throws if `path_btw` is provided but doesn't exist", {
+  expect_error(
+    btw_client(path_btw = tempfile())
+  )
 })

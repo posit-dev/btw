@@ -140,6 +140,8 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
   client
 }
 
+# nocov start
+
 #' @describeIn btw_client Create a btw-enhanced client and launch a Shiny app to
 #'   chat
 #' @export
@@ -152,6 +154,8 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
   )
   ellmer::live_browser(client)
 }
+
+# nocov end
 
 btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
   config$tools <-
@@ -200,7 +204,7 @@ read_btw_file <- function(path = NULL) {
   }
 
   if (must_find && (is.null(path) || !fs::file_exists(path))) {
-    cli::cli_abort("{.path {path}} does not exist.")
+    cli::cli_abort("Invalid {.arg path}: {.path {path}} does not exist.")
   }
 
   config <- rmarkdown::yaml_front_matter(path)
