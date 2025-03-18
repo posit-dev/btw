@@ -46,11 +46,11 @@ The `btw()` function allows you to compile information about all sorts
 of R stuff and copy it to your clipboard.
 
 - Pass any R object to `btw()`, like `btw(mtcars)`, `btw(dplyr::across)`
-  or `btw(globalenv())`. Strings will be evaluated as R code and
-  dispatched to the appropriate method unless they match a shortcut
-  described below.
+  or `btw(globalenv())`.
 - `btw("{dplyr}")` will describe the dplyr package via the function
   reference and (if available) introductory vignette.
+- `btw("?dplyr::across")` or `btw(?dplyr::across)` includes the help
+  pages for `dplyr::across()`.
 - `btw("./path")` will read the lines of the file at that path (or list
   the files at that path if it’s a directory).
 - `btw("@current_file")` and `btw("@current_selection")` reads the
@@ -62,7 +62,7 @@ When passed multiple arguments, `btw()` will concatenate each
 description. For example, you could run:
 
 ``` r
-btw(mtcars, "{btw}", btw::btw)
+btw(mtcars, "{btw}", ?btw::btw)
 ```
 
     ✔ btw copied to the clipboard!
@@ -97,7 +97,7 @@ The following would be attached to your clipboard:
     ]
     ```
 
-    btw::btw
+    `?`(btw::btw)
     btw                    package:btw                     R Documentation
 
     Plain-text descriptions of R objects
