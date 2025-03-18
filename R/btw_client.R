@@ -149,7 +149,7 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
 }
 
 btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
-  config$include <-
+  config$tools <-
     tools %||%
     getOption("btw.chat_tools") %||%
     config$tools
