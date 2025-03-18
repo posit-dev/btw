@@ -46,6 +46,9 @@
 #' @param client An [ellmer::Chat] client, defaults to [ellmer::chat_claude()].
 #'   You can use the `btw.chat_client` option to set a default client for new
 #'   `btw_client()` calls.
+#' @param path_btw A path to a `.btw` project context file. If `NULL`, btw will
+#'   find a project-specific `.btw` file in the parents of the current working
+#'   directory.
 #' @inheritParams btw_register_tools
 #'
 #' @return Returns an [ellmer::Chat] object with additional tools registered by
@@ -54,33 +57,20 @@
 #'
 #' @describeIn btw_client Create a btw-enhanced [ellmer::Chat] client
 #' @export
-btw_client <- function(..., client = NULL, include = NULL) {
-  if (is.null(client)) {
-    default <- getOption("btw.chat_client")
-    if (is.null(default)) {
-      client <- ellmer::chat_claude()
-    } else {
-      check_inherits(default, "Chat")
-      client <- default$clone()
-    }
-  } else {
-    check_inherits(client, "Chat")
-  }
+btw_client <- function(..., client = NULL, include = NULL, path_btw = NULL) {
+  config <- btw_client_config(client, include, config = read_btw_file(path_btw))
 
-  include <- if (is.null(include)) getOption("btw.chat_include")
-
-  btw_proj_context <- path_find_in_project(".btw")
-  if (!fs::is_file(btw_proj_context)) btw_proj_context <- NULL
+  client <- config$client
 
   sys_prompt <- client$get_system_prompt()
   sys_prompt <- c(
     sys_prompt,
     "",
-    if (!is.null(btw_proj_context)) {
+    if (!is.null(config$btw_context)) {
       c(
         "# Project Context",
         "",
-        paste(readLines(btw_proj_context, warn = FALSE), collapse = "\n"),
+        trimws(paste(config$btw_context, collapse = "\n")),
         ""
       )
     },
@@ -95,7 +85,9 @@ btw_client <- function(..., client = NULL, include = NULL) {
     )
   )
   client$set_system_prompt(paste(sys_prompt, collapse = "\n"))
-  btw_register_tools(client, include = include)
+
+  maybe_quiet <- if (is.null(include)) suppressMessages else I
+  maybe_quiet(btw_register_tools(client, include = config$include))
 
   dots <- dots_list(..., .named = TRUE)
 
@@ -117,7 +109,73 @@ btw_client <- function(..., client = NULL, include = NULL) {
 #' @describeIn btw_client Create a btw-enhanced client and launch a Shiny app to
 #'   chat
 #' @export
-btw_app <- function(..., client = NULL, include = NULL) {
-  client <- btw_client(client = client, ..., include = include)
+btw_app <- function(..., client = NULL, include = NULL, path_btw = NULL) {
+  client <- btw_client(
+    client = client,
+    ...,
+    include = include,
+    path_btw = path_btw
+  )
   ellmer::live_browser(client)
+}
+
+btw_client_config <- function(client = NULL, include = NULL, config = list()) {
+  config$include <-
+    include %||%
+    getOption("btw.chat_include") %||%
+    config$include
+
+  if (!is.null(client)) {
+    check_inherits(client, "Chat")
+    config$client <- client
+    return(config)
+  }
+
+  default <- getOption("btw.chat_client")
+  if (!is.null(default)) {
+    check_inherits(default, "Chat")
+    config$client <- default$clone()
+    return(config)
+  }
+
+  if (!is.null(config$provider)) {
+    chat_args <- config[setdiff(
+      names(config),
+      c("include", "provider", "btw_context")
+    )]
+    chat_fn <- gsub(" ", "_", tolower(config$provider))
+    if (!grepl("^chat_", chat_fn)) {
+      chat_fn <- paste0("chat_", chat_fn)
+    }
+    chat_client <- call2(.ns = "ellmer", chat_fn, !!!chat_args)
+    config$client <- eval(chat_client)
+    return(config)
+  }
+
+  config$client <- ellmer::chat_claude()
+  config
+}
+
+read_btw_file <- function(path = NULL) {
+  must_find <- !is.null(path)
+
+  path <- path %||% path_find_in_project(".btw")
+
+  if (!must_find && is.null(path)) {
+    return(list())
+  }
+
+  if (must_find && (is.null(path) || !fs::file_exists(path))) {
+    cli::cli_abort("{.path {path}} does not exist.")
+  }
+
+  config <- rmarkdown::yaml_front_matter(path)
+
+  remove_yaml <- function(path) {
+    pyfm <- asNamespace("rmarkdown")[["partition_yaml_front_matter"]]
+    pyfm(readLines(path, warn = FALSE))$body
+  }
+
+  config$btw_context <- remove_yaml(path)
+  config
 }

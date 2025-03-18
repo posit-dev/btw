@@ -5,9 +5,9 @@
 \alias{btw_app}
 \title{Create a btw-enhanced ellmer chat client}
 \usage{
-btw_client(..., client = NULL, include = NULL)
+btw_client(..., client = NULL, include = NULL, path_btw = NULL)
 
-btw_app(..., client = NULL, include = NULL)
+btw_app(..., client = NULL, include = NULL, path_btw = NULL)
 }
 \arguments{
 \item{...}{Objects and documentation to be included as context in the chat,
@@ -20,6 +20,10 @@ You can use the \code{btw.chat_client} option to set a default client for new
 \item{include}{Names of tools or tool groups to include when registering
 tools, e.g. \code{include = "docs"} to include only the documentation related
 tools, or \code{include = c("data", "docs", "environment")}, etc.}
+
+\item{path_btw}{A path to a \code{.btw} project context file. If \code{NULL}, btw will
+find a project-specific \code{.btw} file in the parents of the current working
+directory.}
 }
 \value{
 Returns an \link[ellmer:Chat]{ellmer::Chat} object with additional tools registered by

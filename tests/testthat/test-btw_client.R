@@ -76,3 +76,45 @@ test_that("btw_client() adds `.btw` context file to system prompt", {
   skip_if_not_macos()
   expect_snapshot(print(chat))
 })
+
+test_that("btw_client() uses `.btw` context file for client settings", {
+  withr::local_envvar(list(OPENAI_API_KEY = "beep"))
+  wd <- withr::local_tempdir(
+    tmpdir = file.path(tempdir(), "btw-proj", "subtask")
+  )
+  withr::local_dir(wd)
+
+  writeLines(
+    con = file.path(wd, "..", ".btw"),
+    c(
+      "---",
+      "provider: openai",
+      "model: gpt-4o",
+      "system_prompt: I like to have my own system prompt",
+      "include: docs",
+      "---",
+      "",
+      "* Prefer solutions that use {tidyverse}",
+      "* Always use `=` for assignment",
+      "* Always use the native base-R pipe `|>` for piped expressions"
+    )
+  )
+
+  chat <- btw_client()
+
+  expect_equal(chat$get_model(), "gpt-4o")
+  expect_true(inherits(
+    chat$.__enclos_env__$private$provider,
+    "ellmer::ProviderOpenAI"
+  ))
+
+  expect_match(chat$get_system_prompt(), "# Project Context", fixed = TRUE)
+  expect_match(
+    chat$get_system_prompt(),
+    "Always use `=` for assignment",
+    fixed = TRUE
+  )
+
+  skip_if_not_macos()
+  expect_snapshot(print(chat))
+})
