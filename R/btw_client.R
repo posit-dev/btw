@@ -93,16 +93,20 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
 
   sys_prompt <- client$get_system_prompt()
   sys_prompt <- c(
-    "# Tools",
-    "",
-    paste(
-      "You have access to tools that help you interact with the user's R session and workspace.",
-      "Use these tools when they are helpful and appropriate to complete the user's request.",
-      "These tools are available to augment your ability to help the user,",
-      "but you are smart and capable and can answer many things on your own.",
-      "It is okay to answer the user without relying on these tools."
-    ),
-    "",
+    if (!identical(config$tools, "none")) {
+      c(
+        "# Tools",
+        "",
+        paste(
+          "You have access to tools that help you interact with the user's R session and workspace.",
+          "Use these tools when they are helpful and appropriate to complete the user's request.",
+          "These tools are available to augment your ability to help the user,",
+          "but you are smart and capable and can answer many things on your own.",
+          "It is okay to answer the user without relying on these tools."
+        ),
+        ""
+      )
+    },
     if (!is.null(config$btw_context)) {
       c(
         "# Project Context",
@@ -111,6 +115,7 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
         ""
       )
     },
+    "---\n",
     sys_prompt
   )
   client$set_system_prompt(paste(sys_prompt, collapse = "\n"))

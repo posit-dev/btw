@@ -5,8 +5,6 @@
     Output
       <Chat turns=1 tokens=0/0>
       -- system ----------------------------------------------------------------------
-      I like to have my own system prompt.
-      
       # Tools
       
       You have access to tools that help you interact with the user's R session and 
@@ -14,6 +12,10 @@
       the user's request. These tools are available to augment your ability to help 
       the user, but you are smart and capable and can answer many things on your own.
       It is okay to answer the user without relying on these tools.
+      
+      ---
+      
+      I like to have my own system prompt.
 
 # btw_client() adds `.btw` context file to system prompt
 
@@ -22,14 +24,6 @@
     Output
       <Chat turns=1 tokens=0/0>
       -- system ----------------------------------------------------------------------
-      I like to have my own system prompt.
-      
-      # Project Context
-      
-      * Prefer solutions that use {tidyverse}
-      * Always use `=` for assignment
-      * Always use the native base-R pipe `|>` for piped expressions
-      
       # Tools
       
       You have access to tools that help you interact with the user's R session and 
@@ -37,6 +31,16 @@
       the user's request. These tools are available to augment your ability to help 
       the user, but you are smart and capable and can answer many things on your own.
       It is okay to answer the user without relying on these tools.
+      
+      # Project Context
+      
+      * Prefer solutions that use {tidyverse}
+      * Always use `=` for assignment
+      * Always use the native base-R pipe `|>` for piped expressions
+      
+      ---
+      
+      I like to have my own system prompt.
 
 # btw_client() uses `.btw` context file for client settings
 
@@ -45,14 +49,6 @@
     Output
       <Chat turns=1 tokens=0/0>
       -- system ----------------------------------------------------------------------
-      I like to have my own system prompt
-      
-      # Project Context
-      
-      * Prefer solutions that use {tidyverse}
-      * Always use `=` for assignment
-      * Always use the native base-R pipe `|>` for piped expressions
-      
       # Tools
       
       You have access to tools that help you interact with the user's R session and 
@@ -60,4 +56,14 @@
       the user's request. These tools are available to augment your ability to help 
       the user, but you are smart and capable and can answer many things on your own.
       It is okay to answer the user without relying on these tools.
+      
+      # Project Context
+      
+      * Prefer solutions that use {tidyverse}
+      * Always use `=` for assignment
+      * Always use the native base-R pipe `|>` for piped expressions
+      
+      ---
+      
+      I like to have my own system prompt
 
