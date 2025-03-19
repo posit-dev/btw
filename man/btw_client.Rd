@@ -5,9 +5,9 @@
 \alias{btw_app}
 \title{Create a btw-enhanced ellmer chat client}
 \usage{
-btw_client(..., client = NULL, include = NULL)
+btw_client(..., client = NULL, tools = NULL, path_btw = NULL)
 
-btw_app(..., client = NULL, include = NULL)
+btw_app(..., client = NULL, tools = NULL, path_btw = NULL)
 }
 \arguments{
 \item{...}{Objects and documentation to be included as context in the chat,
@@ -15,11 +15,19 @@ via \code{\link[=btw]{btw()}}.}
 
 \item{client}{An \link[ellmer:Chat]{ellmer::Chat} client, defaults to \code{\link[ellmer:chat_claude]{ellmer::chat_claude()}}.
 You can use the \code{btw.chat_client} option to set a default client for new
-\code{btw_client()} calls.}
+\code{btw_client()} calls, or use a \code{.btw} project file for default chat client
+settings, like provider and model. We check the \code{client} argument, then the
+\code{btw.chat_client} R option, and finally the \code{.btw} project file, using only
+the client definition from the first of these that is available.}
 
-\item{include}{Names of tools or tool groups to include when registering
+\item{tools}{Names of tools or tool groups to include when registering
 tools, e.g. \code{include = "docs"} to include only the documentation related
-tools, or \code{include = c("data", "docs", "environment")}, etc.}
+tools, or \code{include = c("data", "docs", "environment")}, etc. Equivalent to
+the \code{include} argument of \code{\link[=btw_register_tools]{btw_register_tools()}}.}
+
+\item{path_btw}{A path to a \code{.btw} project context file. If \code{NULL}, btw will
+find a project-specific \code{.btw} file in the parents of the current working
+directory.}
 }
 \value{
 Returns an \link[ellmer:Chat]{ellmer::Chat} object with additional tools registered by
@@ -32,8 +40,49 @@ Creates an \link[ellmer:Chat]{ellmer::Chat} client, enhanced with the tools from
 general or interactive use at the console, or \code{btw_app()} to create a chat
 client and launch a Shiny app for chatting with a btw-enhanced LLM in your
 local workspace.
+\subsection{Project Context}{
+
+You can keep track of project-specific rules, guidance and context by adding
+a \code{.btw} file in your project directory. Any time you start a chat client
+with \code{btw_client()} or launch a chat session with \code{btw_app()}, btw will
+automatically find and include the contents of the \code{.btw} file in your chat.
+
+Use the \code{.btw} file to inform the LLM of your preferred code style, to
+provide domain-specific terminology or definitions, to establish project
+documentation, goals and constraints, to include reference materials such or
+technical specifications, or more. Storing this kind of information in the
+\code{.btw} file may help you avoid repeating yourself and can be used to maintain
+coherence across many chat sessions.
+
+The \code{.btw} file, when present, is included as part of the system prompt for
+your chat conversation. You can structure the file in any way you wish.
+
+You can also use the \code{.btw} file to choose default chat settings for your
+project in a YAML block at the top of the file. In this YAML block you can
+choose the default \code{provider}, \code{model} and \code{tools} for \code{btw_client()} or
+\code{btw_app()}. \code{provider} chooses the \verb{ellmer::chat_*()} function, e.g.
+\code{provider: openai} or \code{provider: chat_openai} to use \code{\link[ellmer:chat_openai]{ellmer::chat_openai()}}.
+\code{tools} chooses which btw tools are included in the chat, and all other
+values are passed to the \verb{ellmer::chat_*()} constructor, e.g.
+\verb{model: gpt-4o}, \code{seed: 42}, or `echo: all``.
+
+Here's an example \code{.btw} file:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{---
+provider: claude
+model: claude-3-7-sonnet-20250219
+tools: [data, docs, environment]
+---
+
+Follow these important style rules for any R code in this project:
+
+* Prefer solutions that use \{tidyverse\}
+* Always use `<-` for assignment
+* Always use the native base-R pipe `|>` for piped expressions
+
+}\if{html}{\out{</div>}}
 }
-\details{
+
 \subsection{Client Options}{
 \itemize{
 \item \code{btw.chat_client}: The \link[ellmer:Chat]{ellmer::Chat} client to use as the basis for new

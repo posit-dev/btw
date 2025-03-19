@@ -4,14 +4,14 @@
 \alias{btw_register_tools}
 \title{Tools: Register tools from btw}
 \usage{
-btw_register_tools(chat, include = NULL)
+btw_register_tools(chat, tools = NULL)
 }
 \arguments{
 \item{chat}{An ellmer \code{Chat} object.}
 
-\item{include}{Names of tools or tool groups to include when registering
-tools, e.g. \code{include = "docs"} to include only the documentation related
-tools, or \code{include = c("data", "docs", "environment")}, etc.}
+\item{tools}{Names of tools or tool groups to include when registering tools,
+e.g. \code{tools = "docs"} to include only the documentation related tools, or
+\code{tools = c("data", "docs", "environment")}, etc.}
 }
 \value{
 Registers the tools with \code{chat}, updating the \code{chat} object in
