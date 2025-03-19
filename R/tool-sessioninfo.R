@@ -59,7 +59,7 @@ platform_info <- function() {
   }
 
   if (identical(platform$language, "(EN)")) {
-    platform$language <- "EN (implied default)"
+    platform$language <- "EN (implied default)" # nocov
   }
 
   platform
