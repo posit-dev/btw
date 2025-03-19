@@ -10,6 +10,12 @@ scrub_system_info <- function(x) {
   x <- sub(version$system, "SYSTEM VERSION", x, fixed = TRUE)
   x <- sub(Sys.timezone(), "TIMEZONE", x, fixed = TRUE)
   x <- sub(platform_date(), "CURRENT DATE", x, fixed = TRUE)
+  x <- sub(
+    sprintf("'%s'", Sys.getlocale("LC_CTYPE")),
+    "'LC_CTYPE'",
+    x,
+    fixed = TRUE
+  )
   x
 }
 
@@ -22,17 +28,16 @@ mock_platform_date <- function() {
 
 with_mocked_platform <- function(
   code,
-  lc_collate = "es_ES.UTF-8",
-  lc_ctype = "es_ES.UTF-8",
+  lc_collate = "C",
   timezone = "Europe/Madrid",
   language = "es",
   ide = "positron"
 ) {
   mock_platform_date()
 
-  withr::local_locale(c(LC_COLLATE = lc_collate, LC_CTYPE = lc_ctype))
-  withr::local_timezone(timezone)
   withr::local_language(language)
+  withr::local_locale(c(LC_COLLATE = lc_collate))
+  withr::local_timezone(timezone)
 
   switch(
     ide,
