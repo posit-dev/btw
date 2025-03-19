@@ -72,7 +72,9 @@
 #' @param client An [ellmer::Chat] client, defaults to [ellmer::chat_claude()].
 #'   You can use the `btw.chat_client` option to set a default client for new
 #'   `btw_client()` calls, or use a `.btw` project file for default chat client
-#'   settings, like provider and model.
+#'   settings, like provider and model. We check the `client` argument, then the
+#'   `btw.chat_client` R option, and finally the `.btw` project file, using only
+#'   the client definition from the first of these that is available.
 #' @param tools Names of tools or tool groups to include when registering
 #'   tools, e.g. `include = "docs"` to include only the documentation related
 #'   tools, or `include = c("data", "docs", "environment")`, etc. Equivalent to
