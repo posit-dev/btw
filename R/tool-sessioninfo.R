@@ -15,21 +15,11 @@
 #' @export
 btw_tool_describe_platform <- function() {
   platform <- platform_info()
+  platform <- trimws(capture.output(platform)[-1])
+  platform <- sub(" +", " ", platform)
+  platform <- paste(platform, collapse = "\n")
 
-  # fmt: skip
-  description <- paste0(
-    "The user is running ", platform$version, " on ", platform$os, " (",
-    platform$system, ") ",
-    "using ", ifelse(platform$ui == "", "a terminal/console", platform$ui), ". ",
-    "System language: ", platform$language, "; ",
-    "locale: ", platform$collate, "; ",
-    "character encoding: ", platform$ctype, "; ",
-    "timezone: ", platform$tz, ". ",
-    "The current date is ", platform_date(), ". ",
-    "Please account for these system settings in all responses."
-  )
-
-  return(description)
+  sprintf("<system_info>\n%s\n</system_info>", platform)
 }
 
 .btw_add_to_tools(
@@ -50,17 +40,29 @@ platform_date <- function(when = Sys.time()) {
 platform_info <- function() {
   platform <- sessioninfo::platform_info()
 
+  platform$date <- platform_date()
+  platform$pandoc <- NULL
+  platform$quarto <- NULL
+
   if (identical(Sys.getenv("POSITRON"), "1")) {
-    platform$ui <- "Positron (a VS Code equivalent IDE for data science)"
+    platform$ui <- "Positron (a VS Code equivalent)"
   } else if (identical(Sys.getenv("RSTUDIO"), "1")) {
     platform$ui <- "RStudio"
   } else if (identical(Sys.getenv("TERM_PROGRAM"), "vscode")) {
     platform$ui <- "VS Code"
   }
 
-  if (identical(platform$language, "(EN)")) {
-    platform$language <- "EN (implied default)" # nocov
-  }
+  recode <- c(
+    "version" = "r_version",
+    "collate" = "locale",
+    "ctype" = "encoding",
+    "tz" = "timezone"
+  )
+
+  needs_recode <- names(platform) %in% names(recode)
+
+  names(platform)[needs_recode] <- recode[names(platform)[needs_recode]]
+  names(platform) <- sprintf("%s:", toupper(names(platform)))
 
   platform
 }

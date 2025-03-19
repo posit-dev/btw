@@ -5,13 +5,21 @@
     Output
       <Chat turns=1 tokens=0/0>
       -- system ----------------------------------------------------------------------
-      # User System
+      # System and Session Context
+      Please account for the following R session and system settings in all 
+      responses.
       
-      The user is running R VERSION on OPERATING SYSTEM 
-      (SYSTEM VERSION) using RStudio. System language: es; locale: C; character 
-      encoding: LC_CTYPE; timezone: Europe/Madrid. The current date is DAY OF 
-      WEEK, MONTH DAY, YEAR (YYYY-MM-DD). Please account for these system settings in
-      all responses.
+      <system_info>
+      R_VERSION: R VERSION
+      OS: OPERATING SYSTEM
+      SYSTEM: SYSTEM VERSION
+      UI: RStudio
+      LANGUAGE: es
+      LOCALE: C
+      ENCODING: LC_CTYPE
+      TIMEZONE: Europe/Madrid
+      DATE: DAY OF WEEK, MONTH DAY, YEAR (YYYY-MM-DD)
+      </system_info>
       
       # Tools
       
@@ -32,13 +40,21 @@
     Output
       <Chat turns=1 tokens=0/0>
       -- system ----------------------------------------------------------------------
-      # User System
+      # System and Session Context
+      Please account for the following R session and system settings in all 
+      responses.
       
-      The user is running R VERSION on OPERATING SYSTEM 
-      (SYSTEM VERSION) using RStudio. System language: es; locale: C; character 
-      encoding: LC_CTYPE; timezone: Europe/Madrid. The current date is DAY OF 
-      WEEK, MONTH DAY, YEAR (YYYY-MM-DD). Please account for these system settings in
-      all responses.
+      <system_info>
+      R_VERSION: R VERSION
+      OS: OPERATING SYSTEM
+      SYSTEM: SYSTEM VERSION
+      UI: RStudio
+      LANGUAGE: es
+      LOCALE: C
+      ENCODING: LC_CTYPE
+      TIMEZONE: Europe/Madrid
+      DATE: DAY OF WEEK, MONTH DAY, YEAR (YYYY-MM-DD)
+      </system_info>
       
       # Tools
       
@@ -65,13 +81,21 @@
     Output
       <Chat turns=1 tokens=0/0>
       -- system ----------------------------------------------------------------------
-      # User System
+      # System and Session Context
+      Please account for the following R session and system settings in all 
+      responses.
       
-      The user is running R VERSION on OPERATING SYSTEM 
-      (SYSTEM VERSION) using RStudio. System language: es; locale: C; character 
-      encoding: LC_CTYPE; timezone: Europe/Madrid. The current date is DAY OF 
-      WEEK, MONTH DAY, YEAR (YYYY-MM-DD). Please account for these system settings in
-      all responses.
+      <system_info>
+      R_VERSION: R VERSION
+      OS: OPERATING SYSTEM
+      SYSTEM: SYSTEM VERSION
+      UI: RStudio
+      LANGUAGE: es
+      LOCALE: C
+      ENCODING: LC_CTYPE
+      TIMEZONE: Europe/Madrid
+      DATE: DAY OF WEEK, MONTH DAY, YEAR (YYYY-MM-DD)
+      </system_info>
       
       # Tools
       

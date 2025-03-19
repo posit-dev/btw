@@ -8,17 +8,17 @@ test_that("btw_tool_describe_platform() works", {
 
 test_that("btw_tool_describe_platform() detects RStudio, Positron, VS Code", {
   withr::with_envvar(list(POSITRON = 1), {
-    expect_match(btw_tool_describe_platform(), "using Positron")
+    expect_match(btw_tool_describe_platform(), "UI: Positron")
   })
 
   withr::with_envvar(list(POSITRON = "", RSTUDIO = 1), {
-    expect_match(btw_tool_describe_platform(), "using RStudio")
+    expect_match(btw_tool_describe_platform(), "UI: RStudio")
   })
 
   withr::with_envvar(
     list(POSITRON = "", RSTUDIO = "", TERM_PROGRAM = "vscode"),
     {
-      expect_match(btw_tool_describe_platform(), "using VS Code")
+      expect_match(btw_tool_describe_platform(), "UI: VS Code")
     }
   )
 })
