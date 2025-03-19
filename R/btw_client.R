@@ -96,6 +96,11 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
 
   sys_prompt <- client$get_system_prompt()
   sys_prompt <- c(
+    "# System and Session Context",
+    "Please account for the following R session and system settings in all responses.",
+    "",
+    btw_tool_describe_platform(),
+    "",
     if (!identical(config$tools, "none")) {
       c(
         "# Tools",

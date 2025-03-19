@@ -25,6 +25,7 @@ Tool: Describe an environment
 Other Tools: 
 \code{\link{btw_register_tools}()},
 \code{\link{btw_tool_describe_data_frame}()},
+\code{\link{btw_tool_describe_platform}()},
 \code{\link{btw_tool_get_installed_packages}()},
 \code{\link{btw_tool_list_files}()},
 \code{\link{btw_tool_package_docs}},

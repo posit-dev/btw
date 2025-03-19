@@ -5,6 +5,22 @@
     Output
       <Chat turns=1 tokens=0/0>
       -- system ----------------------------------------------------------------------
+      # System and Session Context
+      Please account for the following R session and system settings in all 
+      responses.
+      
+      <system_info>
+      R_VERSION: R VERSION
+      OS: OPERATING SYSTEM
+      SYSTEM: SYSTEM VERSION
+      UI: RStudio
+      LANGUAGE: es
+      LOCALE: C
+      ENCODING: LC_CTYPE
+      TIMEZONE: Europe/Madrid
+      DATE: DAY OF WEEK, MONTH DAY, YEAR (YYYY-MM-DD)
+      </system_info>
+      
       # Tools
       
       You have access to tools that help you interact with the user's R session and 
@@ -24,6 +40,22 @@
     Output
       <Chat turns=1 tokens=0/0>
       -- system ----------------------------------------------------------------------
+      # System and Session Context
+      Please account for the following R session and system settings in all 
+      responses.
+      
+      <system_info>
+      R_VERSION: R VERSION
+      OS: OPERATING SYSTEM
+      SYSTEM: SYSTEM VERSION
+      UI: RStudio
+      LANGUAGE: es
+      LOCALE: C
+      ENCODING: LC_CTYPE
+      TIMEZONE: Europe/Madrid
+      DATE: DAY OF WEEK, MONTH DAY, YEAR (YYYY-MM-DD)
+      </system_info>
+      
       # Tools
       
       You have access to tools that help you interact with the user's R session and 
@@ -49,6 +81,22 @@
     Output
       <Chat turns=1 tokens=0/0>
       -- system ----------------------------------------------------------------------
+      # System and Session Context
+      Please account for the following R session and system settings in all 
+      responses.
+      
+      <system_info>
+      R_VERSION: R VERSION
+      OS: OPERATING SYSTEM
+      SYSTEM: SYSTEM VERSION
+      UI: RStudio
+      LANGUAGE: es
+      LOCALE: C
+      ENCODING: LC_CTYPE
+      TIMEZONE: Europe/Madrid
+      DATE: DAY OF WEEK, MONTH DAY, YEAR (YYYY-MM-DD)
+      </system_info>
+      
       # Tools
       
       You have access to tools that help you interact with the user's R session and 
