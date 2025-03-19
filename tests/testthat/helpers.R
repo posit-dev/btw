@@ -11,8 +11,8 @@ scrub_system_info <- function(x) {
   x <- sub(Sys.timezone(), "TIMEZONE", x, fixed = TRUE)
   x <- sub(platform_date(), "CURRENT DATE", x, fixed = TRUE)
   x <- sub(
-    sprintf("'%s'", Sys.getlocale("LC_CTYPE")),
-    "'LC_CTYPE'",
+    sprintf(": %s", Sys.getlocale("LC_CTYPE")),
+    ": LC_CTYPE",
     x,
     fixed = TRUE
   )

@@ -18,15 +18,15 @@ btw_tool_describe_platform <- function() {
 
   # fmt: skip
   description <- paste0(
-    "The user is running ", platform$version, " on a ", platform$os, " system (",
-    platform$system, "). ",
-    "The user interface being used is ", ifelse(platform$ui == "", "terminal/console", platform$ui), ". ",
-    "The system's language setting is ", platform$language, ", ",
-    "with locale collation rules set to '", platform$collate, "' ",
-    "and character encoding set to '", platform$ctype, "'. ",
-    "The system is configured to use the '", platform$tz, "' timezone. ",
+    "The user is running ", platform$version, " on ", platform$os, " (",
+    platform$system, ") ",
+    "using ", ifelse(platform$ui == "", "a terminal/console", platform$ui), ". ",
+    "System language: ", platform$language, "; ",
+    "locale: ", platform$collate, "; ",
+    "character encoding: ", platform$ctype, "; ",
+    "timezone: ", platform$tz, ". ",
     "The current date is ", platform_date(), ". ",
-    "When processing date-related queries or timezone-specific information, please account for these system settings."
+    "Please account for these system settings in all responses."
   )
 
   return(description)
