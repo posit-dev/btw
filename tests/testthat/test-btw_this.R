@@ -1,12 +1,6 @@
 test_that("btw_this.function()", {
-  expect_equal(btw_this('?dplyr::mutate'), btw_this(dplyr::mutate))
-})
-
-test_that("btw() with package functions", {
-  expect_equal(
-    sub("dplyr::mutate", '"?dplyr::mutate"', format(btw(dplyr::mutate))),
-    format(btw('?dplyr::mutate'))
-  )
+  skip_if_not_macos()
+  expect_snapshot(cli::cat_line(btw_this(dplyr::mutate)))
 })
 
 test_that("btw_this('{pkg}')", {

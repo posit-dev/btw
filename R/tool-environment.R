@@ -69,10 +69,6 @@ btw_tool_describe_environment <- function(
       }
     }
 
-    if (is_function(item) && is_namespace(fn_env(item))) {
-      item <- paste0("?", item_name)
-    }
-
     btw_this(item, caller_env = environment)
   })
 
