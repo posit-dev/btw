@@ -3,11 +3,113 @@
 btw_register_tools(). Use btw_chat() to create the chat client for
 general or interactive use at the console, or btw_app() to create a chat
 client and launch a Shiny app for chatting with a btw-enhanced LLM in your
-local workspace."><meta property="og:description" content="Creates an ellmer::Chat client, enhanced with the tools from
+local workspace.
+Project Context
+
+
+You can keep track of project-specific rules, guidance and context by adding
+a .btw file in your project directory. Any time you start a chat client
+with btw_client() or launch a chat session with btw_app(), btw will
+automatically find and include the contents of the .btw file in your chat.
+Use the .btw file to inform the LLM of your preferred code style, to
+provide domain-specific terminology or definitions, to establish project
+documentation, goals and constraints, to include reference materials such or
+technical specifications, or more. Storing this kind of information in the
+.btw file may help you avoid repeating yourself and can be used to maintain
+coherence across many chat sessions.
+The .btw file, when present, is included as part of the system prompt for
+your chat conversation. You can structure the file in any way you wish.
+You can also use the .btw file to choose default chat settings for your
+project in a YAML block at the top of the file. In this YAML block you can
+choose the default provider, model and tools for btw_client() or
+btw_app(). provider chooses the ellmer::chat_*() function, e.g.
+provider: openai or provider: chat_openai to use ellmer::chat_openai().
+tools chooses which btw tools are included in the chat, and all other
+values are passed to the ellmer::chat_*() constructor, e.g.
+model: gpt-4o, seed: 42, or `echo: all“.
+Here's an example .btw file:
+---
+provider: claude
+model: claude-3-7-sonnet-20250219
+tools: [data, docs, environment]
+---
+
+Follow these important style rules for any R code in this project:
+
+* Prefer solutions that use {tidyverse}
+* Always use `&amp;lt;-` for assignment
+* Always use the native base-R pipe `|&amp;gt;` for piped expressions
+
+
+
+
+
+Client Options
+
+
+btw.chat_client: The ellmer::Chat client to use as the basis for new
+btw_client() or btw_app() chats.
+btw.chat_include: The btw tools to include by default when starting a new
+btw chat, see btw_register_tools() for details.
+
+
+
+"><meta property="og:description" content="Creates an ellmer::Chat client, enhanced with the tools from
 btw_register_tools(). Use btw_chat() to create the chat client for
 general or interactive use at the console, or btw_app() to create a chat
 client and launch a Shiny app for chatting with a btw-enhanced LLM in your
-local workspace."></head><body>
+local workspace.
+Project Context
+
+
+You can keep track of project-specific rules, guidance and context by adding
+a .btw file in your project directory. Any time you start a chat client
+with btw_client() or launch a chat session with btw_app(), btw will
+automatically find and include the contents of the .btw file in your chat.
+Use the .btw file to inform the LLM of your preferred code style, to
+provide domain-specific terminology or definitions, to establish project
+documentation, goals and constraints, to include reference materials such or
+technical specifications, or more. Storing this kind of information in the
+.btw file may help you avoid repeating yourself and can be used to maintain
+coherence across many chat sessions.
+The .btw file, when present, is included as part of the system prompt for
+your chat conversation. You can structure the file in any way you wish.
+You can also use the .btw file to choose default chat settings for your
+project in a YAML block at the top of the file. In this YAML block you can
+choose the default provider, model and tools for btw_client() or
+btw_app(). provider chooses the ellmer::chat_*() function, e.g.
+provider: openai or provider: chat_openai to use ellmer::chat_openai().
+tools chooses which btw tools are included in the chat, and all other
+values are passed to the ellmer::chat_*() constructor, e.g.
+model: gpt-4o, seed: 42, or `echo: all“.
+Here's an example .btw file:
+---
+provider: claude
+model: claude-3-7-sonnet-20250219
+tools: [data, docs, environment]
+---
+
+Follow these important style rules for any R code in this project:
+
+* Prefer solutions that use {tidyverse}
+* Always use `&amp;lt;-` for assignment
+* Always use the native base-R pipe `|&amp;gt;` for piped expressions
+
+
+
+
+
+Client Options
+
+
+btw.chat_client: The ellmer::Chat client to use as the basis for new
+btw_client() or btw_app() chats.
+btw.chat_include: The btw tools to include by default when starting a new
+btw chat, see btw_register_tools() for details.
+
+
+
+"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -45,14 +147,61 @@ local workspace."></head><body>
 <code><a href="btw_register_tools.html">btw_register_tools()</a></code>. Use <code>btw_chat()</code> to create the chat client for
 general or interactive use at the console, or <code>btw_app()</code> to create a chat
 client and launch a Shiny app for chatting with a btw-enhanced LLM in your
-local workspace.</p>
+local workspace.</p><div class="section">
+<h3 id="project-context">Project Context<a class="anchor" aria-label="anchor" href="#project-context"></a></h3>
+
+
+<p>You can keep track of project-specific rules, guidance and context by adding
+a <code>.btw</code> file in your project directory. Any time you start a chat client
+with <code>btw_client()</code> or launch a chat session with <code>btw_app()</code>, btw will
+automatically find and include the contents of the <code>.btw</code> file in your chat.</p>
+<p>Use the <code>.btw</code> file to inform the LLM of your preferred code style, to
+provide domain-specific terminology or definitions, to establish project
+documentation, goals and constraints, to include reference materials such or
+technical specifications, or more. Storing this kind of information in the
+<code>.btw</code> file may help you avoid repeating yourself and can be used to maintain
+coherence across many chat sessions.</p>
+<p>The <code>.btw</code> file, when present, is included as part of the system prompt for
+your chat conversation. You can structure the file in any way you wish.</p>
+<p>You can also use the <code>.btw</code> file to choose default chat settings for your
+project in a YAML block at the top of the file. In this YAML block you can
+choose the default <code>provider</code>, <code>model</code> and <code>tools</code> for <code>btw_client()</code> or
+<code>btw_app()</code>. <code>provider</code> chooses the <code>ellmer::chat_*()</code> function, e.g.
+<code>provider: openai</code> or <code>provider: chat_openai</code> to use <code><a href="https://ellmer.tidyverse.org/reference/chat_openai.html" class="external-link">ellmer::chat_openai()</a></code>.
+<code>tools</code> chooses which btw tools are included in the chat, and all other
+values are passed to the <code>ellmer::chat_*()</code> constructor, e.g.
+<code>model: gpt-4o</code>, <code>seed: 42</code>, or `echo: all“.</p>
+<p>Here's an example <code>.btw</code> file:</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="sc">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>provider<span class="sc">:</span> claude</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>model<span class="sc">:</span> claude<span class="dv">-3-7</span><span class="sc">-</span>sonnet<span class="dv">-20250219</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>tools<span class="sc">:</span> [data, docs, environment]</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="sc">---</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>Follow these important style rules <span class="cf">for</span> any R code <span class="cf">in</span> this project<span class="sc">:</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="er">*</span> Prefer solutions that use {tidyverse}</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="sc">*</span> Always use <span class="st">`</span><span class="at">&lt;-</span><span class="st">`</span> <span class="cf">for</span> assignment</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="sc">*</span> Always use the native base<span class="sc">-</span>R pipe <span class="st">`</span><span class="at">|&gt;</span><span class="st">`</span> <span class="cf">for</span> piped expressions</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a></span></code></pre><p></p></div>
+</div>
+
+<div class="section">
+<h3 id="client-options">Client Options<a class="anchor" aria-label="anchor" href="#client-options"></a></h3>
+
+<ul><li><p><code>btw.chat_client</code>: The <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client to use as the basis for new
+<code>btw_client()</code> or <code>btw_app()</code> chats.</p></li>
+<li><p><code>btw.chat_include</code>: The btw tools to include by default when starting a new
+btw chat, see <code><a href="btw_register_tools.html">btw_register_tools()</a></code> for details.</p></li>
+</ul></div>
+
     </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">btw_client</span><span class="op">(</span><span class="va">...</span>, client <span class="op">=</span> <span class="cn">NULL</span>, include <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">btw_client</span><span class="op">(</span><span class="va">...</span>, client <span class="op">=</span> <span class="cn">NULL</span>, tools <span class="op">=</span> <span class="cn">NULL</span>, path_btw <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">btw_app</span><span class="op">(</span><span class="va">...</span>, client <span class="op">=</span> <span class="cn">NULL</span>, include <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">btw_app</span><span class="op">(</span><span class="va">...</span>, client <span class="op">=</span> <span class="cn">NULL</span>, tools <span class="op">=</span> <span class="cn">NULL</span>, path_btw <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -67,13 +216,23 @@ via <code><a href="btw.html">btw()</a></code>.</p></dd>
 <dt id="arg-client">client<a class="anchor" aria-label="anchor" href="#arg-client"></a></dt>
 <dd><p>An <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client, defaults to <code><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">ellmer::chat_claude()</a></code>.
 You can use the <code>btw.chat_client</code> option to set a default client for new
-<code>btw_client()</code> calls.</p></dd>
+<code>btw_client()</code> calls, or use a <code>.btw</code> project file for default chat client
+settings, like provider and model. We check the <code>client</code> argument, then the
+<code>btw.chat_client</code> R option, and finally the <code>.btw</code> project file, using only
+the client definition from the first of these that is available.</p></dd>
 
 
-<dt id="arg-include">include<a class="anchor" aria-label="anchor" href="#arg-include"></a></dt>
+<dt id="arg-tools">tools<a class="anchor" aria-label="anchor" href="#arg-tools"></a></dt>
 <dd><p>Names of tools or tool groups to include when registering
 tools, e.g. <code>include = "docs"</code> to include only the documentation related
-tools, or <code>include = c("data", "docs", "environment")</code>, etc.</p></dd>
+tools, or <code>include = c("data", "docs", "environment")</code>, etc. Equivalent to
+the <code>include</code> argument of <code><a href="btw_register_tools.html">btw_register_tools()</a></code>.</p></dd>
+
+
+<dt id="arg-path-btw">path_btw<a class="anchor" aria-label="anchor" href="#arg-path-btw"></a></dt>
+<dd><p>A path to a <code>.btw</code> project context file. If <code>NULL</code>, btw will
+find a project-specific <code>.btw</code> file in the parents of the current working
+directory.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -81,19 +240,6 @@ tools, or <code>include = c("data", "docs", "environment")</code>, etc.</p></dd>
     <p>Returns an <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> object with additional tools registered by
 <code><a href="btw_register_tools.html">btw_register_tools()</a></code>. <code>btw_app()</code> returns the chat object invisibly, and
 the chat object with the messages added during the chat session.</p>
-    </div>
-    <div class="section level2">
-    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-
-<div class="section">
-<h3 id="client-options">Client Options<a class="anchor" aria-label="anchor" href="#client-options"></a></h3>
-
-<ul><li><p><code>btw.chat_client</code>: The <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client to use as the basis for new
-<code>btw_client()</code> or <code>btw_app()</code> chats.</p></li>
-<li><p><code>btw.chat_include</code>: The btw tools to include by default when starting a new
-btw chat, see <code><a href="btw_register_tools.html">btw_register_tools()</a></code> for details.</p></li>
-</ul></div>
-
     </div>
     <div class="section level2">
     <h2 id="functions">Functions<a class="anchor" aria-label="anchor" href="#functions"></a></h2>
