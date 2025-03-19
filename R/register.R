@@ -8,9 +8,9 @@
 #' `r .docs_list_tools()`
 #'
 #' @param chat An ellmer `Chat` object.
-#' @param include Names of tools or tool groups to include when registering
-#'   tools, e.g. `include = "docs"` to include only the documentation related
-#'   tools, or `include = c("data", "docs", "environment")`, etc.
+#' @param tools Names of tools or tool groups to include when registering tools,
+#'   e.g. `tools = "docs"` to include only the documentation related tools, or
+#'   `tools = c("data", "docs", "environment")`, etc.
 #'
 #' @returns Registers the tools with `chat`, updating the `chat` object in
 #'   place. The `chat` input is returned invisibly.
@@ -25,7 +25,7 @@
 #'
 #' @family Tools
 #' @export
-btw_register_tools <- function(chat, include = NULL) {
+btw_register_tools <- function(chat, tools = NULL) {
   check_inherits(chat, "Chat")
 
   tool_names <- map_chr(.btw_tools, function(x) x$name)
@@ -37,15 +37,15 @@ btw_register_tools <- function(chat, include = NULL) {
     sub("btw_tool_", "", tool_names, fixed = TRUE)
   )
 
-  has_include <- !is.null(include)
+  has_tools <- !is.null(tools)
 
-  if (has_include) {
-    include <- arg_match(include, allowed, multiple = TRUE)
+  if (has_tools) {
+    tools <- arg_match(tools, allowed, multiple = TRUE)
   }
 
   for (tool in .btw_tools) {
-    if (has_include && !tool_matches(tool, include)) next
-    if (has_include) {
+    if (has_tools && !tool_matches(tool, tools)) next
+    if (has_tools) {
       cli::cli_alert_success("Registered tool {.field {tool$name}}")
     }
 

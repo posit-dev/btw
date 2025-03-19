@@ -122,7 +122,7 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
   client$set_system_prompt(paste(sys_prompt, collapse = "\n"))
 
   maybe_quiet <- if (is.null(tools)) suppressMessages else I
-  maybe_quiet(btw_register_tools(client, include = config$tools))
+  maybe_quiet(btw_register_tools(client, tools = config$tools))
 
   dots <- dots_list(..., .named = TRUE)
 
