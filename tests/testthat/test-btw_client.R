@@ -1,7 +1,5 @@
 test_that("btw_client() works with `btw.chat_client` option", {
-  withr::local_envvar(list(POSITRON = "", RSTUDIO = "1"))
   withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
-  mock_platform_date()
 
   local_options(
     btw.chat_client = ellmer::chat_claude(
@@ -9,7 +7,10 @@ test_that("btw_client() works with `btw.chat_client` option", {
     )
   )
 
-  chat <- btw_client()
+  with_mocked_platform(ide = "rstudio", {
+    chat <- btw_client()
+  })
+
   expect_match(chat$get_system_prompt(), "I like to have my own system prompt")
   expect_match(chat$get_system_prompt(), "You have access to tools")
   expect_no_match(
@@ -47,9 +48,7 @@ test_that("btw_client() modifies `client` argument in place", {
 })
 
 test_that("btw_client() adds `.btw` context file to system prompt", {
-  withr::local_envvar(list(POSITRON = "", RSTUDIO = "1"))
   withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
-  mock_platform_date()
 
   wd <- withr::local_tempdir(
     tmpdir = file.path(tempdir(), "btw-proj", "subtask")
@@ -65,11 +64,13 @@ test_that("btw_client() adds `.btw` context file to system prompt", {
     )
   )
 
-  chat <- btw_client(
-    client = ellmer::chat_claude(
-      system_prompt = "I like to have my own system prompt."
+  with_mocked_platform(ide = "rstudio", {
+    chat <- btw_client(
+      client = ellmer::chat_claude(
+        system_prompt = "I like to have my own system prompt."
+      )
     )
-  )
+  })
 
   expect_match(chat$get_system_prompt(), "# Project Context", fixed = TRUE)
   expect_match(
@@ -83,9 +84,7 @@ test_that("btw_client() adds `.btw` context file to system prompt", {
 })
 
 test_that("btw_client() uses `.btw` context file for client settings", {
-  withr::local_envvar(list(POSITRON = "", RSTUDIO = "1"))
   withr::local_envvar(list(OPENAI_API_KEY = "beep"))
-  mock_platform_date()
 
   wd <- withr::local_tempdir(
     tmpdir = file.path(tempdir(), "btw-proj", "subtask")
@@ -108,7 +107,9 @@ test_that("btw_client() uses `.btw` context file for client settings", {
     )
   )
 
-  chat <- btw_client()
+  with_mocked_platform(ide = "rstudio", {
+    chat <- btw_client()
+  })
 
   expect_equal(chat$get_model(), "gpt-4o")
   expect_true(inherits(
@@ -124,8 +125,12 @@ test_that("btw_client() uses `.btw` context file for client settings", {
   )
 
   fs::file_move("../.btw", "../btw-context.md")
+  with_mocked_platform(ide = "rstudio", {
+    chat_parent <-
+      btw_client(path_btw = "../btw-context.md")
+  })
   expect_equal(
-    btw_client(path_btw = "../btw-context.md")$get_system_prompt(),
+    chat_parent$get_system_prompt(),
     chat$get_system_prompt()
   )
 

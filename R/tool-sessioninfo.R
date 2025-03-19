@@ -44,7 +44,7 @@ btw_tool_describe_platform <- function() {
 )
 
 platform_date <- function(when = Sys.time()) {
-  format(when, "%A, %B %d, %Y (%F)")
+  format(when, "%A, %B %e, %Y (%F)")
 }
 
 platform_info <- function() {
