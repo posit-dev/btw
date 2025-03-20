@@ -10,7 +10,7 @@ test_that("btw() preserves order", {
   expect_snapshot(cli::cat_line(btw(two, one)))
 })
 
-test_that("btw() can include prompt stings", {
+test_that("btw() can include prompt strings", {
   expect_equal(
     format(btw("first thing", "second thing")),
     "## User\nfirst thing\nsecond thing"
