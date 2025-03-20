@@ -72,11 +72,12 @@
 btw <- function(..., clipboard = TRUE) {
   check_bool(clipboard)
 
-  elts <- dots_list(..., .named = TRUE)
+  elts <- dots_list(!!!enquos(...), .named = TRUE)
 
   if (length(elts) == 0) {
     res <- btw_this(globalenv())
   } else {
+    elts <- lapply(elts, eval_tidy)
     res <- btw_this(
       new_environment(elts, parent = parent.frame()),
       items = names(elts)

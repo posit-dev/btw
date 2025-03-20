@@ -1,4 +1,4 @@
-# btw works
+# btw() formats output as expected
 
     Code
       cli::cat_line(btw(mtcars))
