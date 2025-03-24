@@ -84,7 +84,7 @@ platform_info <- function() {
 #' @returns Returns a string describing the selected packages.
 #'
 #' @examples
-#' cat(btw_tool_list_packages("btw"))
+#' cat(btw_tool_session_package_info("btw"))
 #'
 #' @family Tools
 #' @export

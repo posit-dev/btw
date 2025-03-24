@@ -24,7 +24,7 @@ package is installed; check the version number of a specific packages; or
 determine which packages are already in use in a session.
 }
 \examples{
-cat(btw_tool_list_packages("btw"))
+cat(btw_tool_session_package_info("btw"))
 
 }
 \seealso{
