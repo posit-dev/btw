@@ -112,7 +112,7 @@ btw_tool_session_package_info <- function(
       attached = "Attached",
       installed = "Installed"
     )
-    title <- c(sprintf("## %s Packages", title[packages]), "")
+    title <- c(sprintf("### %s Packages", title[packages]), "")
   }
 
   packages <- package_info(packages, dependencies)

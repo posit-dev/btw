@@ -65,7 +65,7 @@
     Code
       cat(btw_tool_session_package_info("attached"))
     Output
-      ## Attached Packages
+      ### Attached Packages
       
       ```
        ! package  * version    date (UTC) lib source
@@ -86,7 +86,7 @@
     Code
       cat(btw_tool_session_package_info("loaded"))
     Output
-      ## Loaded Packages
+      ### Loaded Packages
       
       ```
        ! package     * version     date (UTC) lib source
