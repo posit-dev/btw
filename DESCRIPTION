@@ -25,7 +25,6 @@ Imports:
     dplyr,
     ellmer,
     fs,
-    glue,
     jsonlite,
     rlang (>= 1.1.0),
     rmarkdown,
