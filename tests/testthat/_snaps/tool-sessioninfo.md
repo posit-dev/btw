@@ -1,4 +1,4 @@
-# btw_tool_describe_platform() works
+# btw_tool_session_platform_info() works
 
     Code
       cat(platform_description)

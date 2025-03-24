@@ -9,11 +9,11 @@
 #' @returns Returns a string describing the user's platform.
 #'
 #' @examples
-#' cat(btw_tool_describe_platform())
+#' cat(btw_tool_session_platform_info())
 #'
 #' @family Tools
 #' @export
-btw_tool_describe_platform <- function() {
+btw_tool_session_platform_info <- function() {
   platform <- platform_info()
   platform <- trimws(capture.output(platform)[-1])
   platform <- sub(" +", " ", platform)
@@ -23,11 +23,11 @@ btw_tool_describe_platform <- function() {
 }
 
 .btw_add_to_tools(
-  name = "btw_tool_describe_platform",
+  name = "btw_tool_session_platform_info",
   group = "session",
   tool = function() {
     ellmer::tool(
-      btw_tool_describe_platform,
+      btw_tool_session_platform_info,
       .description = "Describes the R version, operating system, language and locale settings for the user's system."
     )
   }
@@ -74,7 +74,7 @@ platform_info <- function() {
 #' package is installed; check the version number of a specific packages; or
 #' determine which packages are already in use in a session.
 #'
-#' @seealso [btw_register_tools()], [btw_tool_describe_platform()]
+#' @seealso [btw_register_tools()], [btw_tool_session_platform_info()]
 #'
 #' @param packages Which packages to show, or `"loaded"` to show all loaded
 #'   packages, `"attached"` to show all attached packages, or `"installed"` to

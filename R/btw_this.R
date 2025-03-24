@@ -106,7 +106,7 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
     return(btw_tool_read_current_editor(selection = TRUE, consent = TRUE))
   }
   if (identical(x, "@platform_info")) {
-    return(btw_tool_describe_platform())
+    return(btw_tool_session_platform_info())
   }
 
   if (grepl("^\\./", x)) {

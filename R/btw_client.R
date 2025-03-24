@@ -99,7 +99,7 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
     "# System and Session Context",
     "Please account for the following R session and system settings in all responses.",
     "",
-    btw_tool_describe_platform(),
+    btw_tool_session_platform_info(),
     "",
     if (!identical(config$tools, "none")) {
       c(
