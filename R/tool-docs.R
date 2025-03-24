@@ -24,16 +24,16 @@ btw_tool_get_installed_packages <- function() {
   )
 }
 
-.btw_add_to_tools(
-  name = "btw_tool_get_installed_packages",
-  group = "docs",
-  tool = function() {
-    ellmer::tool(
-      btw_tool_get_installed_packages,
-      .description = "Displays the name and title of all installed R packages in json format."
-    )
-  }
-)
+# .btw_add_to_tools(
+#   name = "btw_tool_get_installed_packages",
+#   group = "docs",
+#   tool = function() {
+#     ellmer::tool(
+#       btw_tool_get_installed_packages,
+#       .description = "Displays the name and title of all installed R packages in json format."
+#     )
+#   }
+# )
 
 #' Tool: Describe R package documentation
 #'

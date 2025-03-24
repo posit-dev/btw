@@ -22,3 +22,28 @@ test_that("btw_tool_describe_platform() detects RStudio, Positron, VS Code", {
     }
   )
 })
+
+test_that("btw_tool_session_package_info()", {
+  with_mocked_bindings(
+    package_info = function(...) package_info_mock_results[["dplyr"]],
+    expect_snapshot(cat(btw_tool_session_package_info("dplyr")))
+  )
+
+  with_mocked_bindings(
+    package_info = function(...) package_info_mock_results[["digest"]],
+    expect_snapshot(cat(btw_tool_session_package_info(
+      "digest",
+      c("Imports", "Suggests")
+    )))
+  )
+
+  with_mocked_bindings(
+    package_info = function(...) package_info_mock_results[["attached"]],
+    expect_snapshot(cat(btw_tool_session_package_info("attached")))
+  )
+
+  with_mocked_bindings(
+    package_info = function(...) package_info_mock_results[["loaded"]],
+    expect_snapshot(cat(btw_tool_session_package_info("loaded")))
+  )
+})

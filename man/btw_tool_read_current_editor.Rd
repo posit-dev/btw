@@ -32,6 +32,7 @@ Other Tools:
 \code{\link{btw_tool_get_installed_packages}()},
 \code{\link{btw_tool_list_files}()},
 \code{\link{btw_tool_package_docs}},
-\code{\link{btw_tool_read_text_file}()}
+\code{\link{btw_tool_read_text_file}()},
+\code{\link{btw_tool_session_package_info}()}
 }
 \concept{Tools}
