@@ -59,6 +59,9 @@ of the file currently open in the editor using
 Includes information about the current platform, such as the R version,
 operating system, IDE or UI being used, as well as language, locale,
 timezone and current date.
+\item \code{"@attached_packages"}, \code{"@loaded_packages"}, \code{"@installed_packages"} \cr
+Includes information about the attached, loaded, or installed packages in
+your R session, using \code{\link[sessioninfo:package_info]{sessioninfo::package_info()}}.
 }
 }
 \seealso{

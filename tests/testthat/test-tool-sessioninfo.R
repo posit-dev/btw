@@ -47,3 +47,24 @@ test_that("btw_tool_session_package_info()", {
     expect_snapshot(cat(btw_tool_session_package_info("loaded")))
   )
 })
+
+test_that("btw_this('@attached_packages')", {
+  expect_equal(
+    btw_this("@attached_packages"),
+    btw_tool_session_package_info("attached")
+  )
+})
+
+test_that("btw_this('@loaded_packages')", {
+  expect_equal(
+    btw_this("@loaded_packages"),
+    btw_tool_session_package_info("loaded")
+  )
+})
+
+test_that("btw_this('@installed_packages')", {
+  expect_equal(
+    btw_this("@installed_packages"),
+    btw_tool_session_package_info("installed")
+  )
+})
