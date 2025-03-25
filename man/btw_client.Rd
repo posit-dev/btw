@@ -23,7 +23,8 @@ the client definition from the first of these that is available.}
 \item{tools}{Names of tools or tool groups to include when registering
 tools, e.g. \code{include = "docs"} to include only the documentation related
 tools, or \code{include = c("data", "docs", "environment")}, etc. Equivalent to
-the \code{include} argument of \code{\link[=btw_register_tools]{btw_register_tools()}}.}
+the \code{include} argument of \code{\link[=btw_register_tools]{btw_register_tools()}}. Use \code{tools = FALSE} to
+skip registering \pkg{btw} tools with the chat client.}
 
 \item{path_btw}{A path to a \code{.btw} project context file. If \code{NULL}, btw will
 find a project-specific \code{.btw} file in the parents of the current working

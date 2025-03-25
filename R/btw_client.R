@@ -78,7 +78,8 @@
 #' @param tools Names of tools or tool groups to include when registering
 #'   tools, e.g. `include = "docs"` to include only the documentation related
 #'   tools, or `include = c("data", "docs", "environment")`, etc. Equivalent to
-#'   the `include` argument of [btw_register_tools()].
+#'   the `include` argument of [btw_register_tools()]. Use `tools = FALSE` to
+#'   skip registering \pkg{btw} tools with the chat client.
 #' @param path_btw A path to a `.btw` project context file. If `NULL`, btw will
 #'   find a project-specific `.btw` file in the parents of the current working
 #'   directory.
@@ -91,6 +92,7 @@
 #' @export
 btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
   config <- btw_client_config(client, tools, config = read_btw_file(path_btw))
+  skip_tools <- isFALSE(config$tools) || identical(config$tools, "none")
 
   client <- config$client
 
@@ -101,7 +103,7 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
     "",
     btw_tool_session_platform_info(),
     "",
-    if (!identical(config$tools, "none")) {
+    if (!skip_tools) {
       c(
         "# Tools",
         "",
@@ -128,8 +130,10 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
   )
   client$set_system_prompt(paste(sys_prompt, collapse = "\n"))
 
-  maybe_quiet <- if (is.null(tools)) suppressMessages else I
-  maybe_quiet(btw_register_tools(client, tools = config$tools))
+  if (!skip_tools) {
+    maybe_quiet <- if (is.null(tools)) suppressMessages else I
+    maybe_quiet(btw_register_tools(client, tools = config$tools))
+  }
 
   dots <- dots_list(..., .named = TRUE)
 
