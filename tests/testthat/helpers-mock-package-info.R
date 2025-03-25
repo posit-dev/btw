@@ -1101,5 +1101,33 @@ package_info_mock_results <- list(
       "xtable"
     ),
     class = c("packages_info", "data.frame")
+  ),
+  # package_info(c("dplyr", "tidyr"), dependencies = FALSE) |> dput() |> capture.output() |> clipr::write_clip()
+  "dplyr,tidyr" = structure(
+    list(
+      package = c("dplyr", "tidyr"),
+      ondiskversion = c("1.1.4", "1.3.1"),
+      loadedversion = c("1.1.4", NA),
+      path = c(
+        "/Users/garrick/Library/R/arm64/4.4/library/dplyr",
+        "/Users/garrick/Library/R/arm64/4.4/library/tidyr"
+      ),
+      loadedpath = c("/Users/garrick/Library/R/arm64/4.4/library/dplyr", NA),
+      attached = c(FALSE, FALSE),
+      is_base = c(FALSE, FALSE),
+      date = c("2023-11-17", "2024-01-24"),
+      source = c("CRAN (R 4.4.0)", "CRAN (R 4.4.0)"),
+      md5ok = c(NA, NA),
+      library = structure(
+        c(1L, 1L),
+        levels = c(
+          "/Users/garrick/Library/R/arm64/4.4/library",
+          "/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library"
+        ),
+        class = "factor"
+      )
+    ),
+    row.names = c("dplyr", "tidyr"),
+    class = c("packages_info", "data.frame")
   )
 )

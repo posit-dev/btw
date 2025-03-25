@@ -46,6 +46,17 @@ test_that("btw_tool_session_package_info()", {
     package_info = function(...) package_info_mock_results[["loaded"]],
     expect_snapshot(cat(btw_tool_session_package_info("loaded")))
   )
+
+  with_mocked_bindings(
+    package_info = function(packages, dependencies) {
+      stopifnot(
+        identical(packages, c("dplyr", "tidyr")),
+        isFALSE(dependencies)
+      )
+      package_info_mock_results[["dplyr,tidyr"]]
+    },
+    expect_snapshot(cat(btw_tool_session_package_info("dplyr,tidyr", "false")))
+  )
 })
 
 test_that("btw_this('@attached_packages')", {

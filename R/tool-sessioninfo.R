@@ -103,6 +103,11 @@ btw_tool_session_package_info <- function(
     dependencies <- TRUE
   }
 
+  packages <- trimws(strsplit(packages, ",")[[1]])
+  if (is.character(dependencies)) {
+    dependencies <- trimws(strsplit(dependencies, ",")[[1]])
+  }
+
   title <- NULL
   if (
     length(packages) == 1 && packages %in% c("loaded", "attached", "installed")
@@ -153,12 +158,12 @@ package_info <- function(pkgs = NULL, dependencies = NA) {
       ),
       packages = ellmer::type_string(
         description = paste(
-          "Provide a vector of package names to check that these packages are",
+          "Provide a commma-separated list of package names to check that these packages are",
           "installed and to confirm which versions of the packages are available.",
-          "Use \"attached\" to show packages that have been attached by the user,",
-          "i.e. are explicitly in use in the session. Use \"loaded\" to show all",
+          "Use the single string \"attached\" to show packages that have been attached by the user,",
+          "i.e. are explicitly in use in the session. Use the single string \"loaded\" to show all",
           "packages, including implicitly loaded packages, that are in use in the",
-          "session (useful for debugging). Finally, \"installed\" lists all",
+          "session (useful for debugging). Finally, the string \"installed\" lists all",
           "installed packages. Try using the other available options prior to",
           "listing all installed packages."
         ),
@@ -168,8 +173,8 @@ package_info <- function(pkgs = NULL, dependencies = NA) {
         description = paste(
           "When describing the installed or loaded version of a specific package,",
           "you can use `dependencies = \"true\"` to list dependencies of the",
-          "package. Alternatively, you can give a vector of dependency types, ",
-          'choosing from `c("Depends", "Imports", "Suggests", "LinkingTo", "Enhances")`.'
+          "package. Alternatively, you can give a comma-separated list of dependency types, ",
+          'choosing from `"Depends"`, `"Imports"`, `"Suggests"`, `"LinkingTo"`, `"Enhances"`.'
         ),
         required = FALSE
       )
