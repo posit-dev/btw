@@ -63,7 +63,6 @@ Other Tools:
 \code{\link{btw_register_tools}()},
 \code{\link{btw_tool_describe_data_frame}()},
 \code{\link{btw_tool_describe_environment}()},
-\code{\link{btw_tool_get_installed_packages}()},
 \code{\link{btw_tool_list_files}()},
 \code{\link{btw_tool_read_current_editor}()},
 \code{\link{btw_tool_read_text_file}()},
