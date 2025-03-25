@@ -165,3 +165,17 @@
        P -- Loaded and on-disk path mismatch.
       ```
 
+---
+
+    Code
+      cat(btw_tool_session_package_info("dplyr,tidyr", "false"))
+    Output
+      ```
+       package * version date (UTC) lib source
+       dplyr     1.1.4   2023-11-17 [1] CRAN (R 4.4.0)
+       tidyr     1.3.1   2024-01-24 [1] CRAN (R 4.4.0)
+      
+       [1] /Users/garrick/Library/R/arm64/4.4/library
+       [2] /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library
+      ```
+
