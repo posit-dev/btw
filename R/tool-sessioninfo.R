@@ -112,12 +112,13 @@ btw_tool_session_package_info <- function(
   if (
     length(packages) == 1 && packages %in% c("loaded", "attached", "installed")
   ) {
-    title <- c(
-      loaded = "Loaded",
-      attached = "Attached",
-      installed = "Installed"
+    title <- switch(
+      packages,
+      loaded = "Loaded Packages",
+      attached = "Attached Packages",
+      installed = "Installed Packages"
     )
-    title <- c(sprintf("### %s Packages", title[packages]), "")
+    title <- c(paste("###", title), "")
   }
 
   packages <- package_info(packages, dependencies)
@@ -131,7 +132,7 @@ btw_tool_session_package_info <- function(
     packages
   )
 
-  I(paste(c(title, packages), collapse = "\n"))
+  paste(c(title, packages), collapse = "\n")
 }
 
 package_info <- function(pkgs = NULL, dependencies = NA) {

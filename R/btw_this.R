@@ -113,13 +113,13 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
     return(btw_tool_session_platform_info())
   }
   if (identical(x, "@attached_packages")) {
-    return(btw_tool_session_package_info("attached"))
+    return(I(btw_tool_session_package_info("attached")))
   }
   if (identical(x, "@loaded_packages")) {
-    return(btw_tool_session_package_info("loaded"))
+    return(I(btw_tool_session_package_info("loaded")))
   }
   if (identical(x, "@installed_packages")) {
-    return(btw_tool_session_package_info("installed"))
+    return(I(btw_tool_session_package_info("installed")))
   }
 
   if (grepl("^\\./", x)) {
