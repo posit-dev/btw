@@ -17,12 +17,12 @@
 <url><loc>https://posit-dev.github.io/btw/reference/btw_this.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_tool_describe_data_frame.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_tool_describe_environment.html</loc></url>
-<url><loc>https://posit-dev.github.io/btw/reference/btw_tool_describe_platform.html</loc></url>
-<url><loc>https://posit-dev.github.io/btw/reference/btw_tool_get_installed_packages.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_tool_list_files.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_tool_package_docs.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_tool_read_current_editor.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_tool_read_text_file.html</loc></url>
+<url><loc>https://posit-dev.github.io/btw/reference/btw_tool_session_package_info.html</loc></url>
+<url><loc>https://posit-dev.github.io/btw/reference/btw_tool_session_platform_info.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/index.html</loc></url>
 </urlset>
 

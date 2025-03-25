@@ -36,6 +36,9 @@ rstudioapi::getSourceEditorContext().
 Includes information about the current platform, such as the R version,
 operating system, IDE or UI being used, as well as language, locale,
 timezone and current date.
+&quot;@attached_packages&quot;, &quot;@loaded_packages&quot;, &quot;@installed_packages&quot;
+Includes information about the attached, loaded, or installed packages in
+your R session, using sessioninfo::package_info().
 
 "><meta property="og:description" content="Character strings in btw_this() are used as shortcuts to many underlying
 methods. btw_this() detects specific formats in the input string to
@@ -74,6 +77,9 @@ rstudioapi::getSourceEditorContext().
 Includes information about the current platform, such as the R version,
 operating system, IDE or UI being used, as well as language, locale,
 timezone and current date.
+&quot;@attached_packages&quot;, &quot;@loaded_packages&quot;, &quot;@installed_packages&quot;
+Includes information about the attached, loaded, or installed packages in
+your R session, using sessioninfo::package_info().
 
 "></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -142,6 +148,9 @@ of the file currently open in the editor using
 Includes information about the current platform, such as the R version,
 operating system, IDE or UI being used, as well as language, locale,
 timezone and current date.</p></li>
+<li><p><code>"@attached_packages"</code>, <code>"@loaded_packages"</code>, <code>"@installed_packages"</code> <br>
+Includes information about the attached, loaded, or installed packages in
+your R session, using <code><a href="https://sessioninfo.r-lib.org/reference/package_info.html" class="external-link">sessioninfo::package_info()</a></code>.</p></li>
 </ul></div>
 
     <div class="section level2">
