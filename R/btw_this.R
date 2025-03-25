@@ -87,6 +87,10 @@ as_btw_capture <- function(x) {
 #'   operating system, IDE or UI being used, as well as language, locale,
 #'   timezone and current date.
 #'
+#' * `"@attached_packages"`, `"@loaded_packages"`, `"@installed_packages"` \cr
+#'   Includes information about the attached, loaded, or installed packages in
+#'   your R session, using [sessioninfo::package_info()].
+#'
 #' @param x A character string
 #' @param ... Ignored.
 #' @param caller_env The caller environment.
@@ -106,7 +110,16 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
     return(btw_tool_read_current_editor(selection = TRUE, consent = TRUE))
   }
   if (identical(x, "@platform_info")) {
-    return(btw_tool_describe_platform())
+    return(btw_tool_session_platform_info())
+  }
+  if (identical(x, "@attached_packages")) {
+    return(I(btw_tool_session_package_info("attached")))
+  }
+  if (identical(x, "@loaded_packages")) {
+    return(I(btw_tool_session_package_info("loaded")))
+  }
+  if (identical(x, "@installed_packages")) {
+    return(I(btw_tool_session_package_info("installed")))
   }
 
   if (grepl("^\\./", x)) {
