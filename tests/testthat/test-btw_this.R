@@ -30,3 +30,34 @@ test_that("btw_this() handles literal strings", {
     "letters[3]"
   )
 })
+
+test_that("btw_this('@last_error')", {
+  with_mocked_bindings(
+    last_error = function() {
+      stop(
+        "Can't show last error because no error was recorded yet",
+        call. = FALSE
+      )
+    },
+    expect_warning(expect_equal(btw_this("@last_error"), btw_ignore()))
+  )
+
+  with_mocked_bindings(
+    last_error = function() {
+      rlang::catch_cnd(abort("That didn't work.", trace = FALSE, call = NULL))
+    },
+    # btw_this("@last_error")
+    expect_snapshot(cat(btw_this("@last_error")))
+  )
+})
+
+test_that('btw_this("@last_value")', {
+  local_mocked_bindings(
+    get_last_value = function() mtcars[2:4, ]
+  )
+
+  expect_equal(
+    btw_this("@last_value"),
+    btw_this(mtcars[2:4, ])
+  )
+})

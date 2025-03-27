@@ -28,6 +28,8 @@ btw_this.default <- function(x, ...) {
 
 capture_print <- function(x) {
   # TODO: Replace with {evaluate}
+  local_reproducible_output(max.print = 100)
+
   out <- capture.output(print(x))
   if (length(out) == 0 || !any(nzchar(out))) {
     out <- capture.output(print(x), type = "message")
@@ -37,6 +39,7 @@ capture_print <- function(x) {
 }
 
 as_btw_capture <- function(x) {
+  x <- cli::ansi_strip(x)
   structure(x, class = c("btw_captured", "character"))
 }
 
@@ -91,6 +94,15 @@ as_btw_capture <- function(x) {
 #'   Includes information about the attached, loaded, or installed packages in
 #'   your R session, using [sessioninfo::package_info()].
 #'
+#' * `"@last_error"` \cr
+#'   Includes the message from the last error that occurred in your session.
+#'   To reliably capture the last error, you need to enable
+#'   [rlang::global_entrace()] in your session.
+#'
+#' * `"@last_value"` \cr
+#'   Includes the `.Last.value`, i.e. the result of the last expression
+#'   evaluated in your R console.
+#'
 #' @param x A character string
 #' @param ... Ignored.
 #' @param caller_env The caller environment.
@@ -120,6 +132,15 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
   }
   if (identical(x, "@installed_packages")) {
     return(I(btw_tool_session_package_info("installed")))
+  }
+  if (identical(x, "@last_error")) {
+    err <- get_last_error()
+    return(
+      if (is.null(err)) btw_ignore() else capture_print(err)
+    )
+  }
+  if (identical(x, "@last_value")) {
+    return(btw_this(get_last_value()))
   }
 
   if (grepl("^\\./", x)) {
@@ -258,4 +279,22 @@ btw_returns_character <- function(...) {
 #' @export
 btw_this.btw_returns_character <- function(x, ...) {
   capture_print(unclass(x))
+}
+
+# Helpers ---------------------------------------------------------------------
+
+get_last_error <- function() {
+  # last_error() throws its own error if there aren't any errors yet
+  err <- tryCatch(last_error(), error = function(e) NULL)
+  if (is.null(err)) {
+    cli::cli_warn(c(
+      "No last error was found.",
+      "i" = "Use {.run ?rlang::global_entrace} to enable {.code @last_error}."
+    ))
+  }
+  err
+}
+
+get_last_value <- function() {
+  base::.Last.value
 }

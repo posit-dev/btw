@@ -10,3 +10,10 @@
       }
       ```
 
+# btw_this('@last_error')
+
+    Code
+      cat(btw_this("@last_error"))
+    Output
+      <error/rlang_error> Error: ! That didn't work.
+

@@ -63,6 +63,8 @@ of R stuff and copy it to your clipboard.
   `"@installed_packages"` includes a listing of attached (i.e. with
   `library()`), loaded (in use in the session, often indirectly), or
   installed packages.
+- And more! See `?btw_this.character` for the full list of additional
+  context strings.
 
 When passed multiple arguments, `btw()` will concatenate each
 description. For example, you could run:
@@ -95,7 +97,6 @@ The following would be attached to your clipboard:
       {"topic_id":"btw_this.environment","title":"Describe the contents of an environment","aliases":["btw_this.environment"]},
       {"topic_id":"btw_tool_describe_data_frame","title":"Tool: Describe data frame","aliases":["btw_tool_describe_data_frame"]},
       {"topic_id":"btw_tool_describe_environment","title":"Tool: Describe an environment","aliases":["btw_tool_describe_environment"]},
-      {"topic_id":"btw_tool_get_installed_packages","title":"Tool: Describe installed packages","aliases":["btw_tool_get_installed_packages"]},
       {"topic_id":"btw_tool_list_files","title":"Tool: List files","aliases":["btw_tool_list_files"]},
       {"topic_id":"btw_tool_package_docs","title":"Tool: Describe R package documentation","aliases":["btw_tool_package_docs","btw_tool_get_package_help_topics","btw_tool_get_help_page","btw_tool_get_available_vignettes_in_package","btw_tool_get_vignette_from_package"]},
       {"topic_id":"btw_tool_read_current_editor","title":"Tool: Read current file","aliases":["btw_tool_read_current_editor"]},

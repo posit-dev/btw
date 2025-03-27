@@ -56,3 +56,31 @@ path_find_in_project <- function(filename, dir = getwd()) {
 
   path_find_in_project(filename, dirname(dir))
 }
+
+local_reproducible_output <- function(
+  width = 80L,
+  max.print = 100,
+  .env = parent.frame()
+) {
+  # Replicating testthat::local_reproducible_output()
+  withr::local_options(width = width, cli.width = width, .local_envir = .env)
+  withr::local_envvar(RSTUDIO_CONSOLE_WIDTH = width, .local_envir = .env)
+  withr::local_envvar(list(NO_COLOR = "true"), .local_envir = .env)
+  withr::local_options(
+    crayon.enabled = FALSE,
+    cli.hyperlink = FALSE,
+    cli.hyperlink_run = FALSE,
+    cli.hyperlink_help = FALSE,
+    cli.hyperlink_vignette = FALSE,
+    cli.dynamic = FALSE,
+    cli.unicode = FALSE,
+    cli.condition_width = Inf,
+    cli.num_colors = 1L,
+    useFancyQuotes = FALSE,
+    lifecycle_verbosity = "warning",
+    OutDec = ".",
+    rlang_interactive = FALSE,
+    max.print = max.print,
+    .local_envir = .env
+  )
+}
