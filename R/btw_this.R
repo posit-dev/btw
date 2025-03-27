@@ -28,6 +28,8 @@ btw_this.default <- function(x, ...) {
 
 capture_print <- function(x) {
   # TODO: Replace with {evaluate}
+  local_reproducible_output(max.print = 100)
+
   out <- capture.output(print(x))
   if (length(out) == 0 || !any(nzchar(out))) {
     out <- capture.output(print(x), type = "message")
@@ -37,6 +39,7 @@ capture_print <- function(x) {
 }
 
 as_btw_capture <- function(x) {
+  x <- cli::ansi_strip(x)
   structure(x, class = c("btw_captured", "character"))
 }
 
