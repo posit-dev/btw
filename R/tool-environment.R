@@ -110,6 +110,10 @@ btw_tool_describe_environment <- function(
     }
   }
 
+  if (identical(res, c("## Context", ""))) {
+    return("")
+  }
+
   res
 }
 
@@ -139,11 +143,14 @@ btw_item_with_description <- function(item_name, description, header = NULL) {
     return(invisible())
   }
   if (inherits(description, "btw_captured")) {
-    description <- md_code_block(
-      "r",
-      gsub('^"|"$', '', item_name),
-      paste("#>", description)
+    item_name <- gsub('^"|"$', '', item_name)
+    item_name <- switch(
+      item_name,
+      "@last_error" = "last_error()",
+      item_name
     )
+
+    description <- md_code_block("r", item_name, paste("#>", description))
     item_name <- NULL
   }
 

@@ -86,6 +86,11 @@ btw <- function(..., clipboard = TRUE) {
 
   res <- paste(res, collapse = "\n")
 
+  if (identical(res, "")) {
+    cli::cli_alert_warning("Nothing to include in the btw() context.")
+    return(invisible(""))
+  }
+
   BTW(text = res, settings = env(clipboard = clipboard))
 }
 
