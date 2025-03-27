@@ -147,6 +147,7 @@ btw_item_with_description <- function(item_name, description, header = NULL) {
     item_name <- switch(
       item_name,
       "@last_error" = "last_error()",
+      "@last_value" = ".Last.value",
       item_name
     )
 

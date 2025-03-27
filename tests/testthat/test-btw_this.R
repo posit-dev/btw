@@ -50,3 +50,14 @@ test_that("btw_this('@last_error')", {
     expect_snapshot(cat(btw_this("@last_error")))
   )
 })
+
+test_that('btw_this("@last_value")', {
+  local_mocked_bindings(
+    get_last_value = function() mtcars[2:4, ]
+  )
+
+  expect_equal(
+    btw_this("@last_value"),
+    btw_this(mtcars[2:4, ])
+  )
+})

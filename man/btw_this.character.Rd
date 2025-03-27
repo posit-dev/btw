@@ -66,6 +66,9 @@ your R session, using \code{\link[sessioninfo:package_info]{sessioninfo::package
 Includes the message from the last error that occurred in your session.
 To reliably capture the last error, you need to enable
 \code{\link[rlang:global_entrace]{rlang::global_entrace()}} in your session.
+\item \code{"@last_value"} \cr
+Includes the \code{.Last.value}, i.e. the result of the last expression
+evaluated in your R console.
 }
 }
 \seealso{

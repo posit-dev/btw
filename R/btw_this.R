@@ -99,6 +99,10 @@ as_btw_capture <- function(x) {
 #'   To reliably capture the last error, you need to enable
 #'   [rlang::global_entrace()] in your session.
 #'
+#' * `"@last_value"` \cr
+#'   Includes the `.Last.value`, i.e. the result of the last expression
+#'   evaluated in your R console.
+#'
 #' @param x A character string
 #' @param ... Ignored.
 #' @param caller_env The caller environment.
@@ -134,6 +138,9 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
     return(
       if (is.null(err)) btw_ignore() else capture_print(err)
     )
+  }
+  if (identical(x, "@last_value")) {
+    return(btw_this(get_last_value()))
   }
 
   if (grepl("^\\./", x)) {
@@ -286,4 +293,8 @@ get_last_error <- function() {
     ))
   }
   err
+}
+
+get_last_value <- function() {
+  base::.Last.value
 }
