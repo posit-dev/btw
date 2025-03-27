@@ -52,6 +52,7 @@ The `btw()` function allows you to compile information about all sorts of R stuf
 * `btw("@current_file")` and `btw("@current_selection")` reads the contents of the current editor or selection in RStudio, Positron, or anywhere the [rstudioapi](https://rstudio.github.io/rstudioapi) is supported.
 * `btw("@platform_info")` describes your R version, operating system, and locale information.
 * `btw()` with `"@attached_packages"`, `"@loaded_packages"`, or `"@installed_packages"` includes a listing of attached (i.e. with `library()`), loaded (in use in the session, often indirectly), or installed packages.
+* And more! See `?btw_this.character` for the full list of additional context strings.
 
 When passed multiple arguments, `btw()` will concatenate each description. For example, you could run:
 
