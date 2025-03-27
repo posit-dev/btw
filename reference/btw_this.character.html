@@ -39,6 +39,13 @@ timezone and current date.
 &quot;@attached_packages&quot;, &quot;@loaded_packages&quot;, &quot;@installed_packages&quot;
 Includes information about the attached, loaded, or installed packages in
 your R session, using sessioninfo::package_info().
+&quot;@last_error&quot;
+Includes the message from the last error that occurred in your session.
+To reliably capture the last error, you need to enable
+rlang::global_entrace() in your session.
+&quot;@last_value&quot;
+Includes the .Last.value, i.e. the result of the last expression
+evaluated in your R console.
 
 "><meta property="og:description" content="Character strings in btw_this() are used as shortcuts to many underlying
 methods. btw_this() detects specific formats in the input string to
@@ -80,6 +87,13 @@ timezone and current date.
 &quot;@attached_packages&quot;, &quot;@loaded_packages&quot;, &quot;@installed_packages&quot;
 Includes information about the attached, loaded, or installed packages in
 your R session, using sessioninfo::package_info().
+&quot;@last_error&quot;
+Includes the message from the last error that occurred in your session.
+To reliably capture the last error, you need to enable
+rlang::global_entrace() in your session.
+&quot;@last_value&quot;
+Includes the .Last.value, i.e. the result of the last expression
+evaluated in your R console.
 
 "></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -151,6 +165,13 @@ timezone and current date.</p></li>
 <li><p><code>"@attached_packages"</code>, <code>"@loaded_packages"</code>, <code>"@installed_packages"</code> <br>
 Includes information about the attached, loaded, or installed packages in
 your R session, using <code><a href="https://sessioninfo.r-lib.org/reference/package_info.html" class="external-link">sessioninfo::package_info()</a></code>.</p></li>
+<li><p><code>"@last_error"</code> <br>
+Includes the message from the last error that occurred in your session.
+To reliably capture the last error, you need to enable
+<code><a href="https://rlang.r-lib.org/reference/global_entrace.html" class="external-link">rlang::global_entrace()</a></code> in your session.</p></li>
+<li><p><code>"@last_value"</code> <br>
+Includes the <code>.Last.value</code>, i.e. the result of the last expression
+evaluated in your R console.</p></li>
 </ul></div>
 
     <div class="section level2">
