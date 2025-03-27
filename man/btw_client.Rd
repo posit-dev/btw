@@ -15,10 +15,10 @@ via \code{\link[=btw]{btw()}}.}
 
 \item{client}{An \link[ellmer:Chat]{ellmer::Chat} client, defaults to \code{\link[ellmer:chat_claude]{ellmer::chat_claude()}}.
 You can use the \code{btw.chat_client} option to set a default client for new
-\code{btw_client()} calls, or use a \code{.btw} project file for default chat client
-settings, like provider and model. We check the \code{client} argument, then the
-\code{btw.chat_client} R option, and finally the \code{.btw} project file, using only
-the client definition from the first of these that is available.}
+\code{btw_client()} calls, or use a \code{btw.md} project file for default chat
+client settings, like provider and model. We check the \code{client} argument,
+then the \code{btw.chat_client} R option, and finally the \code{btw.md} project file,
+using only the client definition from the first of these that is available.}
 
 \item{tools}{Names of tools or tool groups to include when registering
 tools, e.g. \code{include = "docs"} to include only the documentation related
@@ -26,9 +26,9 @@ tools, or \code{include = c("data", "docs", "environment")}, etc. Equivalent to
 the \code{include} argument of \code{\link[=btw_register_tools]{btw_register_tools()}}. Use \code{tools = FALSE} to
 skip registering \pkg{btw} tools with the chat client.}
 
-\item{path_btw}{A path to a \code{.btw} project context file. If \code{NULL}, btw will
-find a project-specific \code{.btw} file in the parents of the current working
-directory.}
+\item{path_btw}{A path to a \code{btw.md} project context file. If \code{NULL}, btw
+will find a project-specific \code{btw.md} file in the parents of the current
+working directory.}
 }
 \value{
 Returns an \link[ellmer:Chat]{ellmer::Chat} object with additional tools registered by
@@ -44,30 +44,30 @@ local workspace.
 \subsection{Project Context}{
 
 You can keep track of project-specific rules, guidance and context by adding
-a \code{.btw} file in your project directory. Any time you start a chat client
+a \code{btw.md} file in your project directory. Any time you start a chat client
 with \code{btw_client()} or launch a chat session with \code{btw_app()}, btw will
-automatically find and include the contents of the \code{.btw} file in your chat.
+automatically find and include the contents of the \code{btw.md} file in your
+chat.
 
-Use the \code{.btw} file to inform the LLM of your preferred code style, to
-provide domain-specific terminology or definitions, to establish project
+Use \code{btw.md} to inform the LLM of your preferred code style, to provide
+domain-specific terminology or definitions, to establish project
 documentation, goals and constraints, to include reference materials such or
-technical specifications, or more. Storing this kind of information in the
-\code{.btw} file may help you avoid repeating yourself and can be used to maintain
+technical specifications, or more. Storing this kind of information in
+\code{btw.md} may help you avoid repeating yourself and can be used to maintain
 coherence across many chat sessions.
 
-The \code{.btw} file, when present, is included as part of the system prompt for
+The \code{btw.md} file, when present, is included as part of the system prompt for
 your chat conversation. You can structure the file in any way you wish.
 
-You can also use the \code{.btw} file to choose default chat settings for your
+You can also use the \code{btw.md} file to choose default chat settings for your
 project in a YAML block at the top of the file. In this YAML block you can
 choose the default \code{provider}, \code{model} and \code{tools} for \code{btw_client()} or
 \code{btw_app()}. \code{provider} chooses the \verb{ellmer::chat_*()} function, e.g.
 \code{provider: openai} or \code{provider: chat_openai} to use \code{\link[ellmer:chat_openai]{ellmer::chat_openai()}}.
 \code{tools} chooses which btw tools are included in the chat, and all other
-values are passed to the \verb{ellmer::chat_*()} constructor, e.g.
-\verb{model: gpt-4o}, \code{seed: 42}, or `echo: all``.
+values are passed to the \verb{ellmer::chat_*()} constructor, e.g. \verb{model: gpt-4o}, \code{seed: 42}, or `echo: all``.
 
-Here's an example \code{.btw} file:
+Here's an example \code{btw.md} file:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{---
 provider: claude

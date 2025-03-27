@@ -47,7 +47,7 @@ test_that("btw_client() modifies `client` argument in place", {
   expect_identical(chat, client)
 })
 
-test_that("btw_client() adds `.btw` context file to system prompt", {
+test_that("btw_client() adds `btw.md` context file to system prompt", {
   withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
 
   wd <- withr::local_tempdir(
@@ -56,7 +56,7 @@ test_that("btw_client() adds `.btw` context file to system prompt", {
   withr::local_dir(wd)
 
   writeLines(
-    con = file.path(wd, "..", ".btw"),
+    con = file.path(wd, "..", "btw.md"),
     c(
       "* Prefer solutions that use {tidyverse}",
       "* Always use `=` for assignment",
@@ -83,7 +83,7 @@ test_that("btw_client() adds `.btw` context file to system prompt", {
   expect_snapshot(print(chat), transform = scrub_system_info)
 })
 
-test_that("btw_client() uses `.btw` context file for client settings", {
+test_that("btw_client() uses `btw.md` context file for client settings", {
   withr::local_envvar(list(OPENAI_API_KEY = "beep"))
 
   wd <- withr::local_tempdir(
@@ -92,7 +92,7 @@ test_that("btw_client() uses `.btw` context file for client settings", {
   withr::local_dir(wd)
 
   writeLines(
-    con = file.path(wd, "..", ".btw"),
+    con = file.path(wd, "..", "btw.md"),
     c(
       "---",
       "provider: openai",
@@ -124,7 +124,7 @@ test_that("btw_client() uses `.btw` context file for client settings", {
     fixed = TRUE
   )
 
-  fs::file_move("../.btw", "../btw-context.md")
+  fs::file_move("../btw.md", "../btw-context.md")
   with_mocked_platform(ide = "rstudio", {
     chat_parent <-
       btw_client(path_btw = "../btw-context.md")
