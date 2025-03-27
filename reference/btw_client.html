@@ -8,26 +8,26 @@ Project Context
 
 
 You can keep track of project-specific rules, guidance and context by adding
-a .btw file in your project directory. Any time you start a chat client
+a btw.md file in your project directory. Any time you start a chat client
 with btw_client() or launch a chat session with btw_app(), btw will
-automatically find and include the contents of the .btw file in your chat.
-Use the .btw file to inform the LLM of your preferred code style, to
-provide domain-specific terminology or definitions, to establish project
+automatically find and include the contents of the btw.md file in your
+chat.
+Use btw.md to inform the LLM of your preferred code style, to provide
+domain-specific terminology or definitions, to establish project
 documentation, goals and constraints, to include reference materials such or
-technical specifications, or more. Storing this kind of information in the
-.btw file may help you avoid repeating yourself and can be used to maintain
+technical specifications, or more. Storing this kind of information in
+btw.md may help you avoid repeating yourself and can be used to maintain
 coherence across many chat sessions.
-The .btw file, when present, is included as part of the system prompt for
+The btw.md file, when present, is included as part of the system prompt for
 your chat conversation. You can structure the file in any way you wish.
-You can also use the .btw file to choose default chat settings for your
+You can also use the btw.md file to choose default chat settings for your
 project in a YAML block at the top of the file. In this YAML block you can
 choose the default provider, model and tools for btw_client() or
 btw_app(). provider chooses the ellmer::chat_*() function, e.g.
 provider: openai or provider: chat_openai to use ellmer::chat_openai().
 tools chooses which btw tools are included in the chat, and all other
-values are passed to the ellmer::chat_*() constructor, e.g.
-model: gpt-4o, seed: 42, or `echo: all“.
-Here's an example .btw file:
+values are passed to the ellmer::chat_*() constructor, e.g. model: gpt-4o, seed: 42, or `echo: all“.
+Here's an example btw.md file:
 ---
 provider: claude
 model: claude-3-7-sonnet-20250219
@@ -63,26 +63,26 @@ Project Context
 
 
 You can keep track of project-specific rules, guidance and context by adding
-a .btw file in your project directory. Any time you start a chat client
+a btw.md file in your project directory. Any time you start a chat client
 with btw_client() or launch a chat session with btw_app(), btw will
-automatically find and include the contents of the .btw file in your chat.
-Use the .btw file to inform the LLM of your preferred code style, to
-provide domain-specific terminology or definitions, to establish project
+automatically find and include the contents of the btw.md file in your
+chat.
+Use btw.md to inform the LLM of your preferred code style, to provide
+domain-specific terminology or definitions, to establish project
 documentation, goals and constraints, to include reference materials such or
-technical specifications, or more. Storing this kind of information in the
-.btw file may help you avoid repeating yourself and can be used to maintain
+technical specifications, or more. Storing this kind of information in
+btw.md may help you avoid repeating yourself and can be used to maintain
 coherence across many chat sessions.
-The .btw file, when present, is included as part of the system prompt for
+The btw.md file, when present, is included as part of the system prompt for
 your chat conversation. You can structure the file in any way you wish.
-You can also use the .btw file to choose default chat settings for your
+You can also use the btw.md file to choose default chat settings for your
 project in a YAML block at the top of the file. In this YAML block you can
 choose the default provider, model and tools for btw_client() or
 btw_app(). provider chooses the ellmer::chat_*() function, e.g.
 provider: openai or provider: chat_openai to use ellmer::chat_openai().
 tools chooses which btw tools are included in the chat, and all other
-values are passed to the ellmer::chat_*() constructor, e.g.
-model: gpt-4o, seed: 42, or `echo: all“.
-Here's an example .btw file:
+values are passed to the ellmer::chat_*() constructor, e.g. model: gpt-4o, seed: 42, or `echo: all“.
+Here's an example btw.md file:
 ---
 provider: claude
 model: claude-3-7-sonnet-20250219
@@ -152,26 +152,26 @@ local workspace.</p><div class="section">
 
 
 <p>You can keep track of project-specific rules, guidance and context by adding
-a <code>.btw</code> file in your project directory. Any time you start a chat client
+a <code>btw.md</code> file in your project directory. Any time you start a chat client
 with <code>btw_client()</code> or launch a chat session with <code>btw_app()</code>, btw will
-automatically find and include the contents of the <code>.btw</code> file in your chat.</p>
-<p>Use the <code>.btw</code> file to inform the LLM of your preferred code style, to
-provide domain-specific terminology or definitions, to establish project
+automatically find and include the contents of the <code>btw.md</code> file in your
+chat.</p>
+<p>Use <code>btw.md</code> to inform the LLM of your preferred code style, to provide
+domain-specific terminology or definitions, to establish project
 documentation, goals and constraints, to include reference materials such or
-technical specifications, or more. Storing this kind of information in the
-<code>.btw</code> file may help you avoid repeating yourself and can be used to maintain
+technical specifications, or more. Storing this kind of information in
+<code>btw.md</code> may help you avoid repeating yourself and can be used to maintain
 coherence across many chat sessions.</p>
-<p>The <code>.btw</code> file, when present, is included as part of the system prompt for
+<p>The <code>btw.md</code> file, when present, is included as part of the system prompt for
 your chat conversation. You can structure the file in any way you wish.</p>
-<p>You can also use the <code>.btw</code> file to choose default chat settings for your
+<p>You can also use the <code>btw.md</code> file to choose default chat settings for your
 project in a YAML block at the top of the file. In this YAML block you can
 choose the default <code>provider</code>, <code>model</code> and <code>tools</code> for <code>btw_client()</code> or
 <code>btw_app()</code>. <code>provider</code> chooses the <code>ellmer::chat_*()</code> function, e.g.
 <code>provider: openai</code> or <code>provider: chat_openai</code> to use <code><a href="https://ellmer.tidyverse.org/reference/chat_openai.html" class="external-link">ellmer::chat_openai()</a></code>.
 <code>tools</code> chooses which btw tools are included in the chat, and all other
-values are passed to the <code>ellmer::chat_*()</code> constructor, e.g.
-<code>model: gpt-4o</code>, <code>seed: 42</code>, or `echo: all“.</p>
-<p>Here's an example <code>.btw</code> file:</p>
+values are passed to the <code>ellmer::chat_*()</code> constructor, e.g. <code>model: gpt-4o</code>, <code>seed: 42</code>, or `echo: all“.</p>
+<p>Here's an example <code>btw.md</code> file:</p>
 <p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="sc">---</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>provider<span class="sc">:</span> claude</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>model<span class="sc">:</span> claude<span class="dv">-3-7</span><span class="sc">-</span>sonnet<span class="dv">-20250219</span></span>
@@ -216,10 +216,10 @@ via <code><a href="btw.html">btw()</a></code>.</p></dd>
 <dt id="arg-client">client<a class="anchor" aria-label="anchor" href="#arg-client"></a></dt>
 <dd><p>An <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client, defaults to <code><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">ellmer::chat_claude()</a></code>.
 You can use the <code>btw.chat_client</code> option to set a default client for new
-<code>btw_client()</code> calls, or use a <code>.btw</code> project file for default chat client
-settings, like provider and model. We check the <code>client</code> argument, then the
-<code>btw.chat_client</code> R option, and finally the <code>.btw</code> project file, using only
-the client definition from the first of these that is available.</p></dd>
+<code>btw_client()</code> calls, or use a <code>btw.md</code> project file for default chat
+client settings, like provider and model. We check the <code>client</code> argument,
+then the <code>btw.chat_client</code> R option, and finally the <code>btw.md</code> project file,
+using only the client definition from the first of these that is available.</p></dd>
 
 
 <dt id="arg-tools">tools<a class="anchor" aria-label="anchor" href="#arg-tools"></a></dt>
@@ -231,9 +231,9 @@ skip registering <span class="pkg">btw</span> tools with the chat client.</p></d
 
 
 <dt id="arg-path-btw">path_btw<a class="anchor" aria-label="anchor" href="#arg-path-btw"></a></dt>
-<dd><p>A path to a <code>.btw</code> project context file. If <code>NULL</code>, btw will
-find a project-specific <code>.btw</code> file in the parents of the current working
-directory.</p></dd>
+<dd><p>A path to a <code>btw.md</code> project context file. If <code>NULL</code>, btw
+will find a project-specific <code>btw.md</code> file in the parents of the current
+working directory.</p></dd>
 
 </dl></div>
     <div class="section level2">
