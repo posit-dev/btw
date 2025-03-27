@@ -33,7 +33,7 @@
       
       I like to have my own system prompt.
 
-# btw_client() adds `.btw` context file to system prompt
+# btw_client() adds `btw.md` context file to system prompt
 
     Code
       print(chat)
@@ -74,7 +74,7 @@
       
       I like to have my own system prompt.
 
-# btw_client() uses `.btw` context file for client settings
+# btw_client() uses `btw.md` context file for client settings
 
     Code
       print(chat)

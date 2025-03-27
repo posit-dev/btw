@@ -10,30 +10,31 @@
 #' ## Project Context
 #'
 #' You can keep track of project-specific rules, guidance and context by adding
-#' a `.btw` file in your project directory. Any time you start a chat client
+#' a `btw.md` file in your project directory. Any time you start a chat client
 #' with `btw_client()` or launch a chat session with `btw_app()`, btw will
-#' automatically find and include the contents of the `.btw` file in your chat.
+#' automatically find and include the contents of the `btw.md` file in your
+#' chat.
 #'
-#' Use the `.btw` file to inform the LLM of your preferred code style, to
-#' provide domain-specific terminology or definitions, to establish project
+#' Use `btw.md` to inform the LLM of your preferred code style, to provide
+#' domain-specific terminology or definitions, to establish project
 #' documentation, goals and constraints, to include reference materials such or
-#' technical specifications, or more. Storing this kind of information in the
-#' `.btw` file may help you avoid repeating yourself and can be used to maintain
+#' technical specifications, or more. Storing this kind of information in
+#' `btw.md` may help you avoid repeating yourself and can be used to maintain
 #' coherence across many chat sessions.
 #'
-#' The `.btw` file, when present, is included as part of the system prompt for
+#' The `btw.md` file, when present, is included as part of the system prompt for
 #' your chat conversation. You can structure the file in any way you wish.
 #'
-#' You can also use the `.btw` file to choose default chat settings for your
+#' You can also use the `btw.md` file to choose default chat settings for your
 #' project in a YAML block at the top of the file. In this YAML block you can
 #' choose the default `provider`, `model` and `tools` for `btw_client()` or
 #' `btw_app()`. `provider` chooses the `ellmer::chat_*()` function, e.g.
 #' `provider: openai` or `provider: chat_openai` to use [ellmer::chat_openai()].
 #' `tools` chooses which btw tools are included in the chat, and all other
-#' values are passed to the `ellmer::chat_*()` constructor, e.g.
-#' `model: gpt-4o`, `seed: 42`, or `echo: all``.
+#' values are passed to the `ellmer::chat_*()` constructor, e.g. `model:
+#' gpt-4o`, `seed: 42`, or `echo: all``.
 #'
-#' Here's an example `.btw` file:
+#' Here's an example `btw.md` file:
 #'
 #' ````
 #' ---
@@ -71,18 +72,18 @@
 #'   via [btw()].
 #' @param client An [ellmer::Chat] client, defaults to [ellmer::chat_claude()].
 #'   You can use the `btw.chat_client` option to set a default client for new
-#'   `btw_client()` calls, or use a `.btw` project file for default chat client
-#'   settings, like provider and model. We check the `client` argument, then the
-#'   `btw.chat_client` R option, and finally the `.btw` project file, using only
-#'   the client definition from the first of these that is available.
+#'   `btw_client()` calls, or use a `btw.md` project file for default chat
+#'   client settings, like provider and model. We check the `client` argument,
+#'   then the `btw.chat_client` R option, and finally the `btw.md` project file,
+#'   using only the client definition from the first of these that is available.
 #' @param tools Names of tools or tool groups to include when registering
 #'   tools, e.g. `include = "docs"` to include only the documentation related
 #'   tools, or `include = c("data", "docs", "environment")`, etc. Equivalent to
 #'   the `include` argument of [btw_register_tools()]. Use `tools = FALSE` to
 #'   skip registering \pkg{btw} tools with the chat client.
-#' @param path_btw A path to a `.btw` project context file. If `NULL`, btw will
-#'   find a project-specific `.btw` file in the parents of the current working
-#'   directory.
+#' @param path_btw A path to a `btw.md` project context file. If `NULL`, btw
+#'   will find a project-specific `btw.md` file in the parents of the current
+#'   working directory.
 #'
 #' @return Returns an [ellmer::Chat] object with additional tools registered by
 #'   [btw_register_tools()]. `btw_app()` returns the chat object invisibly, and
@@ -209,7 +210,7 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
 read_btw_file <- function(path = NULL) {
   must_find <- !is.null(path)
 
-  path <- path %||% path_find_in_project(".btw")
+  path <- path %||% path_find_in_project("btw.md")
 
   if (!must_find && is.null(path)) {
     return(list())
