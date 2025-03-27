@@ -94,6 +94,11 @@ as_btw_capture <- function(x) {
 #'   Includes information about the attached, loaded, or installed packages in
 #'   your R session, using [sessioninfo::package_info()].
 #'
+#' * `"@last_error"` \cr
+#'   Includes the message from the last error that occurred in your session.
+#'   To reliably capture the last error, you need to enable
+#'   [rlang::global_entrace()] in your session.
+#'
 #' @param x A character string
 #' @param ... Ignored.
 #' @param caller_env The caller environment.
@@ -123,6 +128,12 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
   }
   if (identical(x, "@installed_packages")) {
     return(I(btw_tool_session_package_info("installed")))
+  }
+  if (identical(x, "@last_error")) {
+    err <- get_last_error()
+    return(
+      if (is.null(err)) btw_ignore() else capture_print(err)
+    )
   }
 
   if (grepl("^\\./", x)) {
@@ -261,4 +272,18 @@ btw_returns_character <- function(...) {
 #' @export
 btw_this.btw_returns_character <- function(x, ...) {
   capture_print(unclass(x))
+}
+
+# Helpers ---------------------------------------------------------------------
+
+get_last_error <- function() {
+  # last_error() throws its own error if there aren't any errors yet
+  err <- tryCatch(last_error(), error = function(e) NULL)
+  if (is.null(err)) {
+    cli::cli_warn(c(
+      "No last error was found.",
+      "i" = "Use {.run ?rlang::global_entrace} to enable {.code @last_error}."
+    ))
+  }
+  err
 }
