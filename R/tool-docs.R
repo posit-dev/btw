@@ -82,8 +82,14 @@ btw_tool_get_package_help_topics <- function(package_name) {
 # TODO: should there just be a way to get examples?
 #' @name btw_tool_package_docs
 #' @export
-btw_tool_get_help_page <- function(package_name, topic) {
-  check_installed(package_name)
+btw_tool_get_help_page <- function(topic, package_name = "") {
+  if (identical(package_name, "")) {
+    package_name <- NULL
+  }
+
+  if (!is.null(package_name)) {
+    check_installed(package_name)
+  }
 
   help_page <- inject(help(
     package = !!package_name,
@@ -118,7 +124,7 @@ btw_tool_get_help_page <- function(package_name, topic) {
       btw_tool_get_help_page,
       .description = "Get help page from package.",
       package_name = ellmer::type_string(
-        "The exact name of the package, e.g. 'shiny'."
+        "The exact name of the package, e.g. 'shiny'. Can be an empty string to search for a help topic across all packages."
       ),
       topic = ellmer::type_string(
         "The topic_id or alias of the help page, e.g. 'withProgress' or 'incProgress'."

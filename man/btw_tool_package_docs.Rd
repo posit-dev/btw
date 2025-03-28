@@ -10,7 +10,7 @@
 \usage{
 btw_tool_get_package_help_topics(package_name)
 
-btw_tool_get_help_page(package_name, topic)
+btw_tool_get_help_page(topic, package_name = "")
 
 btw_tool_get_available_vignettes_in_package(package_name)
 
