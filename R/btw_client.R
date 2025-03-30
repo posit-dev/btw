@@ -76,11 +76,11 @@
 #'   client settings, like provider and model. We check the `client` argument,
 #'   then the `btw.chat_client` R option, and finally the `btw.md` project file,
 #'   using only the client definition from the first of these that is available.
-#' @param tools Names of tools or tool groups to include when registering
-#'   tools, e.g. `include = "docs"` to include only the documentation related
-#'   tools, or `include = c("data", "docs", "environment")`, etc. Equivalent to
-#'   the `include` argument of [btw_register_tools()]. Use `tools = FALSE` to
-#'   skip registering \pkg{btw} tools with the chat client.
+#' @param tools Optional names of tools or tool groups to include in the chat
+#'   client. By default, all btw tools are included. For example, use
+#'   `include = "docs"` to include only the documentation related tools, or
+#'   `include = c("env", "docs")`, etc. `btw_client()` also supports
+#'   `tools = FALSE` to skip registering \pkg{btw} tools with the chat client.
 #' @param path_btw A path to a `btw.md` project context file. If `NULL`, btw
 #'   will find a project-specific `btw.md` file in the parents of the current
 #'   working directory.

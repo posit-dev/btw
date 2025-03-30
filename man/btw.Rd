@@ -10,7 +10,7 @@ btw(..., clipboard = TRUE)
 \item{...}{Objects to describe from your R environment. You can pass objects
 themselves, like data frames or functions, or the function also accepts
 output from \verb{btw_tool_*()} functions like
-\code{\link[=btw_tool_get_package_help_topics]{btw_tool_get_package_help_topics()}}, \code{\link[=btw_tool_get_help_page]{btw_tool_get_help_page()}}, etc. If
+\code{\link[=btw_tool_docs_package_help_topics]{btw_tool_docs_package_help_topics()}}, \code{\link[=btw_tool_docs_help_page]{btw_tool_docs_help_page()}}, etc. If
 omitted, this function will just describe the elements in your global R
 environment.}
 

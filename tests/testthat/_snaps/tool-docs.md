@@ -1,4 +1,4 @@
-# btw_tool_get_help_page() works
+# btw_tool_docs_help_page() works
 
     Code
       res

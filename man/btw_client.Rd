@@ -20,11 +20,11 @@ client settings, like provider and model. We check the \code{client} argument,
 then the \code{btw.chat_client} R option, and finally the \code{btw.md} project file,
 using only the client definition from the first of these that is available.}
 
-\item{tools}{Names of tools or tool groups to include when registering
-tools, e.g. \code{include = "docs"} to include only the documentation related
-tools, or \code{include = c("data", "docs", "environment")}, etc. Equivalent to
-the \code{include} argument of \code{\link[=btw_register_tools]{btw_register_tools()}}. Use \code{tools = FALSE} to
-skip registering \pkg{btw} tools with the chat client.}
+\item{tools}{Optional names of tools or tool groups to include in the chat
+client. By default, all btw tools are included. For example, use
+\code{include = "docs"} to include only the documentation related tools, or
+\code{include = c("env", "docs")}, etc. \code{btw_client()} also supports
+\code{tools = FALSE} to skip registering \pkg{btw} tools with the chat client.}
 
 \item{path_btw}{A path to a \code{btw.md} project context file. If \code{NULL}, btw
 will find a project-specific \code{btw.md} file in the parents of the current

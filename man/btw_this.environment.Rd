@@ -28,7 +28,7 @@ btw_this(environment())
 
 }
 \seealso{
-\code{\link[=btw_tool_describe_environment]{btw_tool_describe_environment()}}
+\code{\link[=btw_tool_env_describe_environment]{btw_tool_env_describe_environment()}}
 
 Other \code{btw_this()} methods: 
 \code{\link{btw_this}()},

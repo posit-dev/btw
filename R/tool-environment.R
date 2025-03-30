@@ -14,12 +14,12 @@
 #' A string describing the environment contents with `#>` prefixing
 #' each object's printed representation.
 #'
-#' @seealso [btw_tool_describe_environment()]
+#' @seealso [btw_tool_env_describe_environment()]
 #'
 #' @family `btw_this()` methods
 #' @export
 btw_this.environment <- function(x, ..., items = NULL) {
-  btw_tool_describe_environment(environment = x, items = items)
+  btw_tool_env_describe_environment(environment = x, items = items)
 }
 
 #' Tool: Describe an environment
@@ -32,7 +32,7 @@ btw_this.environment <- function(x, ..., items = NULL) {
 #' @seealso [btw_this.environment()], [btw_register_tools()]
 #' @family Tools
 #' @export
-btw_tool_describe_environment <- function(
+btw_tool_env_describe_environment <- function(
   environment = global_env(),
   items = NULL
 ) {
@@ -118,11 +118,11 @@ btw_tool_describe_environment <- function(
 }
 
 .btw_add_to_tools(
-  name = "btw_tool_describe_environment",
-  group = "environment",
+  name = "btw_tool_env_describe_environment",
+  group = "env",
   tool = function() {
     ellmer::tool(
-      btw_tool_describe_environment,
+      btw_tool_env_describe_environment,
       .description = "List and describe items in an environment.",
       items = ellmer::type_array(
         "The names of items to describe from the environment. Defaults to `NULL`, indicating all items.",

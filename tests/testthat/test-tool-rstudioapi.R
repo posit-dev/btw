@@ -1,9 +1,9 @@
-test_that("btw_tool_read_current_editor()", {
-  expect_error(btw_tool_read_current_editor(selection = "yes"))
-  expect_error(btw_tool_read_current_editor(consent = "yes"))
+test_that("btw_tool_ide_read_current_editor()", {
+  expect_error(btw_tool_ide_read_current_editor(selection = "yes"))
+  expect_error(btw_tool_ide_read_current_editor(consent = "yes"))
 
   expect_snapshot(
-    btw_tool_read_current_editor(),
+    btw_tool_ide_read_current_editor(),
     error = TRUE
   )
 
@@ -11,12 +11,12 @@ test_that("btw_tool_read_current_editor()", {
     rstudioapi_has_source_editor_context = function() FALSE,
     {
       expect_snapshot(
-        btw_tool_read_current_editor(consent = TRUE),
+        btw_tool_ide_read_current_editor(consent = TRUE),
         error = TRUE
       )
 
       expect_null(
-        .btw_tools[["btw_tool_read_current_editor"]]$tool()
+        .btw_tools[["btw_tool_ide_read_current_editor"]]$tool()
       )
     }
   )
@@ -166,12 +166,12 @@ test_that("@current_file", {
 
   expect_equal(
     btw_this("@current_file"),
-    btw_tool_read_current_editor(consent = TRUE)
+    I(btw_tool_ide_read_current_editor(consent = TRUE))
   )
 
   expect_equal(
-    btw_tool_read_current_editor(selection = TRUE, consent = TRUE),
-    btw_tool_read_current_editor(selection = FALSE, consent = TRUE)
+    btw_tool_ide_read_current_editor(selection = TRUE, consent = TRUE),
+    btw_tool_ide_read_current_editor(selection = FALSE, consent = TRUE)
   )
 })
 
@@ -187,6 +187,6 @@ test_that("@current_selection", {
 
   expect_equal(
     btw_this("@current_selection"),
-    btw_tool_read_current_editor(consent = TRUE)
+    I(btw_tool_ide_read_current_editor(consent = TRUE))
   )
 })
