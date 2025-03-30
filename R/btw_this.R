@@ -204,13 +204,13 @@ btw_this.function <- function(x, ...) {
 
 #' @export
 btw_this.btw_docs_topic <- function(x, ...) {
-  btw_tool_docs_help_page(package = x$package, topic = x$topic)
+  btw_tool_docs_help_page(package_name = x$package, topic = x$topic)
 }
 
 #' @export
 btw_this.help_files_with_topic <- function(x, ...) {
   args <- call_args(attr(x, "call")) # help(topic = {topic}, package = {package})
-  btw_tool_docs_help_page(package = args$package, topic = args$topic)
+  btw_tool_docs_help_page(package_name = args$package, topic = args$topic)
 }
 
 as_btw_docs_topic <- function(package, topic) {
