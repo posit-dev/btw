@@ -1,6 +1,16 @@
 url: https://posit-dev.github.io/btw/
+
+authors:
+  Garrick Aden-Buie:
+    href: https://garrickadenbuie.com
+  Simon Couch:
+    href: https://www.simonpcouch.com/
+
 template:
   bootstrap: 5
+  light-switch: true
+  theme: github-light
+  theme-dark: github-dark
 
 reference:
 - title: Core functions
@@ -20,7 +30,7 @@ reference:
 
 - title: Tools
   desc: |
-    Register all of these tools with an `{ellmer}` chat using 
+    Register all of these tools with an `{ellmer}` chat using
     `btw_register_tools(chat)`. These tools generally all have counterparts
     available via `btw()` and `btw_this()` for interactive use. The long and
     awkward function names are for LLMs and to avoid name clashes with other
