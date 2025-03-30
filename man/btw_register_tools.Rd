@@ -9,9 +9,10 @@ btw_register_tools(chat, tools = NULL)
 \arguments{
 \item{chat}{An ellmer \code{Chat} object.}
 
-\item{tools}{Names of tools or tool groups to include when registering tools,
-e.g. \code{tools = "docs"} to include only the documentation related tools, or
-\code{tools = c("data", "docs", "environment")}, etc.}
+\item{tools}{Optional names of tools or tool groups to include when
+registering tools. By default all btw tools are included. For example, use
+\code{tools = "docs"} to include only the documentation related tools, or
+\code{tools = c("env", "docs", "session")}, etc.}
 }
 \value{
 Registers the tools with \code{chat}, updating the \code{chat} object in
