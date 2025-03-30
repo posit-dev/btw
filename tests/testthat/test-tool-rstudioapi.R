@@ -166,7 +166,7 @@ test_that("@current_file", {
 
   expect_equal(
     btw_this("@current_file"),
-    btw_tool_ide_read_current_editor(consent = TRUE)
+    I(btw_tool_ide_read_current_editor(consent = TRUE))
   )
 
   expect_equal(
@@ -187,6 +187,6 @@ test_that("@current_selection", {
 
   expect_equal(
     btw_this("@current_selection"),
-    btw_tool_ide_read_current_editor(consent = TRUE)
+    I(btw_tool_ide_read_current_editor(consent = TRUE))
   )
 })

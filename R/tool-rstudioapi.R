@@ -49,7 +49,7 @@ btw_tool_ide_read_current_editor <- function(
         cf$contents
       )
     )
-    return(I(res))
+    return(res)
   }
 
   res <- c()
@@ -78,7 +78,7 @@ btw_tool_ide_read_current_editor <- function(
     )
   }
 
-  I(res)
+  res
 }
 
 .btw_add_to_tools(
