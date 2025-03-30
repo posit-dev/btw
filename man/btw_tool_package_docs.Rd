@@ -2,19 +2,19 @@
 % Please edit documentation in R/tool-docs.R
 \name{btw_tool_package_docs}
 \alias{btw_tool_package_docs}
-\alias{btw_tool_get_package_help_topics}
-\alias{btw_tool_get_help_page}
-\alias{btw_tool_get_available_vignettes_in_package}
-\alias{btw_tool_get_vignette_from_package}
+\alias{btw_tool_docs_package_help_topics}
+\alias{btw_tool_docs_help_page}
+\alias{btw_tool_docs_available_vignettes}
+\alias{btw_tool_docs_vignette}
 \title{Tool: Describe R package documentation}
 \usage{
-btw_tool_get_package_help_topics(package_name)
+btw_tool_docs_package_help_topics(package_name)
 
-btw_tool_get_help_page(topic, package_name = "")
+btw_tool_docs_help_page(topic, package_name = "")
 
-btw_tool_get_available_vignettes_in_package(package_name)
+btw_tool_docs_available_vignettes(package_name)
 
-btw_tool_get_vignette_from_package(package_name, vignette = package_name)
+btw_tool_docs_vignette(package_name, vignette = package_name)
 }
 \arguments{
 \item{package_name}{The name of the package as a string, e.g. \code{"shiny"}.}
@@ -27,10 +27,10 @@ the "intro" vignette to the package (by the same rules as pkgdown.)}
 }
 \value{
 \itemize{
-\item \code{btw_tool_get_package_help_topics()} returns the \code{topic_id}, \code{title}, and
+\item \code{btw_tool_docs_package_help_topics()} returns the \code{topic_id}, \code{title}, and
 \code{aliases} fields for every topic in a package's documentation as a
 json-formatted string.
-\item \code{btw_tool_get_help_page()} return the help-page for a package topic as a
+\item \code{btw_tool_docs_help_page()} return the help-page for a package topic as a
 string.
 }
 }
@@ -38,21 +38,21 @@ string.
 These functions describe package documentation in plain text:
 }
 \examples{
-cat(btw_tool_get_package_help_topics("btw"))
+cat(btw_tool_docs_package_help_topics("btw"))
 
-cat(btw_tool_get_help_page("btw", "btw"))
+cat(btw_tool_docs_help_page("btw", "btw"))
 
 # show the TOC of vignettes in the dplyr package
-cat(btw_tool_get_available_vignettes_in_package("dplyr"))
+cat(btw_tool_docs_available_vignettes("dplyr"))
 
 # returns a whole bunch of output and relies on
 # dplyr to have the mentioned vignettes available
 \dontrun{
 # grab the intro vignette
-cat(btw_tool_get_vignette_from_package("dplyr"))
+cat(btw_tool_docs_vignette("dplyr"))
 
 # grab the programming vignette specifically
-cat(btw_tool_get_vignette_from_package("dplyr", "programming"))
+cat(btw_tool_docs_vignette("dplyr", "programming"))
 }
 
 }
@@ -61,11 +61,11 @@ cat(btw_tool_get_vignette_from_package("dplyr", "programming"))
 
 Other Tools: 
 \code{\link{btw_register_tools}()},
-\code{\link{btw_tool_describe_data_frame}()},
-\code{\link{btw_tool_describe_environment}()},
-\code{\link{btw_tool_list_files}()},
-\code{\link{btw_tool_read_current_editor}()},
-\code{\link{btw_tool_read_text_file}()},
+\code{\link{btw_tool_env_describe_data_frame}()},
+\code{\link{btw_tool_env_describe_environment}()},
+\code{\link{btw_tool_files_list_files}()},
+\code{\link{btw_tool_files_read_text_file}()},
+\code{\link{btw_tool_ide_read_current_editor}()},
 \code{\link{btw_tool_session_package_info}()},
 \code{\link{btw_tool_session_platform_info}()}
 }

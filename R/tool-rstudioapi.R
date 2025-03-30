@@ -16,7 +16,10 @@
 #'
 #' @family Tools
 #' @export
-btw_tool_read_current_editor <- function(selection = TRUE, consent = FALSE) {
+btw_tool_ide_read_current_editor <- function(
+  selection = TRUE,
+  consent = FALSE
+) {
   check_bool(selection)
   check_bool(consent)
 
@@ -79,12 +82,12 @@ btw_tool_read_current_editor <- function(selection = TRUE, consent = FALSE) {
 }
 
 .btw_add_to_tools(
-  name = "btw_tool_read_current_editor",
+  name = "btw_tool_ide_read_current_editor",
   group = "ide",
   tool = function() {
     if (!rstudioapi_has_source_editor_context()) return(NULL)
     ellmer::tool(
-      btw_tool_read_current_editor,
+      btw_tool_ide_read_current_editor,
       paste(
         "Read the contents of the editor that is currently open in the user's IDE.",
         "Only use this tool when specifically asked to do so by the user.",

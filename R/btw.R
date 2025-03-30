@@ -39,7 +39,7 @@
 #' @param ... Objects to describe from your R environment. You can pass objects
 #'   themselves, like data frames or functions, or the function also accepts
 #'   output from `btw_tool_*()` functions like
-#'   [btw_tool_get_package_help_topics()], [btw_tool_get_help_page()], etc. If
+#'   [btw_tool_docs_package_help_topics()], [btw_tool_docs_help_page()], etc. If
 #'   omitted, this function will just describe the elements in your global R
 #'   environment.
 #' @param clipboard Whether to write the results to the clipboard.

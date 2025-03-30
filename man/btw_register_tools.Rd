@@ -22,15 +22,15 @@ The \code{btw_register_tools()} function equips an ellmer chat to interface with
 your computational environment. Chats returned by this function have access
 to the tools:\tabular{lll}{
    Name \tab Group \tab Description \cr
-   btw_tool_describe_data_frame \tab data \tab Show the data frame or table or get information about the structure of a data frame or table. \cr
-   btw_tool_get_available_vignettes_in_package \tab docs \tab List available vignettes for an R package. \cr
-   btw_tool_get_help_page \tab docs \tab Get help page from package. \cr
-   btw_tool_get_package_help_topics \tab docs \tab Get available help topics for an R package. \cr
-   btw_tool_get_vignette_from_package \tab docs \tab Get a package vignette in plain text. \cr
-   btw_tool_describe_environment \tab environment \tab List and describe items in an environment. \cr
-   btw_tool_list_files \tab files \tab List files in the current working directory or in subfolders in the current project directory. \cr
-   btw_tool_read_text_file \tab files \tab Read an entire text file. \cr
-   btw_tool_read_current_editor \tab ide \tab Read the contents of the editor that is currently open in the user's IDE. \cr
+   btw_tool_docs_available_vignettes \tab docs \tab List available vignettes for an R package. \cr
+   btw_tool_docs_help_page \tab docs \tab Get help page from package. \cr
+   btw_tool_docs_package_help_topics \tab docs \tab Get available help topics for an R package. \cr
+   btw_tool_docs_vignette \tab docs \tab Get a package vignette in plain text. \cr
+   btw_tool_env_describe_data_frame \tab env \tab Show the data frame or table or get information about the structure of a data frame or table. \cr
+   btw_tool_env_describe_environment \tab env \tab List and describe items in an environment. \cr
+   btw_tool_files_list_files \tab files \tab List files in the current working directory or in subfolders in the current project directory. \cr
+   btw_tool_files_read_text_file \tab files \tab Read an entire text file. \cr
+   btw_tool_ide_read_current_editor \tab ide \tab Read the contents of the editor that is currently open in the user's IDE. \cr
    btw_tool_session_package_info \tab session \tab Verify that a specific package is installed, or find out which packages are in use in the current session. \cr
    btw_tool_session_platform_info \tab session \tab Describes the R version, operating system, language and locale settings for the user's system. \cr
 }
@@ -46,12 +46,12 @@ btw_register_tools(ch)
 }
 \seealso{
 Other Tools: 
-\code{\link{btw_tool_describe_data_frame}()},
-\code{\link{btw_tool_describe_environment}()},
-\code{\link{btw_tool_list_files}()},
+\code{\link{btw_tool_env_describe_data_frame}()},
+\code{\link{btw_tool_env_describe_environment}()},
+\code{\link{btw_tool_files_list_files}()},
+\code{\link{btw_tool_files_read_text_file}()},
+\code{\link{btw_tool_ide_read_current_editor}()},
 \code{\link{btw_tool_package_docs}},
-\code{\link{btw_tool_read_current_editor}()},
-\code{\link{btw_tool_read_text_file}()},
 \code{\link{btw_tool_session_package_info}()},
 \code{\link{btw_tool_session_platform_info}()}
 }

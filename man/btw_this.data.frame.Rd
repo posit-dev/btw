@@ -66,7 +66,7 @@ btw_this(mtcars, format = "json")
 
 }
 \seealso{
-\code{\link[=btw_tool_describe_data_frame]{btw_tool_describe_data_frame()}}
+\code{\link[=btw_tool_env_describe_data_frame]{btw_tool_env_describe_data_frame()}}
 
 Other \code{btw_this()} methods: 
 \code{\link{btw_this}()},

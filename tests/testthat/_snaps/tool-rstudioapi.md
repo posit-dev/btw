@@ -1,17 +1,17 @@
-# btw_tool_read_current_editor()
+# btw_tool_ide_read_current_editor()
 
     Code
-      btw_tool_read_current_editor()
+      btw_tool_ide_read_current_editor()
     Condition
-      Error in `btw_tool_read_current_editor()`:
+      Error in `btw_tool_ide_read_current_editor()`:
       ! Please ask the user for consent before reading from the editor.
 
 ---
 
     Code
-      btw_tool_read_current_editor(consent = TRUE)
+      btw_tool_ide_read_current_editor(consent = TRUE)
     Condition
-      Error in `btw_tool_read_current_editor()`:
+      Error in `btw_tool_ide_read_current_editor()`:
       ! @current_file only works in an IDE where the rstudioapi is available.
 
 # @current_file

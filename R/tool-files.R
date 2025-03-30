@@ -13,7 +13,7 @@
 #'
 #' @family Tools
 #' @export
-btw_tool_list_files <- function(
+btw_tool_files_list_files <- function(
   path = getwd(),
   type = c("any", "file", "directory"),
   regexp = ""
@@ -54,17 +54,17 @@ btw_tool_list_files <- function(
 }
 
 .btw_add_to_tools(
-  name = "btw_tool_list_files",
+  name = "btw_tool_files_list_files",
   group = "files",
   tool = function() {
     ellmer::tool(
-      btw_tool_list_files,
+      btw_tool_files_list_files,
       .description = paste0(
         "List files in the current working directory or in subfolders in the current project directory. ",
         "Examples:\n\n",
-        "* `btw_tool_list_files()`: List all files and directories in the current working directory.\n",
-        "* `btw_tool_list_files(\"data\")`: List all files in the `data/` directory.\n",
-        "* `btw_tool_list_files(\"data\", type = \"file\", regexp = \"csv$\"): List all `.csv` files in the `data/` directory."
+        "* `btw_tool_files_list_files()`: List all files and directories in the current working directory.\n",
+        "* `btw_tool_files_list_files(\"data\")`: List all files in the `data/` directory.\n",
+        "* `btw_tool_files_list_files(\"data\", type = \"file\", regexp = \"csv$\"): List all `.csv` files in the `data/` directory."
       ),
       path = ellmer::type_string(
         "The relative path to a folder or file. If `path` is a directory, all files or directories (see `type`) are listed. If `path` is a file, information for just the selected file is listed.",
@@ -93,7 +93,7 @@ btw_tool_list_files <- function(
 #'
 #' @family Tools
 #' @export
-btw_tool_read_text_file <- function(path, max_lines = 1000) {
+btw_tool_files_read_text_file <- function(path, max_lines = 1000) {
   check_path_within_current_wd(path)
 
   if (!fs::is_file(path) || !fs::file_exists(path)) {
@@ -115,11 +115,11 @@ btw_tool_read_text_file <- function(path, max_lines = 1000) {
 }
 
 .btw_add_to_tools(
-  name = "btw_tool_read_text_file",
+  name = "btw_tool_files_read_text_file",
   group = "files",
   tool = function() {
     ellmer::tool(
-      btw_tool_read_text_file,
+      btw_tool_files_read_text_file,
       .description = "Read an entire text file.",
       path = ellmer::type_string(
         "The relative path to a file that can be read as text, such as a CSV, JSON, HTML, markdown file, etc.",

@@ -26,8 +26,8 @@ character string as R code and return the appropriate object description.
 \itemize{
 \item \code{"./path"} \cr
 Any string starting with \verb{./} is treated as a relative path.
-If the path is a file, we call \code{\link[=btw_tool_read_text_file]{btw_tool_read_text_file()}} and if the path
-is a directory we call \code{\link[=btw_tool_list_files]{btw_tool_list_files()}} on the path.
+If the path is a file, we call \code{\link[=btw_tool_files_read_text_file]{btw_tool_files_read_text_file()}} and if the path
+is a directory we call \code{\link[=btw_tool_files_list_files]{btw_tool_files_list_files()}} on the path.
 \itemize{
 \item \code{btw_this("./data")} lists the files in \verb{data/}.
 \item \code{btw_this("./R/load_data.R")} reads the source of the \code{R/load_data.R}
@@ -36,8 +36,8 @@ file.
 \item \code{"{pkgName}"} \cr
 A package name wrapped in braces. Returns either the
 introductory vignette for the package
-(\code{\link[=btw_tool_get_vignette_from_package]{btw_tool_get_vignette_from_package()}}) or a list of help topics if no
-such vignette exists (\code{\link[=btw_tool_get_package_help_topics]{btw_tool_get_package_help_topics()}}).
+(\code{\link[=btw_tool_docs_vignette]{btw_tool_docs_vignette()}}) or a list of help topics if no
+such vignette exists (\code{\link[=btw_tool_docs_package_help_topics]{btw_tool_docs_package_help_topics()}}).
 \itemize{
 \item \code{btw_this("{dplyr}")} includes dplyr's introductory vignette.
 \item \code{btw_this("{btw}")} returns the package help index (because \code{btw}
@@ -45,7 +45,7 @@ doesn't have an intro vignette, yet).
 }
 \item \code{"?help_topic"} \cr
 When the string starts with \verb{?}, btw searches R's help
-topics using \code{\link[=btw_tool_get_help_page]{btw_tool_get_help_page()}}.
+topics using \code{\link[=btw_tool_docs_help_page]{btw_tool_docs_help_page()}}.
 \itemize{
 \item \code{btw_this("?dplyr::across")} includes the reference page for
 \code{dplyr::across}.

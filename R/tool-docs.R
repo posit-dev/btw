@@ -10,36 +10,36 @@
 #' the "intro" vignette to the package (by the same rules as pkgdown.)
 #'
 #' @returns
-#' * `btw_tool_get_package_help_topics()` returns the `topic_id`, `title`, and
+#' * `btw_tool_docs_package_help_topics()` returns the `topic_id`, `title`, and
 #'   `aliases` fields for every topic in a package's documentation as a
 #'   json-formatted string.
-#' * `btw_tool_get_help_page()` return the help-page for a package topic as a
+#' * `btw_tool_docs_help_page()` return the help-page for a package topic as a
 #'   string.
 #'
 #' @seealso [btw_register_tools()]
 #'
 #' @examples
-#' cat(btw_tool_get_package_help_topics("btw"))
+#' cat(btw_tool_docs_package_help_topics("btw"))
 #'
-#' cat(btw_tool_get_help_page("btw", "btw"))
+#' cat(btw_tool_docs_help_page("btw", "btw"))
 #'
 #' # show the TOC of vignettes in the dplyr package
-#' cat(btw_tool_get_available_vignettes_in_package("dplyr"))
+#' cat(btw_tool_docs_available_vignettes("dplyr"))
 #'
 #' # returns a whole bunch of output and relies on
 #' # dplyr to have the mentioned vignettes available
 #' \dontrun{
 #' # grab the intro vignette
-#' cat(btw_tool_get_vignette_from_package("dplyr"))
+#' cat(btw_tool_docs_vignette("dplyr"))
 #'
 #' # grab the programming vignette specifically
-#' cat(btw_tool_get_vignette_from_package("dplyr", "programming"))
+#' cat(btw_tool_docs_vignette("dplyr", "programming"))
 #' }
 #'
 #' @family Tools
 #' @name btw_tool_package_docs
 #' @export
-btw_tool_get_package_help_topics <- function(package_name) {
+btw_tool_docs_package_help_topics <- function(package_name) {
   check_installed(package_name)
 
   help_db <- help.search(
@@ -60,16 +60,16 @@ btw_tool_get_package_help_topics <- function(package_name) {
   res <- dplyr::ungroup(res)
   res <- dplyr::select(res, topic_id, title, aliases)
 
-  btw_tool_describe_data_frame(res, format = "json", dims = c(Inf, Inf))
+  btw_tool_env_describe_data_frame(res, format = "json", dims = c(Inf, Inf))
 }
 
 
 .btw_add_to_tools(
-  name = "btw_tool_get_package_help_topics",
+  name = "btw_tool_docs_package_help_topics",
   group = "docs",
   tool = function() {
     ellmer::tool(
-      btw_tool_get_package_help_topics,
+      btw_tool_docs_package_help_topics,
       .description = "Get available help topics for an R package.",
       package_name = ellmer::type_string(
         "The exact name of the package, e.g. \"shiny\"."
@@ -82,7 +82,7 @@ btw_tool_get_package_help_topics <- function(package_name) {
 # TODO: should there just be a way to get examples?
 #' @name btw_tool_package_docs
 #' @export
-btw_tool_get_help_page <- function(topic, package_name = "") {
+btw_tool_docs_help_page <- function(topic, package_name = "") {
   if (identical(package_name, "")) {
     package_name <- NULL
   }
@@ -117,11 +117,11 @@ btw_tool_get_help_page <- function(topic, package_name = "") {
 }
 
 .btw_add_to_tools(
-  name = "btw_tool_get_help_page",
+  name = "btw_tool_docs_help_page",
   group = "docs",
   tool = function() {
     ellmer::tool(
-      btw_tool_get_help_page,
+      btw_tool_docs_help_page,
       .description = "Get help page from package.",
       package_name = ellmer::type_string(
         "The exact name of the package, e.g. 'shiny'. Can be an empty string to search for a help topic across all packages."
@@ -135,7 +135,7 @@ btw_tool_get_help_page <- function(topic, package_name = "") {
 
 #' @name btw_tool_package_docs
 #' @export
-btw_tool_get_available_vignettes_in_package <- function(package_name) {
+btw_tool_docs_available_vignettes <- function(package_name) {
   check_installed(package_name)
 
   vignettes <- as.data.frame(tools::getVignetteInfo(package = package_name))
@@ -149,16 +149,16 @@ btw_tool_get_available_vignettes_in_package <- function(package_name) {
 }
 
 .btw_add_to_tools(
-  name = "btw_tool_get_available_vignettes_in_package",
+  name = "btw_tool_docs_available_vignettes",
   group = "docs",
   tool = function() {
     ellmer::tool(
-      btw_tool_get_available_vignettes_in_package,
+      btw_tool_docs_available_vignettes,
       .description = paste(
         "List available vignettes for an R package.",
         "Vignettes are articles describing key concepts or features of an R package.",
         "Returns the listing as a JSON array of `vignette` and `title`.",
-        "To read a vignette, use `btw_tool_get_vignette_from_package(package_name, vignette)`."
+        "To read a vignette, use `btw_tool_docs_vignette(package_name, vignette)`."
       ),
       package_name = ellmer::type_string(
         "The exact name of the package, e.g. 'shiny'."
@@ -169,7 +169,7 @@ btw_tool_get_available_vignettes_in_package <- function(package_name) {
 
 #' @name btw_tool_package_docs
 #' @export
-btw_tool_get_vignette_from_package <- function(
+btw_tool_docs_vignette <- function(
   package_name,
   vignette = package_name
 ) {
@@ -200,11 +200,11 @@ btw_tool_get_vignette_from_package <- function(
 }
 
 .btw_add_to_tools(
-  name = "btw_tool_get_vignette_from_package",
+  name = "btw_tool_docs_vignette",
   group = "docs",
   tool = function() {
     ellmer::tool(
-      btw_tool_get_vignette_from_package,
+      btw_tool_docs_vignette,
       .description = "Get a package vignette in plain text.",
       package_name = ellmer::type_string(
         "The exact name of the package, e.g. 'shiny'."

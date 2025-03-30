@@ -7,13 +7,13 @@ test_that("btw_this('{pkg}')", {
   # Gets the intro vignette if one is available
   expect_equal(
     btw_this("{dplyr}"),
-    btw_tool_get_vignette_from_package("dplyr")
+    btw_tool_docs_vignette("dplyr")
   )
 
   # Otherwise returns the help index
   expect_equal(
     btw_this("{cli}"),
-    btw_tool_get_package_help_topics("cli")
+    btw_tool_docs_package_help_topics("cli")
   )
 })
 

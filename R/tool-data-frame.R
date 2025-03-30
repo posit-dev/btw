@@ -29,7 +29,7 @@
 #'
 #' btw_this(mtcars, format = "json")
 #'
-#' @seealso [btw_tool_describe_data_frame()]
+#' @seealso [btw_tool_env_describe_data_frame()]
 #'
 #' @describeIn btw_this.data.frame Summarize a data frame.
 #' @family `btw_this()` methods
@@ -40,7 +40,7 @@ btw_this.data.frame <- function(
   format = c("skim", "glimpse", "print", "json"),
   dims = c(5, 100)
 ) {
-  btw_tool_describe_data_frame(x, format = format, dims = dims)
+  btw_tool_env_describe_data_frame(x, format = format, dims = dims)
 }
 
 #' @describeIn btw_this.data.frame Summarize a `tbl`.
@@ -52,13 +52,13 @@ btw_this.tbl <- function(
   format = c("skim", "glimpse", "print", "json"),
   dims = c(5, 100)
 ) {
-  btw_tool_describe_data_frame(x, format = format, dims = dims)
+  btw_tool_env_describe_data_frame(x, format = format, dims = dims)
 }
 
 #' Tool: Describe data frame
 #'
 #' @examples
-#' btw_tool_describe_data_frame(mtcars)
+#' btw_tool_env_describe_data_frame(mtcars)
 #'
 #' @param data_frame The data frame to describe
 #' @inheritParams btw_this.data.frame
@@ -68,7 +68,7 @@ btw_this.tbl <- function(
 #' @seealso [btw_this.data.frame()], [btw_register_tools()]
 #' @family Tools
 #' @export
-btw_tool_describe_data_frame <- function(
+btw_tool_env_describe_data_frame <- function(
   data_frame,
   format = c("skim", "glimpse", "print", "json"),
   dims = c(5, 100)
@@ -106,12 +106,12 @@ btw_tool_describe_data_frame <- function(
 }
 
 .btw_add_to_tools(
-  name = "btw_tool_describe_data_frame",
-  group = "data",
+  name = "btw_tool_env_describe_data_frame",
+  group = "env",
   tool = function() {
     ellmer::tool(
-      btw_tool_describe_data_frame,
-      .name = "btw_tool_describe_data_frame",
+      btw_tool_env_describe_data_frame,
+      .name = "btw_tool_env_describe_data_frame",
       .description = "Show the data frame or table or get information about the structure of a data frame or table.",
       data_frame = ellmer::type_string(
         "The name of the data frame."

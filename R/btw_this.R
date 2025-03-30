@@ -55,8 +55,8 @@ as_btw_capture <- function(x) {
 #'
 #' * `"./path"` \cr
 #'   Any string starting with `./` is treated as a relative path.
-#'   If the path is a file, we call [btw_tool_read_text_file()] and if the path
-#'   is a directory we call [btw_tool_list_files()] on the path.
+#'   If the path is a file, we call [btw_tool_files_read_text_file()] and if the path
+#'   is a directory we call [btw_tool_files_list_files()] on the path.
 #'
 #'   * `btw_this("./data")` lists the files in `data/`.
 #'   * `btw_this("./R/load_data.R")` reads the source of the `R/load_data.R`
@@ -65,8 +65,8 @@ as_btw_capture <- function(x) {
 #' * `"{pkgName}"` \cr
 #'   A package name wrapped in braces. Returns either the
 #'   introductory vignette for the package
-#'   ([btw_tool_get_vignette_from_package()]) or a list of help topics if no
-#'   such vignette exists ([btw_tool_get_package_help_topics()]).
+#'   ([btw_tool_docs_vignette()]) or a list of help topics if no
+#'   such vignette exists ([btw_tool_docs_package_help_topics()]).
 #'
 #'   * `btw_this("{dplyr}")` includes dplyr's introductory vignette.
 #'   * `btw_this("{btw}")` returns the package help index (because `btw`
@@ -74,7 +74,7 @@ as_btw_capture <- function(x) {
 #'
 #' * `"?help_topic"` \cr
 #'   When the string starts with `?`, btw searches R's help
-#'   topics using [btw_tool_get_help_page()].
+#'   topics using [btw_tool_docs_help_page()].
 #'
 #'   * `btw_this("?dplyr::across")` includes the reference page for
 #'     `dplyr::across`.
@@ -116,10 +116,10 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
   x <- trimws(x)
 
   if (identical(x, "@current_file")) {
-    return(btw_tool_read_current_editor(consent = TRUE))
+    return(btw_tool_ide_read_current_editor(consent = TRUE))
   }
   if (identical(x, "@current_selection")) {
-    return(btw_tool_read_current_editor(selection = TRUE, consent = TRUE))
+    return(btw_tool_ide_read_current_editor(selection = TRUE, consent = TRUE))
   }
   if (identical(x, "@platform_info")) {
     return(btw_tool_session_platform_info())
@@ -149,9 +149,9 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
       path <- "."
     }
     if (fs::is_file(path)) {
-      return(btw_tool_read_text_file(path))
+      return(btw_tool_files_read_text_file(path))
     } else {
-      return(btw_tool_list_files(path))
+      return(btw_tool_files_list_files(path))
     }
   }
 
@@ -164,10 +164,10 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
     pkg <- substring(x, 2, nchar(x) - 1)
     res <- tryCatch(
       # Get the package vignette
-      btw_tool_get_vignette_from_package(pkg),
+      btw_tool_docs_vignette(pkg),
       error = function(err) {
         # or list help topics
-        btw_tool_get_package_help_topics(pkg)
+        btw_tool_docs_package_help_topics(pkg)
       }
     )
     return(res)
@@ -202,13 +202,13 @@ btw_this.function <- function(x, ...) {
 
 #' @export
 btw_this.btw_docs_topic <- function(x, ...) {
-  btw_tool_get_help_page(package = x$package, topic = x$topic)
+  btw_tool_docs_help_page(package = x$package, topic = x$topic)
 }
 
 #' @export
 btw_this.help_files_with_topic <- function(x, ...) {
   args <- call_args(attr(x, "call")) # help(topic = {topic}, package = {package})
-  btw_tool_get_help_page(package = args$package, topic = args$topic)
+  btw_tool_docs_help_page(package = args$package, topic = args$topic)
 }
 
 as_btw_docs_topic <- function(package, topic) {
@@ -222,7 +222,7 @@ as_btw_docs_topic <- function(package, topic) {
 btw_this.btw_docs_package <- function(x, ...) {
   c(
     sprintf("Documented functions and help topics in package %s:", x$package),
-    btw_tool_get_package_help_topics(x$package)
+    btw_tool_docs_package_help_topics(x$package)
   )
 }
 
@@ -234,17 +234,17 @@ as_btw_docs_package <- function(package) {
 btw_this.packageIQR <- function(x, ...) {
   # vignette(package = "btw")
   package_name <- unique(x$results[, "Package"])
-  btw_tool_get_available_vignettes_in_package(package_name)
+  btw_tool_docs_available_vignettes(package_name)
 }
 
 #' @export
 btw_this.btw_docs_vignettes <- function(x, ...) {
-  btw_tool_get_available_vignettes_in_package(package_name = x$package)
+  btw_tool_docs_available_vignettes(package_name = x$package)
 }
 
 #' @export
 btw_this.btw_docs_vignette <- function(x, ...) {
-  btw_tool_get_vignette_from_package(
+  btw_tool_docs_vignette(
     package_name = x$package,
     vignette = x$vignette %||% x$package
   )
@@ -252,7 +252,7 @@ btw_this.btw_docs_vignette <- function(x, ...) {
 
 #' @export
 btw_this.vignette <- function(x, ...) {
-  btw_tool_get_vignette_from_package(
+  btw_tool_docs_vignette(
     package_name = x$Package,
     vignette = x$Topic
   )

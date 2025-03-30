@@ -32,12 +32,12 @@ cat(btw_tool_session_package_info("btw"))
 
 Other Tools: 
 \code{\link{btw_register_tools}()},
-\code{\link{btw_tool_describe_data_frame}()},
-\code{\link{btw_tool_describe_environment}()},
-\code{\link{btw_tool_list_files}()},
+\code{\link{btw_tool_env_describe_data_frame}()},
+\code{\link{btw_tool_env_describe_environment}()},
+\code{\link{btw_tool_files_list_files}()},
+\code{\link{btw_tool_files_read_text_file}()},
+\code{\link{btw_tool_ide_read_current_editor}()},
 \code{\link{btw_tool_package_docs}},
-\code{\link{btw_tool_read_current_editor}()},
-\code{\link{btw_tool_read_text_file}()},
 \code{\link{btw_tool_session_platform_info}()}
 }
 \concept{Tools}
