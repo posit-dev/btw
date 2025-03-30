@@ -44,13 +44,13 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">btw_tool_get_package_help_topics</span><span class="op">(</span><span class="va">package_name</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">btw_tool_docs_package_help_topics</span><span class="op">(</span><span class="va">package_name</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">btw_tool_get_help_page</span><span class="op">(</span><span class="va">topic</span>, package_name <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
+<span><span class="fu">btw_tool_docs_help_page</span><span class="op">(</span><span class="va">topic</span>, package_name <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">btw_tool_get_available_vignettes_in_package</span><span class="op">(</span><span class="va">package_name</span><span class="op">)</span></span>
+<span><span class="fu">btw_tool_docs_available_vignettes</span><span class="op">(</span><span class="va">package_name</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">btw_tool_get_vignette_from_package</span><span class="op">(</span><span class="va">package_name</span>, vignette <span class="op">=</span> <span class="va">package_name</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">btw_tool_docs_vignette</span><span class="op">(</span><span class="va">package_name</span>, vignette <span class="op">=</span> <span class="va">package_name</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -74,10 +74,10 @@ the "intro" vignette to the package (by the same rules as pkgdown.)</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
 
-<ul><li><p><code>btw_tool_get_package_help_topics()</code> returns the <code>topic_id</code>, <code>title</code>, and
+<ul><li><p><code>btw_tool_docs_package_help_topics()</code> returns the <code>topic_id</code>, <code>title</code>, and
 <code>aliases</code> fields for every topic in a package's documentation as a
 json-formatted string.</p></li>
-<li><p><code>btw_tool_get_help_page()</code> return the help-page for a package topic as a
+<li><p><code>btw_tool_docs_help_page()</code> return the help-page for a package topic as a
 string.</p></li>
 </ul></div>
     <div class="section level2">
@@ -85,18 +85,18 @@ string.</p></li>
     <div class="dont-index"><p><code><a href="btw_register_tools.html">btw_register_tools()</a></code></p>
 <p>Other Tools:
 <code><a href="btw_register_tools.html">btw_register_tools</a>()</code>,
-<code><a href="btw_tool_describe_data_frame.html">btw_tool_describe_data_frame</a>()</code>,
-<code><a href="btw_tool_describe_environment.html">btw_tool_describe_environment</a>()</code>,
-<code><a href="btw_tool_list_files.html">btw_tool_list_files</a>()</code>,
-<code><a href="btw_tool_read_current_editor.html">btw_tool_read_current_editor</a>()</code>,
-<code><a href="btw_tool_read_text_file.html">btw_tool_read_text_file</a>()</code>,
+<code><a href="btw_tool_env_describe_data_frame.html">btw_tool_env_describe_data_frame</a>()</code>,
+<code><a href="btw_tool_env_describe_environment.html">btw_tool_env_describe_environment</a>()</code>,
+<code><a href="btw_tool_files_list_files.html">btw_tool_files_list_files</a>()</code>,
+<code><a href="btw_tool_files_read_text_file.html">btw_tool_files_read_text_file</a>()</code>,
+<code><a href="btw_tool_ide_read_current_editor.html">btw_tool_ide_read_current_editor</a>()</code>,
 <code><a href="btw_tool_session_package_info.html">btw_tool_session_package_info</a>()</code>,
 <code><a href="btw_tool_session_platform_info.html">btw_tool_session_platform_info</a>()</code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">btw_tool_get_package_help_topics</span><span class="op">(</span><span class="st">"btw"</span><span class="op">)</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">btw_tool_docs_package_help_topics</span><span class="op">(</span><span class="st">"btw"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ```json [</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   {"topic_id":"btw","title":"Plain-text descriptions of R objects","aliases":["btw"]},</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   {"topic_id":"btw-package","title":"btw: Describe R Stuff to Large Language Models","aliases":["btw-package"]},</span>
@@ -106,31 +106,31 @@ string.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   {"topic_id":"btw_this.character","title":"Describe objects","aliases":["btw_this.character"]},</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   {"topic_id":"btw_this.data.frame","title":"Describe a data frame in plain text","aliases":["btw_this.data.frame","btw_this.tbl"]},</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   {"topic_id":"btw_this.environment","title":"Describe the contents of an environment","aliases":["btw_this.environment"]},</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   {"topic_id":"btw_tool_describe_data_frame","title":"Tool: Describe data frame","aliases":["btw_tool_describe_data_frame"]},</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   {"topic_id":"btw_tool_describe_environment","title":"Tool: Describe an environment","aliases":["btw_tool_describe_environment"]},</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   {"topic_id":"btw_tool_list_files","title":"Tool: List files","aliases":["btw_tool_list_files"]},</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   {"topic_id":"btw_tool_package_docs","title":"Tool: Describe R package documentation","aliases":["btw_tool_package_docs","btw_tool_get_package_help_topics","btw_tool_get_help_page","btw_tool_get_available_vignettes_in_package","btw_tool_get_vignette_from_package"]},</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   {"topic_id":"btw_tool_read_current_editor","title":"Tool: Read current file","aliases":["btw_tool_read_current_editor"]},</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   {"topic_id":"btw_tool_read_text_file","title":"Tool: Read a file","aliases":["btw_tool_read_text_file"]},</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   {"topic_id":"btw_tool_env_describe_data_frame","title":"Tool: Describe data frame","aliases":["btw_tool_env_describe_data_frame"]},</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   {"topic_id":"btw_tool_env_describe_environment","title":"Tool: Describe an environment","aliases":["btw_tool_env_describe_environment"]},</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   {"topic_id":"btw_tool_files_list_files","title":"Tool: List files","aliases":["btw_tool_files_list_files"]},</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   {"topic_id":"btw_tool_files_read_text_file","title":"Tool: Read a file","aliases":["btw_tool_files_read_text_file"]},</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   {"topic_id":"btw_tool_ide_read_current_editor","title":"Tool: Read current file","aliases":["btw_tool_ide_read_current_editor"]},</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   {"topic_id":"btw_tool_package_docs","title":"Tool: Describe R package documentation","aliases":["btw_tool_package_docs","btw_tool_docs_package_help_topics","btw_tool_docs_help_page","btw_tool_docs_available_vignettes","btw_tool_docs_vignette"]},</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   {"topic_id":"btw_tool_session_package_info","title":"Tool: Gather information about a package or currently loaded packages","aliases":["btw_tool_session_package_info"]},</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   {"topic_id":"btw_tool_session_platform_info","title":"Tool: Describe user's platform","aliases":["btw_tool_session_platform_info"]}</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ] ```</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">btw_tool_get_help_page</span><span class="op">(</span><span class="st">"btw"</span>, <span class="st">"btw"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> btw                    package:btw                     R Documentation  Plain-text descriptions of R objects  Description:       This function allows you to quickly describe your computational      environment to a model by concatenating plain-text descriptions of      "R stuff", from data frames to packages to function documentation.       There are two key ways to use ‘btw()’:         1. Use it interactively at the console to gather information           about your environment into prompt text that you can paste           into the chat interface of an LLM, like ChatGPT or Claude. By           default, ‘btw()’ copies the prompt to the clipboard for you.            btw(vignette("colwise", "dplyr"), dplyr::across, dplyr::starwars)           #&gt; ✔ btw copied to the clipboard!                   2. Pair ‘btw()’ with ellmer::Chat during a chat session to           create a prompt that includes additional context drawn from           your environment and help pages.            library(ellmer)                      chat &lt;- chat_claude() # requires an Anthropic API key           chat &lt;- chat_ollama(model = "llama3.1:8b") # requires ollama and a local model                      chat$chat(btw(             vignette("colwise", "dplyr"),             dplyr::across,             dplyr::starwars,             "Create a few interesting examples that use `dplyr::across()`",             "with the `starwars` data set."           ))            Usage:       btw(..., clipboard = TRUE)       Arguments:       ...: Objects to describe from your R environment. You can pass           objects themselves, like data frames or functions, or the           function also accepts output from btw_tool_*() functions like           ‘btw_tool_get_package_help_topics()’,           ‘btw_tool_get_help_page()’, etc. If omitted, this function           will just describe the elements in your global R environment.  clipboard: Whether to write the results to the clipboard. A single           logical value; will default to ‘TRUE’ when run interactively.  Value:       Returns an ellmer::ContentText object with the collected prompt.      If ‘clipboard = TRUE’, the prompt text is copied to the clipboard      when the returned object is printed for the first time (e.g.      calling ‘btw()’ without assignment).  Examples:       btw()            btw(mtcars)            btw(btw::btw)            if (FALSE) {        # btw() can also be used directly in {ellmer} chats        library(ellmer)              chat &lt;- chat_ollama(model = "llama3.1:8b")        chat$chat(          btw(mtcars, "Are there cars with 8 cylinders in this dataset?")        )      }      </span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">btw_tool_docs_help_page</span><span class="op">(</span><span class="st">"btw"</span>, <span class="st">"btw"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> btw                    package:btw                     R Documentation  Plain-text descriptions of R objects  Description:       This function allows you to quickly describe your computational      environment to a model by concatenating plain-text descriptions of      "R stuff", from data frames to packages to function documentation.       There are two key ways to use ‘btw()’:         1. Use it interactively at the console to gather information           about your environment into prompt text that you can paste           into the chat interface of an LLM, like ChatGPT or Claude. By           default, ‘btw()’ copies the prompt to the clipboard for you.            btw(vignette("colwise", "dplyr"), dplyr::across, dplyr::starwars)           #&gt; ✔ btw copied to the clipboard!                   2. Pair ‘btw()’ with ellmer::Chat during a chat session to           create a prompt that includes additional context drawn from           your environment and help pages.            library(ellmer)                      chat &lt;- chat_claude() # requires an Anthropic API key           chat &lt;- chat_ollama(model = "llama3.1:8b") # requires ollama and a local model                      chat$chat(btw(             vignette("colwise", "dplyr"),             dplyr::across,             dplyr::starwars,             "Create a few interesting examples that use `dplyr::across()`",             "with the `starwars` data set."           ))            Usage:       btw(..., clipboard = TRUE)       Arguments:       ...: Objects to describe from your R environment. You can pass           objects themselves, like data frames or functions, or the           function also accepts output from btw_tool_*() functions like           ‘btw_tool_docs_package_help_topics()’,           ‘btw_tool_docs_help_page()’, etc. If omitted, this function           will just describe the elements in your global R environment.  clipboard: Whether to write the results to the clipboard. A single           logical value; will default to ‘TRUE’ when run interactively.  Value:       Returns an ellmer::ContentText object with the collected prompt.      If ‘clipboard = TRUE’, the prompt text is copied to the clipboard      when the returned object is printed for the first time (e.g.      calling ‘btw()’ without assignment).  Examples:       btw()            btw(mtcars)            btw(btw::btw)            if (FALSE) {        # btw() can also be used directly in {ellmer} chats        library(ellmer)              chat &lt;- chat_ollama(model = "llama3.1:8b")        chat$chat(          btw(mtcars, "Are there cars with 8 cylinders in this dataset?")        )      }      </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># show the TOC of vignettes in the dplyr package</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">btw_tool_get_available_vignettes_in_package</span><span class="op">(</span><span class="st">"dplyr"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">btw_tool_docs_available_vignettes</span><span class="op">(</span><span class="st">"dplyr"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [   {"vignette":"colwise","title":"Column-wise operations"},   {"vignette":"grouping","title":"Grouped data"},   {"vignette":"dplyr","title":"Introduction to dplyr"},   {"vignette":"programming","title":"Programming with dplyr"},   {"vignette":"rowwise","title":"Row-wise operations"},   {"vignette":"two-table","title":"Two-table verbs"},   {"vignette":"in-packages","title":"Using dplyr in packages"},   {"vignette":"window-functions","title":"Window functions"},   {"vignette":"base","title":"dplyr &lt;-&gt; base R"} ]</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># returns a whole bunch of output and relies on</span></span></span>
 <span class="r-in"><span><span class="co"># dplyr to have the mentioned vignettes available</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># grab the intro vignette</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">btw_tool_get_vignette_from_package</span><span class="op">(</span><span class="st">"dplyr"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">btw_tool_docs_vignette</span><span class="op">(</span><span class="st">"dplyr"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># grab the programming vignette specifically</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">btw_tool_get_vignette_from_package</span><span class="op">(</span><span class="st">"dplyr"</span>, <span class="st">"programming"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">btw_tool_docs_vignette</span><span class="op">(</span><span class="st">"dplyr"</span>, <span class="st">"programming"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

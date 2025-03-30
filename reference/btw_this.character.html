@@ -6,8 +6,8 @@ character string as R code and return the appropriate object description.
 btw_this() knows about the following special character string formats:
 &quot;./path&quot;
 Any string starting with ./ is treated as a relative path.
-If the path is a file, we call btw_tool_read_text_file() and if the path
-is a directory we call btw_tool_list_files() on the path.
+If the path is a file, we call btw_tool_files_read_text_file() and if the path
+is a directory we call btw_tool_files_list_files() on the path.
 btw_this(&quot;./data&quot;) lists the files in data/.
 btw_this(&quot;./R/load_data.R&quot;) reads the source of the R/load_data.R
 file.
@@ -15,15 +15,15 @@ file.
 &quot;{pkgName}&quot;
 A package name wrapped in braces. Returns either the
 introductory vignette for the package
-(btw_tool_get_vignette_from_package()) or a list of help topics if no
-such vignette exists (btw_tool_get_package_help_topics()).
+(btw_tool_docs_vignette()) or a list of help topics if no
+such vignette exists (btw_tool_docs_package_help_topics()).
 btw_this(&quot;{dplyr}&quot;) includes dplyr's introductory vignette.
 btw_this(&quot;{btw}&quot;) returns the package help index (because btw
 doesn't have an intro vignette, yet).
 
 &quot;?help_topic&quot;
 When the string starts with ?, btw searches R's help
-topics using btw_tool_get_help_page().
+topics using btw_tool_docs_help_page().
 btw_this(&quot;?dplyr::across&quot;) includes the reference page for
 dplyr::across.
 
@@ -54,8 +54,8 @@ character string as R code and return the appropriate object description.
 btw_this() knows about the following special character string formats:
 &quot;./path&quot;
 Any string starting with ./ is treated as a relative path.
-If the path is a file, we call btw_tool_read_text_file() and if the path
-is a directory we call btw_tool_list_files() on the path.
+If the path is a file, we call btw_tool_files_read_text_file() and if the path
+is a directory we call btw_tool_files_list_files() on the path.
 btw_this(&quot;./data&quot;) lists the files in data/.
 btw_this(&quot;./R/load_data.R&quot;) reads the source of the R/load_data.R
 file.
@@ -63,15 +63,15 @@ file.
 &quot;{pkgName}&quot;
 A package name wrapped in braces. Returns either the
 introductory vignette for the package
-(btw_tool_get_vignette_from_package()) or a list of help topics if no
-such vignette exists (btw_tool_get_package_help_topics()).
+(btw_tool_docs_vignette()) or a list of help topics if no
+such vignette exists (btw_tool_docs_package_help_topics()).
 btw_this(&quot;{dplyr}&quot;) includes dplyr's introductory vignette.
 btw_this(&quot;{btw}&quot;) returns the package help index (because btw
 doesn't have an intro vignette, yet).
 
 &quot;?help_topic&quot;
 When the string starts with ?, btw searches R's help
-topics using btw_tool_get_help_page().
+topics using btw_tool_docs_help_page().
 btw_this(&quot;?dplyr::across&quot;) includes the reference page for
 dplyr::across.
 
@@ -141,22 +141,22 @@ determine which method to call, or by default it will try to evaluate the
 character string as R code and return the appropriate object description.</p>
 <p><code><a href="btw_this.html">btw_this()</a></code> knows about the following special character string formats:</p><ul><li><p><code>"./path"</code> <br>
 Any string starting with <code>./</code> is treated as a relative path.
-If the path is a file, we call <code><a href="btw_tool_read_text_file.html">btw_tool_read_text_file()</a></code> and if the path
-is a directory we call <code><a href="btw_tool_list_files.html">btw_tool_list_files()</a></code> on the path.</p><ul><li><p><code>btw_this("./data")</code> lists the files in <code>data/</code>.</p></li>
+If the path is a file, we call <code><a href="btw_tool_files_read_text_file.html">btw_tool_files_read_text_file()</a></code> and if the path
+is a directory we call <code><a href="btw_tool_files_list_files.html">btw_tool_files_list_files()</a></code> on the path.</p><ul><li><p><code>btw_this("./data")</code> lists the files in <code>data/</code>.</p></li>
 <li><p><code>btw_this("./R/load_data.R")</code> reads the source of the <code>R/load_data.R</code>
 file.</p></li>
 </ul></li>
 <li><p><code>"{pkgName}"</code> <br>
 A package name wrapped in braces. Returns either the
 introductory vignette for the package
-(<code><a href="btw_tool_package_docs.html">btw_tool_get_vignette_from_package()</a></code>) or a list of help topics if no
-such vignette exists (<code><a href="btw_tool_package_docs.html">btw_tool_get_package_help_topics()</a></code>).</p><ul><li><p><code>btw_this("{dplyr}")</code> includes dplyr's introductory vignette.</p></li>
+(<code><a href="btw_tool_package_docs.html">btw_tool_docs_vignette()</a></code>) or a list of help topics if no
+such vignette exists (<code><a href="btw_tool_package_docs.html">btw_tool_docs_package_help_topics()</a></code>).</p><ul><li><p><code>btw_this("{dplyr}")</code> includes dplyr's introductory vignette.</p></li>
 <li><p><code>btw_this("{btw}")</code> returns the package help index (because <code>btw</code>
 doesn't have an intro vignette, yet).</p></li>
 </ul></li>
 <li><p><code>"?help_topic"</code> <br>
 When the string starts with <code>?</code>, btw searches R's help
-topics using <code><a href="btw_tool_package_docs.html">btw_tool_get_help_page()</a></code>.</p><ul><li><p><code>btw_this("?dplyr::across")</code> includes the reference page for
+topics using <code><a href="btw_tool_package_docs.html">btw_tool_docs_help_page()</a></code>.</p><ul><li><p><code>btw_this("?dplyr::across")</code> includes the reference page for
 <code><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">dplyr::across</a></code>.</p></li>
 </ul></li>
 <li><p><code>"@current_file"</code> or <code>"@current_selection"</code> <br>

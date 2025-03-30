@@ -229,11 +229,11 @@ using only the client definition from the first of these that is available.</p><
 
 
 <dt id="arg-tools">tools<a class="anchor" aria-label="anchor" href="#arg-tools"></a></dt>
-<dd><p>Names of tools or tool groups to include when registering
-tools, e.g. <code>include = "docs"</code> to include only the documentation related
-tools, or <code>include = c("data", "docs", "environment")</code>, etc. Equivalent to
-the <code>include</code> argument of <code><a href="btw_register_tools.html">btw_register_tools()</a></code>. Use <code>tools = FALSE</code> to
-skip registering <span class="pkg">btw</span> tools with the chat client.</p></dd>
+<dd><p>Optional names of tools or tool groups to include in the chat
+client. By default, all btw tools are included. For example, use
+<code>include = "docs"</code> to include only the documentation related tools, or
+<code>include = c("env", "docs")</code>, etc. <code>btw_client()</code> also supports
+<code>tools = FALSE</code> to skip registering <span class="pkg">btw</span> tools with the chat client.</p></dd>
 
 
 <dt id="arg-path-btw">path_btw<a class="anchor" aria-label="anchor" href="#arg-path-btw"></a></dt>
