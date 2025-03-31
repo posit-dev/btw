@@ -37,7 +37,7 @@ the chat object with the messages added during the chat session.
 }
 \description{
 Creates an \link[ellmer:Chat]{ellmer::Chat} client, enhanced with the tools from
-\code{\link[=btw_register_tools]{btw_register_tools()}}. Use \code{btw_chat()} to create the chat client for
+\code{\link[=btw_register_tools]{btw_register_tools()}}. Use \code{btw_client()} to create the chat client for
 general or interactive use at the console, or \code{btw_app()} to create a chat
 client and launch a Shiny app for chatting with a btw-enhanced LLM in your
 local workspace.
@@ -88,7 +88,7 @@ Follow these important style rules for any R code in this project:
 \itemize{
 \item \code{btw.chat_client}: The \link[ellmer:Chat]{ellmer::Chat} client to use as the basis for new
 \code{btw_client()} or \code{btw_app()} chats.
-\item \code{btw.chat_include}: The btw tools to include by default when starting a new
+\item \code{btw.chat_tools}: The btw tools to include by default when starting a new
 btw chat, see \code{\link[=btw_register_tools]{btw_register_tools()}} for details.
 }
 }
@@ -107,7 +107,7 @@ if (interactive()) {
     btw.chat_client = ellmer::chat_ollama(model="llama3.1:8b")
   ))
 
-  btw_chat <- btw_client()
+  chat <- btw_client()
   chat$chat("How can I replace `stop()` calls with functions from the cli package?")
 }
 

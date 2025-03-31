@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Creates an [ellmer::Chat] client, enhanced with the tools from
-#' [btw_register_tools()]. Use `btw_chat()` to create the chat client for
+#' [btw_register_tools()]. Use `btw_client()` to create the chat client for
 #' general or interactive use at the console, or `btw_app()` to create a chat
 #' client and launch a Shiny app for chatting with a btw-enhanced LLM in your
 #' local workspace.
@@ -55,7 +55,7 @@
 #'
 #' * `btw.chat_client`: The [ellmer::Chat] client to use as the basis for new
 #'   `btw_client()` or `btw_app()` chats.
-#' * `btw.chat_include`: The btw tools to include by default when starting a new
+#' * `btw.chat_tools`: The btw tools to include by default when starting a new
 #'   btw chat, see [btw_register_tools()] for details.
 #'
 #' @examples
@@ -64,7 +64,7 @@
 #'     btw.chat_client = ellmer::chat_ollama(model="llama3.1:8b")
 #'   ))
 #'
-#'   btw_chat <- btw_client()
+#'   chat <- btw_client()
 #'   chat$chat("How can I replace `stop()` calls with functions from the cli package?")
 #' }
 #'
