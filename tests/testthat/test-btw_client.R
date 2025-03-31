@@ -1,8 +1,8 @@
-test_that("btw_client() works with `btw.chat_client` option", {
+test_that("btw_client() works with `btw.client` option", {
   withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
 
   local_options(
-    btw.chat_client = ellmer::chat_claude(
+    btw.client = ellmer::chat_claude(
       system_prompt = "I like to have my own system prompt."
     )
   )
@@ -14,7 +14,7 @@ test_that("btw_client() works with `btw.chat_client` option", {
   expect_match(chat$get_system_prompt(), "I like to have my own system prompt")
   expect_match(chat$get_system_prompt(), "You have access to tools")
   expect_no_match(
-    getOption("btw.chat_client")$get_system_prompt(),
+    getOption("btw.client")$get_system_prompt(),
     "You have access to tools"
   )
 
