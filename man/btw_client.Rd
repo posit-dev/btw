@@ -14,10 +14,10 @@ btw_app(..., client = NULL, tools = NULL, path_btw = NULL)
 via \code{\link[=btw]{btw()}}.}
 
 \item{client}{An \link[ellmer:Chat]{ellmer::Chat} client, defaults to \code{\link[ellmer:chat_claude]{ellmer::chat_claude()}}.
-You can use the \code{btw.chat_client} option to set a default client for new
+You can use the \code{btw.client} option to set a default client for new
 \code{btw_client()} calls, or use a \code{btw.md} project file for default chat
 client settings, like provider and model. We check the \code{client} argument,
-then the \code{btw.chat_client} R option, and finally the \code{btw.md} project file,
+then the \code{btw.client} R option, and finally the \code{btw.md} project file,
 using only the client definition from the first of these that is available.}
 
 \item{tools}{Optional names of tools or tool groups to include in the chat
@@ -86,9 +86,9 @@ Follow these important style rules for any R code in this project:
 
 \subsection{Client Options}{
 \itemize{
-\item \code{btw.chat_client}: The \link[ellmer:Chat]{ellmer::Chat} client to use as the basis for new
+\item \code{btw.client}: The \link[ellmer:Chat]{ellmer::Chat} client to use as the basis for new
 \code{btw_client()} or \code{btw_app()} chats.
-\item \code{btw.chat_tools}: The btw tools to include by default when starting a new
+\item \code{btw.tools}: The btw tools to include by default when starting a new
 btw chat, see \code{\link[=btw_register_tools]{btw_register_tools()}} for details.
 }
 }
@@ -104,7 +104,7 @@ chat
 \examples{
 if (interactive()) {
   withr::local_options(list(
-    btw.chat_client = ellmer::chat_ollama(model="llama3.1:8b")
+    btw.client = ellmer::chat_ollama(model="llama3.1:8b")
   ))
 
   chat <- btw_client()

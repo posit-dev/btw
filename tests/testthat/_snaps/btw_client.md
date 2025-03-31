@@ -1,4 +1,4 @@
-# btw_client() works with `btw.chat_client` option
+# btw_client() works with `btw.client` option
 
     Code
       print(chat)

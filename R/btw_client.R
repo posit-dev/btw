@@ -53,15 +53,15 @@
 #'
 #' ## Client Options
 #'
-#' * `btw.chat_client`: The [ellmer::Chat] client to use as the basis for new
+#' * `btw.client`: The [ellmer::Chat] client to use as the basis for new
 #'   `btw_client()` or `btw_app()` chats.
-#' * `btw.chat_tools`: The btw tools to include by default when starting a new
+#' * `btw.tools`: The btw tools to include by default when starting a new
 #'   btw chat, see [btw_register_tools()] for details.
 #'
 #' @examples
 #' if (interactive()) {
 #'   withr::local_options(list(
-#'     btw.chat_client = ellmer::chat_ollama(model="llama3.1:8b")
+#'     btw.client = ellmer::chat_ollama(model="llama3.1:8b")
 #'   ))
 #'
 #'   chat <- btw_client()
@@ -71,10 +71,10 @@
 #' @param ... Objects and documentation to be included as context in the chat,
 #'   via [btw()].
 #' @param client An [ellmer::Chat] client, defaults to [ellmer::chat_claude()].
-#'   You can use the `btw.chat_client` option to set a default client for new
+#'   You can use the `btw.client` option to set a default client for new
 #'   `btw_client()` calls, or use a `btw.md` project file for default chat
 #'   client settings, like provider and model. We check the `client` argument,
-#'   then the `btw.chat_client` R option, and finally the `btw.md` project file,
+#'   then the `btw.client` R option, and finally the `btw.md` project file,
 #'   using only the client definition from the first of these that is available.
 #' @param tools Optional names of tools or tool groups to include in the chat
 #'   client. By default, all btw tools are included. For example, use
@@ -173,7 +173,7 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
 btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
   config$tools <-
     tools %||%
-    getOption("btw.chat_tools") %||%
+    getOption("btw.tools") %||%
     config$tools
 
   if (!is.null(client)) {
@@ -182,7 +182,7 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
     return(config)
   }
 
-  default <- getOption("btw.chat_client")
+  default <- getOption("btw.client")
   if (!is.null(default)) {
     check_inherits(default, "Chat")
     config$client <- default$clone()
