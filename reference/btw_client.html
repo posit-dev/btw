@@ -47,9 +47,9 @@ Follow these important style rules for any R code in this project:
 Client Options
 
 
-btw.chat_client: The ellmer::Chat client to use as the basis for new
+btw.client: The ellmer::Chat client to use as the basis for new
 btw_client() or btw_app() chats.
-btw.chat_tools: The btw tools to include by default when starting a new
+btw.tools: The btw tools to include by default when starting a new
 btw chat, see btw_register_tools() for details.
 
 
@@ -102,9 +102,9 @@ Follow these important style rules for any R code in this project:
 Client Options
 
 
-btw.chat_client: The ellmer::Chat client to use as the basis for new
+btw.client: The ellmer::Chat client to use as the basis for new
 btw_client() or btw_app() chats.
-btw.chat_tools: The btw tools to include by default when starting a new
+btw.tools: The btw tools to include by default when starting a new
 btw chat, see btw_register_tools() for details.
 
 
@@ -195,9 +195,9 @@ values are passed to the <code>ellmer::chat_*()</code> constructor, e.g. <code>m
 <div class="section">
 <h3 id="client-options">Client Options<a class="anchor" aria-label="anchor" href="#client-options"></a></h3>
 
-<ul><li><p><code>btw.chat_client</code>: The <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client to use as the basis for new
+<ul><li><p><code>btw.client</code>: The <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client to use as the basis for new
 <code>btw_client()</code> or <code>btw_app()</code> chats.</p></li>
-<li><p><code>btw.chat_tools</code>: The btw tools to include by default when starting a new
+<li><p><code>btw.tools</code>: The btw tools to include by default when starting a new
 btw chat, see <code><a href="btw_register_tools.html">btw_register_tools()</a></code> for details.</p></li>
 </ul></div>
 
@@ -221,10 +221,10 @@ via <code><a href="btw.html">btw()</a></code>.</p></dd>
 
 <dt id="arg-client">client<a class="anchor" aria-label="anchor" href="#arg-client"></a></dt>
 <dd><p>An <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client, defaults to <code><a href="https://ellmer.tidyverse.org/reference/chat_claude.html" class="external-link">ellmer::chat_claude()</a></code>.
-You can use the <code>btw.chat_client</code> option to set a default client for new
+You can use the <code>btw.client</code> option to set a default client for new
 <code>btw_client()</code> calls, or use a <code>btw.md</code> project file for default chat
 client settings, like provider and model. We check the <code>client</code> argument,
-then the <code>btw.chat_client</code> R option, and finally the <code>btw.md</code> project file,
+then the <code>btw.client</code> R option, and finally the <code>btw.md</code> project file,
 using only the client definition from the first of these that is available.</p></dd>
 
 
@@ -260,7 +260,7 @@ chat</p></li>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_options.html" class="external-link">local_options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    btw.chat_client <span class="op">=</span> <span class="fu">ellmer</span><span class="fu">::</span><span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_ollama.html" class="external-link">chat_ollama</a></span><span class="op">(</span>model<span class="op">=</span><span class="st">"llama3.1:8b"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    btw.client <span class="op">=</span> <span class="fu">ellmer</span><span class="fu">::</span><span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_ollama.html" class="external-link">chat_ollama</a></span><span class="op">(</span>model<span class="op">=</span><span class="st">"llama3.1:8b"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="va">chat</span> <span class="op">&lt;-</span> <span class="fu">btw_client</span><span class="op">(</span><span class="op">)</span></span></span>
