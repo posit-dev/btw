@@ -131,7 +131,7 @@ btw_tool_env_describe_data_frame <- function(
       dims = ellmer::type_array(
         paste(
           'Dimensions of the data frame to use for the "print" or "json" format.',
-          "A numeric vector of length 2 as number of rows and columns. Default `c(5, 100)`."
+          "A numeric vector of length 2 as number of rows and columns. Default `[5, 100]`."
         ),
         items = ellmer::type_integer(),
         required = FALSE
