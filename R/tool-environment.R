@@ -42,6 +42,10 @@ btw_tool_env_describe_environment <- function(
     cli::cli_abort("Not implemented yet.")
   }
 
+  if (identical(trimws(items), "")) {
+    items <- NULL
+  }
+
   if (is_namespace(environment)) {
     cli::cli_abort(c(
       "Describing an entire package namespace is not supported",
@@ -126,7 +130,8 @@ btw_tool_env_describe_environment <- function(
       .description = "List and describe items in an environment.",
       items = ellmer::type_array(
         "The names of items to describe from the environment. Defaults to `NULL`, indicating all items.",
-        items = ellmer::type_string()
+        items = ellmer::type_string(),
+        required = FALSE
       )
     )
   }
