@@ -19,7 +19,7 @@
 #' @examples
 #' # requires an ANTHROPIC_API_KEY
 #' \dontrun{
-#' ch <- ellmer::chat_claude()
+#' ch <- ellmer::chat_anthropic()
 #'
 #' btw_register_tools(ch)
 #' }

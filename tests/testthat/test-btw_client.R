@@ -2,7 +2,7 @@ test_that("btw_client() works with `btw.client` option", {
   withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
 
   local_options(
-    btw.client = ellmer::chat_claude(
+    btw.client = ellmer::chat_anthropic(
       system_prompt = "I like to have my own system prompt."
     )
   )
@@ -38,7 +38,7 @@ test_that("btw_client() works basic case", {
 test_that("btw_client() modifies `client` argument in place", {
   withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
 
-  client <- ellmer::chat_claude(
+  client <- ellmer::chat_anthropic(
     system_prompt = "I like to make my own chat client.",
   )
 
@@ -66,7 +66,7 @@ test_that("btw_client() adds `btw.md` context file to system prompt", {
 
   with_mocked_platform(ide = "rstudio", {
     chat <- btw_client(
-      client = ellmer::chat_claude(
+      client = ellmer::chat_anthropic(
         system_prompt = "I like to have my own system prompt."
       )
     )

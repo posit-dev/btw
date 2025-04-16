@@ -44,7 +44,7 @@ pages.
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{library(ellmer)
 
-chat <- chat_claude() # requires an Anthropic API key
+chat <- chat_anthropic() # requires an Anthropic API key
 chat <- chat_ollama(model = "llama3.1:8b") # requires ollama and a local model
 
 chat$chat(btw(

@@ -13,7 +13,7 @@ btw_app(..., client = NULL, tools = NULL, path_btw = NULL)
 \item{...}{Objects and documentation to be included as context in the chat,
 via \code{\link[=btw]{btw()}}.}
 
-\item{client}{An \link[ellmer:Chat]{ellmer::Chat} client, defaults to \code{\link[ellmer:deprecated]{ellmer::chat_claude()}}.
+\item{client}{An \link[ellmer:Chat]{ellmer::Chat} client, defaults to \code{\link[ellmer:chat_anthropic]{ellmer::chat_anthropic()}}.
 You can use the \code{btw.client} option to set a default client for new
 \code{btw_client()} calls, or use a \code{btw.md} project file for default chat
 client settings, like provider and model. We check the \code{client} argument,

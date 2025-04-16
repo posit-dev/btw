@@ -3,6 +3,6 @@ test_that("btw_register_tools works", {
 
   # would need to poke inside of the private env to ensure the tools
   # were actually registered, so just check that there are no conditions raised
-  ch <- ellmer::chat_claude()
+  ch <- ellmer::chat_anthropic()
   expect_silent(btw_register_tools(ch))
 })

@@ -70,12 +70,13 @@
 #'
 #' @param ... Objects and documentation to be included as context in the chat,
 #'   via [btw()].
-#' @param client An [ellmer::Chat] client, defaults to [ellmer::chat_claude()].
-#'   You can use the `btw.client` option to set a default client for new
-#'   `btw_client()` calls, or use a `btw.md` project file for default chat
-#'   client settings, like provider and model. We check the `client` argument,
-#'   then the `btw.client` R option, and finally the `btw.md` project file,
-#'   using only the client definition from the first of these that is available.
+#' @param client An [ellmer::Chat] client, defaults to
+#'   [ellmer::chat_anthropic()]. You can use the `btw.client` option to set a
+#'   default client for new `btw_client()` calls, or use a `btw.md` project file
+#'   for default chat client settings, like provider and model. We check the
+#'   `client` argument, then the `btw.client` R option, and finally the `btw.md`
+#'   project file, using only the client definition from the first of these that
+#'   is available.
 #' @param tools Optional names of tools or tool groups to include in the chat
 #'   client. By default, all btw tools are included. For example, use
 #'   `include = "docs"` to include only the documentation related tools, or
@@ -203,7 +204,7 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
     return(config)
   }
 
-  config$client <- ellmer::chat_claude()
+  config$client <- ellmer::chat_anthropic(echo = "output")
   config
 }
 
