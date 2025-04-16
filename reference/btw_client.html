@@ -215,17 +215,18 @@ btw chat, see <code><a href="btw_register_tools.html">btw_register_tools()</a></
 
 
 <dl><dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Objects and documentation to be included as context in the chat,
-via <code><a href="btw.html">btw()</a></code>.</p></dd>
+<dd><p>Additional arguments are ignored. <code>...</code> are included for future
+feature expansion.</p></dd>
 
 
 <dt id="arg-client">client<a class="anchor" aria-label="anchor" href="#arg-client"></a></dt>
-<dd><p>An <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client, defaults to <code><a href="https://ellmer.tidyverse.org/reference/chat_anthropic.html" class="external-link">ellmer::chat_anthropic()</a></code>.
-You can use the <code>btw.client</code> option to set a default client for new
-<code>btw_client()</code> calls, or use a <code>btw.md</code> project file for default chat
-client settings, like provider and model. We check the <code>client</code> argument,
-then the <code>btw.client</code> R option, and finally the <code>btw.md</code> project file,
-using only the client definition from the first of these that is available.</p></dd>
+<dd><p>An <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client, defaults to
+<code><a href="https://ellmer.tidyverse.org/reference/chat_anthropic.html" class="external-link">ellmer::chat_anthropic()</a></code>. You can use the <code>btw.client</code> option to set a
+default client for new <code>btw_client()</code> calls, or use a <code>btw.md</code> project file
+for default chat client settings, like provider and model. We check the
+<code>client</code> argument, then the <code>btw.client</code> R option, and finally the <code>btw.md</code>
+project file, using only the client definition from the first of these that
+is available.</p></dd>
 
 
 <dt id="arg-tools">tools<a class="anchor" aria-label="anchor" href="#arg-tools"></a></dt>
