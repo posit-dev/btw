@@ -27,12 +27,10 @@ test_that("btw_client() works basic case", {
 
   data_foo <- mtcars
 
-  chat <- btw_client(data_foo)
+  expect_error(btw_client(data_foo), class = "rlib_error_dots_nonempty")
+
+  chat <- btw_client()
   expect_s3_class(chat, "Chat")
-  expect_equal(
-    chat$get_turns()[[1]]@contents[[1]],
-    btw(data_foo)
-  )
 })
 
 test_that("btw_client() modifies `client` argument in place", {
