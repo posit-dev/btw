@@ -68,8 +68,6 @@
 #'   chat$chat("How can I replace `stop()` calls with functions from the cli package?")
 #' }
 #'
-#' @param ... Objects and documentation to be included as context in the chat,
-#'   via [btw()].
 #' @param client An [ellmer::Chat] client, defaults to
 #'   [ellmer::chat_anthropic()]. You can use the `btw.client` option to set a
 #'   default client for new `btw_client()` calls, or use a `btw.md` project file
@@ -93,6 +91,8 @@
 #' @describeIn btw_client Create a btw-enhanced [ellmer::Chat] client
 #' @export
 btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
+  check_dots_empty()
+
   config <- btw_client_config(client, tools, config = read_btw_file(path_btw))
   skip_tools <- isFALSE(config$tools) || identical(config$tools, "none")
 
@@ -137,20 +137,6 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
     maybe_quiet(btw_register_tools(client, tools = config$tools))
   }
 
-  dots <- dots_list(..., .named = TRUE)
-
-  if (length(dots)) {
-    turns <- client$get_turns()
-    turns <- c(
-      turns,
-      ellmer::Turn(
-        "user",
-        contents = list(btw(!!!dots))
-      )
-    )
-    client$set_turns(turns)
-  }
-
   client
 }
 
@@ -160,9 +146,10 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
 #'   chat
 #' @export
 btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
+  check_dots_empty()
+
   client <- btw_client(
     client = client,
-    ...,
     tools = tools,
     path_btw = path_btw
   )
