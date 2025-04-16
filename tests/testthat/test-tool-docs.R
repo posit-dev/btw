@@ -8,7 +8,7 @@ test_that("btw_tool_docs_package_help_topics() works", {
 test_that("btw_tool_docs_help_page() works", {
   skip_if_not_macos()
 
-  res <- btw_tool_docs_help_page(package = "stats", topic = "rnorm")
+  res <- btw_tool_docs_help_page(package_name = "stats", topic = "rnorm")
 
   expect_snapshot(res)
 })
