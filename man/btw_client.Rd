@@ -10,6 +10,9 @@ btw_client(..., client = NULL, tools = NULL, path_btw = NULL)
 btw_app(..., client = NULL, tools = NULL, path_btw = NULL)
 }
 \arguments{
+\item{...}{Additional arguments are ignored. \code{...} are included for future
+feature expansion.}
+
 \item{client}{An \link[ellmer:Chat]{ellmer::Chat} client, defaults to
 \code{\link[ellmer:chat_anthropic]{ellmer::chat_anthropic()}}. You can use the \code{btw.client} option to set a
 default client for new \code{btw_client()} calls, or use a \code{btw.md} project file

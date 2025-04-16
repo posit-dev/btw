@@ -83,6 +83,8 @@
 #' @param path_btw A path to a `btw.md` project context file. If `NULL`, btw
 #'   will find a project-specific `btw.md` file in the parents of the current
 #'   working directory.
+#' @param ... Additional arguments are ignored. `...` are included for future
+#'   feature expansion.
 #'
 #' @return Returns an [ellmer::Chat] object with additional tools registered by
 #'   [btw_register_tools()]. `btw_app()` returns the chat object invisibly, and
