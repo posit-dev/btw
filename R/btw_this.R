@@ -85,6 +85,9 @@ as_btw_capture <- function(x) {
 #'   of the file currently open in the editor using
 #'   [rstudioapi::getSourceEditorContext()].
 #'
+#' * `"@clipboard"` \cr
+#'   Includes the contents currently stored in your clipboard.
+#'
 #' * `"@platform_info"` \cr
 #'   Includes information about the current platform, such as the R version,
 #'   operating system, IDE or UI being used, as well as language, locale,
@@ -122,6 +125,9 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
     return(I(
       btw_tool_ide_read_current_editor(selection = TRUE, consent = TRUE)
     ))
+  }
+  if (identical(x, "@clipboard")) {
+    return(I(clipr::read_clip()))
   }
   if (identical(x, "@platform_info")) {
     return(btw_tool_session_platform_info())

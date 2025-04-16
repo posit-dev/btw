@@ -55,6 +55,8 @@ When used in RStudio or Positron, or anywhere else that the
 \pkg{rstudioapi} is supported, \code{btw("@current_file")} includes the contents
 of the file currently open in the editor using
 \code{\link[rstudioapi:rstudio-editors]{rstudioapi::getSourceEditorContext()}}.
+\item \code{"@clipboard"} \cr
+Includes the contents currently stored in your clipboard.
 \item \code{"@platform_info"} \cr
 Includes information about the current platform, such as the R version,
 operating system, IDE or UI being used, as well as language, locale,
