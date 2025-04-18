@@ -100,22 +100,122 @@ btw_tool_docs_help_page <- function(topic, package_name = "") {
     try.all.packages = FALSE
   ))
 
-  pager_result <- NULL
-  pager <- function(files, header, title, delete.file) {
-    str <- readLines(files, warn = FALSE)
-    str <- gsub("_\b", "", str)
-    if (isTRUE(delete.file)) {
-      unlink(files)
-    }
-    pager_result <<- str
-    invisible()
+  resolved <- help_package_topic(help_page)
+
+  if (length(resolved$resolved) > 1) {
+    calls <- sprintf(
+      '{"topic":"%s", "package_name":"%s"}',
+      resolved$resolved,
+      resolved$package
+    )
+    calls <- paste(calls, collapse = "\n")
+    resp <- sprintf(
+      "Topic '%s' matched %d different topics. Please ask the user to choose one of the following:\n%s",
+      topic,
+      length(resolved$resolved),
+      calls
+    )
+    return(resp)
   }
 
-  withr::with_options(list(pager = pager), {
-    print(help_page)
-  })
+  md <- format_help_page_markdown(
+    help_page,
+    options = c("--shift-heading-level-by=1")
+  )
 
-  return(pager_result)
+  # Remove up to the first empty line
+  first_empty <- match(TRUE, !nzchar(md), nomatch = 1) - 1
+  if (first_empty > 0) {
+    md <- md[-seq_len(first_empty)]
+  }
+
+  heading <- sprintf(
+    "## `help(package = \"%s\", \"%s\")`",
+    resolved$package,
+    topic
+  )
+  c(heading, md)
+}
+
+help_package_topic <- function(help_page) {
+  if (inherits(help_page, "dev_topic")) {
+    # Assuming that dev topics are scalar (`?btw::btw_app` in dev workspace)
+    return(list(
+      topic = help_page$topic,
+      resolved = help_page$path,
+      package = help_page$pkg
+    ))
+  }
+
+  # help() mainly returns a path to the un-aliased help topic
+  # help("promise"): .../library/promises/help/promise
+  # help("mutate_if", "dplyr"): .../library/dplyr/help/mutate_all
+  topic <- attr(help_page, "topic", exact = TRUE)
+  help_path <- as.character(help_page)
+
+  list(
+    topic = rep_along(topic, help_path),
+    resolved = basename(help_path),
+    package = basename(dirname(dirname(help_path)))
+  )
+}
+
+help_to_rd <- function(help_page) {
+  check_inherits(help_page, c("help_files_with_topic", "dev_topic"))
+
+  if (inherits(help_page, "dev_topic")) {
+    rd_path <- help_page$path
+    return(tools::parse_Rd(rd_path))
+  }
+
+  help_path <- as.character(help_page)
+  rd_name <- basename(help_path)
+  rd_package <- basename(dirname(dirname(help_path)))
+  tools::Rd_db(rd_package)[[paste0(rd_name, ".Rd")]]
+}
+
+format_help_page_markdown <- function(
+  help_page,
+  ...,
+  to = "markdown_strict+pipe_tables+backtick_code_blocks"
+) {
+  rd_obj <- help_to_rd(help_page)
+  tmp_rd_file <- withr::local_tempfile()
+
+  tools::Rd2HTML(rd_obj, out = tmp_rd_file)
+
+  pandoc_convert(
+    tmp_rd_file,
+    to = to,
+    ...
+  )
+}
+
+format_help_page_html <- function(help_page) {
+  rd_obj <- help_to_rd(help_page)
+  tmp_rd_file <- withr::local_tempfile()
+
+  html <- tools::Rd2HTML(rd_obj, out = tmp_rd_file)
+  readLines(html)
+}
+
+format_help_page_text <- function(help_page) {
+  rd_obj <- help_to_rd(help_page)
+  tmp_rd_file <- withr::local_tempfile()
+
+  rd_opts <- tools::Rd2txt_options(
+    itemBullet = "* ",
+    showURLs = TRUE,
+    underline_titles = FALSE
+  )
+  withr::defer(tools::Rd2txt_options(rd_opts))
+
+  tools::Rd2txt(
+    rd_obj,
+    out = tmp_rd_file,
+    outputEncoding = "utf-8"
+  )
+  readLines(tmp_rd_file)
 }
 
 .btw_add_to_tools(
