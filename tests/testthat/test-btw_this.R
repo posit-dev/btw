@@ -1,4 +1,4 @@
-use_latest_pandoc_on_local()
+use_latest_pandoc()
 
 test_that("btw_this.function()", {
   skip_if_not_macos()

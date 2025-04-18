@@ -1,11 +1,4 @@
-use_latest_pandoc_on_local <- function(.envir = parent.frame()) {
-  if (isTRUE(as.logical(Sys.getenv("CI", "false")))) {
-    # on_ci(), don't do anything
-    return(invisible())
-  }
-
-  check_installed("gh")
-
+use_latest_pandoc <- function(.envir = parent.frame()) {
   v <- Sys.getenv("BTW_TESTS_PANDOC_VERSION", "latest")
   if (identical(v, "latest")) {
     v <- suppressMessages(pandoc::pandoc_available_releases()[1])
