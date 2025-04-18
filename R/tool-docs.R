@@ -190,15 +190,7 @@ btw_tool_docs_vignette <- function(
     )
   }
 
-  tmp_file <- withr::local_tempfile(fileext = ".md")
-  rmarkdown::pandoc_convert(
-    file.path(vignette_info$Dir, "doc", vignette_info$PDF),
-    from = "html",
-    to = "markdown",
-    output = tmp_file
-  )
-
-  readLines(tmp_file)
+  pandoc_convert(file.path(vignette_info$Dir, "doc", vignette_info$PDF))
 }
 
 .btw_add_to_tools(
