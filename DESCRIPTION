@@ -35,6 +35,7 @@ Imports:
     tibble,
     withr
 Suggests:
+    gh,
     pandoc,
     testthat (>= 3.0.0)
 Config/Needs/website: tidyverse/tidytemplate
