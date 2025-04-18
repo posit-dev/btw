@@ -91,6 +91,8 @@ btw_tool_docs_help_page <- function(topic, package_name = "") {
     check_installed(package_name)
   }
 
+  withr::local_options(list(menu.graphics = FALSE))
+
   help_page <- inject(help(
     package = !!package_name,
     topic = !!topic,
