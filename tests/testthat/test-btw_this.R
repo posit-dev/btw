@@ -1,3 +1,5 @@
+use_latest_pandoc()
+
 test_that("btw_this.function()", {
   skip_if_not_macos()
   expect_snapshot(cli::cat_line(btw_this(dplyr::mutate)))
