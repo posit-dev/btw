@@ -1,3 +1,5 @@
+use_latest_pandoc()
+
 test_that("btw_tool_docs_package_help_topics() works", {
   res <- btw_tool_docs_package_help_topics("stats")
 
