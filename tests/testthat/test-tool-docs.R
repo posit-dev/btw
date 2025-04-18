@@ -1,4 +1,4 @@
-use_latest_pandoc()
+use_latest_pandoc_on_local()
 
 test_that("btw_tool_docs_package_help_topics() works", {
   res <- btw_tool_docs_package_help_topics("stats")
