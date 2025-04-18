@@ -12,7 +12,7 @@ test_that("btw_tool_docs_help_page() works", {
 
   res <- btw_tool_docs_help_page(package_name = "stats", topic = "rnorm")
 
-  expect_snapshot(res)
+  expect_snapshot(cli::cat_line(res))
 })
 
 test_that("btw_tool_docs_available_vignettes() works", {
