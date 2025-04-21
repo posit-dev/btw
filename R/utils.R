@@ -1,3 +1,22 @@
+pandoc_convert <- function(path, ..., from = "html", to = "markdown") {
+  tmp_file <- withr::local_tempfile()
+
+  rmarkdown::pandoc_convert(
+    path,
+    from = from,
+    to = to,
+    output = tmp_file,
+    ...
+  )
+
+  readLines(tmp_file)
+}
+
+cli_escape <- function(x) {
+  x <- gsub("{", "{{", x, fixed = TRUE)
+  gsub("}", "}}", x, fixed = TRUE)
+}
+
 # ad-hoc check functions ------------------------------------------------------
 check_inherits <- function(
   x,

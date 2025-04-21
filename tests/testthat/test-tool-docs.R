@@ -1,3 +1,5 @@
+use_latest_pandoc()
+
 test_that("btw_tool_docs_package_help_topics() works", {
   res <- btw_tool_docs_package_help_topics("stats")
 
@@ -10,7 +12,7 @@ test_that("btw_tool_docs_help_page() works", {
 
   res <- btw_tool_docs_help_page(package_name = "stats", topic = "rnorm")
 
-  expect_snapshot(res)
+  expect_snapshot(cli::cat_line(res))
 })
 
 test_that("btw_tool_docs_available_vignettes() works", {
@@ -53,4 +55,13 @@ test_that("btw_tool_docs_vignette() works", {
   expect_type(res, "character")
   expect_match(res, "Programming", fixed = TRUE, all = FALSE)
   expect_equal(btw_this(vignette("programming", "dplyr")), res)
+})
+
+test_that("btw_tool_docs_help_page() with multiple help topics", {
+  skip_if_not_installed("dplyr")
+
+  expect_snapshot(
+    error = TRUE,
+    btw_tool_docs_help_page("filter")
+  )
 })

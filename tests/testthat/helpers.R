@@ -1,3 +1,14 @@
+use_latest_pandoc <- function(.envir = parent.frame()) {
+  v <- Sys.getenv("BTW_TESTS_PANDOC_VERSION", "latest")
+  if (identical(v, "latest")) {
+    v <- suppressMessages(pandoc::pandoc_available_releases()[1])
+  }
+  if (!pandoc::pandoc_is_installed(v)) {
+    pandoc::pandoc_install(v)
+  }
+  pandoc::pandoc_activate(v, quiet = TRUE)
+}
+
 skip_if_not_macos <- function() {
   # Skip helper: snapshots only on macos for now
   skip_on_os("windows")
