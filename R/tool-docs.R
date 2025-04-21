@@ -108,14 +108,12 @@ btw_tool_docs_help_page <- function(topic, package_name = "") {
       resolved$resolved,
       resolved$package
     )
-    calls <- paste(calls, collapse = "\n")
-    resp <- sprintf(
-      "Topic '%s' matched %d different topics. Please ask the user to choose one of the following:\n%s",
-      topic,
-      length(resolved$resolved),
-      calls
-    )
-    return(resp)
+    calls <- set_names(calls, "*")
+    cli::cli_abort(c(
+      "Topic {.val {topic}} matched {length(resolved$resolved)} different topics.",
+      "i" = "Choose one or submit individual tool calls for each topic.",
+      cli_escape(calls)
+    ))
   }
 
   md <- format_help_page_markdown(

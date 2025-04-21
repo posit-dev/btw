@@ -12,6 +12,11 @@ pandoc_convert <- function(path, ..., from = "html", to = "markdown") {
   readLines(tmp_file)
 }
 
+cli_escape <- function(x) {
+  x <- gsub("{", "{{", x, fixed = TRUE)
+  gsub("}", "}}", x, fixed = TRUE)
+}
+
 # ad-hoc check functions ------------------------------------------------------
 check_inherits <- function(
   x,
