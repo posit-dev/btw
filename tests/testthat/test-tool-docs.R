@@ -56,3 +56,12 @@ test_that("btw_tool_docs_vignette() works", {
   expect_match(res, "Programming", fixed = TRUE, all = FALSE)
   expect_equal(btw_this(vignette("programming", "dplyr")), res)
 })
+
+test_that("btw_tool_docs_help_page() with multiple help topics", {
+  skip_if_not_installed("dplyr")
+
+  expect_snapshot(
+    error = TRUE,
+    btw_tool_docs_help_page("filter")
+  )
+})
