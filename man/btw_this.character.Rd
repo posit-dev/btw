@@ -34,13 +34,12 @@ is a directory we call \code{\link[=btw_tool_files_list_files]{btw_tool_files_li
 file.
 }
 \item \code{"{pkgName}"} \cr
-A package name wrapped in braces. Returns either the
-introductory vignette for the package
-(\code{\link[=btw_tool_docs_vignette]{btw_tool_docs_vignette()}}) or a list of help topics if no
-such vignette exists (\code{\link[=btw_tool_docs_package_help_topics]{btw_tool_docs_package_help_topics()}}).
+A package name wrapped in braces. Returns the list of help topics
+(\code{\link[=btw_tool_docs_package_help_topics]{btw_tool_docs_package_help_topics()}}) and, if it exists, the
+introductory vignette for the package (\code{\link[=btw_tool_docs_vignette]{btw_tool_docs_vignette()}}).
 \itemize{
 \item \code{btw_this("{dplyr}")} includes dplyr's introductory vignette.
-\item \code{btw_this("{btw}")} returns the package help index (because \code{btw}
+\item \code{btw_this("{btw}")} returns only the package help index (because \code{btw}
 doesn't have an intro vignette, yet).
 }
 \item \code{"?help_topic"} \cr

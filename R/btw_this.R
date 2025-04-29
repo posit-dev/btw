@@ -63,13 +63,12 @@ as_btw_capture <- function(x) {
 #'     file.
 #'
 #' * `"{pkgName}"` \cr
-#'   A package name wrapped in braces. Returns either the
-#'   introductory vignette for the package
-#'   ([btw_tool_docs_vignette()]) or a list of help topics if no
-#'   such vignette exists ([btw_tool_docs_package_help_topics()]).
+#'   A package name wrapped in braces. Returns the list of help topics 
+#'   ([btw_tool_docs_package_help_topics()]) and, if it exists, the
+#'   introductory vignette for the package ([btw_tool_docs_vignette()]).
 #'
 #'   * `btw_this("{dplyr}")` includes dplyr's introductory vignette.
-#'   * `btw_this("{btw}")` returns the package help index (because `btw`
+#'   * `btw_this("{btw}")` returns only the package help index (because `btw`
 #'     doesn't have an intro vignette, yet).
 #'
 #' * `"?help_topic"` \cr
@@ -170,13 +169,9 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
     # * use only letters, numbers or .
     # * be two or more characters long
     pkg <- substring(x, 2, nchar(x) - 1)
-    res <- tryCatch(
-      # Get the package vignette
-      btw_tool_docs_vignette(pkg),
-      error = function(err) {
-        # or list help topics
-        btw_tool_docs_package_help_topics(pkg)
-      }
+    res <- c(
+      btw_tool_docs_package_help_topics(pkg),
+      tryCatch(c("", btw_tool_docs_vignette(pkg)), error = function(e) NULL)
     )
     return(res)
   }
