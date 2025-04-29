@@ -35,13 +35,13 @@ btw_tool_env_query_data_frame <- function(query, data_frame) {
 
 btw_connect <- function() {
   # TODO: also check if the connection is active
-  if (is.null(btw_env$conn)) {
-    btw_env$conn <- DBI::dbConnect(duckdb::duckdb(), dbdir = ":memory:")
+  if (is.null(.globals$conn)) {
+    .globals$conn <- DBI::dbConnect(duckdb::duckdb(), dbdir = ":memory:")
   }
 }
 
 btw_connection <- function() {
   btw_connect()
 
-  btw_env$conn
+  .globals$conn
 }

@@ -1,4 +1,4 @@
-btw_env <- new_environment()
+.globals <- new_environment()
 
 pandoc_convert <- function(path, ..., from = "html", to = "markdown") {
   tmp_file <- withr::local_tempfile()
