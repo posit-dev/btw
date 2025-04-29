@@ -6,31 +6,27 @@
 \usage{
 btw_tool_env_describe_data_frame(
   data_frame,
-  format = c("skim", "glimpse", "print", "json"),
+  format = c("skim", "json"),
   dims = c(5, 100)
 )
 }
 \arguments{
 \item{data_frame}{The data frame to describe}
 
-\item{format}{One of \code{"skim"}, \code{"glimpse"}, \code{"print"}, or \code{"json"}.
+\item{format}{One of \code{"skim"} or \code{"json"}.
 \itemize{
 \item \code{"skim"} is the most information-dense format for describing the data. It
 uses and returns the same information as \code{\link[skimr:skim]{skimr::skim()}} but formatting as
 a JSON object that describes the dataset.
-\item To glimpse the data column-by-column, use \code{"glimpse"}. This is
-particularly helpful for getting a sense of data frame column names,
-types, and distributions, when pairings of entries in individual rows
-aren't particularly important.
-\item To just print out the data frame, use \code{print()}.
 \item To get a json representation of the data, use \code{"json"}. This is
 particularly helpful when the pairings among entries in specific rows
 are important to demonstrate.
 }}
 
-\item{dims}{The number of rows and columns to show, as a numeric vector of
-length two. For example, the default \code{dims = c(5, 100)} shows the first 5
-rows and 100 columns, whereas \code{dims = c(Inf, Inf)} would show all of the data.}
+\item{dims}{For \code{format = "json"}, the number of rows and columns to show,
+as a numeric vector of length two. For example, the default
+\code{dims = c(5, 100)} shows the first 5 rows and 100 columns, whereas
+\code{dims = c(Inf, Inf)} would show all of the data.}
 }
 \value{
 A character vector containing a representation of the data frame.
