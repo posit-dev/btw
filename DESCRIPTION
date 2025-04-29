@@ -22,7 +22,9 @@ BugReports: https://github.com/posit-dev/btw/issues
 Imports:
     cli,
     clipr,
+    DBI,
     dplyr,
+    duckdb,
     ellmer (>= 0.1.1.9000),
     fs,
     jsonlite,

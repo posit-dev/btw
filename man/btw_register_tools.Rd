@@ -29,12 +29,19 @@ to the tools:\tabular{lll}{
    btw_tool_docs_vignette \tab docs \tab Get a package vignette in plain text. \cr
    btw_tool_env_describe_data_frame \tab env \tab Show the data frame or table or get information about the structure of a data frame or table. \cr
    btw_tool_env_describe_environment \tab env \tab List and describe items in an environment. \cr
-   btw_tool_files_list_files \tab files \tab List files in the current working directory or in subfolders in the current project directory. \cr
-   btw_tool_files_read_text_file \tab files \tab Read an entire text file. \cr
-   btw_tool_ide_read_current_editor \tab ide \tab Read the contents of the editor that is currently open in the user's IDE. \cr
-   btw_tool_session_package_info \tab session \tab Verify that a specific package is installed, or find out which packages are in use in the current session. \cr
-   btw_tool_session_platform_info \tab session \tab Describes the R version, operating system, language and locale settings for the user's system. \cr
+   btw_tool_env_query_data_frame \tab env \tab Run a DuckDB SQL query against a data frame. \cr
 }
+
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{     Use this tool instead of btw_tool_env_describe_data_frame to run more
+     targeted queries, e.g. |
+}\if{html}{\out{</div>}}
+
+| btw_tool_files_list_files | files | List files in the current working directory or in subfolders in the current project directory. |
+| btw_tool_files_read_text_file | files | Read an entire text file. |
+| btw_tool_ide_read_current_editor | ide | Read the contents of the editor that is currently open in the user's IDE. |
+| btw_tool_session_package_info | session | Verify that a specific package is installed, or find out which packages are in use in the current session. |
+| btw_tool_session_platform_info | session | Describes the R version, operating system, language and locale settings for the user's system. |
 }
 \examples{
 # requires an ANTHROPIC_API_KEY
