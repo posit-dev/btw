@@ -63,8 +63,8 @@ as_btw_capture <- function(x) {
 #'     file.
 #'
 #' * `"{pkgName}"` \cr
-#'   A package name wrapped in braces. Returns list of help topics 
-#'   ([btw_tool_docs_package_help_topics()]) and if it exists, the
+#'   A package name wrapped in braces. Returns the list of help topics 
+#'   ([btw_tool_docs_package_help_topics()]) and, if it exists, the
 #'   introductory vignette for the package ([btw_tool_docs_vignette()]).
 #'
 #'   * `btw_this("{dplyr}")` includes dplyr's introductory vignette.
