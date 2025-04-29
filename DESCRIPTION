@@ -24,6 +24,7 @@ Imports:
     clipr,
     DBI,
     dplyr,
+    duckdb,
     ellmer (>= 0.1.1.9000),
     fs,
     jsonlite,
