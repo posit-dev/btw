@@ -10,9 +10,9 @@ test_that("btw_this('{pkg}')", {
   expect_equal(
     btw_this("{dplyr}"),
     c(
-      btw_tool_docs_vignette("dplyr"),
+      btw_tool_docs_package_help_topics("dplyr"),
       "",
-      btw_tool_docs_package_help_topics("dplyr")
+      btw_tool_docs_vignette("dplyr")
     )
   )
 

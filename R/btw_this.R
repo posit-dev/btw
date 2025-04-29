@@ -169,13 +169,9 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
     # * use only letters, numbers or .
     # * be two or more characters long
     pkg <- substring(x, 2, nchar(x) - 1)
-    res <- btw_tool_docs_package_help_topics(pkg)
-    tryCatch(
-      # Get the package vignette
-      res <- c(btw_tool_docs_vignette(pkg), "", res),
-      error = function(err) {
-        character(0)
-      }
+    res <- c(
+      btw_tool_docs_package_help_topics(pkg),
+      tryCatch(c("", btw_tool_docs_vignette(pkg)), error = function(e) NULL)
     )
     return(res)
   }
