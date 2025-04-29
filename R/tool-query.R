@@ -1,7 +1,6 @@
 #' Perform a SQL query on the data, and return the results as JSON.
 #' 
 #' @param query A DuckDB SQL query; must be a SELECT statement.
-# TODO: should any `get`table data frame work here?
 #' @param data_frame The name of the data frame.
 #' @return The results of the query as a JSON string.
 btw_tool_env_query_data_frame <- function(query, data_frame) {
