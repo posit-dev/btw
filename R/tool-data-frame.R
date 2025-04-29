@@ -118,11 +118,9 @@ btw_tool_env_describe_data_frame <- function(
       ),
       format = ellmer::type_string(
         paste(
-          "The output format of the data frame: 'skim', 'glimpse', 'print', or 'json'. Default 'skim'.",
+          "The output format of the data frame: 'skim' or 'json'. 'skim' is the most information-dense and is the default.",
           "",
           "* skim: Returns a JSON object with information about every column in the table.",
-          "* glimpse: Returns the number of rows, columns, column names and types and the first values of each column",
-          "* print: Prints the data frame",
           "* json: Returns the data frame as JSON",
           sep = "\n"
         ),
@@ -130,7 +128,7 @@ btw_tool_env_describe_data_frame <- function(
       ),
       dims = ellmer::type_array(
         paste(
-          'Dimensions of the data frame to use for the "print" or "json" format.',
+          'Dimensions of the data frame to use for the "json" format.',
           "A numeric vector of length 2 as number of rows and columns. Default `[5, 100]`."
         ),
         items = ellmer::type_integer(),
