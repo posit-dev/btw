@@ -13,12 +13,11 @@ btw_this(&quot;./R/load_data.R&quot;) reads the source of the R/load_data.R
 file.
 
 &quot;{pkgName}&quot;
-A package name wrapped in braces. Returns either the
-introductory vignette for the package
-(btw_tool_docs_vignette()) or a list of help topics if no
-such vignette exists (btw_tool_docs_package_help_topics()).
+A package name wrapped in braces. Returns the list of help topics
+(btw_tool_docs_package_help_topics()) and, if it exists, the
+introductory vignette for the package (btw_tool_docs_vignette()).
 btw_this(&quot;{dplyr}&quot;) includes dplyr's introductory vignette.
-btw_this(&quot;{btw}&quot;) returns the package help index (because btw
+btw_this(&quot;{btw}&quot;) returns only the package help index (because btw
 doesn't have an intro vignette, yet).
 
 &quot;?help_topic&quot;
@@ -63,12 +62,11 @@ btw_this(&quot;./R/load_data.R&quot;) reads the source of the R/load_data.R
 file.
 
 &quot;{pkgName}&quot;
-A package name wrapped in braces. Returns either the
-introductory vignette for the package
-(btw_tool_docs_vignette()) or a list of help topics if no
-such vignette exists (btw_tool_docs_package_help_topics()).
+A package name wrapped in braces. Returns the list of help topics
+(btw_tool_docs_package_help_topics()) and, if it exists, the
+introductory vignette for the package (btw_tool_docs_vignette()).
 btw_this(&quot;{dplyr}&quot;) includes dplyr's introductory vignette.
-btw_this(&quot;{btw}&quot;) returns the package help index (because btw
+btw_this(&quot;{btw}&quot;) returns only the package help index (because btw
 doesn't have an intro vignette, yet).
 
 &quot;?help_topic&quot;
@@ -151,11 +149,10 @@ is a directory we call <code><a href="btw_tool_files_list_files.html">btw_tool_f
 file.</p></li>
 </ul></li>
 <li><p><code>"{pkgName}"</code> <br>
-A package name wrapped in braces. Returns either the
-introductory vignette for the package
-(<code><a href="btw_tool_package_docs.html">btw_tool_docs_vignette()</a></code>) or a list of help topics if no
-such vignette exists (<code><a href="btw_tool_package_docs.html">btw_tool_docs_package_help_topics()</a></code>).</p><ul><li><p><code>btw_this("{dplyr}")</code> includes dplyr's introductory vignette.</p></li>
-<li><p><code>btw_this("{btw}")</code> returns the package help index (because <code>btw</code>
+A package name wrapped in braces. Returns the list of help topics
+(<code><a href="btw_tool_package_docs.html">btw_tool_docs_package_help_topics()</a></code>) and, if it exists, the
+introductory vignette for the package (<code><a href="btw_tool_package_docs.html">btw_tool_docs_vignette()</a></code>).</p><ul><li><p><code>btw_this("{dplyr}")</code> includes dplyr's introductory vignette.</p></li>
+<li><p><code>btw_this("{btw}")</code> returns only the package help index (because <code>btw</code>
 doesn't have an intro vignette, yet).</p></li>
 </ul></li>
 <li><p><code>"?help_topic"</code> <br>
@@ -229,7 +226,7 @@ evaluated in your R console.</p></li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer></div>
