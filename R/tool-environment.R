@@ -29,7 +29,7 @@ btw_this.environment <- function(x, ..., items = NULL) {
 #'
 #' @inherit btw_this.environment return
 #'
-#' @seealso [btw_this.environment()], [btw_register_tools()]
+#' @seealso [btw_this.environment()], [btw_tools()]
 #' @family Tools
 #' @export
 btw_tool_env_describe_environment <- function(

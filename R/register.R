@@ -1,9 +1,10 @@
 #' Tools: Register tools from btw
 #'
 #' @description
-#' The `btw_register_tools()` function equips an ellmer chat to interface with
-#' your computational environment. Chats returned by this function have access
-#' to the tools:
+#' The `btw_tools()` function provides a list of tools that can be registered
+#' with an ellmer chat via `chat$set_tools()` that equip the chat to 
+#' interface with your computational environment. Chats returned by this 
+#' function have access to the tools:
 #'
 #' `r .docs_list_tools()`
 #'
@@ -21,13 +22,21 @@
 #' \dontrun{
 #' ch <- ellmer::chat_anthropic()
 #'
-#' btw_register_tools(ch)
+#' # register all of the available tools
+#' ch$set_tools(btw_tools())
+#' 
+#' # or register only the tools related to fetching documentation
+#' ch$set_tools(btw_tools(tools = "docs"))
 #' }
 #'
 #' @family Tools
 #' @export
-btw_register_tools <- function(chat, tools = NULL) {
-  check_inherits(chat, "Chat")
+btw_tools <- function(tools = NULL) {
+  has_tools <- !is.null(tools)
+
+  if (!has_tools) {
+    return(as_ellmer_tools(.btw_tools))
+  }
 
   tool_names <- map_chr(.btw_tools, function(x) x$name)
   tool_groups <- map_chr(.btw_tools, function(x) x$group)
@@ -38,28 +47,12 @@ btw_register_tools <- function(chat, tools = NULL) {
     sub("btw_tool_", "", tool_names, fixed = TRUE)
   )
 
-  has_tools <- !is.null(tools)
+  tools <- arg_match(tools, allowed, multiple = TRUE)
 
-  if (has_tools) {
-    tools <- arg_match(tools, allowed, multiple = TRUE)
-  }
+  tools_to_keep <- vapply(.btw_tools, tool_matches, logical(1), tools)
+  res <- .btw_tools[tools_to_keep]
 
-  for (tool in .btw_tools) {
-    if (has_tools && !tool_matches(tool, tools)) next
-    if (has_tools) {
-      cli::cli_alert_success("Registered tool {.field {tool$name}}")
-    }
-
-    # Tools are stored as functions to avoid creating them at build-time
-    tool <- tool$tool()
-
-    # and some may return `NULL` if disabled or contextually unavailable
-    if (is.null(tool)) next
-
-    chat$register_tool(tool)
-  }
-
-  invisible(chat)
+  as_ellmer_tools(res)
 }
 
 tool_matches <- function(tool, labels = NULL) {
@@ -68,6 +61,13 @@ tool_matches <- function(tool, labels = NULL) {
   if (tool$group %in% labels) return(TRUE)
   if (sub("btw_tool_", "", tool$name) %in% labels) return(TRUE)
   FALSE
+}
+
+# Convert from .btw_tools (or a filtered version of it)
+# to a format compatible with `client$set_tools()`
+as_ellmer_tools <- function(x) {
+  res <- lapply(x, function(.x) {.x$tool()})
+  set_names(res, names(x))
 }
 
 # nocov start

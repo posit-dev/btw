@@ -16,7 +16,7 @@
 #' * `btw_tool_docs_help_page()` return the help-page for a package topic as a
 #'   string.
 #'
-#' @seealso [btw_register_tools()]
+#' @seealso [btw_tools()]
 #'
 #' @examples
 #' cat(btw_tool_docs_package_help_topics("btw"))

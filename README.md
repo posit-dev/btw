@@ -23,8 +23,8 @@ btw helps you describe your computational environment to LLMs.
   into **ellmer tool calls** for describing various kinds of objects
   in R. To equip your ellmer chat with the ability to peruse
   documentation, check out the objects in your R environment, and
-  explore your working directory, pass your chat to
-  `btw_register_tools()`.
+  explore your working directory, pass `your chat to
+  `btw_set_tools()`.`
 
 ## Installation
 
@@ -90,7 +90,7 @@ The following would be attached to your clipboard:
       {"topic_id":"btw","title":"Plain-text descriptions of R objects","aliases":["btw"]},
       {"topic_id":"btw-package","title":"btw: Describe R Stuff to Large Language Models","aliases":["btw-package"]},
       {"topic_id":"btw_client","title":"Create a btw-enhanced ellmer chat client","aliases":["btw_client","btw_app"]},
-      {"topic_id":"btw_register_tools","title":"Tools: Register tools from btw","aliases":["btw_register_tools"]},
+      {"topic_id":"btw_set_tools","title":"Tools: Register tools from btw","aliases":["btw_set_tools"]},
       {"topic_id":"btw_this","title":"Describe something for use by an LLM","aliases":["btw_this"]},
       {"topic_id":"btw_this.character","title":"Describe objects","aliases":["btw_this.character"]},
       {"topic_id":"btw_this.data.frame","title":"Describe a data frame in plain text","aliases":["btw_this.data.frame","btw_this.tbl"]},
@@ -257,8 +257,8 @@ ch <- btw_client(client = ellmer::chat_ollama(model = "llama3.1:8b"))
 Alternatively, you can call `btw_app()` to jump straight into a Shiny
 chat app.
 
-For fully customized chat clients, you can use `btw_register_tools()` to
+For fully customized chat clients, you can use `btw_set_tools()` to
 add btw tools to an existing chat interface. Each of the individual
-tools registered by `btw_register_tools()` are themselves exported, and
-can be selected via the `tools` argument of `btw_register_tools()` (also
+tools registered by `btw_set_tools()` are themselves exported, and
+can be selected via the `tools` argument of `btw_set_tools()` (also
 available in `btw_client()` or `btw_app()`).
