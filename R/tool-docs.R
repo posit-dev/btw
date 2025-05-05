@@ -150,14 +150,17 @@ help_package_topic <- function(help_page) {
   # help("mutate_if", "dplyr"): .../library/dplyr/help/mutate_all
   topic <- attr(help_page, "topic", exact = TRUE)
 
+  help_path <- as.character(help_page)
+
   # In the case where there are multiple matches, sort them so that the
   # raised error is deterministic (#55)
-  help_path <- sort(as.character(help_page))
+  package <- basename(dirname(dirname(help_path)))
+  sort_indices <- rank(package, ties = "first")
 
   list(
     topic = rep_along(topic, help_path),
-    resolved = basename(help_path),
-    package = basename(dirname(dirname(help_path)))
+    resolved = basename(help_path)[sort_indices],
+    package = package[sort_indices]
   )
 }
 
