@@ -143,6 +143,6 @@
       Error in `btw_tool_docs_help_page()`:
       ! Topic "filter" matched 2 different topics.
       i Choose one or submit individual tool calls for each topic.
-      * {"topic":"filter", "package_name":"dplyr"}
       * {"topic":"filter", "package_name":"stats"}
+      * {"topic":"filter", "package_name":"dplyr"}
 

@@ -149,7 +149,10 @@ help_package_topic <- function(help_page) {
   # help("promise"): .../library/promises/help/promise
   # help("mutate_if", "dplyr"): .../library/dplyr/help/mutate_all
   topic <- attr(help_page, "topic", exact = TRUE)
-  help_path <- as.character(help_page)
+
+  # In the case where there are multiple matches, sort them so that the
+  # raised error is deterministic (#55)
+  help_path <- sort(as.character(help_page))
 
   list(
     topic = rep_along(topic, help_path),
