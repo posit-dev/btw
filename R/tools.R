@@ -2,9 +2,9 @@
 #'
 #' @description
 #' The `btw_tools()` function provides a list of tools that can be registered
-#' with an ellmer chat via `chat$set_tools()` that equip the chat to 
-#' interface with your computational environment. Chats returned by this 
-#' function have access to the tools:
+#' with an ellmer chat via `chat$set_tools()` that allow the chat to
+#' interface with your computational environment. Chats returned by 
+#' this function have access to the tools:
 #'
 #' `r .docs_list_tools()`
 #'

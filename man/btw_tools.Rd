@@ -18,9 +18,9 @@ place. The \code{chat} input is returned invisibly.
 }
 \description{
 The \code{btw_tools()} function provides a list of tools that can be registered
-with an ellmer chat via \code{chat$set_tools()} that equip the chat to
-interface with your computational environment. Chats returned by this
-function have access to the tools:\tabular{lll}{
+with an ellmer chat via \code{chat$set_tools()} that allow the chat to
+interface with your computational environment. Chats returned by
+this function have access to the tools:\tabular{lll}{
    Name \tab Group \tab Description \cr
    btw_tool_docs_available_vignettes \tab docs \tab List available vignettes for an R package. \cr
    btw_tool_docs_help_page \tab docs \tab Get help page from package. \cr
