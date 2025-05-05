@@ -155,7 +155,7 @@ help_package_topic <- function(help_page) {
   # In the case where there are multiple matches, sort them so that the
   # raised error is deterministic (#55)
   package <- basename(dirname(dirname(help_path)))
-  sort_indices <- rank(package, ties = "first")
+  sort_indices <- rank(package, ties.method = "first")
 
   list(
     topic = rep_along(topic, help_path),
