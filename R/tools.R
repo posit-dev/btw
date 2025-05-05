@@ -66,7 +66,9 @@ tool_matches <- function(tool, labels = NULL) {
 # to a format compatible with `client$set_tools()`
 as_ellmer_tools <- function(x) {
   res <- lapply(x, function(.x) {.x$tool()})
-  set_names(res, names(x))
+  is_null <- vapply(res, is.null, logical(1))
+  res <- res[!is_null]
+  set_names(res, names(x)[!is_null])
 }
 
 # nocov start
