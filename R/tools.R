@@ -8,7 +8,6 @@
 #'
 #' `r .docs_list_tools()`
 #'
-#' @param chat An ellmer `Chat` object.
 #' @param tools Optional names of tools or tool groups to include when
 #'   registering tools. By default all btw tools are included. For example, use
 #'   `tools = "docs"` to include only the documentation related tools, or

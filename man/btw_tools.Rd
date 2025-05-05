@@ -11,8 +11,6 @@ btw_tools(tools = NULL)
 registering tools. By default all btw tools are included. For example, use
 \code{tools = "docs"} to include only the documentation related tools, or
 \code{tools = c("env", "docs", "session")}, etc.}
-
-\item{chat}{An ellmer \code{Chat} object.}
 }
 \value{
 Registers the tools with \code{chat}, updating the \code{chat} object in
