@@ -31,9 +31,7 @@
 #' @family Tools
 #' @export
 btw_tools <- function(tools = NULL) {
-  has_tools <- !is.null(tools)
-
-  if (!has_tools) {
+  if (is.null(tools)) {
     return(as_ellmer_tools(.btw_tools))
   }
 
@@ -48,7 +46,7 @@ btw_tools <- function(tools = NULL) {
 
   tools <- arg_match(tools, allowed, multiple = TRUE)
 
-  tools_to_keep <- vapply(.btw_tools, tool_matches, logical(1), tools)
+  tools_to_keep <- map_lgl(.btw_tools, tool_matches, tools)
   res <- .btw_tools[tools_to_keep]
 
   as_ellmer_tools(res)
@@ -65,10 +63,7 @@ tool_matches <- function(tool, labels = NULL) {
 # Convert from .btw_tools (or a filtered version of it)
 # to a format compatible with `client$set_tools()`
 as_ellmer_tools <- function(x) {
-  res <- lapply(x, function(.x) {.x$tool()})
-  is_null <- vapply(res, is.null, logical(1))
-  res <- res[!is_null]
-  set_names(res, names(x)[!is_null])
+  compact(map(x, function(.x) .x$tool()))
 }
 
 # nocov start
