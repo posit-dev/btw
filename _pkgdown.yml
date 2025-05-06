@@ -34,7 +34,6 @@ reference:
     `chat$set_tools(btw_tools())`. These tools generally all have 
     counterparts available via `btw()` and `btw_this()` for interactive use. 
     The long and awkward function names are for LLMs and to avoid name 
-    clashes with other
-    tools.
+    clashes with other tools.
   contents:
   - starts_with("btw_tool_")
