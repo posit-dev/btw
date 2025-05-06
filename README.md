@@ -23,7 +23,9 @@ btw helps you describe your computational environment to LLMs.
   into **ellmer tool calls** for describing various kinds of objects
   in R. To equip your ellmer chat with the ability to peruse
   documentation, check out the objects in your R environment, and
-  explore your working directory, call `chat$set_tools(btw_tools())`.
+  explore your working directory, call `chat$set_tools(btw_tools())` (or
+  `chat$set_tools(c(chat$get_tools(), btw_tools()))` to retain any tools
+  you’ve already registered.).
 
 ## Installation
 
@@ -255,7 +257,8 @@ Alternatively, you can call `btw_app()` to jump straight into a Shiny
 chat app.
 
 For fully customized chat clients, you can use
-`chat$set_tools(btw_tools())` to add btw tools to an existing chat
-interface. Each of the individual tools registered with this code can be
-retrieved with `btw_tools()` and filtered via the function’s `tools`
-argument (also available in `btw_client()` or `btw_app()`).
+`chat$set_tools(c(chat$get_tools(), btw_tools()))` to add btw tools to
+an existing chat interface. Each of the individual tools registered with
+this code can be retrieved with `btw_tools()` and filtered via the
+function’s `tools` argument (also available in `btw_client()` or
+`btw_app()`).

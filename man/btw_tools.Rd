@@ -45,6 +45,9 @@ ch$set_tools(btw_tools())
 
 # or register only the tools related to fetching documentation
 ch$set_tools(btw_tools(tools = "docs"))
+
+# ensure that the current tools persist
+ch$set_tools(c(ch$get_tools(), btw_tools()))
 }
 
 }
