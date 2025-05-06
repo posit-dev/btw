@@ -23,8 +23,7 @@ btw helps you describe your computational environment to LLMs.
   into **ellmer tool calls** for describing various kinds of objects
   in R. To equip your ellmer chat with the ability to peruse
   documentation, check out the objects in your R environment, and
-  explore your working directory, pass `your chat to
-  `btw_set_tools()`.`
+  explore your working directory, call `chat$set_tools(btw_tools())`.
 
 ## Installation
 
@@ -90,101 +89,99 @@ The following would be attached to your clipboard:
       {"topic_id":"btw","title":"Plain-text descriptions of R objects","aliases":["btw"]},
       {"topic_id":"btw-package","title":"btw: Describe R Stuff to Large Language Models","aliases":["btw-package"]},
       {"topic_id":"btw_client","title":"Create a btw-enhanced ellmer chat client","aliases":["btw_client","btw_app"]},
-      {"topic_id":"btw_set_tools","title":"Tools: Register tools from btw","aliases":["btw_set_tools"]},
       {"topic_id":"btw_this","title":"Describe something for use by an LLM","aliases":["btw_this"]},
       {"topic_id":"btw_this.character","title":"Describe objects","aliases":["btw_this.character"]},
       {"topic_id":"btw_this.data.frame","title":"Describe a data frame in plain text","aliases":["btw_this.data.frame","btw_this.tbl"]},
       {"topic_id":"btw_this.environment","title":"Describe the contents of an environment","aliases":["btw_this.environment"]},
-      {"topic_id":"btw_tool_describe_data_frame","title":"Tool: Describe data frame","aliases":["btw_tool_describe_data_frame"]},
-      {"topic_id":"btw_tool_describe_environment","title":"Tool: Describe an environment","aliases":["btw_tool_describe_environment"]},
-      {"topic_id":"btw_tool_list_files","title":"Tool: List files","aliases":["btw_tool_list_files"]},
-      {"topic_id":"btw_tool_package_docs","title":"Tool: Describe R package documentation","aliases":["btw_tool_package_docs","btw_tool_get_package_help_topics","btw_tool_get_help_page","btw_tool_get_available_vignettes_in_package","btw_tool_get_vignette_from_package"]},
-      {"topic_id":"btw_tool_read_current_editor","title":"Tool: Read current file","aliases":["btw_tool_read_current_editor"]},
-      {"topic_id":"btw_tool_read_text_file","title":"Tool: Read a file","aliases":["btw_tool_read_text_file"]},
+      {"topic_id":"btw_tool_env_describe_data_frame","title":"Tool: Describe data frame","aliases":["btw_tool_env_describe_data_frame"]},
+      {"topic_id":"btw_tool_env_describe_environment","title":"Tool: Describe an environment","aliases":["btw_tool_env_describe_environment"]},
+      {"topic_id":"btw_tool_files_list_files","title":"Tool: List files","aliases":["btw_tool_files_list_files"]},
+      {"topic_id":"btw_tool_files_read_text_file","title":"Tool: Read a file","aliases":["btw_tool_files_read_text_file"]},
+      {"topic_id":"btw_tool_ide_read_current_editor","title":"Tool: Read current file","aliases":["btw_tool_ide_read_current_editor"]},
+      {"topic_id":"btw_tool_package_docs","title":"Tool: Describe R package documentation","aliases":["btw_tool_package_docs","btw_tool_docs_package_help_topics","btw_tool_docs_help_page","btw_tool_docs_available_vignettes","btw_tool_docs_vignette"]},
       {"topic_id":"btw_tool_session_package_info","title":"Tool: Gather information about a package or currently loaded packages","aliases":["btw_tool_session_package_info"]},
-      {"topic_id":"btw_tool_session_platform_info","title":"Tool: Describe user's platform","aliases":["btw_tool_session_platform_info"]}
+      {"topic_id":"btw_tool_session_platform_info","title":"Tool: Describe user's platform","aliases":["btw_tool_session_platform_info"]},
+      {"topic_id":"btw_tools","title":"Tools: Register tools from btw","aliases":["btw_tools"]}
     ]
     ```
 
     `?`(btw::btw)
-    btw                    package:btw                     R Documentation
+    ## `help(package = "btw", "btw")`
 
-    Plain-text descriptions of R objects
+    ### Plain-text descriptions of R objects
 
-    Description:
+    #### Description
 
-         This function allows you to quickly describe your computational
-         environment to a model by concatenating plain-text descriptions of
-         "R stuff", from data frames to packages to function documentation.
+    This function allows you to quickly describe your computational
+    environment to a model by concatenating plain-text descriptions of "R
+    stuff", from data frames to packages to function documentation.
 
-         There are two key ways to use 'btw()':
+    There are two key ways to use `btw()`:
 
-           1. Use it interactively at the console to gather information
-              about your environment into prompt text that you can paste
-              into the chat interface of an LLM, like ChatGPT or Claude. By
-              default, 'btw()' copies the prompt to the clipboard for you.
+    1.  Use it interactively at the console to gather information about your
+        environment into prompt text that you can paste into the chat
+        interface of an LLM, like ChatGPT or Claude. By default, `btw()`
+        copies the prompt to the clipboard for you.
 
-              btw(vignette("colwise", "dplyr"), dplyr::across, dplyr::starwars)
-              #> ✔ btw copied to the clipboard!
-              
-           2. Pair 'btw()' with ellmer::Chat during a chat session to
-              create a prompt that includes additional context drawn from
-              your environment and help pages.
+            btw(vignette("colwise", "dplyr"), dplyr::across, dplyr::starwars)
+            #> ✔ btw copied to the clipboard!
 
-              library(ellmer)
-              
-              chat <- chat_claude() # requires an Anthropic API key
-              chat <- chat_ollama(model = "llama3.1:8b") # requires ollama and a local model
-              
-              chat$chat(btw(
-                vignette("colwise", "dplyr"),
-                dplyr::across,
-                dplyr::starwars,
-                "Create a few interesting examples that use `dplyr::across()`",
-                "with the `starwars` data set."
-              ))
-              
-    Usage:
+    2.  Pair `btw()` with ellmer::Chat during a chat session to create a
+        prompt that includes additional context drawn from your environment
+        and help pages.
 
-         btw(..., clipboard = TRUE)
-         
-    Arguments:
+            library(ellmer)
 
-         ...: Objects to describe from your R environment. You can pass
-              objects themselves, like data frames or functions, or the
-              function also accepts output from btw_tool_*() functions like
-              'btw_tool_get_package_help_topics()',
-              'btw_tool_get_help_page()', etc. If omitted, this function
-              will just describe the elements in your global R environment.
+            chat <- chat_anthropic() # requires an Anthropic API key
+            chat <- chat_ollama(model = "llama3.1:8b") # requires ollama and a local model
 
-    clipboard: Whether to write the results to the clipboard. A single
-              logical value; will default to 'TRUE' when run interactively.
+            chat$chat(btw(
+              vignette("colwise", "dplyr"),
+              dplyr::across,
+              dplyr::starwars,
+              "Create a few interesting examples that use `dplyr::across()`",
+              "with the `starwars` data set."
+            ))
 
-    Value:
+    #### Usage
 
-         Returns an ellmer::ContentText object with the collected prompt.
-         If 'clipboard = TRUE', the prompt text is copied to the clipboard
-         when the returned object is printed for the first time (e.g.
-         calling 'btw()' without assignment).
+    ``` R
+    btw(..., clipboard = TRUE)
+    ```
 
-    Examples:
+    #### Arguments
 
-         btw()
-         
-         btw(mtcars)
-         
-         btw(btw::btw)
-         
-         if (FALSE) {
-           # btw() can also be used directly in {ellmer} chats
-           library(ellmer)
-         
-           chat <- chat_ollama(model = "llama3.1:8b")
-           chat$chat(
-             btw(mtcars, "Are there cars with 8 cylinders in this dataset?")
-           )
-         }
-         
+    |  |  |
+    |----|----|
+    | `...` | Objects to describe from your R environment. You can pass objects themselves, like data frames or functions, or the function also accepts output from `⁠btw_tool_*()⁠` functions like `btw_tool_docs_package_help_topics()`, `btw_tool_docs_help_page()`, etc. If omitted, this function will just describe the elements in your global R environment. |
+    | `clipboard` | Whether to write the results to the clipboard. A single logical value; will default to `TRUE` when run interactively. |
+
+    #### Value
+
+    Returns an ellmer::ContentText object with the collected prompt. If
+    `clipboard = TRUE`, the prompt text is copied to the clipboard when the
+    returned object is printed for the first time (e.g. calling `btw()`
+    without assignment).
+
+    #### Examples
+
+    ``` R
+    btw()
+
+    btw(mtcars)
+
+    btw(btw::btw)
+
+    if (FALSE) {
+      # btw() can also be used directly in {ellmer} chats
+      library(ellmer)
+
+      chat <- chat_ollama(model = "llama3.1:8b")
+      chat$chat(
+        btw(mtcars, "Are there cars with 8 cylinders in this dataset?")
+      )
+    }
+    ```
 
 You can also just call `btw()` with no inputs, which will describe the
 objects in your global environment.
@@ -257,8 +254,8 @@ ch <- btw_client(client = ellmer::chat_ollama(model = "llama3.1:8b"))
 Alternatively, you can call `btw_app()` to jump straight into a Shiny
 chat app.
 
-For fully customized chat clients, you can use `btw_set_tools()` to
-add btw tools to an existing chat interface. Each of the individual
-tools registered by `btw_set_tools()` are themselves exported, and
-can be selected via the `tools` argument of `btw_set_tools()` (also
-available in `btw_client()` or `btw_app()`).
+For fully customized chat clients, you can use
+`chat$set_tools(btw_tools())` to add btw tools to an existing chat
+interface. Each of the individual tools registered with this code can be
+retrieved with `btw_tools()` and filtered via the function’s `tools`
+argument (also available in `btw_client()` or `btw_app()`).
