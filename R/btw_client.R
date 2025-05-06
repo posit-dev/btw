@@ -135,8 +135,7 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
   client$set_system_prompt(paste(sys_prompt, collapse = "\n"))
 
   if (!skip_tools) {
-    maybe_quiet <- if (is.null(tools)) suppressMessages else I
-    maybe_quiet(client$set_tools(tools = btw_tools(config$tools)))
+    client$set_tools(tools = btw_tools(config$tools))
   }
 
   client
