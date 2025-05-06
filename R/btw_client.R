@@ -135,7 +135,7 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
   client$set_system_prompt(paste(sys_prompt, collapse = "\n"))
 
   if (!skip_tools) {
-    client$set_tools(tools = btw_tools(config$tools))
+    client$set_tools(tools = c(client$get_tools(), btw_tools(config$tools)))
   }
 
   client
