@@ -61,7 +61,7 @@
 <p>btw helps you describe your computational environment to LLMs.</p>
 <ul>
 <li>When used <strong>interactively</strong>, <code><a href="reference/btw.html">btw()</a></code> assembles context on your R environment, package documentation, and working directory, copying the results to your clipboard for easy pasting into chat interfaces.</li>
-<li>The <code><a href="reference/btw.html">btw()</a></code> function wraps methods that can be easily incorporated into <strong>ellmer tool calls</strong> for describing various kinds of objects in R. To equip your ellmer chat with the ability to peruse documentation, check out the objects in your R environment, and explore your working directory, pass your chat to <code><a href="reference/btw_register_tools.html">btw_register_tools()</a></code>.</li>
+<li>The <code><a href="reference/btw.html">btw()</a></code> function wraps methods that can be easily incorporated into <strong>ellmer tool calls</strong> for describing various kinds of objects in R. To equip your ellmer chat with the ability to peruse documentation, check out the objects in your R environment, and explore your working directory, call <code>chat$set_tools(btw_tools())</code> (or <code>chat$set_tools(c(chat$get_tools(), btw_tools()))</code> to retain any tools you’ve already registered.).</li>
 </ul>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -113,101 +113,99 @@
 <span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="at">  {"topic_id":"btw","title":"Plain-text descriptions of R objects","aliases":["btw"]},</span></span>
 <span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="at">  {"topic_id":"btw-package","title":"btw: Describe R Stuff to Large Language Models","aliases":["btw-package"]},</span></span>
 <span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="at">  {"topic_id":"btw_client","title":"Create a btw-enhanced ellmer chat client","aliases":["btw_client","btw_app"]},</span></span>
-<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="at">  {"topic_id":"btw_register_tools","title":"Tools: Register tools from btw","aliases":["btw_register_tools"]},</span></span>
-<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="at">  {"topic_id":"btw_this","title":"Describe something for use by an LLM","aliases":["btw_this"]},</span></span>
-<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="at">  {"topic_id":"btw_this.character","title":"Describe objects","aliases":["btw_this.character"]},</span></span>
-<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="at">  {"topic_id":"btw_this.data.frame","title":"Describe a data frame in plain text","aliases":["btw_this.data.frame","btw_this.tbl"]},</span></span>
-<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="at">  {"topic_id":"btw_this.environment","title":"Describe the contents of an environment","aliases":["btw_this.environment"]},</span></span>
-<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_describe_data_frame","title":"Tool: Describe data frame","aliases":["btw_tool_describe_data_frame"]},</span></span>
-<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_describe_environment","title":"Tool: Describe an environment","aliases":["btw_tool_describe_environment"]},</span></span>
-<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_list_files","title":"Tool: List files","aliases":["btw_tool_list_files"]},</span></span>
-<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_package_docs","title":"Tool: Describe R package documentation","aliases":["btw_tool_package_docs","btw_tool_get_package_help_topics","btw_tool_get_help_page","btw_tool_get_available_vignettes_in_package","btw_tool_get_vignette_from_package"]},</span></span>
-<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_read_current_editor","title":"Tool: Read current file","aliases":["btw_tool_read_current_editor"]},</span></span>
-<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_read_text_file","title":"Tool: Read a file","aliases":["btw_tool_read_text_file"]},</span></span>
-<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_session_package_info","title":"Tool: Gather information about a package or currently loaded packages","aliases":["btw_tool_session_package_info"]},</span></span>
-<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_session_platform_info","title":"Tool: Describe user's platform","aliases":["btw_tool_session_platform_info"]}</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="at">  {"topic_id":"btw_this","title":"Describe something for use by an LLM","aliases":["btw_this"]},</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="at">  {"topic_id":"btw_this.character","title":"Describe objects","aliases":["btw_this.character"]},</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="at">  {"topic_id":"btw_this.data.frame","title":"Describe a data frame in plain text","aliases":["btw_this.data.frame","btw_this.tbl"]},</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="at">  {"topic_id":"btw_this.environment","title":"Describe the contents of an environment","aliases":["btw_this.environment"]},</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_env_describe_data_frame","title":"Tool: Describe data frame","aliases":["btw_tool_env_describe_data_frame"]},</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_env_describe_environment","title":"Tool: Describe an environment","aliases":["btw_tool_env_describe_environment"]},</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_files_list_files","title":"Tool: List files","aliases":["btw_tool_files_list_files"]},</span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_files_read_text_file","title":"Tool: Read a file","aliases":["btw_tool_files_read_text_file"]},</span></span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_ide_read_current_editor","title":"Tool: Read current file","aliases":["btw_tool_ide_read_current_editor"]},</span></span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_package_docs","title":"Tool: Describe R package documentation","aliases":["btw_tool_package_docs","btw_tool_docs_package_help_topics","btw_tool_docs_help_page","btw_tool_docs_available_vignettes","btw_tool_docs_vignette"]},</span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_session_package_info","title":"Tool: Gather information about a package or currently loaded packages","aliases":["btw_tool_session_package_info"]},</span></span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tool_session_platform_info","title":"Tool: Describe user's platform","aliases":["btw_tool_session_platform_info"]},</span></span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a><span class="at">  {"topic_id":"btw_tools","title":"Tools: Register tools from btw","aliases":["btw_tools"]}</span></span>
 <span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a><span class="at">]</span></span>
 <span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a><span class="st">```</span></span>
 <span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a></span>
 <span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a><span class="st">`</span><span class="at">?</span><span class="st">`</span>(btw<span class="sc">::</span>btw)</span>
-<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a>btw                    package<span class="sc">:</span>btw                     R Documentation</span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a><span class="do">## `help(package = "btw", "btw")`</span></span>
 <span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a></span>
-<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a>Plain<span class="sc">-</span>text descriptions of R objects</span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a><span class="do">### Plain-text descriptions of R objects</span></span>
 <span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a></span>
-<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a>Description<span class="sc">:</span></span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a><span class="do">#### Description</span></span>
 <span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a></span>
-<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a>     This <span class="cf">function</span> allows you to quickly describe your computational</span>
-<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a>     environment to a model by concatenating plain<span class="sc">-</span>text descriptions of</span>
-<span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a>     <span class="st">"R stuff"</span>, from data frames to packages to <span class="cf">function</span> documentation.</span>
+<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a>This <span class="cf">function</span> allows you to quickly describe your computational</span>
+<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a>environment to a model by concatenating plain<span class="sc">-</span>text descriptions of <span class="st">"R</span></span>
+<span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a><span class="st">stuff"</span>, from data frames to packages to <span class="cf">function</span> documentation.</span>
 <span id="cb5-40"><a href="#cb5-40" tabindex="-1"></a></span>
-<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a>     There are two key ways to use <span class="st">'btw()'</span><span class="sc">:</span></span>
+<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a>There are two key ways to use <span class="st">`</span><span class="at">btw()</span><span class="st">`</span><span class="sc">:</span></span>
 <span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a></span>
-<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a>       <span class="fl">1.</span> Use it interactively at the console to gather information</span>
-<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a>          about your environment into prompt text that you can paste</span>
-<span id="cb5-45"><a href="#cb5-45" tabindex="-1"></a>          into the chat interface of an LLM, like ChatGPT or Claude. By</span>
-<span id="cb5-46"><a href="#cb5-46" tabindex="-1"></a>          default, <span class="st">'btw()'</span> copies the prompt to the clipboard <span class="cf">for</span> you.</span>
+<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a><span class="fl">1.</span>  Use it interactively at the console to gather information about your</span>
+<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a>    environment into prompt text that you can paste into the chat</span>
+<span id="cb5-45"><a href="#cb5-45" tabindex="-1"></a>    interface of an LLM, like ChatGPT or Claude. By default, <span class="st">`</span><span class="at">btw()</span><span class="st">`</span></span>
+<span id="cb5-46"><a href="#cb5-46" tabindex="-1"></a>    copies the prompt to the clipboard <span class="cf">for</span> you.</span>
 <span id="cb5-47"><a href="#cb5-47" tabindex="-1"></a></span>
-<span id="cb5-48"><a href="#cb5-48" tabindex="-1"></a>          <span class="fu">btw</span>(<span class="fu">vignette</span>(<span class="st">"colwise"</span>, <span class="st">"dplyr"</span>), dplyr<span class="sc">::</span>across, dplyr<span class="sc">::</span>starwars)</span>
-<span id="cb5-49"><a href="#cb5-49" tabindex="-1"></a>          <span class="co">#&gt; ✔ btw copied to the clipboard!</span></span>
-<span id="cb5-50"><a href="#cb5-50" tabindex="-1"></a>          </span>
-<span id="cb5-51"><a href="#cb5-51" tabindex="-1"></a>       <span class="fl">2.</span> Pair <span class="st">'btw()'</span> with ellmer<span class="sc">::</span>Chat during a chat session to</span>
-<span id="cb5-52"><a href="#cb5-52" tabindex="-1"></a>          create a prompt that includes additional context drawn from</span>
-<span id="cb5-53"><a href="#cb5-53" tabindex="-1"></a>          your environment and help pages.</span>
+<span id="cb5-48"><a href="#cb5-48" tabindex="-1"></a>        <span class="fu">btw</span>(<span class="fu">vignette</span>(<span class="st">"colwise"</span>, <span class="st">"dplyr"</span>), dplyr<span class="sc">::</span>across, dplyr<span class="sc">::</span>starwars)</span>
+<span id="cb5-49"><a href="#cb5-49" tabindex="-1"></a>        <span class="co">#&gt; ✔ btw copied to the clipboard!</span></span>
+<span id="cb5-50"><a href="#cb5-50" tabindex="-1"></a></span>
+<span id="cb5-51"><a href="#cb5-51" tabindex="-1"></a><span class="fl">2.</span>  Pair <span class="st">`</span><span class="at">btw()</span><span class="st">`</span> with ellmer<span class="sc">::</span>Chat during a chat session to create a</span>
+<span id="cb5-52"><a href="#cb5-52" tabindex="-1"></a>    prompt that includes additional context drawn from your environment</span>
+<span id="cb5-53"><a href="#cb5-53" tabindex="-1"></a>    and help pages.</span>
 <span id="cb5-54"><a href="#cb5-54" tabindex="-1"></a></span>
-<span id="cb5-55"><a href="#cb5-55" tabindex="-1"></a>          <span class="fu">library</span>(ellmer)</span>
-<span id="cb5-56"><a href="#cb5-56" tabindex="-1"></a>          </span>
-<span id="cb5-57"><a href="#cb5-57" tabindex="-1"></a>          chat <span class="ot">&lt;-</span> <span class="fu">chat_claude</span>() <span class="co"># requires an Anthropic API key</span></span>
-<span id="cb5-58"><a href="#cb5-58" tabindex="-1"></a>          chat <span class="ot">&lt;-</span> <span class="fu">chat_ollama</span>(<span class="at">model =</span> <span class="st">"llama3.1:8b"</span>) <span class="co"># requires ollama and a local model</span></span>
-<span id="cb5-59"><a href="#cb5-59" tabindex="-1"></a>          </span>
-<span id="cb5-60"><a href="#cb5-60" tabindex="-1"></a>          chat<span class="sc">$</span><span class="fu">chat</span>(<span class="fu">btw</span>(</span>
-<span id="cb5-61"><a href="#cb5-61" tabindex="-1"></a>            <span class="fu">vignette</span>(<span class="st">"colwise"</span>, <span class="st">"dplyr"</span>),</span>
-<span id="cb5-62"><a href="#cb5-62" tabindex="-1"></a>            dplyr<span class="sc">::</span>across,</span>
-<span id="cb5-63"><a href="#cb5-63" tabindex="-1"></a>            dplyr<span class="sc">::</span>starwars,</span>
-<span id="cb5-64"><a href="#cb5-64" tabindex="-1"></a>            <span class="st">"Create a few interesting examples that use `dplyr::across()`"</span>,</span>
-<span id="cb5-65"><a href="#cb5-65" tabindex="-1"></a>            <span class="st">"with the `starwars` data set."</span></span>
-<span id="cb5-66"><a href="#cb5-66" tabindex="-1"></a>          ))</span>
-<span id="cb5-67"><a href="#cb5-67" tabindex="-1"></a>          </span>
-<span id="cb5-68"><a href="#cb5-68" tabindex="-1"></a>Usage<span class="sc">:</span></span>
+<span id="cb5-55"><a href="#cb5-55" tabindex="-1"></a>        <span class="fu">library</span>(ellmer)</span>
+<span id="cb5-56"><a href="#cb5-56" tabindex="-1"></a></span>
+<span id="cb5-57"><a href="#cb5-57" tabindex="-1"></a>        chat <span class="ot">&lt;-</span> <span class="fu">chat_anthropic</span>() <span class="co"># requires an Anthropic API key</span></span>
+<span id="cb5-58"><a href="#cb5-58" tabindex="-1"></a>        chat <span class="ot">&lt;-</span> <span class="fu">chat_ollama</span>(<span class="at">model =</span> <span class="st">"llama3.1:8b"</span>) <span class="co"># requires ollama and a local model</span></span>
+<span id="cb5-59"><a href="#cb5-59" tabindex="-1"></a></span>
+<span id="cb5-60"><a href="#cb5-60" tabindex="-1"></a>        chat<span class="sc">$</span><span class="fu">chat</span>(<span class="fu">btw</span>(</span>
+<span id="cb5-61"><a href="#cb5-61" tabindex="-1"></a>          <span class="fu">vignette</span>(<span class="st">"colwise"</span>, <span class="st">"dplyr"</span>),</span>
+<span id="cb5-62"><a href="#cb5-62" tabindex="-1"></a>          dplyr<span class="sc">::</span>across,</span>
+<span id="cb5-63"><a href="#cb5-63" tabindex="-1"></a>          dplyr<span class="sc">::</span>starwars,</span>
+<span id="cb5-64"><a href="#cb5-64" tabindex="-1"></a>          <span class="st">"Create a few interesting examples that use `dplyr::across()`"</span>,</span>
+<span id="cb5-65"><a href="#cb5-65" tabindex="-1"></a>          <span class="st">"with the `starwars` data set."</span></span>
+<span id="cb5-66"><a href="#cb5-66" tabindex="-1"></a>        ))</span>
+<span id="cb5-67"><a href="#cb5-67" tabindex="-1"></a></span>
+<span id="cb5-68"><a href="#cb5-68" tabindex="-1"></a><span class="do">#### Usage</span></span>
 <span id="cb5-69"><a href="#cb5-69" tabindex="-1"></a></span>
-<span id="cb5-70"><a href="#cb5-70" tabindex="-1"></a>     <span class="fu">btw</span>(..., <span class="at">clipboard =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb5-71"><a href="#cb5-71" tabindex="-1"></a>     </span>
-<span id="cb5-72"><a href="#cb5-72" tabindex="-1"></a>Arguments<span class="sc">:</span></span>
+<span id="cb5-70"><a href="#cb5-70" tabindex="-1"></a><span class="st">```</span><span class="at"> R</span></span>
+<span id="cb5-71"><a href="#cb5-71" tabindex="-1"></a><span class="at">btw(..., clipboard = TRUE)</span></span>
+<span id="cb5-72"><a href="#cb5-72" tabindex="-1"></a><span class="st">```</span></span>
 <span id="cb5-73"><a href="#cb5-73" tabindex="-1"></a></span>
-<span id="cb5-74"><a href="#cb5-74" tabindex="-1"></a>     ...<span class="sc">:</span> Objects to describe from your R environment. You can pass</span>
-<span id="cb5-75"><a href="#cb5-75" tabindex="-1"></a>          objects themselves, like data frames or functions, or the</span>
-<span id="cb5-76"><a href="#cb5-76" tabindex="-1"></a>          <span class="cf">function</span> also accepts output from btw_tool_<span class="sc">*</span>() functions like</span>
-<span id="cb5-77"><a href="#cb5-77" tabindex="-1"></a>          <span class="st">'btw_tool_get_package_help_topics()'</span>,</span>
-<span id="cb5-78"><a href="#cb5-78" tabindex="-1"></a>          <span class="st">'btw_tool_get_help_page()'</span>, etc. If omitted, this <span class="cf">function</span></span>
-<span id="cb5-79"><a href="#cb5-79" tabindex="-1"></a>          will just describe the elements <span class="cf">in</span> your global R environment.</span>
+<span id="cb5-74"><a href="#cb5-74" tabindex="-1"></a><span class="do">#### Arguments</span></span>
+<span id="cb5-75"><a href="#cb5-75" tabindex="-1"></a></span>
+<span id="cb5-76"><a href="#cb5-76" tabindex="-1"></a><span class="sc">|</span>  <span class="er">|</span>  <span class="er">|</span></span>
+<span id="cb5-77"><a href="#cb5-77" tabindex="-1"></a><span class="er">|</span><span class="sc">----</span><span class="er">|</span><span class="sc">----</span><span class="er">|</span></span>
+<span id="cb5-78"><a href="#cb5-78" tabindex="-1"></a><span class="er">|</span> <span class="st">`</span><span class="at">...</span><span class="st">`</span> <span class="sc">|</span> Objects to describe from your R environment. You can pass objects themselves, like data frames or functions, or the <span class="cf">function</span> also accepts output from <span class="st">`</span><span class="at">⁠btw_tool_*()⁠</span><span class="st">`</span> functions like <span class="st">`</span><span class="at">btw_tool_docs_package_help_topics()</span><span class="st">`</span>, <span class="st">`</span><span class="at">btw_tool_docs_help_page()</span><span class="st">`</span>, etc. If omitted, this <span class="cf">function</span> will just describe the elements <span class="cf">in</span> your global R environment. <span class="sc">|</span></span>
+<span id="cb5-79"><a href="#cb5-79" tabindex="-1"></a><span class="er">|</span> <span class="st">`</span><span class="at">clipboard</span><span class="st">`</span> <span class="sc">|</span> Whether to write the results to the clipboard. A single logical value; will default to <span class="st">`</span><span class="at">TRUE</span><span class="st">`</span> when run interactively. <span class="sc">|</span></span>
 <span id="cb5-80"><a href="#cb5-80" tabindex="-1"></a></span>
-<span id="cb5-81"><a href="#cb5-81" tabindex="-1"></a>clipboard<span class="sc">:</span> Whether to write the results to the clipboard. A single</span>
-<span id="cb5-82"><a href="#cb5-82" tabindex="-1"></a>          logical value; will default to <span class="st">'TRUE'</span> when run interactively.</span>
-<span id="cb5-83"><a href="#cb5-83" tabindex="-1"></a></span>
-<span id="cb5-84"><a href="#cb5-84" tabindex="-1"></a>Value<span class="sc">:</span></span>
-<span id="cb5-85"><a href="#cb5-85" tabindex="-1"></a></span>
-<span id="cb5-86"><a href="#cb5-86" tabindex="-1"></a>     Returns an ellmer<span class="sc">::</span>ContentText object with the collected prompt.</span>
-<span id="cb5-87"><a href="#cb5-87" tabindex="-1"></a>     If <span class="st">'clipboard = TRUE'</span>, the prompt text is copied to the clipboard</span>
-<span id="cb5-88"><a href="#cb5-88" tabindex="-1"></a>     when the returned object is printed <span class="cf">for</span> the first <span class="fu">time</span> (e.g.</span>
-<span id="cb5-89"><a href="#cb5-89" tabindex="-1"></a>     calling <span class="st">'btw()'</span> without assignment).</span>
-<span id="cb5-90"><a href="#cb5-90" tabindex="-1"></a></span>
-<span id="cb5-91"><a href="#cb5-91" tabindex="-1"></a>Examples<span class="sc">:</span></span>
+<span id="cb5-81"><a href="#cb5-81" tabindex="-1"></a><span class="do">#### Value</span></span>
+<span id="cb5-82"><a href="#cb5-82" tabindex="-1"></a></span>
+<span id="cb5-83"><a href="#cb5-83" tabindex="-1"></a>Returns an ellmer<span class="sc">::</span>ContentText object with the collected prompt. If</span>
+<span id="cb5-84"><a href="#cb5-84" tabindex="-1"></a><span class="st">`</span><span class="at">clipboard = TRUE</span><span class="st">`</span>, the prompt text is copied to the clipboard when the</span>
+<span id="cb5-85"><a href="#cb5-85" tabindex="-1"></a>returned object is printed <span class="cf">for</span> the first <span class="fu">time</span> (e.g. calling <span class="st">`</span><span class="at">btw()</span><span class="st">`</span></span>
+<span id="cb5-86"><a href="#cb5-86" tabindex="-1"></a>without assignment).</span>
+<span id="cb5-87"><a href="#cb5-87" tabindex="-1"></a></span>
+<span id="cb5-88"><a href="#cb5-88" tabindex="-1"></a><span class="do">#### Examples</span></span>
+<span id="cb5-89"><a href="#cb5-89" tabindex="-1"></a></span>
+<span id="cb5-90"><a href="#cb5-90" tabindex="-1"></a><span class="st">```</span><span class="at"> R</span></span>
+<span id="cb5-91"><a href="#cb5-91" tabindex="-1"></a><span class="at">btw()</span></span>
 <span id="cb5-92"><a href="#cb5-92" tabindex="-1"></a></span>
-<span id="cb5-93"><a href="#cb5-93" tabindex="-1"></a>     <span class="fu">btw</span>()</span>
-<span id="cb5-94"><a href="#cb5-94" tabindex="-1"></a>     </span>
-<span id="cb5-95"><a href="#cb5-95" tabindex="-1"></a>     <span class="fu">btw</span>(mtcars)</span>
-<span id="cb5-96"><a href="#cb5-96" tabindex="-1"></a>     </span>
-<span id="cb5-97"><a href="#cb5-97" tabindex="-1"></a>     <span class="fu">btw</span>(btw<span class="sc">::</span>btw)</span>
-<span id="cb5-98"><a href="#cb5-98" tabindex="-1"></a>     </span>
-<span id="cb5-99"><a href="#cb5-99" tabindex="-1"></a>     <span class="cf">if</span> (<span class="cn">FALSE</span>) {</span>
-<span id="cb5-100"><a href="#cb5-100" tabindex="-1"></a>       <span class="co"># btw() can also be used directly in {ellmer} chats</span></span>
-<span id="cb5-101"><a href="#cb5-101" tabindex="-1"></a>       <span class="fu">library</span>(ellmer)</span>
-<span id="cb5-102"><a href="#cb5-102" tabindex="-1"></a>     </span>
-<span id="cb5-103"><a href="#cb5-103" tabindex="-1"></a>       chat <span class="ot">&lt;-</span> <span class="fu">chat_ollama</span>(<span class="at">model =</span> <span class="st">"llama3.1:8b"</span>)</span>
-<span id="cb5-104"><a href="#cb5-104" tabindex="-1"></a>       chat<span class="sc">$</span><span class="fu">chat</span>(</span>
-<span id="cb5-105"><a href="#cb5-105" tabindex="-1"></a>         <span class="fu">btw</span>(mtcars, <span class="st">"Are there cars with 8 cylinders in this dataset?"</span>)</span>
-<span id="cb5-106"><a href="#cb5-106" tabindex="-1"></a>       )</span>
-<span id="cb5-107"><a href="#cb5-107" tabindex="-1"></a>     }</span>
-<span id="cb5-108"><a href="#cb5-108" tabindex="-1"></a>     </span></code></pre></div>
+<span id="cb5-93"><a href="#cb5-93" tabindex="-1"></a><span class="at">btw(mtcars)</span></span>
+<span id="cb5-94"><a href="#cb5-94" tabindex="-1"></a></span>
+<span id="cb5-95"><a href="#cb5-95" tabindex="-1"></a><span class="at">btw(btw::btw)</span></span>
+<span id="cb5-96"><a href="#cb5-96" tabindex="-1"></a></span>
+<span id="cb5-97"><a href="#cb5-97" tabindex="-1"></a><span class="at">if (FALSE) {</span></span>
+<span id="cb5-98"><a href="#cb5-98" tabindex="-1"></a><span class="at">  # btw() can also be used directly in {ellmer} chats</span></span>
+<span id="cb5-99"><a href="#cb5-99" tabindex="-1"></a><span class="at">  library(ellmer)</span></span>
+<span id="cb5-100"><a href="#cb5-100" tabindex="-1"></a></span>
+<span id="cb5-101"><a href="#cb5-101" tabindex="-1"></a><span class="at">  chat &lt;- chat_ollama(model = "llama3.1:8b")</span></span>
+<span id="cb5-102"><a href="#cb5-102" tabindex="-1"></a><span class="at">  chat$chat(</span></span>
+<span id="cb5-103"><a href="#cb5-103" tabindex="-1"></a><span class="at">    btw(mtcars, "Are there cars with 8 cylinders in this dataset?")</span></span>
+<span id="cb5-104"><a href="#cb5-104" tabindex="-1"></a><span class="at">  )</span></span>
+<span id="cb5-105"><a href="#cb5-105" tabindex="-1"></a><span class="at">}</span></span>
+<span id="cb5-106"><a href="#cb5-106" tabindex="-1"></a><span class="st">```</span></span></code></pre></div>
 <p>You can also just call <code><a href="reference/btw.html">btw()</a></code> with no inputs, which will describe the objects in your global environment.</p>
 </div>
 <div class="section level3">
@@ -262,7 +260,7 @@
 <span><span class="co"># same as above</span></span>
 <span><span class="va">ch</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/btw_client.html">btw_client</a></span><span class="op">(</span>client <span class="op">=</span> <span class="fu">ellmer</span><span class="fu">::</span><span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_ollama.html" class="external-link">chat_ollama</a></span><span class="op">(</span>model <span class="op">=</span> <span class="st">"llama3.1:8b"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Alternatively, you can call <code><a href="reference/btw_client.html">btw_app()</a></code> to jump straight into a Shiny chat app.</p>
-<p>For fully customized chat clients, you can use <code><a href="reference/btw_register_tools.html">btw_register_tools()</a></code> to add btw tools to an existing chat interface. Each of the individual tools registered by <code><a href="reference/btw_register_tools.html">btw_register_tools()</a></code> are themselves exported, and can be selected via the <code>tools</code> argument of <code><a href="reference/btw_register_tools.html">btw_register_tools()</a></code> (also available in <code><a href="reference/btw_client.html">btw_client()</a></code> or <code><a href="reference/btw_client.html">btw_app()</a></code>).</p>
+<p>For fully customized chat clients, you can use <code>chat$set_tools(c(chat$get_tools(), btw_tools()))</code> to add btw tools to an existing chat interface. Each of the individual tools registered with this code can be retrieved with <code><a href="reference/btw_tools.html">btw_tools()</a></code> and filtered via the function’s <code>tools</code> argument (also available in <code><a href="reference/btw_client.html">btw_client()</a></code> or <code><a href="reference/btw_client.html">btw_app()</a></code>).</p>
 </div>
 </div>
 </div>
