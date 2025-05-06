@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 btw helps you describe your computational environment to LLMs.
 
 * When used **interactively**, `btw()` assembles context on your R environment, package documentation, and working directory, copying the results to your clipboard for easy pasting into chat interfaces.
-* The `btw()` function wraps methods that can be easily incorporated into **ellmer tool calls** for describing various kinds of objects in R. To equip your ellmer chat with the ability to peruse documentation, check out the objects in your R environment, and explore your working directory, pass your chat to `btw_register_tools()`.
+* The `btw()` function wraps methods that can be easily incorporated into **ellmer tool calls** for describing various kinds of objects in R. To equip your ellmer chat with the ability to peruse documentation, check out the objects in your R environment, and explore your working directory, call `chat$set_tools(btw_tools())` (or `chat$set_tools(c(chat$get_tools(), btw_tools()))` to retain any tools you've already registered).
 
 ## Installation
 
@@ -147,8 +147,9 @@ ch <- btw_client(client = ellmer::chat_ollama(model = "llama3.1:8b"))
 
 Alternatively, you can call `btw_app()` to jump straight into a Shiny chat app.
 
-For fully customized chat clients, you can use `btw_register_tools()` to add btw
-tools to an existing chat interface. Each of the individual tools registered by
-`btw_register_tools()` are themselves exported, and can be selected via the
-`tools` argument of `btw_register_tools()` (also available in `btw_client()` or
+For fully customized chat clients, you can use 
+`chat$set_tools(c(chat$get_tools(), btw_tools())) ` to add btw tools to an 
+existing chat interface. Each of the individual tools 
+registered with this code can be retrieved with `btw_tools()` and filtered
+via the function's `tools` argument (also available in `btw_client()` or
 `btw_app()`).

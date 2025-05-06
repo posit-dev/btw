@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Creates an [ellmer::Chat] client, enhanced with the tools from
-#' [btw_register_tools()]. Use `btw_client()` to create the chat client for
+#' [btw_tools()]. Use `btw_client()` to create the chat client for
 #' general or interactive use at the console, or `btw_app()` to create a chat
 #' client and launch a Shiny app for chatting with a btw-enhanced LLM in your
 #' local workspace.
@@ -56,7 +56,7 @@
 #' * `btw.client`: The [ellmer::Chat] client to use as the basis for new
 #'   `btw_client()` or `btw_app()` chats.
 #' * `btw.tools`: The btw tools to include by default when starting a new
-#'   btw chat, see [btw_register_tools()] for details.
+#'   btw chat, see [btw_tools()] for details.
 #'
 #' @examples
 #' if (interactive()) {
@@ -86,8 +86,8 @@
 #' @param ... Additional arguments are ignored. `...` are included for future
 #'   feature expansion.
 #'
-#' @return Returns an [ellmer::Chat] object with additional tools registered by
-#'   [btw_register_tools()]. `btw_app()` returns the chat object invisibly, and
+#' @return Returns an [ellmer::Chat] object with additional tools registered 
+#'   from [btw_tools()]. `btw_app()` returns the chat object invisibly, and
 #'   the chat object with the messages added during the chat session.
 #'
 #' @describeIn btw_client Create a btw-enhanced [ellmer::Chat] client
@@ -135,8 +135,7 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
   client$set_system_prompt(paste(sys_prompt, collapse = "\n"))
 
   if (!skip_tools) {
-    maybe_quiet <- if (is.null(tools)) suppressMessages else I
-    maybe_quiet(btw_register_tools(client, tools = config$tools))
+    client$set_tools(tools = c(client$get_tools(), btw_tools(config$tools)))
   }
 
   client

@@ -4,7 +4,7 @@
 #' for the user's system. When using [btw_client()] or [btw_app()], this
 #' information is automatically included in the system prompt.
 #'
-#' @seealso [btw_register_tools()]
+#' @seealso [btw_tools()]
 #'
 #' @returns Returns a string describing the user's platform.
 #'
@@ -74,7 +74,7 @@ platform_info <- function() {
 #' package is installed; check the version number of a specific packages; or
 #' determine which packages are already in use in a session.
 #'
-#' @seealso [btw_register_tools()], [btw_tool_session_platform_info()]
+#' @seealso [btw_tools()], [btw_tool_session_platform_info()]
 #'
 #' @param packages Which packages to show, or `"loaded"` to show all loaded
 #'   packages, `"attached"` to show all attached packages, or `"installed"` to

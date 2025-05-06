@@ -57,16 +57,16 @@ cat(btw_tool_docs_vignette("dplyr", "programming"))
 
 }
 \seealso{
-\code{\link[=btw_register_tools]{btw_register_tools()}}
+\code{\link[=btw_tools]{btw_tools()}}
 
 Other Tools: 
-\code{\link{btw_register_tools}()},
 \code{\link{btw_tool_env_describe_data_frame}()},
 \code{\link{btw_tool_env_describe_environment}()},
 \code{\link{btw_tool_files_list_files}()},
 \code{\link{btw_tool_files_read_text_file}()},
 \code{\link{btw_tool_ide_read_current_editor}()},
 \code{\link{btw_tool_session_package_info}()},
-\code{\link{btw_tool_session_platform_info}()}
+\code{\link{btw_tool_session_platform_info}()},
+\code{\link{btw_tools}()}
 }
 \concept{Tools}

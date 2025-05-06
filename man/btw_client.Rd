@@ -32,13 +32,13 @@ will find a project-specific \code{btw.md} file in the parents of the current
 working directory.}
 }
 \value{
-Returns an \link[ellmer:Chat]{ellmer::Chat} object with additional tools registered by
-\code{\link[=btw_register_tools]{btw_register_tools()}}. \code{btw_app()} returns the chat object invisibly, and
+Returns an \link[ellmer:Chat]{ellmer::Chat} object with additional tools registered
+from \code{\link[=btw_tools]{btw_tools()}}. \code{btw_app()} returns the chat object invisibly, and
 the chat object with the messages added during the chat session.
 }
 \description{
 Creates an \link[ellmer:Chat]{ellmer::Chat} client, enhanced with the tools from
-\code{\link[=btw_register_tools]{btw_register_tools()}}. Use \code{btw_client()} to create the chat client for
+\code{\link[=btw_tools]{btw_tools()}}. Use \code{btw_client()} to create the chat client for
 general or interactive use at the console, or \code{btw_app()} to create a chat
 client and launch a Shiny app for chatting with a btw-enhanced LLM in your
 local workspace.
@@ -90,7 +90,7 @@ Follow these important style rules for any R code in this project:
 \item \code{btw.client}: The \link[ellmer:Chat]{ellmer::Chat} client to use as the basis for new
 \code{btw_client()} or \code{btw_app()} chats.
 \item \code{btw.tools}: The btw tools to include by default when starting a new
-btw chat, see \code{\link[=btw_register_tools]{btw_register_tools()}} for details.
+btw chat, see \code{\link[=btw_tools]{btw_tools()}} for details.
 }
 }
 }
