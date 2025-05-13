@@ -3,7 +3,7 @@
 #' @description
 #' The `btw_tools()` function provides a list of tools that can be registered
 #' with an ellmer chat via `chat$set_tools()` that allow the chat to
-#' interface with your computational environment. Chats returned by 
+#' interface with your computational environment. Chats returned by
 #' this function have access to the tools:
 #'
 #' `r .docs_list_tools()`
@@ -23,10 +23,10 @@
 #'
 #' # register all of the available tools
 #' ch$set_tools(btw_tools())
-#' 
+#'
 #' # or register only the tools related to fetching documentation
 #' ch$set_tools(btw_tools(tools = "docs"))
-#' 
+#'
 #' # ensure that the current tools persist
 #' ch$set_tools(c(ch$get_tools(), btw_tools()))
 #' }
@@ -42,20 +42,31 @@ btw_tools <- function(tools = NULL) {
   tool_groups <- map_chr(.btw_tools, function(x) x$group)
 
   allowed <- c(
-    tool_names,
     tool_groups,
+    tool_names,
     sub("btw_tool_", "", tool_names, fixed = TRUE)
   )
+  allowed <- unique(allowed)
 
-  tools <- arg_match(tools, allowed, multiple = TRUE)
+  tools <- tryCatch(
+    arg_match(tools, allowed[!grepl("^btw_", allowed)], multiple = TRUE),
+    error = function(err_short) {
+      tryCatch(
+        arg_match(tools, allowed, multiple = TRUE),
+        error = function(err_long) {
+          cnd_signal(err_short)
+        }
+      )
+    }
+  )
 
-  tools_to_keep <- map_lgl(.btw_tools, tool_matches, tools)
+  tools_to_keep <- map_lgl(.btw_tools, is_tool_match, tools)
   res <- .btw_tools[tools_to_keep]
 
   as_ellmer_tools(res)
 }
 
-tool_matches <- function(tool, labels = NULL) {
+is_tool_match <- function(tool, labels = NULL) {
   if (is.null(labels)) return(TRUE)
   if (tool$name %in% labels) return(TRUE)
   if (tool$group %in% labels) return(TRUE)
