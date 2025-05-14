@@ -5,7 +5,7 @@
 \title{Tool: List files}
 \usage{
 btw_tool_files_list_files(
-  path = getwd(),
+  path = NULL,
   type = c("any", "file", "directory"),
   regexp = ""
 )
