@@ -79,6 +79,7 @@ btw_tool_files_list_files <- function(
       ),
       regexp = ellmer::type_string(
         'A regular expression to use to identify files, e.g. `regexp="[.]csv"` to find files with a `.csv` extension.',
+        "Note that it's best to be as general as possible to find the file you want.",
         required = FALSE
       )
     )
