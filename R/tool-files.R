@@ -14,10 +14,12 @@
 #' @family Tools
 #' @export
 btw_tool_files_list_files <- function(
-  path = getwd(),
+  path = NULL,
   type = c("any", "file", "directory"),
   regexp = ""
 ) {
+  path <- path %||% getwd()
+  type <- type %||% "any"
   check_string(path) # one path a time, please
 
   type <- arg_match(type, multiple = TRUE)
