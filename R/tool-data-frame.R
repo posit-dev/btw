@@ -13,9 +13,13 @@
 #' * To get a json representation of the data, use `"json"`. This is
 #'   particularly helpful when the pairings among entries in specific rows
 #'   are important to demonstrate.
-#' @param dims The number of rows and columns to show, as a numeric vector of
-#' length two. For example, the default `dims = c(5, 100)` shows the first 5
-#' rows and 100 columns, whereas `dims = c(Inf, Inf)` would show all of the data.
+#' @param package The name of the package that provides the data set. If not
+#'   provided, `data_frame` must be loaded in the current environment, or may
+#'   also be inferred from the name of the data frame, e.g. `"dplyr::storms"`.
+#' @param max_rows The maximum number of rows to show in the data frame. Only
+#'   applies when `format = "json"`.
+#' @param max_cols The maximum number of columns to show in the data frame. Only
+#'  applies when `format = "json"`.
 #' @param ... Additional arguments are silently ignored.
 #'
 #' @returns
@@ -38,9 +42,18 @@ btw_this.data.frame <- function(
   x,
   ...,
   format = c("skim", "glimpse", "print", "json"),
-  dims = c(5, 100)
+  max_rows = 5,
+  max_cols = 100,
+  package = NULL
 ) {
-  btw_tool_env_describe_data_frame(x, format = format, dims = dims)
+  result <- btw_tool_env_describe_data_frame(
+    x,
+    format = format,
+    max_rows = max_rows,
+    max_cols = max_cols,
+    package = package
+  )
+  result@value
 }
 
 #' @describeIn btw_this.data.frame Summarize a `tbl`.
@@ -50,9 +63,18 @@ btw_this.tbl <- function(
   x,
   ...,
   format = c("skim", "glimpse", "print", "json"),
-  dims = c(5, 100)
+  max_rows = 5,
+  max_cols = 100,
+  package = NULL
 ) {
-  btw_tool_env_describe_data_frame(x, format = format, dims = dims)
+  result <- btw_tool_env_describe_data_frame(
+    x,
+    format = format,
+    max_rows = max_rows,
+    max_cols = max_cols,
+    package = package
+  )
+  result@value
 }
 
 #' Tool: Describe data frame
@@ -71,16 +93,28 @@ btw_this.tbl <- function(
 btw_tool_env_describe_data_frame <- function(
   data_frame,
   format = c("skim", "glimpse", "print", "json"),
-  dims = c(5, 100)
+  max_rows = 5,
+  max_cols = 100,
+  package = NULL
 ) {
   format <- arg_match(format)
-  check_inherits(dims, "numeric")
+  max_rows <- max_rows %||% 5
+  max_cols <- max_cols %||% 100
+  check_number_whole(max_rows, allow_infinite = TRUE)
+  check_number_whole(max_cols, allow_infinite = TRUE)
 
-  # models have likely the seen the "object ___ not found" quite a bit,
-  # so no need to rethrow / handle errors nicely
   if (inherits(data_frame, "character")) {
     .data_name <- data_frame
-    data_frame <- get(data_frame)
+    data_frame <- get0(.data_name, ifnotfound = missing_arg())
+    if (is_missing(data_frame)) {
+      data_frame <- get_dataset_from_package(.data_name, package = package)
+    }
+    if (is_missing(data_frame)) {
+      cli::cli_abort(c(
+        "The data frame {.val {(.data_name)}} was not found in the environment.",
+        "i" = "If the data is from a package, use {.arg package} to specify the package name."
+      ))
+    }
   }
 
   if (format != "json" && ncol(data_frame) <= 10 && nrow(data_frame) <= 30) {
@@ -89,20 +123,43 @@ btw_tool_env_describe_data_frame <- function(
   }
 
   if (format %in% c("print", "json")) {
-    n_row <- min(dims[1], nrow(data_frame))
-    n_col <- min(dims[2], ncol(data_frame))
-    data_frame_small <- data_frame[seq_len(n_row), seq_len(n_col), drop = FALSE]
+    n_row <- min(max_rows, nrow(data_frame))
+    n_col <- min(max_cols, ncol(data_frame))
+    data_frame <- data_frame[seq_len(n_row), seq_len(n_col), drop = FALSE]
   }
 
   res <- switch(
     format,
     glimpse = describe_data_frame_glimpse(x = data_frame),
-    print = describe_data_frame_print(x = data_frame_small),
-    json = describe_data_frame_json(x = data_frame_small),
+    print = describe_data_frame_print(x = data_frame),
+    json = describe_data_frame_json(x = data_frame),
     skim = describe_data_frame_skim(data_frame)
   )
 
-  res
+  ellmer::ContentToolResult(
+    value = res,
+    extra = list(data = data_frame)
+  )
+}
+
+get_dataset_from_package <- function(name, package = NULL) {
+  if (is.null(package) && grepl("::", name, fixed = TRUE)) {
+    package <- sub("::.*$", "", name)
+    name <- sub("^.*::", "", name)
+  }
+
+  if (is.null(package)) {
+    return(missing_arg())
+  }
+
+  env <- new.env()
+  tryCatch(
+    {
+      data(list = name, package = package, envir = env)
+      get(name, envir = env)
+    },
+    error = function(...) missing_arg()
+  )
 }
 
 .btw_add_to_tools(
@@ -113,10 +170,20 @@ btw_tool_env_describe_data_frame <- function(
       btw_tool_env_describe_data_frame,
       .name = "btw_tool_env_describe_data_frame",
       .description = "Show the data frame or table or get information about the structure of a data frame or table.",
-      data_frame = ellmer::type_string(
-        "The name of the data frame."
+      .annotations = ellmer::tool_annotations(
+        title = "Show a data frame",
+        read_only_hint = TRUE,
+        open_world_hint = FALSE
       ),
-      format = ellmer::type_string(
+      data_frame = ellmer::type_string("The name of the data frame."),
+      package = ellmer::type_string(
+        paste(
+          "The package that provides the data set.",
+          "If not provided, `data_frame` must be loaded in the current environment."
+        ),
+        required = FALSE
+      ),
+      format = ellmer::type_enum(
         paste(
           "The output format of the data frame: 'skim' or 'json'. 'skim' is the most information-dense and is the default.",
           "",
@@ -124,16 +191,25 @@ btw_tool_env_describe_data_frame <- function(
           "* json: Returns the data frame as JSON",
           sep = "\n"
         ),
+        values = c("skim", "json"),
         required = FALSE
       ),
-      dims = ellmer::type_array(
+      max_rows = ellmer::type_integer(
         paste(
-          'Dimensions of the data frame to use for the "json" format.',
-          "A numeric vector of length 2 as number of rows and columns. Default `[5, 100]`."
+          "The maximum number of rows to show in the data frame.",
+          "Defaults to 5.",
+          "Only applies when `format=\"json\"`."
         ),
-        items = ellmer::type_integer(),
         required = FALSE
-      )
+      ),
+      max_cols = ellmer::type_integer(
+        paste(
+          "The maximum number of columns to show in the data frame.",
+          "Defaults to 100.",
+          "Only applies when `format=\"json\"`."
+        ),
+        required = FALSE
+      ),
     )
   }
 )

@@ -60,7 +60,12 @@ btw_tool_docs_package_help_topics <- function(package_name) {
   res <- dplyr::ungroup(res)
   res <- dplyr::select(res, topic_id, title, aliases)
 
-  btw_tool_env_describe_data_frame(res, format = "json", dims = c(Inf, Inf))
+  btw_tool_env_describe_data_frame(
+    res,
+    format = "json",
+    max_rows = Inf,
+    max_cols = Inf
+  )
 }
 
 

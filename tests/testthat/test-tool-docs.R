@@ -3,8 +3,10 @@ use_latest_pandoc()
 test_that("btw_tool_docs_package_help_topics() works", {
   res <- btw_tool_docs_package_help_topics("stats")
 
-  expect_type(res, "character")
-  expect_match(res, '"topic_id":"Normal"', fixed = TRUE, all = FALSE)
+  expect_s3_class(res, "ellmer::ContentToolResult")
+  expect_type(res@value, "character")
+  expect_s3_class(res@extra$data, "data.frame")
+  expect_match(res@value, '"topic_id":"Normal"', fixed = TRUE, all = FALSE)
 })
 
 test_that("btw_tool_docs_help_page() works", {

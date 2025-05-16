@@ -63,7 +63,7 @@ as_btw_capture <- function(x) {
 #'     file.
 #'
 #' * `"{pkgName}"` \cr
-#'   A package name wrapped in braces. Returns the list of help topics 
+#'   A package name wrapped in braces. Returns the list of help topics
 #'   ([btw_tool_docs_package_help_topics()]) and, if it exists, the
 #'   introductory vignette for the package ([btw_tool_docs_vignette()]).
 #'
@@ -170,7 +170,7 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
     # * be two or more characters long
     pkg <- substring(x, 2, nchar(x) - 1)
     res <- c(
-      btw_tool_docs_package_help_topics(pkg),
+      btw_tool_docs_package_help_topics(pkg)@value,
       tryCatch(c("", btw_tool_docs_vignette(pkg)), error = function(e) NULL)
     )
     return(res)

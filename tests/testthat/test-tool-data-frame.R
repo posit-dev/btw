@@ -2,20 +2,51 @@ skip_if_not_macos()
 
 test_that("btw_this.data.frame() works", {
   expect_snapshot(cli::cat_line(btw_this(mtcars)))
-  expect_snapshot(cli::cat_line(btw_this(mtcars, dims = c(Inf, Inf))))
+  expect_snapshot(cli::cat_line(btw_this(
+    mtcars,
+    max_rows = Inf,
+    max_cols = Inf
+  )))
 
   expect_snapshot(cli::cat_line(btw_this(mtcars, format = "glimpse")))
   expect_snapshot(
-    cli::cat_line(btw_this(mtcars, format = "glimpse", dims = c(Inf, Inf)))
+    cli::cat_line(btw_this(
+      mtcars,
+      format = "glimpse",
+      max_rows = Inf,
+      max_cols = Inf
+    ))
   )
 
   expect_snapshot(cli::cat_line(btw_this(mtcars, format = "print")))
   expect_snapshot(
-    cli::cat_line(btw_this(mtcars, format = "print", dims = c(Inf, Inf)))
+    cli::cat_line(btw_this(
+      mtcars,
+      format = "print",
+      max_rows = Inf,
+      max_cols = Inf
+    ))
   )
 
   expect_snapshot(cli::cat_line(btw_this(mtcars, format = "json")))
   expect_snapshot(
-    cli::cat_line(btw_this(mtcars, format = "json", dims = c(Inf, Inf)))
+    cli::cat_line(btw_this(
+      mtcars,
+      format = "json",
+      max_rows = Inf,
+      max_cols = Inf
+    ))
+  )
+})
+
+test_that("btw_tool_env_describe_data_frame() handles namespaced datasets", {
+  expect_equal(
+    btw_tool_env_describe_data_frame("dplyr::storms"),
+    btw_tool_env_describe_data_frame("storms", package = "dplyr")
+  )
+
+  expect_equal(
+    btw_this.data.frame("dplyr::storms"),
+    btw_this.data.frame("storms", package = "dplyr")
   )
 })
