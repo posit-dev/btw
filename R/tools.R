@@ -77,7 +77,27 @@ is_tool_match <- function(tool, labels = NULL) {
 # Convert from .btw_tools (or a filtered version of it)
 # to a format compatible with `client$set_tools()`
 as_ellmer_tools <- function(x) {
-  compact(map(x, function(.x) .x$tool()))
+  tools <- compact(map(x, function(.x) .x$tool()))
+  map(tools, wrap_with_intent)
+}
+
+wrap_with_intent <- function(tool) {
+  if ("intent" %in% names(tool@arguments@properties)) return(tool)
+
+  tool_fun <- tool@fun
+  wrapped_tool <- new_function(
+    c(fn_fmls(tool_fun), list(intent = "")),
+    fn_body(tool_fun)
+  )
+  tool@fun <- wrapped_tool
+  tool@arguments@properties$intent <- ellmer::type_string(
+    paste(
+      "The intent of the tool call that describes why you called this tool.",
+      "This should be a single, short phrase that explains this tool call to the user."
+    )
+  )
+
+  tool
 }
 
 # nocov start
