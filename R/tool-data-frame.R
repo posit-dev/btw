@@ -136,9 +136,9 @@ btw_tool_env_describe_data_frame <- function(
     skim = describe_data_frame_skim(data_frame)
   )
 
-  ellmer::ContentToolResult(
+  btw_tool_result(
     value = res,
-    extra = list(data = data_frame)
+    data = data_frame
   )
 }
 

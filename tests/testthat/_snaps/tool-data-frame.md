@@ -143,3 +143,11 @@
       ]
       ```
 
+# btw_tool_env_describe_data_frame() checks that the package is installed
+
+    Code
+      btw_tool_env_describe_data_frame("skibidi::ohio")
+    Condition
+      Error in `btw_tool_env_describe_data_frame()`:
+      ! Package skibidi is not installed.
+
