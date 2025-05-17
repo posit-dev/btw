@@ -19,11 +19,13 @@ btw_tool_docs_vignette(package_name, vignette = package_name)
 \arguments{
 \item{package_name}{The name of the package as a string, e.g. \code{"shiny"}.}
 
-\item{topic}{The \code{topic_id} or \code{alias} of the help page, e.g. \code{"withProgress"}
-or \code{"incProgress"}. Find \code{topic_id}s or \code{alias}es using \code{get_package_help()}.}
+\item{topic}{The \code{topic_id} or \code{alias} of the help page, e.g.
+\code{"withProgress"} or \code{"incProgress"}. Find \code{topic_id}s or \code{alias}es using
+\code{get_package_help()}.}
 
-\item{vignette}{The name (or index) of the vignette to retrieve. Defaults to
-the "intro" vignette to the package (by the same rules as pkgdown.)}
+\item{vignette}{The name (or index) of the vignette to
+retrieve. Defaults to the "intro" vignette to the package (by the same
+rules as pkgdown.)}
 }
 \value{
 \itemize{
@@ -35,24 +37,24 @@ string.
 }
 }
 \description{
-These functions describe package documentation in plain text:
+These functions describe package documentation in plain text.
 }
 \examples{
-cat(btw_tool_docs_package_help_topics("btw"))
+btw_tool_docs_package_help_topics("btw")
 
-cat(btw_tool_docs_help_page("btw", "btw"))
+btw_tool_docs_help_page("btw", "btw")
 
 # show the TOC of vignettes in the dplyr package
-cat(btw_tool_docs_available_vignettes("dplyr"))
+btw_tool_docs_available_vignettes("dplyr")
 
 # returns a whole bunch of output and relies on
 # dplyr to have the mentioned vignettes available
 \dontrun{
 # grab the intro vignette
-cat(btw_tool_docs_vignette("dplyr"))
+btw_tool_docs_vignette("dplyr")
 
 # grab the programming vignette specifically
-cat(btw_tool_docs_vignette("dplyr", "programming"))
+btw_tool_docs_vignette("dplyr", "programming")
 }
 
 }

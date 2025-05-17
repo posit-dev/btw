@@ -1,13 +1,36 @@
+#' @include tool-result.R
+NULL
+
 #' Tool: Describe R package documentation
 #'
 #' @description
-#' These functions describe package documentation in plain text:
+#' These functions describe package documentation in plain text.
+#'
+#' @examples
+#' btw_tool_docs_package_help_topics("btw")
+#'
+#' btw_tool_docs_help_page("btw", "btw")
+#'
+#' # show the TOC of vignettes in the dplyr package
+#' btw_tool_docs_available_vignettes("dplyr")
+#'
+#' # returns a whole bunch of output and relies on
+#' # dplyr to have the mentioned vignettes available
+#' \dontrun{
+#' # grab the intro vignette
+#' btw_tool_docs_vignette("dplyr")
+#'
+#' # grab the programming vignette specifically
+#' btw_tool_docs_vignette("dplyr", "programming")
+#' }
 #'
 #' @param package_name The name of the package as a string, e.g. `"shiny"`.
-#' @param topic The `topic_id` or `alias` of the help page, e.g. `"withProgress"`
-#' or `"incProgress"`. Find `topic_id`s or `alias`es using `get_package_help()`.
-#' @param vignette The name (or index) of the vignette to retrieve. Defaults to
-#' the "intro" vignette to the package (by the same rules as pkgdown.)
+#' @param topic The `topic_id` or `alias` of the help page, e.g.
+#'   `"withProgress"` or `"incProgress"`. Find `topic_id`s or `alias`es using
+#'   `get_package_help()`.
+#' @param vignette The name (or index) of the vignette to
+#'   retrieve. Defaults to the "intro" vignette to the package (by the same
+#'   rules as pkgdown.)
 #'
 #' @returns
 #' * `btw_tool_docs_package_help_topics()` returns the `topic_id`, `title`, and
@@ -17,25 +40,6 @@
 #'   string.
 #'
 #' @seealso [btw_tools()]
-#'
-#' @examples
-#' cat(btw_tool_docs_package_help_topics("btw"))
-#'
-#' cat(btw_tool_docs_help_page("btw", "btw"))
-#'
-#' # show the TOC of vignettes in the dplyr package
-#' cat(btw_tool_docs_available_vignettes("dplyr"))
-#'
-#' # returns a whole bunch of output and relies on
-#' # dplyr to have the mentioned vignettes available
-#' \dontrun{
-#' # grab the intro vignette
-#' cat(btw_tool_docs_vignette("dplyr"))
-#'
-#' # grab the programming vignette specifically
-#' cat(btw_tool_docs_vignette("dplyr", "programming"))
-#' }
-#'
 #' @family Tools
 #' @name btw_tool_package_docs
 #' @export
@@ -60,7 +64,12 @@ btw_tool_docs_package_help_topics <- function(package_name) {
   res <- dplyr::ungroup(res)
   res <- dplyr::select(res, topic_id, title, aliases)
 
-  btw_tool_env_describe_data_frame(res, format = "json", dims = c(Inf, Inf))
+  btw_tool_env_describe_data_frame(
+    res,
+    format = "json",
+    max_rows = Inf,
+    max_cols = Inf
+  )
 }
 
 
@@ -71,6 +80,11 @@ btw_tool_docs_package_help_topics <- function(package_name) {
     ellmer::tool(
       btw_tool_docs_package_help_topics,
       .description = "Get available help topics for an R package.",
+      .annotations = ellmer::tool_annotations(
+        title = "Package Help Topics",
+        read_only_hint = TRUE,
+        open_world_hint = FALSE
+      ),
       package_name = ellmer::type_string(
         "The exact name of the package, e.g. \"shiny\"."
       )
@@ -132,8 +146,21 @@ btw_tool_docs_help_page <- function(topic, package_name = "") {
     resolved$package,
     topic
   )
-  c(heading, md)
+
+  BtwHelpPageToolResult(
+    value = c(heading, md),
+    extra = list(
+      help_text = md,
+      topic = basename(resolved$topic),
+      package = resolved$package
+    )
+  )
 }
+
+BtwHelpPageToolResult <- S7::new_class(
+  "BtwHelpPageToolResult",
+  parent = BtwToolResult
+)
 
 help_package_topic <- function(help_page) {
   if (inherits(help_page, "dev_topic")) {
@@ -229,6 +256,11 @@ format_help_page_text <- function(help_page) {
     ellmer::tool(
       btw_tool_docs_help_page,
       .description = "Get help page from package.",
+      .annotations = ellmer::tool_annotations(
+        title = "Help Page",
+        read_only_hint = TRUE,
+        open_world_hint = FALSE
+      ),
       package_name = ellmer::type_string(
         "The exact name of the package, e.g. 'shiny'. Can be an empty string to search for a help topic across all packages."
       ),

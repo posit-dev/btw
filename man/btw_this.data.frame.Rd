@@ -9,14 +9,18 @@
   x,
   ...,
   format = c("skim", "glimpse", "print", "json"),
-  dims = c(5, 100)
+  max_rows = 5,
+  max_cols = 100,
+  package = NULL
 )
 
 \method{btw_this}{tbl}(
   x,
   ...,
   format = c("skim", "glimpse", "print", "json"),
-  dims = c(5, 100)
+  max_rows = 5,
+  max_cols = 100,
+  package = NULL
 )
 }
 \arguments{
@@ -39,9 +43,15 @@ particularly helpful when the pairings among entries in specific rows
 are important to demonstrate.
 }}
 
-\item{dims}{The number of rows and columns to show, as a numeric vector of
-length two. For example, the default \code{dims = c(5, 100)} shows the first 5
-rows and 100 columns, whereas \code{dims = c(Inf, Inf)} would show all of the data.}
+\item{max_rows}{The maximum number of rows to show in the data frame. Only
+applies when \code{format = "json"}.}
+
+\item{max_cols}{The maximum number of columns to show in the data frame. Only
+applies when \code{format = "json"}.}
+
+\item{package}{The name of the package that provides the data set. If not
+provided, \code{data_frame} must be loaded in the current environment, or may
+also be inferred from the name of the data frame, e.g. \code{"dplyr::storms"}.}
 }
 \value{
 A character vector containing a representation of the data frame.
