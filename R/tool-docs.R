@@ -19,21 +19,21 @@
 #' @seealso [btw_tools()]
 #'
 #' @examples
-#' cat(btw_tool_docs_package_help_topics("btw"))
+#' btw_tool_docs_package_help_topics("btw")
 #'
-#' cat(btw_tool_docs_help_page("btw", "btw"))
+#' btw_tool_docs_help_page("btw", "btw")
 #'
 #' # show the TOC of vignettes in the dplyr package
-#' cat(btw_tool_docs_available_vignettes("dplyr"))
+#' btw_tool_docs_available_vignettes("dplyr")
 #'
 #' # returns a whole bunch of output and relies on
 #' # dplyr to have the mentioned vignettes available
 #' \dontrun{
 #' # grab the intro vignette
-#' cat(btw_tool_docs_vignette("dplyr"))
+#' btw_tool_docs_vignette("dplyr")
 #'
 #' # grab the programming vignette specifically
-#' cat(btw_tool_docs_vignette("dplyr", "programming"))
+#' btw_tool_docs_vignette("dplyr", "programming")
 #' }
 #'
 #' @family Tools

@@ -155,7 +155,7 @@ get_dataset_from_package <- function(name, package = NULL) {
   env <- new.env()
   tryCatch(
     {
-      data(list = name, package = package, envir = env)
+      utils::data(list = name, package = package, envir = env)
       get(name, envir = env)
     },
     error = function(...) missing_arg()

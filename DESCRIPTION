@@ -33,6 +33,7 @@ Imports:
     sessioninfo,
     skimr,
     tibble,
+    utils,
     withr
 Suggests:
     gh,
