@@ -27,7 +27,8 @@ NULL
 #' @param package_name The name of the package as a string, e.g. `"shiny"`.
 #' @param topic The `topic_id` or `alias` of the help page, e.g.
 #'   `"withProgress"` or `"incProgress"`. Find `topic_id`s or `alias`es using
-#' `get_package_help()`. @param vignette The name (or index) of the vignette to
+#'   `get_package_help()`.
+#' @param vignette The name (or index) of the vignette to
 #'   retrieve. Defaults to the "intro" vignette to the package (by the same
 #'   rules as pkgdown.)
 #'

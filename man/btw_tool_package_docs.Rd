@@ -21,7 +21,9 @@ btw_tool_docs_vignette(package_name, vignette = package_name)
 
 \item{topic}{The \code{topic_id} or \code{alias} of the help page, e.g.
 \code{"withProgress"} or \code{"incProgress"}. Find \code{topic_id}s or \code{alias}es using
-\code{get_package_help()}. @param vignette The name (or index) of the vignette to
+\code{get_package_help()}.}
+
+\item{vignette}{The name (or index) of the vignette to
 retrieve. Defaults to the "intro" vignette to the package (by the same
 rules as pkgdown.)}
 }
