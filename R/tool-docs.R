@@ -76,6 +76,11 @@ btw_tool_docs_package_help_topics <- function(package_name) {
     ellmer::tool(
       btw_tool_docs_package_help_topics,
       .description = "Get available help topics for an R package.",
+      .annotations = ellmer::tool_annotations(
+        title = "Package Help Topics",
+        read_only_hint = TRUE,
+        open_world_hint = FALSE
+      ),
       package_name = ellmer::type_string(
         "The exact name of the package, e.g. \"shiny\"."
       )
