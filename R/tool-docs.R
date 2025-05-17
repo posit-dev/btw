@@ -1,22 +1,7 @@
 #' Tool: Describe R package documentation
 #'
 #' @description
-#' These functions describe package documentation in plain text:
-#'
-#' @param package_name The name of the package as a string, e.g. `"shiny"`.
-#' @param topic The `topic_id` or `alias` of the help page, e.g. `"withProgress"`
-#' or `"incProgress"`. Find `topic_id`s or `alias`es using `get_package_help()`.
-#' @param vignette The name (or index) of the vignette to retrieve. Defaults to
-#' the "intro" vignette to the package (by the same rules as pkgdown.)
-#'
-#' @returns
-#' * `btw_tool_docs_package_help_topics()` returns the `topic_id`, `title`, and
-#'   `aliases` fields for every topic in a package's documentation as a
-#'   json-formatted string.
-#' * `btw_tool_docs_help_page()` return the help-page for a package topic as a
-#'   string.
-#'
-#' @seealso [btw_tools()]
+#' These functions describe package documentation in plain text.
 #'
 #' @examples
 #' btw_tool_docs_package_help_topics("btw")
@@ -36,6 +21,21 @@
 #' btw_tool_docs_vignette("dplyr", "programming")
 #' }
 #'
+#' @param package_name The name of the package as a string, e.g. `"shiny"`.
+#' @param topic The `topic_id` or `alias` of the help page, e.g.
+#'   `"withProgress"` or `"incProgress"`. Find `topic_id`s or `alias`es using
+#' `get_package_help()`. @param vignette The name (or index) of the vignette to
+#'   retrieve. Defaults to the "intro" vignette to the package (by the same
+#'   rules as pkgdown.)
+#'
+#' @returns
+#' * `btw_tool_docs_package_help_topics()` returns the `topic_id`, `title`, and
+#'   `aliases` fields for every topic in a package's documentation as a
+#'   json-formatted string.
+#' * `btw_tool_docs_help_page()` return the help-page for a package topic as a
+#'   string.
+#'
+#' @seealso [btw_tools()]
 #' @family Tools
 #' @name btw_tool_package_docs
 #' @export

@@ -19,11 +19,11 @@ btw_tool_docs_vignette(package_name, vignette = package_name)
 \arguments{
 \item{package_name}{The name of the package as a string, e.g. \code{"shiny"}.}
 
-\item{topic}{The \code{topic_id} or \code{alias} of the help page, e.g. \code{"withProgress"}
-or \code{"incProgress"}. Find \code{topic_id}s or \code{alias}es using \code{get_package_help()}.}
-
-\item{vignette}{The name (or index) of the vignette to retrieve. Defaults to
-the "intro" vignette to the package (by the same rules as pkgdown.)}
+\item{topic}{The \code{topic_id} or \code{alias} of the help page, e.g.
+\code{"withProgress"} or \code{"incProgress"}. Find \code{topic_id}s or \code{alias}es using
+\code{get_package_help()}. @param vignette The name (or index) of the vignette to
+retrieve. Defaults to the "intro" vignette to the package (by the same
+rules as pkgdown.)}
 }
 \value{
 \itemize{
@@ -35,7 +35,7 @@ string.
 }
 }
 \description{
-These functions describe package documentation in plain text:
+These functions describe package documentation in plain text.
 }
 \examples{
 btw_tool_docs_package_help_topics("btw")
