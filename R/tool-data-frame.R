@@ -152,6 +152,8 @@ get_dataset_from_package <- function(name, package = NULL) {
     return(missing_arg())
   }
 
+  check_installed(package, call = caller_env())
+
   env <- new.env()
   tryCatch(
     {

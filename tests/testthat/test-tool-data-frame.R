@@ -50,3 +50,10 @@ test_that("btw_tool_env_describe_data_frame() handles namespaced datasets", {
     btw_this.data.frame("storms", package = "dplyr")
   )
 })
+
+test_that("btw_tool_env_describe_data_frame() checks that the package is installed", {
+  expect_snapshot(
+    error = TRUE,
+    btw_tool_env_describe_data_frame("skibidi::ohio"),
+  )
+})
