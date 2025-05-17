@@ -1,3 +1,6 @@
+#' @include tool-result.R
+NULL
+
 #' Tool: Describe R package documentation
 #'
 #' @description
@@ -142,8 +145,21 @@ btw_tool_docs_help_page <- function(topic, package_name = "") {
     resolved$package,
     topic
   )
-  c(heading, md)
+
+  BtwHelpPageToolResult(
+    value = c(heading, md),
+    extra = list(
+      help_text = md,
+      topic = basename(resolved$topic),
+      package = resolved$package
+    )
+  )
 }
+
+BtwHelpPageToolResult <- S7::new_class(
+  "BtwHelpPageToolResult",
+  parent = BtwToolResult
+)
 
 help_package_topic <- function(help_page) {
   if (inherits(help_page, "dev_topic")) {
@@ -239,6 +255,11 @@ format_help_page_text <- function(help_page) {
     ellmer::tool(
       btw_tool_docs_help_page,
       .description = "Get help page from package.",
+      .annotations = ellmer::tool_annotations(
+        title = "Help Page",
+        read_only_hint = TRUE,
+        open_world_hint = FALSE
+      ),
       package_name = ellmer::type_string(
         "The exact name of the package, e.g. 'shiny'. Can be an empty string to search for a help topic across all packages."
       ),

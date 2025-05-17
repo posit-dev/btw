@@ -10,11 +10,16 @@ test_that("btw_tool_docs_package_help_topics() works", {
 })
 
 test_that("btw_tool_docs_help_page() works", {
-  skip_if_not_macos()
-
   res <- btw_tool_docs_help_page(package_name = "stats", topic = "rnorm")
 
-  expect_snapshot(cli::cat_line(res))
+  expect_s3_class(res, "btw::BtwHelpPageToolResult")
+  expect_s3_class(res, "ellmer::ContentToolResult")
+  expect_equal(res@extra$topic, "Normal")
+  expect_equal(res@extra$package, "stats")
+  expect_type(res@extra$help_text, "character")
+
+  skip_if_not_macos()
+  expect_snapshot(cli::cat_line(res@value))
 })
 
 test_that("btw_tool_docs_available_vignettes() works", {

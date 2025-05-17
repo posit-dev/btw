@@ -47,3 +47,24 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Remotes: 
     tidyverse/ellmer
+Collate: 
+    'aaa-tools.R'
+    'btw-package.R'
+    'btw.R'
+    'btw_client.R'
+    'btw_this.R'
+    'clipboard.R'
+    'import-standalone-obj-type.R'
+    'import-standalone-purrr.R'
+    'import-standalone-types-check.R'
+    'tool-data-frame.R'
+    'tool-result.R'
+    'tool-docs.R'
+    'tool-environment.R'
+    'tool-files.R'
+    'tool-rstudioapi.R'
+    'tool-sessioninfo.R'
+    'tools.R'
+    'utils-md.R'
+    'utils.R'
+    'zzz.R'
