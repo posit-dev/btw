@@ -122,7 +122,7 @@ btw_tool_env_describe_environment <- function(
     return("")
   }
 
-  btw_tool_result(res)
+  BtwToolResult(res)
 }
 
 .btw_add_to_tools(
