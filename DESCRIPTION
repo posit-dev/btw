@@ -23,7 +23,7 @@ Imports:
     cli,
     clipr,
     dplyr,
-    ellmer (>= 0.1.1.9000),
+    ellmer (>= 0.2.0),
     fs,
     jsonlite,
     rlang (>= 1.1.0),
@@ -45,9 +45,7 @@ Config/testthat/parallel: true
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Remotes: 
-    tidyverse/ellmer
-Collate: 
+Collate:
     'aaa-tools.R'
     'btw-package.R'
     'btw.R'
