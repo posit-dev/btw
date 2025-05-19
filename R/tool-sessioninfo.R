@@ -1,3 +1,6 @@
+#' @include tool-result.R
+NULL
+
 #' Tool: Describe user's platform
 #'
 #' Describes the R version, operating system, and language and locale settings
@@ -121,8 +124,8 @@ btw_tool_session_package_info <- function(
     title <- c(paste("###", title), "")
   }
 
-  packages <- package_info(packages, dependencies)
-  packages <- as.character(packages)
+  packages_df <- package_info(packages, dependencies)
+  packages <- as.character(packages_df)
   packages <- md_code_block(type = "", packages)
 
   packages <- gsub(" R ", " X ", packages)
@@ -132,8 +135,16 @@ btw_tool_session_package_info <- function(
     packages
   )
 
-  paste(c(title, packages), collapse = "\n")
+  BtwPackageInfoToolResult(
+    value = paste(c(title, packages), collapse = "\n"),
+    extra = list(data = packages_df)
+  )
 }
+
+BtwPackageInfoToolResult <- S7::new_class(
+  "BtwPackageInfoToolResult",
+  parent = BtwToolResult
+)
 
 package_info <- function(pkgs = NULL, dependencies = NA) {
   if (is.character(dependencies)) {
@@ -156,6 +167,11 @@ package_info <- function(pkgs = NULL, dependencies = NA) {
         "Verify that a specific package is installed,",
         "or find out which packages are in use in the current session.",
         "As a last resort, this function can also list all installed packages."
+      ),
+      .annotations = ellmer::tool_annotations(
+        title = "Package Version",
+        read_only_hint = TRUE,
+        open_world_hint = FALSE
       ),
       packages = ellmer::type_string(
         description = paste(

@@ -18,7 +18,7 @@
 # btw_tool_session_package_info()
 
     Code
-      cat(btw_tool_session_package_info("dplyr"))
+      cat(btw_tool_session_package_info("dplyr")@value)
     Output
       ```
        package    * version date (UTC) lib source
@@ -46,7 +46,7 @@
 ---
 
     Code
-      cat(btw_tool_session_package_info("digest", c("Imports", "Suggests")))
+      cat(btw_tool_session_package_info("digest", c("Imports", "Suggests"))@value)
     Output
       ```
        ! package         * version date (UTC) lib source
@@ -63,7 +63,7 @@
 ---
 
     Code
-      cat(btw_tool_session_package_info("attached"))
+      cat(btw_tool_session_package_info("attached")@value)
     Output
       ### Attached Packages
       
@@ -84,7 +84,7 @@
 ---
 
     Code
-      cat(btw_tool_session_package_info("loaded"))
+      cat(btw_tool_session_package_info("loaded")@value)
     Output
       ### Loaded Packages
       
@@ -168,7 +168,7 @@
 ---
 
     Code
-      cat(btw_tool_session_package_info("dplyr,tidyr", "false"))
+      cat(btw_tool_session_package_info("dplyr,tidyr", "false")@value)
     Output
       ```
        package * version date (UTC) lib source

@@ -15,6 +15,14 @@ skip_if_not_macos <- function() {
   skip_on_os("linux")
 }
 
+expect_btw_tool_result <- function(x, has_data = TRUE) {
+  expect_s3_class(x, "ellmer::ContentToolResult")
+  expect_type(x@value, "character")
+  if (has_data) {
+    expect_s3_class(x@extra$data, "data.frame")
+  }
+}
+
 scrub_system_info <- function(x) {
   x <- sub(R.version.string, "R VERSION", x, fixed = TRUE)
   x <- sub(sessioninfo::os_name(), "OPERATING SYSTEM", x, fixed = TRUE)

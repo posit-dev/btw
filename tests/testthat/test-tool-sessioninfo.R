@@ -26,25 +26,42 @@ test_that("btw_tool_session_platform_info() detects RStudio, Positron, VS Code",
 test_that("btw_tool_session_package_info()", {
   with_mocked_bindings(
     package_info = function(...) package_info_mock_results[["dplyr"]],
-    expect_snapshot(cat(btw_tool_session_package_info("dplyr")))
+    {
+      expect_btw_tool_result(btw_tool_session_package_info("dplyr"))
+      expect_snapshot(cat(btw_tool_session_package_info("dplyr")@value))
+    }
   )
 
   with_mocked_bindings(
     package_info = function(...) package_info_mock_results[["digest"]],
-    expect_snapshot(cat(btw_tool_session_package_info(
-      "digest",
-      c("Imports", "Suggests")
-    )))
+    {
+      expect_btw_tool_result(
+        btw_tool_session_package_info("digest", c("Imports", "Suggests"))
+      )
+      expect_snapshot(cat(
+        btw_tool_session_package_info("digest", c("Imports", "Suggests"))@value
+      ))
+    }
   )
 
   with_mocked_bindings(
     package_info = function(...) package_info_mock_results[["attached"]],
-    expect_snapshot(cat(btw_tool_session_package_info("attached")))
+    {
+      expect_btw_tool_result(btw_tool_session_package_info("attached"))
+      expect_snapshot(cat(
+        btw_tool_session_package_info("attached")@value
+      ))
+    }
   )
 
   with_mocked_bindings(
     package_info = function(...) package_info_mock_results[["loaded"]],
-    expect_snapshot(cat(btw_tool_session_package_info("loaded")))
+    {
+      expect_btw_tool_result(btw_tool_session_package_info("loaded"))
+      expect_snapshot(cat(
+        btw_tool_session_package_info("loaded")@value
+      ))
+    }
   )
 
   with_mocked_bindings(
@@ -55,7 +72,14 @@ test_that("btw_tool_session_package_info()", {
       )
       package_info_mock_results[["dplyr,tidyr"]]
     },
-    expect_snapshot(cat(btw_tool_session_package_info("dplyr,tidyr", "false")))
+    {
+      expect_btw_tool_result(
+        btw_tool_session_package_info("dplyr,tidyr", "false"),
+      )
+      expect_snapshot(cat(
+        btw_tool_session_package_info("dplyr,tidyr", "false")@value
+      ))
+    }
   )
 })
 
