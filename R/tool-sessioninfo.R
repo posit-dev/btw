@@ -12,18 +12,28 @@ NULL
 #' @returns Returns a string describing the user's platform.
 #'
 #' @examples
-#' cat(btw_tool_session_platform_info())
+#' btw_tool_session_platform_info()
 #'
 #' @family Tools
 #' @export
 btw_tool_session_platform_info <- function() {
-  platform <- platform_info()
-  platform <- trimws(capture.output(platform)[-1])
+  platform_list <- platform_info()
+  platform <- trimws(capture.output(platform_list)[-1])
   platform <- sub(" +", " ", platform)
   platform <- paste(platform, collapse = "\n")
 
-  sprintf("<system_info>\n%s\n</system_info>", platform)
+  names(platform_list) <- tolower(names(platform_list))
+
+  BtwSessionInfoToolResult(
+    value = sprintf("<system_info>\n%s\n</system_info>", platform),
+    extra = platform_list
+  )
 }
+
+BtwSessionInfoToolResult <- S7::new_class(
+  "BtwSessionInfoToolResult",
+  parent = BtwToolResult
+)
 
 .btw_add_to_tools(
   name = "btw_tool_session_platform_info",
@@ -31,7 +41,15 @@ btw_tool_session_platform_info <- function() {
   tool = function() {
     ellmer::tool(
       btw_tool_session_platform_info,
-      .description = "Describes the R version, operating system, language and locale settings for the user's system."
+      .description = paste(
+        "Describes the R version, operating system, language and locale settings",
+        "for the user's system."
+      ),
+      .annotations = ellmer::tool_annotations(
+        title = "Platform Info",
+        read_only_hint = TRUE,
+        open_world_hint = FALSE
+      ),
     )
   }
 )
@@ -154,7 +172,7 @@ btw_tool_session_package_info <- function(
 
 BtwPackageInfoToolResult <- S7::new_class(
   "BtwPackageInfoToolResult",
-  parent = BtwToolResult
+  parent = BtwSessionInfoToolResult
 )
 
 package_info <- function(pkgs = NULL, dependencies = NA) {

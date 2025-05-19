@@ -86,7 +86,7 @@
 #' @param ... Additional arguments are ignored. `...` are included for future
 #'   feature expansion.
 #'
-#' @return Returns an [ellmer::Chat] object with additional tools registered 
+#' @return Returns an [ellmer::Chat] object with additional tools registered
 #'   from [btw_tools()]. `btw_app()` returns the chat object invisibly, and
 #'   the chat object with the messages added during the chat session.
 #'
@@ -105,7 +105,7 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
     "# System and Session Context",
     "Please account for the following R session and system settings in all responses.",
     "",
-    btw_tool_session_platform_info(),
+    btw_tool_session_platform_info()@value,
     "",
     if (!skip_tools) {
       c(

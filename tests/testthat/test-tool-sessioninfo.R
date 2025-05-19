@@ -1,24 +1,36 @@
 test_that("btw_tool_session_platform_info() works", {
   with_mocked_platform({
+    platform_data <- platform_info()
     platform_description <- btw_tool_session_platform_info()
   })
 
-  expect_snapshot(cat(platform_description), transform = scrub_system_info)
+  expect_btw_tool_result(platform_description, has_data = FALSE)
+  for (nm in names(platform_description@extra)) {
+    expect_equal(
+      platform_description@extra[[!!nm]],
+      platform_data[[!!toupper(nm)]]
+    )
+  }
+
+  expect_snapshot(
+    cat(platform_description@value),
+    transform = scrub_system_info
+  )
 })
 
 test_that("btw_tool_session_platform_info() detects RStudio, Positron, VS Code", {
   withr::with_envvar(list(POSITRON = 1), {
-    expect_match(btw_tool_session_platform_info(), "UI: Positron")
+    expect_match(btw_tool_session_platform_info()@value, "UI: Positron")
   })
 
   withr::with_envvar(list(POSITRON = "", RSTUDIO = 1), {
-    expect_match(btw_tool_session_platform_info(), "UI: RStudio")
+    expect_match(btw_tool_session_platform_info()@value, "UI: RStudio")
   })
 
   withr::with_envvar(
     list(POSITRON = "", RSTUDIO = "", TERM_PROGRAM = "vscode"),
     {
-      expect_match(btw_tool_session_platform_info(), "UI: VS Code")
+      expect_match(btw_tool_session_platform_info()@value, "UI: VS Code")
     }
   )
 })

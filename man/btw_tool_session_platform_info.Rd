@@ -15,7 +15,7 @@ for the user's system. When using \code{\link[=btw_client]{btw_client()}} or \co
 information is automatically included in the system prompt.
 }
 \examples{
-cat(btw_tool_session_platform_info())
+btw_tool_session_platform_info()
 
 }
 \seealso{

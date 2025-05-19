@@ -1,7 +1,7 @@
 # btw_tool_session_platform_info() works
 
     Code
-      cat(platform_description)
+      cat(platform_description@value)
     Output
       <system_info>
       R_VERSION: R VERSION
