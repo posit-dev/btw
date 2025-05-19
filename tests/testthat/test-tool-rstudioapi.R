@@ -1,4 +1,4 @@
-test_that("btw_tool_ide_read_current_editor()", {
+test_that("btw_tool_ide_read_current_editor() has informative errors", {
   expect_error(btw_tool_ide_read_current_editor(selection = "yes"))
   expect_error(btw_tool_ide_read_current_editor(consent = "yes"))
 
@@ -160,18 +160,23 @@ test_that("@current_file", {
     rstudioapi_has_source_editor_context = function() TRUE
   )
 
-  expect_snapshot(
-    cli::cat_line(btw("@current_file"))
+  expect_btw_tool_result(
+    btw_tool_ide_read_current_editor(consent = TRUE),
+    has_data = FALSE
   )
-
   expect_equal(
     btw_this("@current_file"),
-    I(btw_tool_ide_read_current_editor(consent = TRUE))
+    I(btw_tool_ide_read_current_editor(consent = TRUE)@value)
   )
 
   expect_equal(
     btw_tool_ide_read_current_editor(selection = TRUE, consent = TRUE),
     btw_tool_ide_read_current_editor(selection = FALSE, consent = TRUE)
+  )
+
+  skip_if_not_macos()
+  expect_snapshot(
+    cli::cat_line(btw("@current_file"))
   )
 })
 
@@ -181,12 +186,18 @@ test_that("@current_selection", {
     rstudioapi_has_source_editor_context = function() TRUE
   )
 
-  expect_snapshot(
-    cli::cat_line(btw("@current_selection"))
+  expect_btw_tool_result(
+    btw_tool_ide_read_current_editor(consent = TRUE),
+    has_data = FALSE
   )
 
   expect_equal(
     btw_this("@current_selection"),
-    I(btw_tool_ide_read_current_editor(consent = TRUE))
+    I(btw_tool_ide_read_current_editor(consent = TRUE)@value)
+  )
+
+  skip_if_not_macos()
+  expect_snapshot(
+    cli::cat_line(btw("@current_selection"))
   )
 })

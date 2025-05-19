@@ -118,11 +118,13 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
   x <- trimws(x)
 
   if (identical(x, "@current_file")) {
-    return(I(btw_tool_ide_read_current_editor(consent = TRUE)))
+    return(I(
+      btw_tool_ide_read_current_editor(selection = FALSE, consent = TRUE)@value
+    ))
   }
   if (identical(x, "@current_selection")) {
     return(I(
-      btw_tool_ide_read_current_editor(selection = TRUE, consent = TRUE)
+      btw_tool_ide_read_current_editor(selection = TRUE, consent = TRUE)@value
     ))
   }
   if (identical(x, "@clipboard")) {

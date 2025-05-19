@@ -1,4 +1,4 @@
-# btw_tool_ide_read_current_editor()
+# btw_tool_ide_read_current_editor() has informative errors
 
     Code
       btw_tool_ide_read_current_editor()

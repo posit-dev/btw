@@ -1,3 +1,6 @@
+#' @include tool-result.R
+NULL
+
 #' Tool: Read current file
 #'
 #' @description
@@ -41,6 +44,7 @@ btw_tool_ide_read_current_editor <- function(
   has_no_selection <-
     length(cf$selection) == 1 && !nzchar(cf$selection[[1]]$text)
 
+  res <- c()
   if (!selection || has_no_selection) {
     res <- c(
       sprintf('FILE: `%s`', path),
@@ -49,37 +53,40 @@ btw_tool_ide_read_current_editor <- function(
         cf$contents
       )
     )
-    return(res)
-  }
+  } else {
+    for (selection in cf$selection) {
+      if (!nzchar(selection$text)) next
 
-  res <- c()
-  for (selection in cf$selection) {
-    if (!nzchar(selection$text)) next
+      line_column <- function(range) {
+        sprintf("L%dC%d", range[1], range[2])
+      }
 
-    line_column <- function(range) {
-      sprintf("L%dC%d", range[1], range[2])
-    }
-
-    line_range <- c(selection$range$start[1], selection$range$end[1])
-    lines <- paste0("L", unique(line_range), collapse = "-")
-    res <- c(
-      res,
-      if (length(res)) "",
-      sprintf(
-        'FILE: %s:%s-%s',
-        path,
-        line_column(selection$range$start),
-        line_column(selection$range$end)
-      ),
-      md_code_block(
-        type = fs::path_ext(path),
-        strsplit(selection$text, "\n")[[1]]
+      line_range <- c(selection$range$start[1], selection$range$end[1])
+      lines <- paste0("L", unique(line_range), collapse = "-")
+      res <- c(
+        res,
+        if (length(res)) "",
+        sprintf(
+          'FILE: %s:%s-%s',
+          path,
+          line_column(selection$range$start),
+          line_column(selection$range$end)
+        ),
+        md_code_block(
+          type = fs::path_ext(path),
+          strsplit(selection$text, "\n")[[1]]
+        )
       )
-    )
+    }
   }
 
-  res
+  BtwEditorContextToolResult(res, extra = cf)
 }
+
+BtwEditorContextToolResult <- S7::new_class(
+  "BtwEditorContextToolResult",
+  parent = BtwToolResult
+)
 
 .btw_add_to_tools(
   name = "btw_tool_ide_read_current_editor",
@@ -88,10 +95,16 @@ btw_tool_ide_read_current_editor <- function(
     if (!rstudioapi_has_source_editor_context()) return(NULL)
     ellmer::tool(
       btw_tool_ide_read_current_editor,
-      paste(
+      .description = paste(
         "Read the contents of the editor that is currently open in the user's IDE.",
         "Only use this tool when specifically asked to do so by the user.",
         "'@current_file' and '@current_selection' are considered explicit consent."
+      ),
+      .annotations = ellmer::tool_annotations(
+        title = "Editor Contents",
+        read_only_hint = TRUE,
+        open_world_hint = FALSE,
+        idempotent_hint = FALSE
       ),
       selection = ellmer::type_boolean(
         paste(
