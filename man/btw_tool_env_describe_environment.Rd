@@ -4,13 +4,19 @@
 \alias{btw_tool_env_describe_environment}
 \title{Tool: Describe an environment}
 \usage{
-btw_tool_env_describe_environment(environment = global_env(), items = NULL)
+btw_tool_env_describe_environment(
+  items = NULL,
+  ...,
+  environment = global_env()
+)
 }
 \arguments{
-\item{environment}{An environment to describe.}
-
 \item{items}{Optional. A character vector of objects in the environment to
 describe.}
+
+\item{...}{Ignored.}
+
+\item{environment}{An environment to describe.}
 }
 \value{
 A string describing the environment contents with \verb{#>} prefixing

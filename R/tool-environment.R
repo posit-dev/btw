@@ -19,12 +19,13 @@
 #' @family `btw_this()` methods
 #' @export
 btw_this.environment <- function(x, ..., items = NULL) {
-  btw_tool_env_describe_environment(environment = x, items = items)
+  btw_tool_env_describe_environment(environment = x, items = items)@value
 }
 
 #' Tool: Describe an environment
 #'
 #' @param environment An environment to describe.
+#' @param ... Ignored.
 #' @inheritParams btw_this.environment
 #'
 #' @inherit btw_this.environment return
@@ -33,9 +34,12 @@ btw_this.environment <- function(x, ..., items = NULL) {
 #' @family Tools
 #' @export
 btw_tool_env_describe_environment <- function(
-  environment = global_env(),
-  items = NULL
+  items = NULL,
+  ...,
+  environment = global_env()
 ) {
+  check_dots_empty()
+
   if (!is.environment(environment)) {
     # TODO: does the env name live in the global env?
     # is it in `search_envs`?
@@ -118,7 +122,7 @@ btw_tool_env_describe_environment <- function(
     return("")
   }
 
-  res
+  btw_tool_result(res)
 }
 
 .btw_add_to_tools(
@@ -128,6 +132,11 @@ btw_tool_env_describe_environment <- function(
     ellmer::tool(
       btw_tool_env_describe_environment,
       .description = "List and describe items in an environment.",
+      .annotations = ellmer::tool_annotations(
+        title = "Object in Session",
+        read_only_hint = TRUE,
+        open_world_hint = FALSE
+      ),
       items = ellmer::type_array(
         "The names of items to describe from the environment. Defaults to `NULL`, indicating all items.",
         items = ellmer::type_string(),
