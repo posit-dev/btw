@@ -12,7 +12,7 @@ test_that("btw_this('{pkg}')", {
     c(
       btw_tool_docs_package_help_topics("dplyr")@value,
       "",
-      btw_tool_docs_vignette("dplyr")
+      btw_tool_docs_vignette("dplyr")@value
     )
   )
 

@@ -129,16 +129,16 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
     return(I(clipr::read_clip()))
   }
   if (identical(x, "@platform_info")) {
-    return(btw_tool_session_platform_info())
+    return(btw_tool_session_platform_info()@value)
   }
   if (identical(x, "@attached_packages")) {
-    return(I(btw_tool_session_package_info("attached")))
+    return(I(btw_tool_session_package_info("attached")@value))
   }
   if (identical(x, "@loaded_packages")) {
-    return(I(btw_tool_session_package_info("loaded")))
+    return(I(btw_tool_session_package_info("loaded")@value))
   }
   if (identical(x, "@installed_packages")) {
-    return(I(btw_tool_session_package_info("installed")))
+    return(I(btw_tool_session_package_info("installed")@value))
   }
   if (identical(x, "@last_error")) {
     err <- get_last_error()
@@ -156,9 +156,9 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
       path <- "."
     }
     if (fs::is_file(path)) {
-      return(btw_tool_files_read_text_file(path))
+      return(btw_tool_files_read_text_file(path)@value)
     } else {
-      return(btw_tool_files_list_files(path))
+      return(btw_tool_files_list_files(path)@value)
     }
   }
 
@@ -171,7 +171,10 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
     pkg <- substring(x, 2, nchar(x) - 1)
     res <- c(
       btw_tool_docs_package_help_topics(pkg)@value,
-      tryCatch(c("", btw_tool_docs_vignette(pkg)), error = function(e) NULL)
+      tryCatch(
+        c("", btw_tool_docs_vignette(pkg)@value),
+        error = function(e) NULL
+      )
     )
     return(res)
   }

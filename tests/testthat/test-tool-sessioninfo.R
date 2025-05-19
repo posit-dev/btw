@@ -96,22 +96,25 @@ test_that("btw_tool_session_package_info()", {
 })
 
 test_that("btw_this('@attached_packages')", {
+  expect_type(btw_this("@attached_packages"), "character")
   expect_equal(
     btw_this("@attached_packages"),
-    I(btw_tool_session_package_info("attached"))
+    I(btw_tool_session_package_info("attached")@value)
   )
 })
 
 test_that("btw_this('@loaded_packages')", {
+  expect_type(btw_this("@loaded_packages"), "character")
   expect_equal(
     btw_this("@loaded_packages"),
-    I(btw_tool_session_package_info("loaded"))
+    I(btw_tool_session_package_info("loaded")@value)
   )
 })
 
 test_that("btw_this('@installed_packages')", {
+  expect_type(btw_this("@installed_packages"), "character")
   expect_equal(
     btw_this("@installed_packages"),
-    I(btw_tool_session_package_info("installed"))
+    I(btw_tool_session_package_info("installed")@value)
   )
 })
