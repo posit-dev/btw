@@ -87,7 +87,7 @@ platform_info <- function() {
 #' @returns Returns a string describing the selected packages.
 #'
 #' @examples
-#' cat(btw_tool_session_package_info("btw"))
+#' btw_tool_session_package_info("btw")
 #'
 #' @family Tools
 #' @export
@@ -95,6 +95,9 @@ btw_tool_session_package_info <- function(
   packages = "attached",
   dependencies = ""
 ) {
+  if (is.factor(dependencies)) {
+    dependencies <- as.character(dependencies)
+  }
   if (
     !any(nzchar(dependencies)) ||
       identical(dependencies, "FALSE") ||
@@ -106,8 +109,16 @@ btw_tool_session_package_info <- function(
     dependencies <- TRUE
   }
 
-  packages <- trimws(strsplit(packages, ",")[[1]])
-  if (is.character(dependencies)) {
+  string_with_comma <- function(x) {
+    if (!is.character(x)) return(FALSE)
+    if (length(x) != 1) return(FALSE)
+    grepl(",", x, fixed = TRUE)
+  }
+
+  if (string_with_comma(packages)) {
+    packages <- trimws(strsplit(packages, ",")[[1]])
+  }
+  if (string_with_comma(dependencies)) {
     dependencies <- trimws(strsplit(dependencies, ",")[[1]])
   }
 
@@ -169,13 +180,16 @@ package_info <- function(pkgs = NULL, dependencies = NA) {
         "As a last resort, this function can also list all installed packages."
       ),
       .annotations = ellmer::tool_annotations(
-        title = "Package Version",
+        title = "Package Info",
         read_only_hint = TRUE,
         open_world_hint = FALSE
       ),
-      packages = ellmer::type_string(
+      .convert = TRUE,
+      packages = ellmer::type_array(
+        required = TRUE,
+        items = ellmer::type_string(),
         description = paste(
-          "Provide a commma-separated list of package names to check that these packages are",
+          "Provide an array of package names to check that these packages are",
           "installed and to confirm which versions of the packages are available.",
           "Use the single string \"attached\" to show packages that have been attached by the user,",
           "i.e. are explicitly in use in the session. Use the single string \"loaded\" to show all",
@@ -183,17 +197,26 @@ package_info <- function(pkgs = NULL, dependencies = NA) {
           "session (useful for debugging). Finally, the string \"installed\" lists all",
           "installed packages. Try using the other available options prior to",
           "listing all installed packages."
-        ),
-        required = TRUE
+        )
       ),
-      dependencies = ellmer::type_string(
+      dependencies = ellmer::type_array(
+        required = FALSE,
         description = paste(
-          "When describing the installed or loaded version of a specific package,",
-          "you can use `dependencies = \"true\"` to list dependencies of the",
-          "package. Alternatively, you can give a comma-separated list of dependency types, ",
-          'choosing from `"Depends"`, `"Imports"`, `"Suggests"`, `"LinkingTo"`, `"Enhances"`.'
+          "The dependencies to include when listing package information.",
+          "You can use `dependencies = \"true\"` to list all dependencies of the package.",
+          "Alternatively, you can request an array of dependency types."
         ),
-        required = FALSE
+        items = ellmer::type_enum(
+          values = c(
+            "true",
+            "false",
+            "Depends",
+            "Imports",
+            "Suggests",
+            "LinkingTo",
+            "Enhances"
+          )
+        )
       )
     )
   }
