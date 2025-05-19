@@ -3,6 +3,13 @@ NULL
 
 #' Tool: List files
 #'
+#' @examples
+#' withr::with_tempdir({
+#'   write.csv(mtcars, "mtcars.csv")
+#'
+#'   btw_tool_files_list_files(type = "file")
+#' })
+#'
 #' @param path Path to a directory or file for which to get information. The
 #'   `path` must be in the current working directory. If `path` is a directory,
 #'   we use [fs::dir_info()] to list information about files and directories in
@@ -103,6 +110,13 @@ btw_tool_files_list_files <- function(
 )
 
 #' Tool: Read a file
+#'
+#' @examples
+#' withr::with_tempdir({
+#'   write.csv(mtcars, "mtcars.csv")
+#'
+#'   btw_tool_files_read_text_file("mtcars.csv", max_lines = 5)
+#' })
 #'
 #' @param path Path to a file for which to get information. The `path` must be
 #'   in the current working directory.

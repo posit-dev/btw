@@ -28,6 +28,14 @@ Returns a character table of file information.
 \description{
 Tool: List files
 }
+\examples{
+withr::with_tempdir({
+  write.csv(mtcars, "mtcars.csv")
+
+  btw_tool_files_list_files(type = "file")
+})
+
+}
 \seealso{
 Other Tools: 
 \code{\link{btw_tool_env_describe_data_frame}()},

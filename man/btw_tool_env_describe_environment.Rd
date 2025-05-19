@@ -25,6 +25,11 @@ each object's printed representation.
 \description{
 Tool: Describe an environment
 }
+\examples{
+my_cars <- mtcars[mtcars$mpg > 25, ]
+ btw_tool_env_describe_environment("my_cars")
+
+}
 \seealso{
 \code{\link[=btw_this.environment]{btw_this.environment()}}, \code{\link[=btw_tools]{btw_tools()}}
 

@@ -7,6 +7,9 @@ NULL
 #' Reads the current file using the \pkg{rstudioapi}, which works in RStudio,
 #' Positron and VS Code (with the vscode-r extension).
 #'
+#' @examplesIf rstudioapi::hasFun("getSourceEditorContext")
+#' btw_tool_ide_read_current_editor(consent = TRUE)
+#'
 #' @param selection Should only the selected text be included? If no text is
 #'   selected, the full file contents are returned.
 #' @param consent Boolean indicating whether the user has consented to reading

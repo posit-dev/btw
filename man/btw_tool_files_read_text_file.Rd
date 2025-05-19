@@ -18,6 +18,14 @@ Returns a character vector of lines from the file.
 \description{
 Tool: Read a file
 }
+\examples{
+withr::with_tempdir({
+  write.csv(mtcars, "mtcars.csv")
+
+  btw_tool_files_read_text_file("mtcars.csv", max_lines = 5)
+})
+
+}
 \seealso{
 Other Tools: 
 \code{\link{btw_tool_env_describe_data_frame}()},

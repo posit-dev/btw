@@ -24,6 +24,10 @@ btw_this.environment <- function(x, ..., items = NULL) {
 
 #' Tool: Describe an environment
 #'
+#' @examples
+#' my_cars <- mtcars[mtcars$mpg > 25, ]
+#'  btw_tool_env_describe_environment("my_cars")
+#'
 #' @param environment An environment to describe.
 #' @param ... Ignored.
 #' @inheritParams btw_this.environment

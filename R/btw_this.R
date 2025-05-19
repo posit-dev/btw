@@ -105,6 +105,9 @@ as_btw_capture <- function(x) {
 #'   Includes the `.Last.value`, i.e. the result of the last expression
 #'   evaluated in your R console.
 #'
+#' @examples
+#' btw_this("?btw::btw_this")
+#'
 #' @param x A character string
 #' @param ... Ignored.
 #' @param caller_env The caller environment.
