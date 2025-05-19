@@ -50,7 +50,14 @@ test_that("btw_tools can be registered with a chat", {
 })
 
 test_that("All btw tools have annotations", {
+  local_mocked_bindings(
+    # Force conditional tools to always be included in this test
+    rstudioapi_has_source_editor_context = function() TRUE
+  )
+
   tools <- btw_tools()
+  expect_setequal(names(tools), names(.btw_tools))
+
   for (name in names(tools)) {
     expect(
       !is.null(tools[[name]]@annotations$title),
