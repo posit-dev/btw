@@ -27,14 +27,16 @@ test_that("btw_tool_docs_available_vignettes() works", {
 
   res <- btw_tool_docs_available_vignettes("dplyr")
 
-  expect_type(res, "character")
-  expect_match(res, '"vignette":"dplyr"', fixed = TRUE, all = FALSE)
+  expect_s3_class(res, "ellmer::ContentToolResult")
+  expect_type(res@value, "character")
+  expect_match(res@value, '"vignette":"dplyr"', fixed = TRUE, all = FALSE)
   expect_match(
-    res,
+    res@value,
     '"title":"Programming with dplyr"',
     fixed = TRUE,
     all = FALSE
   )
+  expect_s3_class(res@extra$data, "data.frame")
 
   expect_equal(
     btw_tool_docs_available_vignettes("dplyr"),
@@ -42,9 +44,9 @@ test_that("btw_tool_docs_available_vignettes() works", {
   )
 
   expect_true(
-    jsonlite::validate(btw_tool_docs_available_vignettes(
-      "dplyr"
-    ))
+    jsonlite::validate(
+      btw_tool_docs_available_vignettes("dplyr")@value
+    )
   )
 })
 
