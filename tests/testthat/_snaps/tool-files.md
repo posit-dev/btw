@@ -1,7 +1,7 @@
 # btw_tool_files_list_files() works
 
     Code
-      writeLines(btw_tool_files_list_files())
+      writeLines(btw_tool_files_list_files()@value)
     Output
       | path | type | size | modification_time |
       |------|------|------|-------------------|

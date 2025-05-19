@@ -19,12 +19,12 @@ A character vector of lines describing the object.
 A generic function used to describe an object for use by LLM.
 }
 \examples{
-btw_this(mtcars)
-btw_this(dplyr::mutate)
-btw_this("{dplyr}")
-
-# Files ----
+btw_this(mtcars) # describe the mtcars dataset
+btw_this(dplyr::mutate) # include function source
+\dontrun{
+btw_this("{dplyr}") # include dplyr's intro vignette
 btw_this("./") # list files in the current working directory
+}
 
 }
 \seealso{

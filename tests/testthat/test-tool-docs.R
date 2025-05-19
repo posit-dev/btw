@@ -3,16 +3,20 @@ use_latest_pandoc()
 test_that("btw_tool_docs_package_help_topics() works", {
   res <- btw_tool_docs_package_help_topics("stats")
 
-  expect_type(res, "character")
-  expect_match(res, '"topic_id":"Normal"', fixed = TRUE, all = FALSE)
+  expect_btw_tool_result(res)
+  expect_match(res@value, '"topic_id":"Normal"', fixed = TRUE, all = FALSE)
 })
 
 test_that("btw_tool_docs_help_page() works", {
-  skip_if_not_macos()
-
   res <- btw_tool_docs_help_page(package_name = "stats", topic = "rnorm")
 
-  expect_snapshot(cli::cat_line(res))
+  expect_btw_tool_result(res, has_data = FALSE)
+  expect_equal(res@extra$topic, "Normal")
+  expect_equal(res@extra$package, "stats")
+  expect_type(res@extra$help_text, "character")
+
+  skip_if_not_macos()
+  expect_snapshot(cli::cat_line(res@value))
 })
 
 test_that("btw_tool_docs_available_vignettes() works", {
@@ -20,10 +24,11 @@ test_that("btw_tool_docs_available_vignettes() works", {
 
   res <- btw_tool_docs_available_vignettes("dplyr")
 
-  expect_type(res, "character")
-  expect_match(res, '"vignette":"dplyr"', fixed = TRUE, all = FALSE)
+  expect_btw_tool_result(res)
+
+  expect_match(res@value, '"vignette":"dplyr"', fixed = TRUE, all = FALSE)
   expect_match(
-    res,
+    res@value,
     '"title":"Programming with dplyr"',
     fixed = TRUE,
     all = FALSE
@@ -35,26 +40,29 @@ test_that("btw_tool_docs_available_vignettes() works", {
   )
 
   expect_true(
-    jsonlite::validate(btw_tool_docs_available_vignettes(
-      "dplyr"
-    ))
+    jsonlite::validate(
+      btw_tool_docs_available_vignettes("dplyr")@value
+    )
   )
 })
 
 test_that("btw_tool_docs_vignette() works", {
   skip_on_cran()
 
-  res <- btw_tool_docs_vignette("dplyr")
+  res_dplyr <- btw_tool_docs_vignette("dplyr")
+  expect_btw_tool_result(res_dplyr)
+  expect_match(
+    res_dplyr@value,
+    "Introduction to dplyr",
+    fixed = TRUE,
+    all = FALSE
+  )
+  expect_equal(btw_this(vignette("dplyr", "dplyr")), res_dplyr)
 
-  expect_type(res, "character")
-  expect_match(res, "Introduction to dplyr", fixed = TRUE, all = FALSE)
-  expect_equal(btw_this(vignette("dplyr", "dplyr")), res)
-
-  res <- btw_tool_docs_vignette("dplyr", "programming")
-
-  expect_type(res, "character")
-  expect_match(res, "Programming", fixed = TRUE, all = FALSE)
-  expect_equal(btw_this(vignette("programming", "dplyr")), res)
+  res_prog <- btw_tool_docs_vignette("dplyr", "programming")
+  expect_btw_tool_result(res_prog)
+  expect_match(res_prog@value, "Programming", fixed = TRUE, all = FALSE)
+  expect_equal(btw_this(vignette("programming", "dplyr")), res_prog)
 })
 
 test_that("btw_tool_docs_help_page() with multiple help topics", {

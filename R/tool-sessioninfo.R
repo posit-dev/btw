@@ -1,3 +1,6 @@
+#' @include tool-result.R
+NULL
+
 #' Tool: Describe user's platform
 #'
 #' Describes the R version, operating system, and language and locale settings
@@ -9,18 +12,28 @@
 #' @returns Returns a string describing the user's platform.
 #'
 #' @examples
-#' cat(btw_tool_session_platform_info())
+#' btw_tool_session_platform_info()
 #'
 #' @family Tools
 #' @export
 btw_tool_session_platform_info <- function() {
-  platform <- platform_info()
-  platform <- trimws(capture.output(platform)[-1])
+  platform_list <- platform_info()
+  platform <- trimws(capture.output(platform_list)[-1])
   platform <- sub(" +", " ", platform)
   platform <- paste(platform, collapse = "\n")
 
-  sprintf("<system_info>\n%s\n</system_info>", platform)
+  names(platform_list) <- tolower(names(platform_list))
+
+  BtwSessionInfoToolResult(
+    value = sprintf("<system_info>\n%s\n</system_info>", platform),
+    extra = platform_list
+  )
 }
+
+BtwSessionInfoToolResult <- S7::new_class(
+  "BtwSessionInfoToolResult",
+  parent = BtwToolResult
+)
 
 .btw_add_to_tools(
   name = "btw_tool_session_platform_info",
@@ -28,7 +41,15 @@ btw_tool_session_platform_info <- function() {
   tool = function() {
     ellmer::tool(
       btw_tool_session_platform_info,
-      .description = "Describes the R version, operating system, language and locale settings for the user's system."
+      .description = paste(
+        "Describes the R version, operating system, language and locale settings",
+        "for the user's system."
+      ),
+      .annotations = ellmer::tool_annotations(
+        title = "Platform Info",
+        read_only_hint = TRUE,
+        open_world_hint = FALSE
+      ),
     )
   }
 )
@@ -84,7 +105,7 @@ platform_info <- function() {
 #' @returns Returns a string describing the selected packages.
 #'
 #' @examples
-#' cat(btw_tool_session_package_info("btw"))
+#' btw_tool_session_package_info("btw")
 #'
 #' @family Tools
 #' @export
@@ -92,6 +113,9 @@ btw_tool_session_package_info <- function(
   packages = "attached",
   dependencies = ""
 ) {
+  if (is.factor(dependencies)) {
+    dependencies <- as.character(dependencies)
+  }
   if (
     !any(nzchar(dependencies)) ||
       identical(dependencies, "FALSE") ||
@@ -103,8 +127,16 @@ btw_tool_session_package_info <- function(
     dependencies <- TRUE
   }
 
-  packages <- trimws(strsplit(packages, ",")[[1]])
-  if (is.character(dependencies)) {
+  string_with_comma <- function(x) {
+    if (!is.character(x)) return(FALSE)
+    if (length(x) != 1) return(FALSE)
+    grepl(",", x, fixed = TRUE)
+  }
+
+  if (string_with_comma(packages)) {
+    packages <- trimws(strsplit(packages, ",")[[1]])
+  }
+  if (string_with_comma(dependencies)) {
     dependencies <- trimws(strsplit(dependencies, ",")[[1]])
   }
 
@@ -121,8 +153,8 @@ btw_tool_session_package_info <- function(
     title <- c(paste("###", title), "")
   }
 
-  packages <- package_info(packages, dependencies)
-  packages <- as.character(packages)
+  packages_df <- package_info(packages, dependencies)
+  packages <- as.character(packages_df)
   packages <- md_code_block(type = "", packages)
 
   packages <- gsub(" R ", " X ", packages)
@@ -132,8 +164,16 @@ btw_tool_session_package_info <- function(
     packages
   )
 
-  paste(c(title, packages), collapse = "\n")
+  BtwPackageInfoToolResult(
+    value = paste(c(title, packages), collapse = "\n"),
+    extra = list(data = packages_df)
+  )
 }
+
+BtwPackageInfoToolResult <- S7::new_class(
+  "BtwPackageInfoToolResult",
+  parent = BtwSessionInfoToolResult
+)
 
 package_info <- function(pkgs = NULL, dependencies = NA) {
   if (is.character(dependencies)) {
@@ -157,9 +197,17 @@ package_info <- function(pkgs = NULL, dependencies = NA) {
         "or find out which packages are in use in the current session.",
         "As a last resort, this function can also list all installed packages."
       ),
-      packages = ellmer::type_string(
+      .annotations = ellmer::tool_annotations(
+        title = "Package Info",
+        read_only_hint = TRUE,
+        open_world_hint = FALSE
+      ),
+      .convert = TRUE,
+      packages = ellmer::type_array(
+        required = TRUE,
+        items = ellmer::type_string(),
         description = paste(
-          "Provide a commma-separated list of package names to check that these packages are",
+          "Provide an array of package names to check that these packages are",
           "installed and to confirm which versions of the packages are available.",
           "Use the single string \"attached\" to show packages that have been attached by the user,",
           "i.e. are explicitly in use in the session. Use the single string \"loaded\" to show all",
@@ -167,17 +215,26 @@ package_info <- function(pkgs = NULL, dependencies = NA) {
           "session (useful for debugging). Finally, the string \"installed\" lists all",
           "installed packages. Try using the other available options prior to",
           "listing all installed packages."
-        ),
-        required = TRUE
+        )
       ),
-      dependencies = ellmer::type_string(
+      dependencies = ellmer::type_array(
+        required = FALSE,
         description = paste(
-          "When describing the installed or loaded version of a specific package,",
-          "you can use `dependencies = \"true\"` to list dependencies of the",
-          "package. Alternatively, you can give a comma-separated list of dependency types, ",
-          'choosing from `"Depends"`, `"Imports"`, `"Suggests"`, `"LinkingTo"`, `"Enhances"`.'
+          "The dependencies to include when listing package information.",
+          "You can use `dependencies = \"true\"` to list all dependencies of the package.",
+          "Alternatively, you can request an array of dependency types."
         ),
-        required = FALSE
+        items = ellmer::type_enum(
+          values = c(
+            "true",
+            "false",
+            "Depends",
+            "Imports",
+            "Suggests",
+            "LinkingTo",
+            "Enhances"
+          )
+        )
       )
     )
   }

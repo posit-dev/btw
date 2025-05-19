@@ -3,12 +3,12 @@
 #' A generic function used to describe an object for use by LLM.
 #'
 #' @examples
-#' btw_this(mtcars)
-#' btw_this(dplyr::mutate)
-#' btw_this("{dplyr}")
-#'
-#' # Files ----
+#' btw_this(mtcars) # describe the mtcars dataset
+#' btw_this(dplyr::mutate) # include function source
+#' \dontrun{
+#' btw_this("{dplyr}") # include dplyr's intro vignette
 #' btw_this("./") # list files in the current working directory
+#' }
 #'
 #' @param x The thing to describe.
 #' @param ... Additional arguments passed down to underlying methods. Unused
@@ -63,7 +63,7 @@ as_btw_capture <- function(x) {
 #'     file.
 #'
 #' * `"{pkgName}"` \cr
-#'   A package name wrapped in braces. Returns the list of help topics 
+#'   A package name wrapped in braces. Returns the list of help topics
 #'   ([btw_tool_docs_package_help_topics()]) and, if it exists, the
 #'   introductory vignette for the package ([btw_tool_docs_vignette()]).
 #'
@@ -105,6 +105,9 @@ as_btw_capture <- function(x) {
 #'   Includes the `.Last.value`, i.e. the result of the last expression
 #'   evaluated in your R console.
 #'
+#' @examples
+#' btw_this("?btw::btw_this")
+#'
 #' @param x A character string
 #' @param ... Ignored.
 #' @param caller_env The caller environment.
@@ -118,27 +121,29 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
   x <- trimws(x)
 
   if (identical(x, "@current_file")) {
-    return(I(btw_tool_ide_read_current_editor(consent = TRUE)))
+    return(I(
+      btw_tool_ide_read_current_editor(selection = FALSE, consent = TRUE)@value
+    ))
   }
   if (identical(x, "@current_selection")) {
     return(I(
-      btw_tool_ide_read_current_editor(selection = TRUE, consent = TRUE)
+      btw_tool_ide_read_current_editor(selection = TRUE, consent = TRUE)@value
     ))
   }
   if (identical(x, "@clipboard")) {
     return(I(clipr::read_clip()))
   }
   if (identical(x, "@platform_info")) {
-    return(btw_tool_session_platform_info())
+    return(btw_tool_session_platform_info()@value)
   }
   if (identical(x, "@attached_packages")) {
-    return(I(btw_tool_session_package_info("attached")))
+    return(I(btw_tool_session_package_info("attached")@value))
   }
   if (identical(x, "@loaded_packages")) {
-    return(I(btw_tool_session_package_info("loaded")))
+    return(I(btw_tool_session_package_info("loaded")@value))
   }
   if (identical(x, "@installed_packages")) {
-    return(I(btw_tool_session_package_info("installed")))
+    return(I(btw_tool_session_package_info("installed")@value))
   }
   if (identical(x, "@last_error")) {
     err <- get_last_error()
@@ -156,9 +161,9 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
       path <- "."
     }
     if (fs::is_file(path)) {
-      return(btw_tool_files_read_text_file(path))
+      return(btw_tool_files_read_text_file(path)@value)
     } else {
-      return(btw_tool_files_list_files(path))
+      return(btw_tool_files_list_files(path)@value)
     }
   }
 
@@ -170,8 +175,11 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
     # * be two or more characters long
     pkg <- substring(x, 2, nchar(x) - 1)
     res <- c(
-      btw_tool_docs_package_help_topics(pkg),
-      tryCatch(c("", btw_tool_docs_vignette(pkg)), error = function(e) NULL)
+      btw_tool_docs_package_help_topics(pkg)@value,
+      tryCatch(
+        c("", btw_tool_docs_vignette(pkg)@value),
+        error = function(e) NULL
+      )
     )
     return(res)
   }

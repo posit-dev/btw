@@ -10,16 +10,16 @@ test_that("btw_this('{pkg}')", {
   expect_equal(
     btw_this("{dplyr}"),
     c(
-      btw_tool_docs_package_help_topics("dplyr"),
+      btw_tool_docs_package_help_topics("dplyr")@value,
       "",
-      btw_tool_docs_vignette("dplyr")
+      btw_tool_docs_vignette("dplyr")@value
     )
   )
 
   # Otherwise returns the help index
   expect_equal(
     btw_this("{cli}"),
-    btw_tool_docs_package_help_topics("cli")
+    btw_tool_docs_package_help_topics("cli")@value
   )
 })
 

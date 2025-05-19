@@ -72,6 +72,10 @@ Includes the \code{.Last.value}, i.e. the result of the last expression
 evaluated in your R console.
 }
 }
+\examples{
+btw_this("?btw::btw_this")
+
+}
 \seealso{
 Other \code{btw_this()} methods: 
 \code{\link{btw_this}()},

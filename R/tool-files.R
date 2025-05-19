@@ -1,4 +1,14 @@
+#' @include tool-result.R
+NULL
+
 #' Tool: List files
+#'
+#' @examples
+#' withr::with_tempdir({
+#'   write.csv(mtcars, "mtcars.csv")
+#'
+#'   btw_tool_files_list_files(type = "file")
+#' })
 #'
 #' @param path Path to a directory or file for which to get information. The
 #'   `path` must be in the current working directory. If `path` is a directory,
@@ -52,7 +62,7 @@ btw_tool_files_list_files <- function(
 
   fields <- c("path", "type", "size", "modification_time")
 
-  md_table(info[fields])
+  btw_tool_result(md_table(info[fields]), data = info[fields])
 }
 
 .btw_add_to_tools(
@@ -68,8 +78,19 @@ btw_tool_files_list_files <- function(
         "* `btw_tool_files_list_files(\"data\")`: List all files in the `data/` directory.\n",
         "* `btw_tool_files_list_files(\"data\", type = \"file\", regexp = \"csv$\"): List all `.csv` files in the `data/` directory."
       ),
+      .annotations = ellmer::tool_annotations(
+        title = "Project Files",
+        read_only_hint = TRUE,
+        open_world_hint = FALSE,
+        idempotent_hint = FALSE
+      ),
       path = ellmer::type_string(
-        "The relative path to a folder or file. If `path` is a directory, all files or directories (see `type`) are listed. If `path` is a file, information for just the selected file is listed.",
+        paste(
+          "The relative path to a folder or file.",
+          "If `path` is a directory, all files or directories (see `type`) are listed.",
+          'Use `"."` to refer to the current working directory.',
+          "If `path` is a file, information for just the selected file is listed."
+        ),
         required = FALSE
       ),
       type = ellmer::type_enum(
@@ -78,8 +99,10 @@ btw_tool_files_list_files <- function(
         required = FALSE
       ),
       regexp = ellmer::type_string(
-        'A regular expression to use to identify files, e.g. `regexp="[.]csv"` to find files with a `.csv` extension.
-        Note that it\'s best to be as general as possible to find the file you want.',
+        paste(
+          'A regular expression to use to identify files, e.g. `regexp="[.]csv$"` to find files with a `.csv` extension.',
+          "Note that it's best to be as general as possible to find the file you want."
+        ),
         required = FALSE
       )
     )
@@ -87,6 +110,13 @@ btw_tool_files_list_files <- function(
 )
 
 #' Tool: Read a file
+#'
+#' @examples
+#' withr::with_tempdir({
+#'   write.csv(mtcars, "mtcars.csv")
+#'
+#'   btw_tool_files_read_text_file("mtcars.csv", max_lines = 5)
+#' })
 #'
 #' @param path Path to a file for which to get information. The `path` must be
 #'   in the current working directory.
@@ -111,11 +141,19 @@ btw_tool_files_read_text_file <- function(path, max_lines = 1000) {
     )
   }
 
-  md_code_block(
-    fs::path_ext(path),
-    readLines(path, warn = FALSE, n = max_lines)
+  BtwTextFileToolResult(
+    md_code_block(
+      fs::path_ext(path),
+      readLines(path, warn = FALSE, n = max_lines)
+    ),
+    extra = list(path = fs::path_rel(path))
   )
 }
+
+BtwTextFileToolResult <- S7::new_class(
+  "BtwTextFileToolResult",
+  parent = BtwToolResult
+)
 
 .btw_add_to_tools(
   name = "btw_tool_files_read_text_file",
@@ -124,6 +162,12 @@ btw_tool_files_read_text_file <- function(path, max_lines = 1000) {
     ellmer::tool(
       btw_tool_files_read_text_file,
       .description = "Read an entire text file.",
+      .annotations = ellmer::tool_annotations(
+        title = "Read File",
+        read_only_hint = TRUE,
+        open_world_hint = FALSE,
+        idempotent_hint = FALSE
+      ),
       path = ellmer::type_string(
         "The relative path to a file that can be read as text, such as a CSV, JSON, HTML, markdown file, etc.",
       ),

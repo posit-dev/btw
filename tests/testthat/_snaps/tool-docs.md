@@ -1,7 +1,7 @@
 # btw_tool_docs_help_page() works
 
     Code
-      cli::cat_line(res)
+      cli::cat_line(res@value)
     Output
       ## `help(package = "stats", "rnorm")`
       

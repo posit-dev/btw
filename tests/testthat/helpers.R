@@ -1,4 +1,10 @@
 use_latest_pandoc <- function(.envir = parent.frame()) {
+  if (nzchar(Sys.getenv("CI"))) {
+    if (!nzchar(Sys.getenv("BTW_TESTS_PANDOC_VERSION"))) {
+      # ci installs latest pandoc for us
+      return()
+    }
+  }
   v <- Sys.getenv("BTW_TESTS_PANDOC_VERSION", "latest")
   if (identical(v, "latest")) {
     v <- suppressMessages(pandoc::pandoc_available_releases()[1])
@@ -13,6 +19,14 @@ skip_if_not_macos <- function() {
   # Skip helper: snapshots only on macos for now
   skip_on_os("windows")
   skip_on_os("linux")
+}
+
+expect_btw_tool_result <- function(x, has_data = TRUE) {
+  expect_s3_class(x, "ellmer::ContentToolResult")
+  expect_type(x@value, "character")
+  if (has_data) {
+    expect_s3_class(x@extra$data, "data.frame")
+  }
 }
 
 scrub_system_info <- function(x) {
