@@ -47,9 +47,10 @@ test_that("btw_tool_files_read_text_file() works", {
     has_data = FALSE
   )
 
-  expect_equivalent(
+  expect_equal(
     btw_tool_files_read_text_file("mtcars.csv")@extra$path,
-    "mtcars.csv"
+    "mtcars.csv",
+    ignore_attr = TRUE
   )
 
   expect_equal(
