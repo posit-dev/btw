@@ -335,7 +335,10 @@ btw_tool_docs_vignette <- function(
     )
   }
 
-  pandoc_convert(file.path(vignette_info$Dir, "doc", vignette_info$PDF))
+  btw_tool_result(
+    pandoc_convert(file.path(vignette_info$Dir, "doc", vignette_info$PDF)),
+    data = vignette_info
+  )
 }
 
 .btw_add_to_tools(
@@ -345,6 +348,11 @@ btw_tool_docs_vignette <- function(
     ellmer::tool(
       btw_tool_docs_vignette,
       .description = "Get a package vignette in plain text.",
+      .annotations = ellmer::tool_annotations(
+        title = "Vignette",
+        read_only_hint = TRUE,
+        open_world_hint = FALSE
+      ),
       package_name = ellmer::type_string(
         "The exact name of the package, e.g. 'shiny'."
       ),
