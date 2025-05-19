@@ -1,4 +1,10 @@
 use_latest_pandoc <- function(.envir = parent.frame()) {
+  if (nzchar(Sys.getenv("CI"))) {
+    if (!nzchar(Sys.getenv("BTW_TESTS_PANDOC_VERSION"))) {
+      # ci installs latest pandoc for us
+      return()
+    }
+  }
   v <- Sys.getenv("BTW_TESTS_PANDOC_VERSION", "latest")
   if (identical(v, "latest")) {
     v <- suppressMessages(pandoc::pandoc_available_releases()[1])
