@@ -1,8 +1,8 @@
-pandoc: 3.1.11
+pandoc: 3.7.0.1
 pkgdown: 2.1.2
 pkgdown_sha: ~
 articles: {}
-last_built: 2025-05-16T18:52Z
+last_built: 2025-05-19T16:27Z
 urls:
   reference: https://posit-dev.github.io/btw/reference
   article: https://posit-dev.github.io/btw/articles

@@ -73,18 +73,22 @@ information is automatically included in the system prompt.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu">btw_tool_session_platform_info</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;system_info&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> R_VERSION: R version 4.5.0 (2025-04-11)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> OS: Ubuntu 24.04.2 LTS</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> SYSTEM: x86_64, linux-gnu</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> UI: X11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LANGUAGE: en</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> LOCALE: C</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ENCODING: C.UTF-8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> TIMEZONE: UTC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> DATE: Friday, May 16, 2025 (2025-05-16)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;/system_info&gt;</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">btw_tool_session_platform_info</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;btw::BtwSessionInfoToolResult&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  @ value  : chr "&lt;system_info&gt;\nR_VERSION: R version 4.5.0 (2025-04-11)\nOS: Ubuntu 24.04.2 LTS\nSYSTEM: x86_64, linux-gnu\nUI: "| __truncated__</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  @ error  : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  @ extra  :List of 9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ r_version:: chr "R version 4.5.0 (2025-04-11)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ os:       : chr "Ubuntu 24.04.2 LTS"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ system:   : chr "x86_64, linux-gnu"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ ui:       : chr "X11"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ language: : chr "en"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ locale:   : chr "C"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ encoding: : chr "C.UTF-8"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ timezone: : chr "UTC"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ date:     : chr "Monday, May 19, 2025 (2025-05-19)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. - attr(*, "class")= chr [1:2] "platform_info" "list"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  @ request: NULL</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
