@@ -32,7 +32,7 @@ rules as pkgdown.)}
 \item \code{btw_tool_docs_package_help_topics()} returns the \code{topic_id}, \code{title}, and
 \code{aliases} fields for every topic in a package's documentation as a
 json-formatted string.
-\item \code{btw_tool_docs_help_page()} return the help-page for a package topic as a
+\item \code{btw_tool_docs_help_page()} returns the help-page for a package topic as a
 string.
 }
 }

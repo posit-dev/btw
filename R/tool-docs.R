@@ -36,7 +36,7 @@ NULL
 #' * `btw_tool_docs_package_help_topics()` returns the `topic_id`, `title`, and
 #'   `aliases` fields for every topic in a package's documentation as a
 #'   json-formatted string.
-#' * `btw_tool_docs_help_page()` return the help-page for a package topic as a
+#' * `btw_tool_docs_help_page()` returns the help-page for a package topic as a
 #'   string.
 #'
 #' @seealso [btw_tools()]
