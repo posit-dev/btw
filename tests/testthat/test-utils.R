@@ -1,13 +1,18 @@
 test_that("check_installed() works", {
   # returns NULL invisibly if installed
-  testthat::local_mocked_bindings(is_installed = function(x) TRUE)
+  local_mocked_bindings(is_installed = function(x) TRUE)
   expect_invisible(check_installed("somepackage"))
   expect_null(check_installed("somepackage"))
 
   skip_if_not_macos()
 
   # informative error if not installed
-  testthat::local_mocked_bindings(is_installed = function(x) FALSE)
+  local_mocked_bindings(
+    is_installed = function(x) FALSE,
+    find_package_candidates = function(...) {
+      c("doudpackage", "datapackage", "findPackage", "FSTpackage", "somspace")
+    }
+  )
   expect_snapshot(check_installed("somepackage"), error = TRUE)
 })
 

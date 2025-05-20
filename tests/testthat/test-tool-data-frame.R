@@ -52,6 +52,12 @@ test_that("btw_tool_env_describe_data_frame() handles namespaced datasets", {
 })
 
 test_that("btw_tool_env_describe_data_frame() checks that the package is installed", {
+  local_mocked_bindings(
+    find_package_candidates = function(...) {
+      c("Kifidi", "simIDM", "bib2df", "BiBitR", "Bioi")
+    }
+  )
+
   expect_snapshot(
     error = TRUE,
     btw_tool_env_describe_data_frame("skibidi::ohio"),

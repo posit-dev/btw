@@ -150,4 +150,5 @@
     Condition
       Error in `btw_tool_env_describe_data_frame()`:
       ! Package skibidi is not installed.
+      i Did you mean "Kifidi", "simIDM", "bib2df", "BiBitR", and "Bioi"?
 
