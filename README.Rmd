@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# btw
+# btw <a href="https://posit-dev.github.io/btw/"><img src="man/figures/logo.png" align="right" height="138" alt="btw website" /></a>
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
@@ -147,9 +147,9 @@ ch <- btw_client(client = ellmer::chat_ollama(model = "llama3.1:8b"))
 
 Alternatively, you can call `btw_app()` to jump straight into a Shiny chat app.
 
-For fully customized chat clients, you can use 
-`chat$set_tools(c(chat$get_tools(), btw_tools())) ` to add btw tools to an 
-existing chat interface. Each of the individual tools 
+For fully customized chat clients, you can use
+`chat$set_tools(c(chat$get_tools(), btw_tools())) ` to add btw tools to an
+existing chat interface. Each of the individual tools
 registered with this code can be retrieved with `btw_tools()` and filtered
 via the function's `tools` argument (also available in `btw_client()` or
 `btw_app()`).
