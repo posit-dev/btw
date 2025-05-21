@@ -28,8 +28,12 @@ template:
           family: Neuton
         link:
           color: green
-    navbar-light-bg: "#E8F3EF"
-    navbar-dark-bg: "#356955"
+    navbar-padding-y: 1rem
+    pkgdown-nav-height: 72px
+    # navbar-light-bg: "#E8F3EF"
+    # navbar-dark-bg: "#356955"
+    navbar-light-bg: "linear-gradient(90deg, hsla(203, 87%, 88%, 1) -50%, hsla(158, 31%, 93%, 1) 100%);"
+    navbar-dark-bg: "linear-gradient(90deg, hsla(203, 86%, 22%, 1) -50%, hsla(157, 33%, 31%, 1) 100%)"
     link-color-dark: "#A0CFBD"
 
 reference:
