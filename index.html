@@ -6,13 +6,20 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Describe R Stuff to Large Language Models • btw</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" sizes="any" href="favicon.ico">
+<link rel="manifest" href="site.webmanifest">
 <script src="lightswitch.js"></script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/Neuton-0.4.10/font.css" rel="stylesheet">
+<link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Describe R Stuff to Large Language Models">
 <meta name="description" content="Provides a number of utilities for describing R objects and package documentation in plain text. For interactive use, this is especially powerful for describing relevant pieces of context to large language models. When used programmatically, these utilities can be registered with ellmer chats as tool calls, enabling language models to peruse package documentation and explore your computational environment.">
 <meta property="og:description" content="Provides a number of utilities for describing R objects and package documentation in plain text. For interactive use, this is especially powerful for describing relevant pieces of context to large language models. When used programmatically, these utilities can be registered with ellmer chats as tool calls, enabling language models to peruse package documentation and explore your computational environment.">
+<meta property="og:image" content="https://posit-dev.github.io/btw/logo.png">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -54,14 +61,17 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="btw">btw<a class="anchor" aria-label="anchor" href="#btw"></a>
-</h1></div>
+<div class="page-header">
+<img src="logo.png" class="logo" alt=""><h1 id="btw-">btw 
+<a class="anchor" aria-label="anchor" href="#btw-"></a>
+</h1>
+</div>
 <!-- badges: start -->
 
 <p>btw helps you describe your computational environment to LLMs.</p>
 <ul>
 <li>When used <strong>interactively</strong>, <code><a href="reference/btw.html">btw()</a></code> assembles context on your R environment, package documentation, and working directory, copying the results to your clipboard for easy pasting into chat interfaces.</li>
-<li>The <code><a href="reference/btw.html">btw()</a></code> function wraps methods that can be easily incorporated into <strong>ellmer tool calls</strong> for describing various kinds of objects in R. To equip your ellmer chat with the ability to peruse documentation, check out the objects in your R environment, and explore your working directory, call <code>chat$set_tools(btw_tools())</code> (or <code>chat$set_tools(c(chat$get_tools(), btw_tools()))</code> to retain any tools you’ve already registered.).</li>
+<li>The <code><a href="reference/btw.html">btw()</a></code> function wraps methods that can be easily incorporated into <strong>ellmer tool calls</strong> for describing various kinds of objects in R. To equip your ellmer chat with the ability to peruse documentation, check out the objects in your R environment, and explore your working directory, call <code>chat$set_tools(btw_tools())</code> (or <code>chat$set_tools(c(chat$get_tools(), btw_tools()))</code> to retain any tools you’ve already registered).</li>
 </ul>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -130,82 +140,7 @@
 <span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a><span class="st">```</span></span>
 <span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a></span>
 <span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a><span class="st">`</span><span class="at">?</span><span class="st">`</span>(btw<span class="sc">::</span>btw)</span>
-<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a><span class="do">## `help(package = "btw", "btw")`</span></span>
-<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a></span>
-<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a><span class="do">### Plain-text descriptions of R objects</span></span>
-<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a></span>
-<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a><span class="do">#### Description</span></span>
-<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a></span>
-<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a>This <span class="cf">function</span> allows you to quickly describe your computational</span>
-<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a>environment to a model by concatenating plain<span class="sc">-</span>text descriptions of <span class="st">"R</span></span>
-<span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a><span class="st">stuff"</span>, from data frames to packages to <span class="cf">function</span> documentation.</span>
-<span id="cb5-40"><a href="#cb5-40" tabindex="-1"></a></span>
-<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a>There are two key ways to use <span class="st">`</span><span class="at">btw()</span><span class="st">`</span><span class="sc">:</span></span>
-<span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a></span>
-<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a><span class="fl">1.</span>  Use it interactively at the console to gather information about your</span>
-<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a>    environment into prompt text that you can paste into the chat</span>
-<span id="cb5-45"><a href="#cb5-45" tabindex="-1"></a>    interface of an LLM, like ChatGPT or Claude. By default, <span class="st">`</span><span class="at">btw()</span><span class="st">`</span></span>
-<span id="cb5-46"><a href="#cb5-46" tabindex="-1"></a>    copies the prompt to the clipboard <span class="cf">for</span> you.</span>
-<span id="cb5-47"><a href="#cb5-47" tabindex="-1"></a></span>
-<span id="cb5-48"><a href="#cb5-48" tabindex="-1"></a>        <span class="fu">btw</span>(<span class="fu">vignette</span>(<span class="st">"colwise"</span>, <span class="st">"dplyr"</span>), dplyr<span class="sc">::</span>across, dplyr<span class="sc">::</span>starwars)</span>
-<span id="cb5-49"><a href="#cb5-49" tabindex="-1"></a>        <span class="co">#&gt; ✔ btw copied to the clipboard!</span></span>
-<span id="cb5-50"><a href="#cb5-50" tabindex="-1"></a></span>
-<span id="cb5-51"><a href="#cb5-51" tabindex="-1"></a><span class="fl">2.</span>  Pair <span class="st">`</span><span class="at">btw()</span><span class="st">`</span> with ellmer<span class="sc">::</span>Chat during a chat session to create a</span>
-<span id="cb5-52"><a href="#cb5-52" tabindex="-1"></a>    prompt that includes additional context drawn from your environment</span>
-<span id="cb5-53"><a href="#cb5-53" tabindex="-1"></a>    and help pages.</span>
-<span id="cb5-54"><a href="#cb5-54" tabindex="-1"></a></span>
-<span id="cb5-55"><a href="#cb5-55" tabindex="-1"></a>        <span class="fu">library</span>(ellmer)</span>
-<span id="cb5-56"><a href="#cb5-56" tabindex="-1"></a></span>
-<span id="cb5-57"><a href="#cb5-57" tabindex="-1"></a>        chat <span class="ot">&lt;-</span> <span class="fu">chat_anthropic</span>() <span class="co"># requires an Anthropic API key</span></span>
-<span id="cb5-58"><a href="#cb5-58" tabindex="-1"></a>        chat <span class="ot">&lt;-</span> <span class="fu">chat_ollama</span>(<span class="at">model =</span> <span class="st">"llama3.1:8b"</span>) <span class="co"># requires ollama and a local model</span></span>
-<span id="cb5-59"><a href="#cb5-59" tabindex="-1"></a></span>
-<span id="cb5-60"><a href="#cb5-60" tabindex="-1"></a>        chat<span class="sc">$</span><span class="fu">chat</span>(<span class="fu">btw</span>(</span>
-<span id="cb5-61"><a href="#cb5-61" tabindex="-1"></a>          <span class="fu">vignette</span>(<span class="st">"colwise"</span>, <span class="st">"dplyr"</span>),</span>
-<span id="cb5-62"><a href="#cb5-62" tabindex="-1"></a>          dplyr<span class="sc">::</span>across,</span>
-<span id="cb5-63"><a href="#cb5-63" tabindex="-1"></a>          dplyr<span class="sc">::</span>starwars,</span>
-<span id="cb5-64"><a href="#cb5-64" tabindex="-1"></a>          <span class="st">"Create a few interesting examples that use `dplyr::across()`"</span>,</span>
-<span id="cb5-65"><a href="#cb5-65" tabindex="-1"></a>          <span class="st">"with the `starwars` data set."</span></span>
-<span id="cb5-66"><a href="#cb5-66" tabindex="-1"></a>        ))</span>
-<span id="cb5-67"><a href="#cb5-67" tabindex="-1"></a></span>
-<span id="cb5-68"><a href="#cb5-68" tabindex="-1"></a><span class="do">#### Usage</span></span>
-<span id="cb5-69"><a href="#cb5-69" tabindex="-1"></a></span>
-<span id="cb5-70"><a href="#cb5-70" tabindex="-1"></a><span class="st">```</span><span class="at"> R</span></span>
-<span id="cb5-71"><a href="#cb5-71" tabindex="-1"></a><span class="at">btw(..., clipboard = TRUE)</span></span>
-<span id="cb5-72"><a href="#cb5-72" tabindex="-1"></a><span class="st">```</span></span>
-<span id="cb5-73"><a href="#cb5-73" tabindex="-1"></a></span>
-<span id="cb5-74"><a href="#cb5-74" tabindex="-1"></a><span class="do">#### Arguments</span></span>
-<span id="cb5-75"><a href="#cb5-75" tabindex="-1"></a></span>
-<span id="cb5-76"><a href="#cb5-76" tabindex="-1"></a><span class="sc">|</span>  <span class="er">|</span>  <span class="er">|</span></span>
-<span id="cb5-77"><a href="#cb5-77" tabindex="-1"></a><span class="er">|</span><span class="sc">----</span><span class="er">|</span><span class="sc">----</span><span class="er">|</span></span>
-<span id="cb5-78"><a href="#cb5-78" tabindex="-1"></a><span class="er">|</span> <span class="st">`</span><span class="at">...</span><span class="st">`</span> <span class="sc">|</span> Objects to describe from your R environment. You can pass objects themselves, like data frames or functions, or the <span class="cf">function</span> also accepts output from <span class="st">`</span><span class="at">⁠btw_tool_*()⁠</span><span class="st">`</span> functions like <span class="st">`</span><span class="at">btw_tool_docs_package_help_topics()</span><span class="st">`</span>, <span class="st">`</span><span class="at">btw_tool_docs_help_page()</span><span class="st">`</span>, etc. If omitted, this <span class="cf">function</span> will just describe the elements <span class="cf">in</span> your global R environment. <span class="sc">|</span></span>
-<span id="cb5-79"><a href="#cb5-79" tabindex="-1"></a><span class="er">|</span> <span class="st">`</span><span class="at">clipboard</span><span class="st">`</span> <span class="sc">|</span> Whether to write the results to the clipboard. A single logical value; will default to <span class="st">`</span><span class="at">TRUE</span><span class="st">`</span> when run interactively. <span class="sc">|</span></span>
-<span id="cb5-80"><a href="#cb5-80" tabindex="-1"></a></span>
-<span id="cb5-81"><a href="#cb5-81" tabindex="-1"></a><span class="do">#### Value</span></span>
-<span id="cb5-82"><a href="#cb5-82" tabindex="-1"></a></span>
-<span id="cb5-83"><a href="#cb5-83" tabindex="-1"></a>Returns an ellmer<span class="sc">::</span>ContentText object with the collected prompt. If</span>
-<span id="cb5-84"><a href="#cb5-84" tabindex="-1"></a><span class="st">`</span><span class="at">clipboard = TRUE</span><span class="st">`</span>, the prompt text is copied to the clipboard when the</span>
-<span id="cb5-85"><a href="#cb5-85" tabindex="-1"></a>returned object is printed <span class="cf">for</span> the first <span class="fu">time</span> (e.g. calling <span class="st">`</span><span class="at">btw()</span><span class="st">`</span></span>
-<span id="cb5-86"><a href="#cb5-86" tabindex="-1"></a>without assignment).</span>
-<span id="cb5-87"><a href="#cb5-87" tabindex="-1"></a></span>
-<span id="cb5-88"><a href="#cb5-88" tabindex="-1"></a><span class="do">#### Examples</span></span>
-<span id="cb5-89"><a href="#cb5-89" tabindex="-1"></a></span>
-<span id="cb5-90"><a href="#cb5-90" tabindex="-1"></a><span class="st">```</span><span class="at"> R</span></span>
-<span id="cb5-91"><a href="#cb5-91" tabindex="-1"></a><span class="at">btw()</span></span>
-<span id="cb5-92"><a href="#cb5-92" tabindex="-1"></a></span>
-<span id="cb5-93"><a href="#cb5-93" tabindex="-1"></a><span class="at">btw(mtcars)</span></span>
-<span id="cb5-94"><a href="#cb5-94" tabindex="-1"></a></span>
-<span id="cb5-95"><a href="#cb5-95" tabindex="-1"></a><span class="at">btw(btw::btw)</span></span>
-<span id="cb5-96"><a href="#cb5-96" tabindex="-1"></a></span>
-<span id="cb5-97"><a href="#cb5-97" tabindex="-1"></a><span class="at">if (FALSE) {</span></span>
-<span id="cb5-98"><a href="#cb5-98" tabindex="-1"></a><span class="at">  # btw() can also be used directly in {ellmer} chats</span></span>
-<span id="cb5-99"><a href="#cb5-99" tabindex="-1"></a><span class="at">  library(ellmer)</span></span>
-<span id="cb5-100"><a href="#cb5-100" tabindex="-1"></a></span>
-<span id="cb5-101"><a href="#cb5-101" tabindex="-1"></a><span class="at">  chat &lt;- chat_ollama(model = "llama3.1:8b")</span></span>
-<span id="cb5-102"><a href="#cb5-102" tabindex="-1"></a><span class="at">  chat$chat(</span></span>
-<span id="cb5-103"><a href="#cb5-103" tabindex="-1"></a><span class="at">    btw(mtcars, "Are there cars with 8 cylinders in this dataset?")</span></span>
-<span id="cb5-104"><a href="#cb5-104" tabindex="-1"></a><span class="at">  )</span></span>
-<span id="cb5-105"><a href="#cb5-105" tabindex="-1"></a><span class="at">}</span></span>
-<span id="cb5-106"><a href="#cb5-106" tabindex="-1"></a><span class="st">```</span></span></code></pre></div>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a><span class="sc">&lt;</span>object<span class="sc">&gt;</span></span></code></pre></div>
 <p>You can also just call <code><a href="reference/btw.html">btw()</a></code> with no inputs, which will describe the objects in your global environment.</p>
 </div>
 <div class="section level3">
