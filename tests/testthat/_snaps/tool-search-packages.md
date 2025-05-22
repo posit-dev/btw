@@ -66,7 +66,7 @@
       
       * Maintainer: Jake Riley
       * Homepage: https://rjake.github.io/headliner/, https://github.com/rjake/headliner/
-      * Date: 2022-12-20
+      * Date: 2022-12-19
       * Downloads Last Month:       181
       
       Create dynamic, data-driven text. Given two values, a list of
@@ -151,19 +151,13 @@
       | package | title | version | date | url | downloads_last_month |
       |---------|-------|---------|------|-----|----------------------|
       | glue | Interpreted String Literals | 1.8.0 | 2024-09-30 | https://glue.tidyverse.org/, https://github.com/tidyverse/glue | 1,488,317 |
-      | epoxy | String Interpolation for Documents, Reports and Apps | 1.0.0 | 2023-09-19 | https://pkg.garrickadenbuie.com/epoxy/,
-      https://github.com/gadenbuie/epoxy |       258 |
+      | epoxy | String Interpolation for Documents, Reports and Apps | 1.0.0 | 2023-09-19 | https://pkg.garrickadenbuie.com/epoxy/, https://github.com/gadenbuie/epoxy |       258 |
       | gsubfn | Utilities for Strings and Function Arguments | 0.7 | 2018-03-16 | https://github.com/ggrothendieck/gsubfn |    19,149 |
-      | stringmagic | Character String Operations and Interpolation, Magic Edition | 1.2.0 | 2025-04-18 | https://lrberge.github.io/stringmagic/,
-      https://github.com/lrberge/stringmagic |         1 |
-      | headliner | Compose Sentences to Describe Comparisons | 0.0.3 | 2022-12-19 | https://rjake.github.io/headliner/,
-      https://github.com/rjake/headliner/ |       181 |
-      | stringi | Fast and Portable Character String Processing Facilities | 1.8.7 | 2025-03-27 | https://stringi.gagolewski.com/,
-      https://github.com/gagolews/stringi, https://icu.unicode.org/ | 1,170,101 |
-      | stringr | Simple, Consistent Wrappers for Common String Operations | 1.5.1 | 2023-11-14 | https://stringr.tidyverse.org,
-      https://github.com/tidyverse/stringr | 1,139,411 |
+      | stringmagic | Character String Operations and Interpolation, Magic Edition | 1.2.0 | 2025-04-18 | https://lrberge.github.io/stringmagic/, https://github.com/lrberge/stringmagic |         1 |
+      | headliner | Compose Sentences to Describe Comparisons | 0.0.3 | 2022-12-19 | https://rjake.github.io/headliner/, https://github.com/rjake/headliner/ |       181 |
+      | stringi | Fast and Portable Character String Processing Facilities | 1.8.7 | 2025-03-27 | https://stringi.gagolewski.com/, https://github.com/gagolews/stringi, https://icu.unicode.org/ | 1,170,101 |
+      | stringr | Simple, Consistent Wrappers for Common String Operations | 1.5.1 | 2023-11-14 | https://stringr.tidyverse.org, https://github.com/tidyverse/stringr | 1,139,411 |
       | tidyr | Tidy Messy Data | 1.3.1 | 2024-01-24 | https://tidyr.tidyverse.org, https://github.com/tidyverse/tidyr | 1,098,165 |
       | tidyselect | Select from a Set of Strings | 1.2.1 | 2024-03-11 | https://tidyselect.r-lib.org, https://github.com/r-lib/tidyselect | 1,110,863 |
-      | sqlhelper | Easier 'SQL' Integration | 0.2.1 | 2024-01-21 | https://majerr.github.io/sqlhelper/dev/,
-      https://github.com/majerr/sqlhelper/ |       130 |
+      | sqlhelper | Easier 'SQL' Integration | 0.2.1 | 2024-01-21 | https://majerr.github.io/sqlhelper/dev/, https://github.com/majerr/sqlhelper/ |       130 |
 

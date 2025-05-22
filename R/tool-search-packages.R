@@ -52,32 +52,30 @@ pkg_search <- function(query, format = c("long", "short"), size = 10) {
 btw_this.pkg_search_result <- function(x, ...) {
   meta <- attr(x, "metadata", exact = TRUE)
 
+  res <- x
+  res$version <- as.character(res$version)
+  res$date <- strftime(res$date, "%F")
+  res$url <- gsub("\n", " ", res$url)
+  res$downloads_last_month <- format(res$downloads_last_month, big.mark = ',')
+
   if (meta$format == "long") {
     value <- ellmer::interpolate(
       "### {{ package }} (v{{ version }}) -- {{ title }}
 
 * Maintainer: {{ maintainer_name }}
-* Homepage: {{ gsub('\n', ' ', url) }}
-* Date: {{ as.Date(date) }}
-* Downloads Last Month: {{ format(downloads_last_month, big.mark = ',') }}
+* Homepage: {{ url }}
+* Date: {{ date }}
+* Downloads Last Month: {{ downloads_last_month }}
 
 {{ description }}
       ",
-      .envir = list2env(x)
+      .envir = list2env(res)
     )
     value <- paste(value, collapse = "\n\n")
   } else {
     # fmt: skip
     cols <- c("package", "title", "version", "date", "url", "downloads_last_month")
-    value <- x[cols]
-    value$version <- as.character(value$version)
-    value$date <- strftime(value$date, "%F")
-    value$downloads_last_month <- format(
-      value$downloads_last_month,
-      big.mark = ","
-    )
-
-    value <- md_table(value)
+    value <- md_table(res[cols])
   }
 
   plural <- function(x, singular = "", plural = "s") {
