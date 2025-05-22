@@ -4,7 +4,7 @@
       cli::cat_line(btw_tool_search_packages("string interpolation", format = "long")@
         value)
     Output
-      Found 337 packages matching `string interpolation`, showing 10 results.
+      Found 337 packages matching `string interpolation`, showing 5 results.
       
       ### glue (v1.8.0) -- Interpreted String Literals
       
@@ -72,73 +72,6 @@
       Create dynamic, data-driven text. Given two values, a list of
       talking points is generated and can be combined using string
       interpolation. Based on the 'glue' package.
-      
-      ### stringi (v1.8.7) -- Fast and Portable Character String Processing Facilities
-      
-      * Maintainer: Marek Gagolewski
-      * Homepage: https://stringi.gagolewski.com/, https://github.com/gagolews/stringi, https://icu.unicode.org/
-      * Date: 2025-03-27
-      * Downloads Last Month: 1,170,101
-      
-      A collection of character string/text/natural language
-      processing tools for pattern searching (e.g., with 'Java'-like regular
-      expressions or the 'Unicode' collation algorithm), random string generation,
-      case mapping, string transliteration, concatenation, sorting, padding,
-      wrapping, Unicode normalisation, date-time formatting and parsing,
-      and many more. They are fast, consistent, convenient, and -
-      thanks to 'ICU' (International Components for Unicode) -
-      portable across all locales and platforms. Documentation about 'stringi' is
-      provided via its website at <https://stringi.gagolewski.com/> and
-      the paper by Gagolewski (2022, <doi:10.18637/jss.v103.i02>).
-      
-      ### stringr (v1.5.1) -- Simple, Consistent Wrappers for Common String Operations
-      
-      * Maintainer: Hadley Wickham
-      * Homepage: https://stringr.tidyverse.org, https://github.com/tidyverse/stringr
-      * Date: 2023-11-14
-      * Downloads Last Month: 1,139,411
-      
-      A consistent, simple and easy to use set of wrappers around
-      the fantastic 'stringi' package. All function and argument names (and
-      positions) are consistent, all functions deal with "NA"'s and zero
-      length vectors in the same way, and the output from one function is
-      easy to feed into the input of another.
-      
-      ### tidyr (v1.3.1) -- Tidy Messy Data
-      
-      * Maintainer: Hadley Wickham
-      * Homepage: https://tidyr.tidyverse.org, https://github.com/tidyverse/tidyr
-      * Date: 2024-01-24
-      * Downloads Last Month: 1,098,165
-      
-      Tools to help to create tidy data, where each column is a
-      variable, each row is an observation, and each cell contains a single
-      value.  'tidyr' contains tools for changing the shape (pivoting) and
-      hierarchy (nesting and 'unnesting') of a dataset, turning deeply
-      nested lists into rectangular data frames ('rectangling'), and
-      extracting values out of string columns. It also includes tools for
-      working with missing values (both implicit and explicit).
-      
-      ### tidyselect (v1.2.1) -- Select from a Set of Strings
-      
-      * Maintainer: Lionel Henry
-      * Homepage: https://tidyselect.r-lib.org, https://github.com/r-lib/tidyselect
-      * Date: 2024-03-11
-      * Downloads Last Month: 1,110,863
-      
-      A backend for the selecting functions of the 'tidyverse'.  It
-      makes it easy to implement select-like functions in your own packages
-      in a way that is consistent with other 'tidyverse' interfaces for
-      selection.
-      
-      ### sqlhelper (v0.2.1) -- Easier 'SQL' Integration
-      
-      * Maintainer: Matthew Roberts
-      * Homepage: https://majerr.github.io/sqlhelper/dev/, https://github.com/majerr/sqlhelper/
-      * Date: 2024-01-21
-      * Downloads Last Month:       130
-      
-      Execute files of 'SQL' and manage database connections. 'SQL' statements and queries may be interpolated with string literals. Execution of individual statements and queries may be controlled with keywords. Multiple connections may be defined with 'YAML' and accessed by name.
 
 ---
 
