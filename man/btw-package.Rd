@@ -5,6 +5,8 @@
 \alias{btw-package}
 \title{btw: Describe R Stuff to Large Language Models}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Provides a number of utilities for describing R objects and package documentation in plain text. For interactive use, this is especially powerful for describing relevant pieces of context to large language models. When used programmatically, these utilities can be registered with 'ellmer' chats as tool calls, enabling language models to peruse package documentation and explore your computational environment.
 }
 \seealso{
