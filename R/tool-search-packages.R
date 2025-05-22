@@ -54,7 +54,7 @@ btw_this.pkg_search_result <- function(x, ...) {
 
   res <- x
   res$version <- as.character(res$version)
-  res$date <- strftime(res$date, "%F")
+  res$date <- strftime(res$date, "%F", tz = "UTC")
   res$url <- gsub("\n", " ", res$url)
   res$downloads_last_month <- format(res$downloads_last_month, big.mark = ',')
 
