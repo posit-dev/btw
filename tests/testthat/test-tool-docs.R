@@ -35,7 +35,7 @@ test_that("btw_tool_docs_available_vignettes() works", {
   )
 
   expect_equal(
-    btw_tool_docs_available_vignettes("dplyr"),
+    btw_tool_docs_available_vignettes("dplyr")@value,
     btw_this(vignette(package = "dplyr"))
   )
 
@@ -57,12 +57,12 @@ test_that("btw_tool_docs_vignette() works", {
     fixed = TRUE,
     all = FALSE
   )
-  expect_equal(btw_this(vignette("dplyr", "dplyr")), res_dplyr)
+  expect_equal(btw_this(vignette("dplyr", "dplyr")), res_dplyr@value)
 
   res_prog <- btw_tool_docs_vignette("dplyr", "programming")
   expect_btw_tool_result(res_prog)
   expect_match(res_prog@value, "Programming", fixed = TRUE, all = FALSE)
-  expect_equal(btw_this(vignette("programming", "dplyr")), res_prog)
+  expect_equal(btw_this(vignette("programming", "dplyr")), res_prog@value)
 })
 
 test_that("btw_tool_docs_help_page() with multiple help topics", {
