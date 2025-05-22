@@ -34,3 +34,14 @@ test_that("btw_tool_search_packages() snapshots", {
     )
   )
 })
+
+test_that("btw_tool_search_packages() warns for too many results", {
+  expect_warning(
+    btw(pkgsearch::pkg_search("data API"))
+  )
+
+  expect_match(
+    btw_tool_search_packages("data API")@value,
+    "YOUR QUERY IS TOO BROAD"
+  )
+})

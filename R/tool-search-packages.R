@@ -41,7 +41,11 @@ btw_tool_search_packages <- function(
 
   res <- pkg_search(query, format = format, size = n_results)
 
-  btw_tool_result(btw_this(res), res, cls = BtwPackageSearchToolResult)
+  btw_tool_result(
+    value = btw_this(res, for_tool_use = TRUE),
+    data = res,
+    cls = BtwPackageSearchToolResult
+  )
 }
 
 pkg_search <- function(query, format = c("long", "short"), size = 10) {
@@ -49,7 +53,7 @@ pkg_search <- function(query, format = c("long", "short"), size = 10) {
 }
 
 #' @export
-btw_this.pkg_search_result <- function(x, ...) {
+btw_this.pkg_search_result <- function(x, ..., for_tool_use = FALSE) {
   meta <- attr(x, "metadata", exact = TRUE)
 
   res <- x
@@ -70,7 +74,7 @@ btw_this.pkg_search_result <- function(x, ...) {
 
 {{ description }}
       ",
-      .envir = list2env()(res[rows, ])
+      .envir = list2env(res[rows, ])
     )
     value <- paste(value, collapse = "\n\n")
   } else {
@@ -90,13 +94,18 @@ btw_this.pkg_search_result <- function(x, ...) {
   )
 
   if (meta$total >= 1000) {
-    header <- paste0(
-      "WARNING: YOUR QUERY IS TOO BROAD AND RETURNED TOO MANY RESULTS!",
-      "It's likely your phrase wasn't found, so the search fell back to individual words.",
-      "Try removing common words like `data`, `API`, `tools`, `statistics`, etc. or find a more specific phrase.",
-      "\n\n",
-      header
+    warning <- c(
+      "Your query is too broad and returned too many results!",
+      "*" = "It's likely your phrase wasn't found, so the search fell back to individual words.",
+      "i" = "Try removing common words like `data`, `API`, `tools`, `statistics`, etc. or find a more specific phrase."
     )
+
+    if (!isTRUE(for_tool_use)) {
+      cli::cli_warn(warning)
+    } else {
+      warning[1] <- paste("WARNING:", toupper(warning[1]))
+      header <- paste0(paste(warning, collapse = " "), "\n\n", header)
+    }
   }
 
   paste(header, value, sep = "\n\n")
