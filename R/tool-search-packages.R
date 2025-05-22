@@ -95,8 +95,8 @@ btw_this.pkg_search_result <- function(x, ..., for_tool_use = FALSE) {
 
   if (meta$total >= 1000) {
     warning <- c(
-      "Your query is too broad and returned too many results!",
-      "*" = "It's likely your phrase wasn't found, so the search fell back to individual words.",
+      "Your package search query is too broad and returned too many results!",
+      "*" = "It's likely the exact phrase in `query` wasn't found, so the search fell back to searching for the individual words in `query`.",
       "i" = "Try removing common words like `data`, `API`, `tools`, `statistics`, etc. or find a more specific phrase."
     )
 
