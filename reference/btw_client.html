@@ -258,15 +258,14 @@ chat</p></li>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_options.html" class="external-link">local_options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    btw.client <span class="op">=</span> <span class="fu">ellmer</span><span class="fu">::</span><span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_ollama.html" class="external-link">chat_ollama</a></span><span class="op">(</span>model<span class="op">=</span><span class="st">"llama3.1:8b"</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># rlang::is_interactive()</span></span></span>
+<span class="r-in"><span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_options.html" class="external-link">local_options</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  btw.client <span class="op">=</span> <span class="fu">ellmer</span><span class="fu">::</span><span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_ollama.html" class="external-link">chat_ollama</a></span><span class="op">(</span>model<span class="op">=</span><span class="st">"llama3.1:8b"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="va">chat</span> <span class="op">&lt;-</span> <span class="fu">btw_client</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">chat</span><span class="op">$</span><span class="fu">chat</span><span class="op">(</span><span class="st">"How can I replace `stop()` calls with functions from the cli package?"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">chat</span> <span class="op">&lt;-</span> <span class="fu">btw_client</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">chat</span><span class="op">$</span><span class="fu">chat</span><span class="op">(</span><span class="st">"How can I replace `stop()` calls with functions from the cli package?"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
