@@ -103,13 +103,12 @@ chat
 
 }}
 \examples{
-if (interactive()) {
-  withr::local_options(list(
-    btw.client = ellmer::chat_ollama(model="llama3.1:8b")
-  ))
+\dontshow{if (is_interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+withr::local_options(list(
+  btw.client = ellmer::chat_ollama(model="llama3.1:8b")
+))
 
-  chat <- btw_client()
-  chat$chat("How can I replace `stop()` calls with functions from the cli package?")
-}
-
+chat <- btw_client()
+chat$chat("How can I replace `stop()` calls with functions from the cli package?")
+\dontshow{\}) # examplesIf}
 }

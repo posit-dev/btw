@@ -58,15 +58,13 @@
 #' * `btw.tools`: The btw tools to include by default when starting a new
 #'   btw chat, see [btw_tools()] for details.
 #'
-#' @examples
-#' if (interactive()) {
-#'   withr::local_options(list(
-#'     btw.client = ellmer::chat_ollama(model="llama3.1:8b")
-#'   ))
+#' @examplesIf is_interactive()
+#' withr::local_options(list(
+#'   btw.client = ellmer::chat_ollama(model="llama3.1:8b")
+#' ))
 #'
-#'   chat <- btw_client()
-#'   chat$chat("How can I replace `stop()` calls with functions from the cli package?")
-#' }
+#' chat <- btw_client()
+#' chat$chat("How can I replace `stop()` calls with functions from the cli package?")
 #'
 #' @param client An [ellmer::Chat] client, defaults to
 #'   [ellmer::chat_anthropic()]. You can use the `btw.client` option to set a
