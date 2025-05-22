@@ -56,17 +56,10 @@ btw_this.pkg_search_result <- function(x, ...) {
     value <- ellmer::interpolate(
       "### {{ package }} (v{{ version }}) -- {{ title }}
 
-Maintainer
-:    {{ maintainer_name }}
-
-Homepage
-:    {{ gsub('\n', ' ', url) }}
-
-Date
-:    {{ as.Date(date) }}
-
-Downloads Last Month
-:    {{ format(downloads_last_month, big.mark = ',') }}
+* Maintainer: {{ maintainer_name }}
+* Homepage: {{ gsub('\n', ' ', url) }}
+* Date: {{ as.Date(date) }}
+* Downloads Last Month: {{ format(downloads_last_month, big.mark = ',') }}
 
 {{ description }}
       ",

@@ -8,17 +8,10 @@
       
       ### glue (v1.8.0) -- Interpreted String Literals
       
-      Maintainer
-      :    Jennifer Bryan
-      
-      Homepage
-      :    https://glue.tidyverse.org/, https://github.com/tidyverse/glue
-      
-      Date
-      :    2024-09-30
-      
-      Downloads Last Month
-      :    1,488,317
+      * Maintainer: Jennifer Bryan
+      * Homepage: https://glue.tidyverse.org/, https://github.com/tidyverse/glue
+      * Date: 2024-09-30
+      * Downloads Last Month: 1,488,317
       
       An implementation of interpreted string literals, inspired by
       Python's Literal String Interpolation
@@ -29,17 +22,10 @@
       
       ### epoxy (v1.0.0) -- String Interpolation for Documents, Reports and Apps
       
-      Maintainer
-      :    Garrick Aden-Buie
-      
-      Homepage
-      :    https://pkg.garrickadenbuie.com/epoxy/, https://github.com/gadenbuie/epoxy
-      
-      Date
-      :    2023-09-19
-      
-      Downloads Last Month
-      :          258
+      * Maintainer: Garrick Aden-Buie
+      * Homepage: https://pkg.garrickadenbuie.com/epoxy/, https://github.com/gadenbuie/epoxy
+      * Date: 2023-09-19
+      * Downloads Last Month:       258
       
       Extra strength 'glue' for data-driven templates. String
       interpolation for 'Shiny' apps or 'R Markdown' and 'knitr'-powered
@@ -47,17 +33,10 @@
       
       ### gsubfn (v0.7) -- Utilities for Strings and Function Arguments
       
-      Maintainer
-      :    G. Grothendieck
-      
-      Homepage
-      :    https://github.com/ggrothendieck/gsubfn
-      
-      Date
-      :    2018-03-16
-      
-      Downloads Last Month
-      :       19,149
+      * Maintainer: G. Grothendieck
+      * Homepage: https://github.com/ggrothendieck/gsubfn
+      * Date: 2018-03-16
+      * Downloads Last Month:    19,149
       
       The gsubfn function is like gsub but can take a replacement
       function or certain other objects instead of the replacement string.
@@ -76,33 +55,19 @@
       
       ### stringmagic (v1.2.0) -- Character String Operations and Interpolation, Magic Edition
       
-      Maintainer
-      :    Laurent R Berge
-      
-      Homepage
-      :    https://lrberge.github.io/stringmagic/, https://github.com/lrberge/stringmagic
-      
-      Date
-      :    2025-04-18
-      
-      Downloads Last Month
-      :            1
+      * Maintainer: Laurent R Berge
+      * Homepage: https://lrberge.github.io/stringmagic/, https://github.com/lrberge/stringmagic
+      * Date: 2025-04-18
+      * Downloads Last Month:         1
       
       Performs complex string operations compactly and efficiently. Supports string interpolation jointly with over 50 string operations. Also enhances regular string functions (like grep() and co). See an introduction at <https://lrberge.github.io/stringmagic/>.
       
       ### headliner (v0.0.3) -- Compose Sentences to Describe Comparisons
       
-      Maintainer
-      :    Jake Riley
-      
-      Homepage
-      :    https://rjake.github.io/headliner/, https://github.com/rjake/headliner/
-      
-      Date
-      :    2022-12-20
-      
-      Downloads Last Month
-      :          181
+      * Maintainer: Jake Riley
+      * Homepage: https://rjake.github.io/headliner/, https://github.com/rjake/headliner/
+      * Date: 2022-12-20
+      * Downloads Last Month:       181
       
       Create dynamic, data-driven text. Given two values, a list of
       talking points is generated and can be combined using string
@@ -110,17 +75,10 @@
       
       ### stringi (v1.8.7) -- Fast and Portable Character String Processing Facilities
       
-      Maintainer
-      :    Marek Gagolewski
-      
-      Homepage
-      :    https://stringi.gagolewski.com/, https://github.com/gagolews/stringi, https://icu.unicode.org/
-      
-      Date
-      :    2025-03-27
-      
-      Downloads Last Month
-      :    1,170,101
+      * Maintainer: Marek Gagolewski
+      * Homepage: https://stringi.gagolewski.com/, https://github.com/gagolews/stringi, https://icu.unicode.org/
+      * Date: 2025-03-27
+      * Downloads Last Month: 1,170,101
       
       A collection of character string/text/natural language
       processing tools for pattern searching (e.g., with 'Java'-like regular
@@ -135,17 +93,10 @@
       
       ### stringr (v1.5.1) -- Simple, Consistent Wrappers for Common String Operations
       
-      Maintainer
-      :    Hadley Wickham
-      
-      Homepage
-      :    https://stringr.tidyverse.org, https://github.com/tidyverse/stringr
-      
-      Date
-      :    2023-11-14
-      
-      Downloads Last Month
-      :    1,139,411
+      * Maintainer: Hadley Wickham
+      * Homepage: https://stringr.tidyverse.org, https://github.com/tidyverse/stringr
+      * Date: 2023-11-14
+      * Downloads Last Month: 1,139,411
       
       A consistent, simple and easy to use set of wrappers around
       the fantastic 'stringi' package. All function and argument names (and
@@ -155,17 +106,10 @@
       
       ### tidyr (v1.3.1) -- Tidy Messy Data
       
-      Maintainer
-      :    Hadley Wickham
-      
-      Homepage
-      :    https://tidyr.tidyverse.org, https://github.com/tidyverse/tidyr
-      
-      Date
-      :    2024-01-24
-      
-      Downloads Last Month
-      :    1,098,165
+      * Maintainer: Hadley Wickham
+      * Homepage: https://tidyr.tidyverse.org, https://github.com/tidyverse/tidyr
+      * Date: 2024-01-24
+      * Downloads Last Month: 1,098,165
       
       Tools to help to create tidy data, where each column is a
       variable, each row is an observation, and each cell contains a single
@@ -177,17 +121,10 @@
       
       ### tidyselect (v1.2.1) -- Select from a Set of Strings
       
-      Maintainer
-      :    Lionel Henry
-      
-      Homepage
-      :    https://tidyselect.r-lib.org, https://github.com/r-lib/tidyselect
-      
-      Date
-      :    2024-03-11
-      
-      Downloads Last Month
-      :    1,110,863
+      * Maintainer: Lionel Henry
+      * Homepage: https://tidyselect.r-lib.org, https://github.com/r-lib/tidyselect
+      * Date: 2024-03-11
+      * Downloads Last Month: 1,110,863
       
       A backend for the selecting functions of the 'tidyverse'.  It
       makes it easy to implement select-like functions in your own packages
@@ -196,17 +133,10 @@
       
       ### sqlhelper (v0.2.1) -- Easier 'SQL' Integration
       
-      Maintainer
-      :    Matthew Roberts
-      
-      Homepage
-      :    https://majerr.github.io/sqlhelper/dev/, https://github.com/majerr/sqlhelper/
-      
-      Date
-      :    2024-01-21
-      
-      Downloads Last Month
-      :          130
+      * Maintainer: Matthew Roberts
+      * Homepage: https://majerr.github.io/sqlhelper/dev/, https://github.com/majerr/sqlhelper/
+      * Date: 2024-01-21
+      * Downloads Last Month:       130
       
       Execute files of 'SQL' and manage database connections. 'SQL' statements and queries may be interpolated with string literals. Execution of individual statements and queries may be controlled with keywords. Multiple connections may be defined with 'YAML' and accessed by name.
 
