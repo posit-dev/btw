@@ -213,7 +213,7 @@ BtwSearchPackageInfoToolResult <- S7::new_class(
 )
 
 #' @export
-btw_this.cran_package <- function(pkg, ...) {
+btw_this.cran_package <- function(x, ...) {
   template <- "### {{Package}} (v{{Version}}) -- {{Title}}
 
 #### Description
@@ -260,16 +260,16 @@ btw_this.cran_package <- function(pkg, ...) {
     paste(deps_text, collapse = "\n")
   }
 
-  depends_text <- format_deps(pkg$Depends)
-  imports_text <- format_deps(pkg$Imports)
-  suggests_text <- format_deps(pkg$Suggests)
+  depends_text <- format_deps(x$Depends)
+  imports_text <- format_deps(x$Imports)
+  suggests_text <- format_deps(x$Suggests)
 
   md_text <- ellmer::interpolate(
     template,
     depends_text = depends_text,
     imports_text = imports_text,
     suggests_text = suggests_text,
-    .envir = list2env(pkg, parent = parent.frame()),
+    .envir = list2env(x, parent = parent.frame()),
     .trim = FALSE
   )
 
