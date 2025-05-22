@@ -26,6 +26,7 @@ Imports:
     ellmer (>= 0.2.0),
     fs,
     jsonlite,
+    pkgsearch,
     rlang (>= 1.1.0),
     rmarkdown,
     rstudioapi,
@@ -61,6 +62,7 @@ Collate:
     'tool-environment.R'
     'tool-files.R'
     'tool-rstudioapi.R'
+    'tool-search-packages.R'
     'tool-sessioninfo.R'
     'tools.R'
     'utils-md.R'

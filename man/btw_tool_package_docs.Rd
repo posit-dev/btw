@@ -67,6 +67,7 @@ Other Tools:
 \code{\link{btw_tool_files_list_files}()},
 \code{\link{btw_tool_files_read_text_file}()},
 \code{\link{btw_tool_ide_read_current_editor}()},
+\code{\link{btw_tool_search_packages}()},
 \code{\link{btw_tool_session_package_info}()},
 \code{\link{btw_tool_session_platform_info}()},
 \code{\link{btw_tools}()}

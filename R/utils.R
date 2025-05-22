@@ -56,10 +56,10 @@ find_package_candidates <- function(package_name, installed_only = TRUE) {
     if (installed_only) {
       rownames(installed.packages())
     } else {
-      rownames(available.packages())
+      rownames(utils::available.packages())
     }
 
-  dists <- adist(tolower(package_name), tolower(all_packages))
+  dists <- utils::adist(tolower(package_name), tolower(all_packages))
 
   if (any(dists == 0)) {
     candidate_indices <- which(dists == 0)
