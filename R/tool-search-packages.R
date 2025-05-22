@@ -23,7 +23,8 @@ NULL
 #' }
 #'
 #' @inheritParams pkgsearch::pkg_search
-#' @param n_results Number of search results to include.
+#' @param n_results Number of search results to include. Defaults to 10 for
+#'   'short' format and 5 for 'long' format.
 #'
 #' @returns A listing of packages matching the search term.
 #'
@@ -33,10 +34,13 @@ NULL
 #' @export
 btw_tool_search_packages <- function(
   query,
-  format = c("long", "short"),
-  n_results = 10
+  format = c("short", "long"),
+  n_results = NULL
 ) {
   format <- arg_match(format)
+  if (is.null(n_results)) {
+    n_results <- switch(format, short = 10, long = 5)
+  }
   check_number_whole(n_results)
 
   res <- pkg_search(query, format = format, size = n_results)
@@ -154,13 +158,14 @@ Bad: Search for `"statistical analysis tools for permutation test"`
       format = ellmer::type_string(
         paste(
           "The format of the search results, either \"long\" or \"short\".",
-          "Prefer \"long\" for more details about each package, or \"short\" for a quick overview when used with a higher number of results."
+          "Default is 'short' for discovery with a higher number of results.",
+          "Switch to \"long\" to gather more details about each package."
         ),
         required = FALSE
       ),
       n_results = ellmer::type_number(
         paste(
-          "The number of search results to include, defaults to 10.",
+          "The number of search results to include, defaults to 20 for 'short' format and 5 for 'long' format.",
           "Limited to 10 results for the 'long' format or 50 results for 'short' format."
         ),
         required = FALSE

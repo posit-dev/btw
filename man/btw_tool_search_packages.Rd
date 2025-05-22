@@ -4,7 +4,7 @@
 \alias{btw_tool_search_packages}
 \title{Tool: Search for an R package on CRAN}
 \usage{
-btw_tool_search_packages(query, format = c("long", "short"), n_results = 10)
+btw_tool_search_packages(query, format = c("short", "long"), n_results = NULL)
 }
 \arguments{
 \item{query}{Search query string. If this argument is missing or
@@ -20,7 +20,8 @@ Note that this only affects the default printing, and you can
 still inspect the full results, even if you specify \emph{short}
 here.}
 
-\item{n_results}{Number of search results to include.}
+\item{n_results}{Number of search results to include. Defaults to 10 for
+'short' format and 5 for 'long' format.}
 }
 \value{
 A listing of packages matching the search term.
