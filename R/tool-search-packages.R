@@ -30,7 +30,18 @@ btw_tool_search_packages <- function(
 
   res <- pkg_search(query, format = format, size = n_results)
 
-  if (format == "long") {
+  btw_tool_result(btw_this(res), res, cls = BtwPackageSearchToolResult)
+}
+
+pkg_search <- function(query, format = c("long", "short"), size = 10) {
+  pkgsearch::pkg_search(query, format = format, size = size)
+}
+
+#' @export
+btw_this.pkg_search_result <- function(x, ...) {
+  meta <- attr(x, "metadata", exact = TRUE)
+
+  if (meta$format == "long") {
     value <- ellmer::interpolate(
       "### {{ package }} (v{{ version }}) -- {{ title }}
 
@@ -48,13 +59,13 @@ Downloads Last Month
 
 {{ description }}
       ",
-      .envir = list2env(res)
+      .envir = list2env(x)
     )
     value <- paste(value, collapse = "\n\n")
   } else {
     # fmt: skip
     cols <- c("package", "title", "version", "date", "url", "downloads_last_month")
-    value <- res[cols]
+    value <- x[cols]
     value$version <- as.character(value$version)
     value$date <- strftime(value$date, "%F")
     value$downloads_last_month <- format(
@@ -65,12 +76,18 @@ Downloads Last Month
     value <- md_table(value)
   }
 
-  btw_tool_result(value, res, cls = BtwPackageSearchToolResult)
+  plural <- function(x, singular = "", plural = "s") {
+    if (x == 1) singular else plural
+  }
+
+  header <- ellmer::interpolate(
+    "Found {{total}} package{{ plural(total) }} matching `{{query}}`, showing {{size}} result{{ plural(size) }}.",
+    .envir = list2env(meta)
+  )
+
+  paste(header, value, sep = "\n\n")
 }
 
-pkg_search <- function(query, format = c("long", "short"), size = 10) {
-  pkgsearch::pkg_search(query, format = format, size = size)
-}
 
 BtwPackageSearchToolResult <- S7::new_class(
   "BtwPackageSearchToolResult",

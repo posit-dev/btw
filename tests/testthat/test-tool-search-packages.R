@@ -8,6 +8,20 @@ test_that("btw_tool_search_packages()", {
     has_data = TRUE
   )
 
+  expect_equal(
+    btw_tool_search_packages("string interpolation")@value,
+    btw_this(mock_pkgsearch("string interpolation"))
+  )
+
+  expect_equal(
+    btw_tool_search_packages("string interpolation", format = "short")@value,
+    btw_this(mock_pkgsearch("string interpolation", format = "short"))
+  )
+})
+
+test_that("btw_tool_search_packages() snapshots", {
+  skip_if_not_macos()
+
   expect_snapshot(
     cli::cat_line(
       btw_tool_search_packages("string interpolation", format = "long")@value
