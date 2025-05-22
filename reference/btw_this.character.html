@@ -219,14 +219,47 @@ evaluated in your R console.</p></li>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="btw_this.html">btw_this</a></span><span class="op">(</span><span class="st">"?btw::btw_this"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;btw::BtwHelpPageToolResult&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  @ value  : chr [1:41] "## `help(package = \"btw\", \"btw_this\")`" "" ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  @ error  : NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  @ extra  :List of 3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ help_text: chr [1:40] "" "### Describe something for use by an LLM" "" "#### Description" ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ topic    : chr "btw_this"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ package  : chr "btw"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  @ request: NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "## `help(package = \"btw\", \"btw_this\")`"                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2] ""                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "### Describe something for use by an LLM"                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4] ""                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "#### Description"                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] ""                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "A generic function used to describe an object for use by LLM."                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] ""                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "#### Usage"                                                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10] ""                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11] "``` R"                                                                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12] "btw_this(x, ...)"                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13] "```"                                                                                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14] ""                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15] "#### Arguments"                                                                                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16] ""                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17] "|  |  |"                                                                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18] "|----|----|"                                                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19] "| `x` | The thing to describe. |"                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20] "| `...` | Additional arguments passed down to underlying methods. Unused arguments are silently ignored. |"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21] ""                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22] "#### Value"                                                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23] ""                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [24] "A character vector of lines describing the object."                                                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25] ""                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26] "#### See Also"                                                                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27] ""                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [28] "Other `btw_this()` methods: `btw_this.character()`,"                                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29] "`btw_this.data.frame()`, `btw_this.environment()`"                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [30] ""                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31] "#### Examples"                                                                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [32] ""                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [33] "``` R"                                                                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [34] "btw_this(mtcars) # describe the mtcars dataset"                                                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [35] "btw_this(dplyr::mutate) # include function source"                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [36] "## Not run: "                                                                                              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [37] "btw_this(\"{dplyr}\") # include dplyr's intro vignette"                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [38] "btw_this(\"./\") # list files in the current working directory"                                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [39] ""                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [40] "## End(Not run)"                                                                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [41] "```"                                                                                                       </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
