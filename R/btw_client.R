@@ -58,7 +58,7 @@
 #' * `btw.tools`: The btw tools to include by default when starting a new
 #'   btw chat, see [btw_tools()] for details.
 #'
-#' @examplesIf is_interactive()
+#' @examplesIf rlang::is_interactive()
 #' withr::local_options(list(
 #'   btw.client = ellmer::chat_ollama(model="llama3.1:8b")
 #' ))
