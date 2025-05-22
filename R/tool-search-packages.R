@@ -37,6 +37,7 @@ btw_tool_search_packages <- function(
   format = c("short", "long"),
   n_results = NULL
 ) {
+  check_string(query)
   format <- arg_match(format)
   if (is.null(n_results)) {
     n_results <- switch(format, short = 10, long = 5)
@@ -48,7 +49,7 @@ btw_tool_search_packages <- function(
   btw_tool_result(
     value = btw_this(res, for_tool_use = TRUE),
     data = res,
-    cls = BtwPackageSearchToolResult
+    cls = BtwSearchPackageToolResult
   )
 }
 
@@ -116,8 +117,8 @@ btw_this.pkg_search_result <- function(x, ..., for_tool_use = FALSE) {
 }
 
 
-BtwPackageSearchToolResult <- S7::new_class(
-  "BtwPackageSearchToolResult",
+BtwSearchPackageToolResult <- S7::new_class(
+  "BtwSearchPackageToolResult",
   parent = BtwToolResult
 )
 
@@ -169,6 +170,141 @@ Bad: Search for `"statistical analysis tools for permutation test"`
           "Limited to 10 results for the 'long' format or 50 results for 'short' format."
         ),
         required = FALSE
+      )
+    )
+  }
+)
+
+
+#' Tool: Describe a CRAN package
+#'
+#' @description
+#' Describes a CRAN package using [pkgsearch::cran_package()].
+#'
+#' @examples
+#' btw_this(pkgsearch::cran_package("anyflights"))
+#'
+#' \dontrun{
+#' btw_tool_search_package_info("anyflights")
+#' }
+#'
+#' @param package_name The name of a package on CRAN.
+#'
+#' @returns An info sheet about the package.
+#' @export
+btw_tool_search_package_info <- function(package_name) {
+  check_string(package_name)
+
+  pkg <- pkgsearch::cran_package(package_name)
+
+  BtwSearchPackageInfoToolResult(
+    value = btw_this(pkg),
+    extra = pkg
+  )
+}
+
+cran_package <- function(package_name) {
+  pkgsearch::cran_package(package_name)
+}
+
+BtwSearchPackageInfoToolResult <- S7::new_class(
+  "BtwSearchPackageInfoToolResult",
+  parent = BtwToolResult
+)
+
+#' @export
+btw_this.cran_package <- function(pkg, ..., template = NULL) {
+  # Check if the input is a cran_package object
+  if (!inherits(pkg, "cran_package")) {
+    stop("Input must be a cran_package object")
+  }
+
+  # Default template if none provided
+  if (is.null(template)) {
+    template <- "### {{Package}} (v{{Version}}) -- {{Title}}
+
+#### Description
+
+{{Description}}
+
+#### Details
+
+* License: {{License}}
+* Home: {{ gsub('\n', '', URL) }}
+* Issue Tracker: {{ BugReports }}
+* Last Updated: {{ strftime(`Date/Publication`, '%F', tz = 'UTC') }}
+
+#### Dependencies
+
+* Depends
+  {{ gsub('\n', '\n  ', depends_text) }}
+* Imports
+  {{ gsub('\n', '\n  ', imports_text) }}
+* Suggests
+  {{ gsub('\n', '\n  ', suggests_text) }}
+
+#### Author Information
+
+{{Author}}
+
+**Maintainer**: {{Maintainer}}"
+  }
+
+  format_deps <- function(deps) {
+    if (is.null(deps) || length(deps) == 0) {
+      return("None")
+    }
+
+    deps_text <- sapply(names(deps), function(dep_name) {
+      if (dep_name == "R") {
+        return(paste0("* R ", deps[[dep_name]]))
+      } else {
+        ver <- if (deps[[dep_name]] == "*") "" else
+          paste0(" (", deps[[dep_name]], ")")
+        return(paste0("* ", dep_name, ver))
+      }
+    })
+
+    paste(deps_text, collapse = "\n")
+  }
+
+  depends_text <- format_deps(pkg$Depends)
+  imports_text <- format_deps(pkg$Imports)
+  suggests_text <- format_deps(pkg$Suggests)
+
+  md_text <- ellmer::interpolate(
+    template,
+    depends_text = depends_text,
+    imports_text = imports_text,
+    suggests_text = suggests_text,
+    .envir = list2env(pkg, parent = parent.frame()),
+    .trim = FALSE
+  )
+
+  return(md_text)
+}
+
+.btw_add_to_tools(
+  name = "btw_tool_search_package_info",
+  group = "search",
+  tool = function() {
+    ellmer::tool(
+      btw_tool_search_package_info,
+      .description = paste(
+        "Describe a CRAN package.",
+        "Shows the title, description, dependencies and author information for a package on CRAN, regardless of whether the package is installed or not."
+      ),
+      .annotations = ellmer::tool_annotations(
+        title = "CRAN Package Info",
+        read_only_hint = TRUE,
+        open_world_hint = FALSE,
+        idempotent_hint = FALSE
+      ),
+      package_name = ellmer::type_string(
+        paste(
+          "The name of a package on CRAN.",
+          "The package does not need to be installed locally."
+        )
       )
     )
   }

@@ -36,6 +36,8 @@ test_that("btw_tool_search_packages() snapshots", {
 })
 
 test_that("btw_tool_search_packages() warns for too many results", {
+  skip_if_offline()
+
   expect_warning(
     btw(pkgsearch::pkg_search("data API"))
   )
@@ -43,5 +45,40 @@ test_that("btw_tool_search_packages() warns for too many results", {
   expect_match(
     btw_tool_search_packages("data API")@value,
     "QUERY IS TOO BROAD"
+  )
+})
+
+test_that("btw_tool_search_package_info()", {
+  skip_if_offline()
+
+  search_result <- pkgsearch::cran_package("anyflights")
+  tool_result <- btw_tool_search_package_info("anyflights")
+
+  expect_equal(
+    tool_result@value,
+    btw_this(search_result)
+  )
+
+  expect_equal(
+    tool_result@extra,
+    search_result
+  )
+})
+
+test_that("btw_tool_search_package_info() snapshots", {
+  skip_if_not_macos()
+
+  local_mocked_bindings(
+    cran_package = mock_cran_package
+  )
+
+  expect_snapshot(
+    cli::cat_line(
+      btw_tool_search_package_info("anyflights")@value
+    )
+  )
+
+  expect_snapshot(
+    cli::cat_line(btw_this(mock_cran_package("anyflights")))
   )
 })

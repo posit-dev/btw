@@ -158,3 +158,53 @@ mock_pkgsearch <- function(..., format = "long") {
     )
   )
 }
+
+mock_cran_package <- function(...) {
+  structure(
+    list(
+      Package = "anyflights",
+      Title = "Query 'nycflights13'-Like Air Travel Data for Given Years and\nAirports",
+      Version = "0.3.5",
+      `Authors@R` = "c(\nperson(\"Simon P.\", \"Couch\", , \"simonpatrickcouch@gmail.com\", c(\"aut\", \"cre\")),\nperson(\"Hadley\", \"Wickham\", , \"hadley@rstudio.com\", \"ctb\"),\nperson(\"Jay\", \"Lee\", , \"jaylee@reed.edu\", \"ctb\"),\nperson(\"Dennis\", \"Irorere\", , \"denironyx@gmail.com\", \"ctb\")\n)",
+      Description = "Supplies a set of functions to query air travel data for user-\nspecified years and airports. Datasets include on-time flights, airlines,\nairports, planes, and weather.",
+      License = "CC0",
+      Depends = list(R = ">= 3.5.0"),
+      Imports = list(
+        httr = "*",
+        dplyr = "*",
+        readr = "*",
+        utils = "*",
+        lubridate = "*",
+        vroom = "*",
+        glue = "*",
+        purrr = "*",
+        stringr = "*",
+        curl = "*",
+        usethis = "*",
+        roxygen2 = "*",
+        progress = "*",
+        tidyr = "*"
+      ),
+      URL = "https://github.com/simonpcouch/anyflights,\nhttps://simonpcouch.github.io/anyflights/",
+      BugReports = "https://github.com/simonpcouch/anyflights/issues",
+      RoxygenNote = "7.3.2",
+      Encoding = "UTF-8",
+      Suggests = list(
+        testthat = "*",
+        nycflights13 = "*",
+        covr = "*"
+      ),
+      NeedsCompilation = "no",
+      Packaged = "2025-01-10 19:42:22 UTC; simoncouch",
+      Author = "Simon P. Couch [aut, cre],\nHadley Wickham [ctb],\nJay Lee [ctb],\nDennis Irorere [ctb]",
+      Maintainer = "Simon P. Couch <simonpatrickcouch@gmail.com>",
+      Repository = "CRAN",
+      `Date/Publication` = "2025-01-10 20:30:02 UTC",
+      crandb_file_date = "2025-01-10 20:46:55",
+      MD5sum = "ba62eeb4c481153e634313042c4274cf",
+      date = "2025-01-10T19:30:02+00:00",
+      releases = list()
+    ),
+    class = "cran_package"
+  )
+}
