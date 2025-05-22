@@ -213,15 +213,8 @@ BtwSearchPackageInfoToolResult <- S7::new_class(
 )
 
 #' @export
-btw_this.cran_package <- function(pkg, ..., template = NULL) {
-  # Check if the input is a cran_package object
-  if (!inherits(pkg, "cran_package")) {
-    stop("Input must be a cran_package object")
-  }
-
-  # Default template if none provided
-  if (is.null(template)) {
-    template <- "### {{Package}} (v{{Version}}) -- {{Title}}
+btw_this.cran_package <- function(pkg, ...) {
+  template <- "### {{Package}} (v{{Version}}) -- {{Title}}
 
 #### Description
 
@@ -248,7 +241,6 @@ btw_this.cran_package <- function(pkg, ..., template = NULL) {
 {{Author}}
 
 **Maintainer**: {{Maintainer}}"
-  }
 
   format_deps <- function(deps) {
     if (is.null(deps) || length(deps) == 0) {
