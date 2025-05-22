@@ -87,6 +87,16 @@ btw_this.pkg_search_result <- function(x, ...) {
     .envir = list2env(meta)
   )
 
+  if (meta$total >= 1000) {
+    header <- paste0(
+      "WARNING: YOUR QUERY IS TOO BROAD AND RETURNED TOO MANY RESULTS!",
+      "It's likely your phrase wasn't found, so the search fell back to individual words.",
+      "Try removing common words like `data`, `API`, `tools`, `statistics`, etc. or find a more specific phrase.",
+      "\n\n",
+      header
+    )
+  }
+
   paste(header, value, sep = "\n\n")
 }
 
@@ -102,7 +112,22 @@ BtwPackageSearchToolResult <- S7::new_class(
   tool = function() {
     ellmer::tool(
       btw_tool_search_packages,
-      .description = "Search for an R package on CRAN.",
+      .description = 'Search for an R package on CRAN.
+
+## Search Behavior
+- Prioritizes exact phrase matches over individual words
+- Falls back to word matching only when phrase matching fails
+
+## Query Strategy
+- Submit separate searches for distinct concepts (e.g., `flights`, `airlines`)
+- Break multi-concept queries (e.g., `flights airlines data API`) into multiple searches and synthesize results
+- Search for single, specific technical terms that package authors would use
+- If the search result includes more than a 1000 results, refine your query and try again.
+
+## Examples
+Good: Search for `"permutation test"` or just `"permutation"`
+Bad: Search for `"statistical analysis tools for permutation test"`
+',
       .annotations = ellmer::tool_annotations(
         title = "CRAN Package Search",
         read_only_hint = TRUE,
