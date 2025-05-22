@@ -32,8 +32,31 @@ this function have access to the tools:\tabular{lll}{
    btw_tool_files_read_text_file \tab files \tab Read an entire text file. \cr
    btw_tool_ide_read_current_editor \tab ide \tab Read the contents of the editor that is currently open in the user's IDE. \cr
    btw_tool_search_packages \tab search \tab Search for an R package on CRAN. \cr
-   btw_tool_session_package_info \tab session \tab Verify that a specific package is installed, or find out which packages are in use in the current session. \cr
-   btw_tool_session_platform_info \tab session \tab Describes the R version, operating system, language and locale settings for the user's system. \cr
+}
+
+\subsection{Search Behavior}{
+\itemize{
+\item Prioritizes exact phrase matches over individual words
+\item Falls back to word matching only when phrase matching fails
+}
+}
+
+\subsection{Query Strategy}{
+\itemize{
+\item Submit separate searches for distinct concepts (e.g., \code{flights}, \code{airlines})
+\item Break multi-concept queries (e.g., \verb{flights airlines data API}) into multiple searches and synthesize results
+\item Search for single, specific technical terms that package authors would use
+\item If the search result includes more than a 1000 results, refine your query and try again.
+}
+}
+
+\subsection{Examples}{
+
+Good: Search for \code{"permutation test"} or just \code{"permutation"}
+Bad: Search for \code{"statistical analysis tools for permutation test"}
+. |
+| btw_tool_session_package_info | session | Verify that a specific package is installed, or find out which packages are in use in the current session. |
+| btw_tool_session_platform_info | session | Describes the R version, operating system, language and locale settings for the user's system. |
 }
 }
 \examples{

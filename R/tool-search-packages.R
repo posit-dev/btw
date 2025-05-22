@@ -59,6 +59,7 @@ btw_this.pkg_search_result <- function(x, ...) {
   res$downloads_last_month <- format(res$downloads_last_month, big.mark = ',')
 
   if (meta$format == "long") {
+    rows <- seq_len(min(nrow(res), 10))
     value <- ellmer::interpolate(
       "### {{ package }} (v{{ version }}) -- {{ title }}
 
@@ -69,13 +70,14 @@ btw_this.pkg_search_result <- function(x, ...) {
 
 {{ description }}
       ",
-      .envir = list2env(res)
+      .envir = list2env()(res[rows, ])
     )
     value <- paste(value, collapse = "\n\n")
   } else {
     # fmt: skip
     cols <- c("package", "title", "version", "date", "url", "downloads_last_month")
-    value <- md_table(res[cols])
+    rows <- seq_len(min(nrow(res), 50))
+    value <- md_table(res[rows, cols])
   }
 
   plural <- function(x, singular = "", plural = "s") {
@@ -148,7 +150,10 @@ Bad: Search for `"statistical analysis tools for permutation test"`
         required = FALSE
       ),
       n_results = ellmer::type_number(
-        "The number of search results to include, defaults to 10.",
+        paste(
+          "The number of search results to include, defaults to 10.",
+          "Limited to 10 results for the 'long' format or 50 results for 'short' format."
+        ),
         required = FALSE
       )
     )
