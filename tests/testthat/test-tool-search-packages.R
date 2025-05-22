@@ -9,8 +9,8 @@ test_that("btw_tool_search_packages()", {
   )
 
   expect_equal(
-    btw_tool_search_packages("string interpolation")@value,
-    btw_this(mock_pkgsearch("string interpolation"))
+    btw_tool_search_packages("string interpolation", format = "long")@value,
+    btw_this(mock_pkgsearch("string interpolation", format = "long"))
   )
 
   expect_equal(
