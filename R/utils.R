@@ -38,44 +38,6 @@ check_inherits <- function(
   invisible(NULL)
 }
 
-# rlang's version prompts when interactive
-check_installed <- function(package_name, call = caller_env()) {
-  if (is_installed(package_name)) {
-    return(invisible())
-  }
-
-  candidates <- find_package_candidates(package_name)
-
-  cli::cli_abort(
-    c(
-      "Package {.pkg {package_name}} is not installed.",
-      "i" = "Did you mean {.val {candidates}}?"
-    ),
-    call = call
-  )
-}
-
-find_package_candidates <- function(package_name, installed_only = TRUE) {
-  all_packages <-
-    if (installed_only) {
-      rownames(installed.packages())
-    } else {
-      rownames(utils::available.packages())
-    }
-
-  dists <- utils::adist(tolower(package_name), tolower(all_packages))
-
-  if (any(dists == 0)) {
-    candidate_indices <- which(dists == 0)
-  } else {
-    candidate_indices <- order(dists)[1:5]
-  }
-
-  all_packages[candidate_indices]
-}
-
-interactive <- NULL
-
 as_json_rowwise <- function(x, ...) {
   json <- jsonlite::toJSON(
     x,

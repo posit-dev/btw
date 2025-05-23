@@ -63,6 +63,7 @@ Collate:
     'tool-files.R'
     'tool-rstudioapi.R'
     'tool-search-packages.R'
+    'tool-session-package-installed.R'
     'tool-sessioninfo.R'
     'tools.R'
     'utils-md.R'

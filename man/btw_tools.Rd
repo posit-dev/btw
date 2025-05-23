@@ -56,6 +56,7 @@ this function have access to the tools:\tabular{lll}{
 Good: Search for \code{"permutation test"} or just \code{"permutation"}
 Bad: Search for \code{"statistical analysis tools for permutation test"}
 . |
+| btw_tool_session_check_package_installed | session | Check if a package is installed in the current session. |
 | btw_tool_session_package_info | session | Verify that a specific package is installed, or find out which packages are in use in the current session. |
 | btw_tool_session_platform_info | session | Describes the R version, operating system, language and locale settings for the user's system. |
 }
