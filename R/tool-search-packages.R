@@ -195,7 +195,7 @@ Bad: Search for `"statistical analysis tools for permutation test"`
 btw_tool_search_package_info <- function(package_name) {
   check_string(package_name)
 
-  pkg <- pkgsearch::cran_package(package_name)
+  pkg <- cran_package(package_name)
 
   BtwSearchPackageInfoToolResult(
     value = btw_this(pkg),

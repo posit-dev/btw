@@ -21,6 +21,9 @@ test_that("btw_tool_search_packages()", {
 
 test_that("btw_tool_search_packages() snapshots", {
   skip_if_not_macos()
+  local_mocked_bindings(
+    pkg_search = mock_pkgsearch
+  )
 
   expect_snapshot(
     cli::cat_line(

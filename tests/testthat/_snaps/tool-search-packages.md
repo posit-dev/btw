@@ -4,7 +4,7 @@
       cli::cat_line(btw_tool_search_packages("string interpolation", format = "long")@
         value)
     Output
-      Found 337 packages matching `string interpolation`, showing 5 results.
+      Found 337 packages matching `string interpolation`, showing 3 results.
       
       ### glue (v1.8.0) -- Interpreted String Literals
       
@@ -52,26 +52,6 @@
       There is also a facility for returning multiple objects from functions
       and a version of transform that allows the RHS to refer to LHS used in
       the same transform.
-      
-      ### stringmagic (v1.2.0) -- Character String Operations and Interpolation, Magic Edition
-      
-      * Maintainer: Laurent R Berge
-      * Homepage: https://lrberge.github.io/stringmagic/, https://github.com/lrberge/stringmagic
-      * Date: 2025-04-18
-      * Downloads Last Month:         1
-      
-      Performs complex string operations compactly and efficiently. Supports string interpolation jointly with over 50 string operations. Also enhances regular string functions (like grep() and co). See an introduction at <https://lrberge.github.io/stringmagic/>.
-      
-      ### headliner (v0.0.3) -- Compose Sentences to Describe Comparisons
-      
-      * Maintainer: Jake Riley
-      * Homepage: https://rjake.github.io/headliner/, https://github.com/rjake/headliner/
-      * Date: 2022-12-20
-      * Downloads Last Month:       181
-      
-      Create dynamic, data-driven text. Given two values, a list of
-      talking points is generated and can be combined using string
-      interpolation. Based on the 'glue' package.
 
 ---
 
@@ -79,20 +59,13 @@
       cli::cat_line(btw_tool_search_packages("string interpolation", format = "short")@
         value)
     Output
-      Found 337 packages matching `string interpolation`, showing 10 results.
+      Found 337 packages matching `string interpolation`, showing 3 results.
       
       | package | title | version | date | url | downloads_last_month |
       |---------|-------|---------|------|-----|----------------------|
       | glue | Interpreted String Literals | 1.8.0 | 2024-09-30 | https://glue.tidyverse.org/, https://github.com/tidyverse/glue | 1,488,317 |
       | epoxy | String Interpolation for Documents, Reports and Apps | 1.0.0 | 2023-09-19 | https://pkg.garrickadenbuie.com/epoxy/, https://github.com/gadenbuie/epoxy |       258 |
       | gsubfn | Utilities for Strings and Function Arguments | 0.7 | 2018-03-16 | https://github.com/ggrothendieck/gsubfn |    19,149 |
-      | stringmagic | Character String Operations and Interpolation, Magic Edition | 1.2.0 | 2025-04-18 | https://lrberge.github.io/stringmagic/, https://github.com/lrberge/stringmagic |         1 |
-      | headliner | Compose Sentences to Describe Comparisons | 0.0.3 | 2022-12-20 | https://rjake.github.io/headliner/, https://github.com/rjake/headliner/ |       181 |
-      | stringi | Fast and Portable Character String Processing Facilities | 1.8.7 | 2025-03-27 | https://stringi.gagolewski.com/, https://github.com/gagolews/stringi, https://icu.unicode.org/ | 1,170,101 |
-      | stringr | Simple, Consistent Wrappers for Common String Operations | 1.5.1 | 2023-11-14 | https://stringr.tidyverse.org, https://github.com/tidyverse/stringr | 1,139,411 |
-      | tidyr | Tidy Messy Data | 1.3.1 | 2024-01-24 | https://tidyr.tidyverse.org, https://github.com/tidyverse/tidyr | 1,098,165 |
-      | tidyselect | Select from a Set of Strings | 1.2.1 | 2024-03-11 | https://tidyselect.r-lib.org, https://github.com/r-lib/tidyselect | 1,110,863 |
-      | sqlhelper | Easier 'SQL' Integration | 0.2.1 | 2024-01-21 | https://majerr.github.io/sqlhelper/dev/, https://github.com/majerr/sqlhelper/ |       130 |
 
 # btw_tool_search_package_info() snapshots
 
