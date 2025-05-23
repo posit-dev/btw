@@ -222,19 +222,11 @@ btw_this.cran_package <- function(x, ...) {
 
 #### Details
 
-* License: {{License}}
-* Home: {{ gsub('\n', '', URL) }}
-* Issue Tracker: {{ BugReports }}
+* License: {{License}}{{ links_text }}
 * Last Updated: {{ strftime(`Date/Publication`, '%F', tz = 'UTC') }}
 
 #### Dependencies
-
-* Depends
-  {{ gsub('\n', '\n  ', depends_text) }}
-* Imports
-  {{ gsub('\n', '\n  ', imports_text) }}
-* Suggests
-  {{ gsub('\n', '\n  ', suggests_text) }}
+{{ depends_text }}{{ imports_text }}{{ suggests_text }}
 
 #### Author Information
 
@@ -242,9 +234,10 @@ btw_this.cran_package <- function(x, ...) {
 
 **Maintainer**: {{Maintainer}}"
 
-  format_deps <- function(deps) {
+  format_deps <- function(x, field) {
+    deps <- x[[field]]
     if (is.null(deps) || length(deps) == 0) {
-      return("None")
+      return("")
     }
 
     deps_text <- sapply(names(deps), function(dep_name) {
@@ -257,18 +250,29 @@ btw_this.cran_package <- function(x, ...) {
       }
     })
 
-    paste(deps_text, collapse = "\n")
+    paste0("\n* ", field, "\n  ", paste(deps_text, collapse = "\n  "))
   }
 
-  depends_text <- format_deps(x$Depends)
-  imports_text <- format_deps(x$Imports)
-  suggests_text <- format_deps(x$Suggests)
+  depends_text <- format_deps(x, "Depends")
+  imports_text <- format_deps(x, "Imports")
+  suggests_text <- format_deps(x, "Suggests")
 
-  md_text <- ellmer::interpolate(
+  links_text <- ""
+  if (!is.null(x$URL)) {
+    url_home <- gsub("\n", "", x$URL)
+    links_text <- paste0(links_text, paste("\n* Home:", url_home))
+  }
+  if (!is.null(x$BugReports)) {
+    url_bugs <- gsub("\n", "", x$BugReports)
+    links_text <- paste0(links_text, paste("\n* Issue Tracker:", url_bugs))
+  }
+
+  md_text <- glue_(
     template,
     depends_text = depends_text,
     imports_text = imports_text,
     suggests_text = suggests_text,
+    links_text = links_text,
     .envir = list2env(x, parent = parent.frame()),
     .trim = FALSE
   )

@@ -17,6 +17,10 @@ cli_escape <- function(x) {
   gsub("}", "}}", x, fixed = TRUE)
 }
 
+glue_ <- function(x, ..., .envir = parent.frame()) {
+  as.character(ellmer::interpolate(x, ..., .envir = .envir))
+}
+
 # ad-hoc check functions ------------------------------------------------------
 check_inherits <- function(
   x,
