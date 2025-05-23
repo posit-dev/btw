@@ -16,7 +16,9 @@ An info sheet about the package.
 Describes a CRAN package using \code{\link[pkgsearch:cran_package]{pkgsearch::cran_package()}}.
 }
 \examples{
-btw_this(pkgsearch::cran_package("anyflights"))
+cli::cat_line(
+  btw_this(pkgsearch::cran_package("anyflights"))
+)
 
 \dontrun{
 btw_tool_search_package_info("anyflights")
