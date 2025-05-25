@@ -146,13 +146,170 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
 #' @export
 btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
   check_dots_empty()
+  rlang::check_installed("shiny")
+  rlang::check_installed("bslib")
+  rlang::check_installed("shinychat", version = "0.2.0")
 
   client <- btw_client(
     client = client,
     tools = tools,
     path_btw = path_btw
   )
-  ellmer::live_browser(client)
+
+  ui <- bslib::page_sidebar(
+    sidebar = bslib::sidebar(
+      title = shiny::tagList(
+        "btw Tools",
+        # shiny::img(
+        #   src = system.file("man", "figures", "logo.png", package = "btw")
+        # )
+      ),
+      width = "30vw",
+      height = "100%",
+      style = bslib::css(max_height = "100%"),
+      shiny::div(
+        class = "btn-group",
+        shiny::actionButton(
+          "select_all",
+          "Select All",
+          icon = shiny::icon("check-square"),
+          class = "btn-sm"
+        ),
+        shiny::actionButton(
+          "deselect_all",
+          "Select none",
+          icon = shiny::icon("square"),
+          class = "btn-sm"
+        )
+      ),
+      shiny::div(
+        class = "overflow-y-auto",
+        create_tool_accordion(btw_tools_df())
+      )
+    ),
+    shiny::actionButton(
+      "close_btn",
+      label = "",
+      class = "btn-close",
+      style = "position: fixed; top: 6px; right: 6px;"
+    ),
+    shinychat::chat_mod_ui("chat", client = client)
+  )
+
+  server <- function(input, output, session) {
+    shinychat::chat_mod_server("chat", client = client)
+    shiny::observeEvent(input$close_btn, {
+      shiny::stopApp()
+    })
+
+    tool_groups <- unique(btw_tools_df()$group)
+
+    selected_tools <- shiny::reactive({
+      unlist(
+        map(tool_groups, function(group) input[[paste0("tools_", group)]])
+      )
+    })
+
+    shiny::observeEvent(input$select_all, {
+      tools <- btw_tools_df()
+      for (group in tool_groups) {
+        shiny::updateCheckboxGroupInput(
+          session = session,
+          inputId = paste0("tools_", group),
+          selected = tools[tools$group == group, ][["name"]]
+        )
+      }
+    })
+
+    shiny::observeEvent(input$deselect_all, {
+      tools <- btw_tools_df()
+      for (group in tool_groups) {
+        shiny::updateCheckboxGroupInput(
+          session = session,
+          inputId = paste0("tools_", group),
+          selected = ""
+        )
+      }
+    })
+
+    shiny::observe({
+      if (!length(selected_tools())) {
+        client$set_tools(list())
+      } else {
+        client$set_tools(btw_tools(selected_tools()))
+      }
+    })
+  }
+
+  app <- shiny::shinyApp(ui, server)
+  tryCatch(shiny::runGadget(app), interrupt = function(cnd) NULL)
+  invisible(client)
+}
+
+btw_tools_df <- function() {
+  .btw_tools <- map(.btw_tools, function(def) {
+    tool <- def$tool()
+    if (is.null(tool)) return()
+    data.frame(
+      group = def$group,
+      name = tool@name,
+      description = tool@description,
+      title = tool@annotations$title,
+      is_read_only = tool@annotations$read_only_hint %||% FALSE,
+      is_open_world = tool@annotations$open_world_hint %||% FALSE
+    )
+  })
+  .btw_tools <- dplyr::bind_rows(.btw_tools)
+  dplyr::as_tibble(.btw_tools)
+}
+
+create_tool_accordion <- function(tools_df) {
+  # Get unique groups
+  groups <- unique(tools_df$group)
+
+  # Create an accordion panel for each group
+  panels <- lapply(groups, function(group) {
+    # Filter tools for this group
+    group_tools <- tools_df[tools_df$group == group, ]
+
+    # Create choice names with tooltips for each tool
+    choice_names <- lapply(seq_len(nrow(group_tools)), function(i) {
+      tool <- group_tools[i, ]
+
+      # Extract description up to the first empty line
+      description <- strsplit(tool$description, "\n\n")[[1]][1]
+
+      # Create a label with tooltip
+      bslib::tooltip(
+        span(tool$title),
+        description,
+        placement = "right"
+      )
+    })
+
+    # Create choice values (tool names)
+    choice_values <- group_tools$name
+
+    # Create checkbox group input
+    checkbox_group <- shiny::checkboxGroupInput(
+      inputId = paste0("tools_", group),
+      label = NULL,
+      choiceNames = choice_names,
+      choiceValues = choice_values,
+      selected = choice_values,
+    )
+
+    # Create the accordion panel with the group name as title
+    shiny::tagList(
+      shiny::h3(
+        class = "h6",
+        paste0(toupper(substring(group, 1, 1)), substring(group, 2))
+      ),
+      checkbox_group
+    )
+  })
+
+  shiny::tagList(!!!panels)
 }
 
 # nocov end

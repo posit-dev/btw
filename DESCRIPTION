@@ -37,8 +37,11 @@ Imports:
     utils,
     withr
 Suggests:
+    bslib (>= 0.7.0),
     gh,
     pandoc,
+    shiny,
+    shinychat (>= 0.2.0),
     testthat (>= 3.0.0)
 Config/Needs/website: tidyverse/tidytemplate
 Config/testthat/edition: 3
