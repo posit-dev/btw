@@ -156,15 +156,25 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
     path_btw = path_btw
   )
 
+  shiny::addResourcePath(
+    "figures",
+    system.file("man", "figures", package = "btw")
+  )
+
   ui <- bslib::page_sidebar(
     sidebar = bslib::sidebar(
-      title = shiny::tagList(
-        "btw Tools",
-        # shiny::img(
-        #   src = system.file("man", "figures", "logo.png", package = "btw")
-        # )
+      title = shiny::tags$header(
+        shiny::img(
+          src = "figures/logo.png",
+          class = "me-2 dib",
+          style = bslib::css(max_width = "35px")
+        ),
+        "Chat with",
+        shiny::code("{btw}"),
+        "tools",
+        class = "sidebar-title mb-0",
       ),
-      width = "30vw",
+      width = NULL,
       height = "100%",
       style = bslib::css(max_height = "100%"),
       shiny::div(
@@ -183,9 +193,14 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
         )
       ),
       shiny::div(
-        class = "overflow-y-auto",
-        create_tool_accordion(btw_tools_df())
-      )
+        class = "overflow-y-auto overflow-x-visible",
+        app_tool_group_inputs(
+          btw_tools_df(),
+          initial_tool_names = map_chr(client$get_tools(), function(.x) .x@name)
+        ),
+        uiOutput("ui_other_tools")
+      ),
+      bslib::input_dark_mode(style = "display: none")
     ),
     shiny::actionButton(
       "close_btn",
@@ -193,7 +208,10 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
       class = "btn-close",
       style = "position: fixed; top: 6px; right: 6px;"
     ),
-    shinychat::chat_mod_ui("chat", client = client)
+    shinychat::chat_mod_ui("chat", client = client),
+    shiny::tags$head(
+      shiny::tags$style(":root { --bslib-sidebar-width: max(30vw, 275px); }"),
+    )
   )
 
   server <- function(input, output, session) {
@@ -203,8 +221,12 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
     })
 
     tool_groups <- unique(btw_tools_df()$group)
+    other_tools <- keep(client$get_tools(), function(tool) {
+      !identical(substring(tool@name, 1, 9), "btw_tool_")
+    })
 
     selected_tools <- shiny::reactive({
+      tool_groups <- c(tool_groups, if (length(other_tools) > 0) "other")
       unlist(
         map(tool_groups, function(group) input[[paste0("tools_", group)]])
       )
@@ -236,8 +258,35 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
       if (!length(selected_tools())) {
         client$set_tools(list())
       } else {
-        client$set_tools(btw_tools(selected_tools()))
+        .btw_tools <- keep(btw_tools(), function(tool) {
+          tool@name %in% selected_tools()
+        })
+        .other_tools <- keep(other_tools, function(tool) {
+          tool@name %in% selected_tools()
+        })
+        client$set_tools(c(.btw_tools, other_tools))
       }
+    })
+
+    output$ui_other_tools <- shiny::renderUI({
+      if (length(other_tools) == 0) {
+        return(NULL)
+      }
+
+      other_tools_df <- dplyr::bind_rows(
+        map(other_tools, function(tool) {
+          dplyr::tibble(
+            group = "other",
+            name = tool@name,
+            description = tool@description,
+            title = tool@annotations$title %||% tool@name,
+            is_read_only = tool@annotations$read_only_hint %||% FALSE,
+            is_open_world = tool@annotations$open_world_hint %||% FALSE
+          )
+        })
+      )
+
+      app_tool_group_choice_input("other", other_tools_df)
     })
   }
 
@@ -250,7 +299,7 @@ btw_tools_df <- function() {
   .btw_tools <- map(.btw_tools, function(def) {
     tool <- def$tool()
     if (is.null(tool)) return()
-    data.frame(
+    dplyr::tibble(
       group = def$group,
       name = tool@name,
       description = tool@description,
@@ -259,57 +308,62 @@ btw_tools_df <- function() {
       is_open_world = tool@annotations$open_world_hint %||% FALSE
     )
   })
-  .btw_tools <- dplyr::bind_rows(.btw_tools)
-  dplyr::as_tibble(.btw_tools)
+  dplyr::bind_rows(.btw_tools)
 }
 
-create_tool_accordion <- function(tools_df) {
-  # Get unique groups
-  groups <- unique(tools_df$group)
+app_tool_group_inputs <- function(tools_df, initial_tool_names = NULL) {
+  tools_df <- split(tools_df, tools_df$group)
 
-  # Create an accordion panel for each group
-  panels <- lapply(groups, function(group) {
-    # Filter tools for this group
-    group_tools <- tools_df[tools_df$group == group, ]
+  map2(
+    names(tools_df),
+    tools_df,
+    app_tool_group_choice_input,
+    initial_tool_names = initial_tool_names
+  )
+}
 
-    # Create choice names with tooltips for each tool
-    choice_names <- lapply(seq_len(nrow(group_tools)), function(i) {
-      tool <- group_tools[i, ]
+app_tool_group_choice_input <- function(
+  group,
+  group_tools_df,
+  initial_tool_names = NULL
+) {
+  choice_names <- pmap(group_tools_df, app_tool_group_choices_labels)
 
-      # Extract description up to the first empty line
-      description <- strsplit(tool$description, "\n\n")[[1]][1]
+  if (is.null(initial_tool_names)) {
+    initial_tool_names <- group_tools_df$name
+  }
 
-      # Create a label with tooltip
-      bslib::tooltip(
-        span(tool$title),
-        description,
-        placement = "right"
-      )
-    })
+  label_text <- if (group == "other") {
+    "Other Tools"
+  } else {
+    paste0(toupper(substring(group, 1, 1)), substring(group, 2))
+  }
 
-    # Create choice values (tool names)
-    choice_values <- group_tools$name
+  shiny::checkboxGroupInput(
+    inputId = paste0("tools_", group),
+    label = shiny::h3(label_text, class = "h6 mb-0"),
+    choiceNames = choice_names,
+    choiceValues = group_tools_df$name,
+    selected = intersect(group_tools_df$name, initial_tool_names),
+  )
+}
 
-    # Create checkbox group input
-    checkbox_group <- shiny::checkboxGroupInput(
-      inputId = paste0("tools_", group),
-      label = NULL,
-      choiceNames = choice_names,
-      choiceValues = choice_values,
-      selected = choice_values,
-    )
+app_tool_group_choices_labels <- function(title, description, ...) {
+  description <- strsplit(description, "\n\n")[[1]][1]
 
-    # Create the accordion panel with the group name as title
-    shiny::tagList(
-      shiny::h3(
-        class = "h6",
-        paste0(toupper(substring(group, 1, 1)), substring(group, 2))
+  bslib::tooltip(
+    shiny::span(
+      title,
+      shiny::HTML("&nbsp;", .noWS = c("before", "after")),
+      shiny::icon(
+        "info-circle",
+        class = "text-secondary",
+        .noWS = c("before", "after")
       ),
-      checkbox_group
-    )
-  })
-
-  shiny::tagList(!!!panels)
+    ),
+    description,
+    placement = "right"
+  )
 }
 
 # nocov end
