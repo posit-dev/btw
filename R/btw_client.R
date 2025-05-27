@@ -198,7 +198,7 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
           btw_tools_df(),
           initial_tool_names = map_chr(client$get_tools(), function(.x) .x@name)
         ),
-        uiOutput("ui_other_tools")
+        shiny::uiOutput("ui_other_tools")
       ),
       bslib::input_dark_mode(style = "display: none")
     ),
