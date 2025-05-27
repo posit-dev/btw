@@ -210,7 +210,13 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
     ),
     shinychat::chat_mod_ui("chat", client = client),
     shiny::tags$head(
-      shiny::tags$style(":root { --bslib-sidebar-width: max(30vw, 275px); }"),
+      shiny::tags$style(shiny::HTML(
+        "
+        :root { --bslib-sidebar-width: max(30vw, 275px); }
+        .opacity-100-hover:hover { opacity: 1 !important; }
+        :hover > .opacity-100-hover-parent, .opacity-100-hover-parent:hover { opacity: 1 !important; }
+      "
+      )),
     )
   )
 
@@ -280,8 +286,8 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
             name = tool@name,
             description = tool@description,
             title = tool@annotations$title %||% tool@name,
-            is_read_only = tool@annotations$read_only_hint %||% FALSE,
-            is_open_world = tool@annotations$open_world_hint %||% FALSE
+            is_read_only = tool@annotations$read_only_hint %||% NA,
+            is_open_world = tool@annotations$open_world_hint %||% NA
           )
         })
       )
@@ -304,8 +310,8 @@ btw_tools_df <- function() {
       name = tool@name,
       description = tool@description,
       title = tool@annotations$title,
-      is_read_only = tool@annotations$read_only_hint %||% FALSE,
-      is_open_world = tool@annotations$open_world_hint %||% FALSE
+      is_read_only = tool@annotations$read_only_hint %||% NA,
+      is_open_world = tool@annotations$open_world_hint %||% NA
     )
   })
   dplyr::bind_rows(.btw_tools)
@@ -354,22 +360,56 @@ app_tool_group_choice_input <- function(
   )
 }
 
-app_tool_group_choices_labels <- function(title, description, ...) {
+app_tool_group_choices_labels <- function(
+  title,
+  description,
+  ...,
+  is_read_only = NA,
+  is_open_world = NA
+) {
   description <- strsplit(description, "\\.\\s")[[1]][1]
   description <- paste0(sub("\\.$", "", description), ".")
 
-  bslib::tooltip(
-    shiny::span(
-      title,
-      shiny::HTML("&nbsp;", .noWS = c("before", "after")),
-      shiny::icon(
-        "info-circle",
-        class = "text-secondary",
-        .noWS = c("before", "after")
+  shiny::tagList(
+    bslib::tooltip(
+      shiny::span(
+        title,
+        shiny::HTML("&nbsp;", .noWS = c("before", "after")),
+        shiny::icon(
+          "info-circle",
+          class = "small text-secondary opacity-50 opacity-100-hover-parent",
+          .noWS = c("before", "after")
+        ),
       ),
+      description,
+      placement = "right"
     ),
-    description,
-    placement = "right"
+    if (!isTRUE(is_read_only)) {
+      bslib::tooltip(
+        shiny::icon(
+          "file-pen",
+          class = "small text-danger opacity-50 opacity-100-hover"
+        ),
+        shiny::HTML(
+          if (is.na(is_read_only)) {
+            "<strong>May Modify Files</strong><br>This tool does not explicitly report that it is read-only."
+          } else {
+            "<strong>Read-Write</strong><br>This tool self-reports that it can modify files."
+          }
+        )
+      )
+    },
+    if (isTRUE(is_open_world)) {
+      bslib::tooltip(
+        shiny::icon(
+          "satellite-dish",
+          class = "small text-primary opacity-50 opacity-100-hover"
+        ),
+        shiny::HTML(
+          "<strong>Open World Tool</strong><br>This tool may access external resources, such as the web or databases."
+        )
+      )
+    }
   )
 }
 
