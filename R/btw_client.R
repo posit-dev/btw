@@ -161,22 +161,35 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
     system.file("man", "figures", package = "btw")
   )
 
+  btw_title <- function(in_sidebar) {
+    logo <- shiny::img(
+      src = "figures/logo.png",
+      class = "me-2 dib",
+      style = bslib::css(max_width = "35px"),
+      .noWS = c("before", "after")
+    )
+    shiny::tags$header(
+      if (in_sidebar) {
+        shiny::span(logo)
+      } else {
+        shiny::actionLink("show_sidebar", logo)
+      },
+      "Chat with",
+      shiny::code("{btw}"),
+      "tools",
+      class = "sidebar-title mb-0",
+    )
+  }
+
   ui <- bslib::page_sidebar(
+    window_title = "Chat with {btw} tools",
     sidebar = bslib::sidebar(
-      title = shiny::tags$header(
-        shiny::img(
-          src = "figures/logo.png",
-          class = "me-2 dib",
-          style = bslib::css(max_width = "35px")
-        ),
-        "Chat with",
-        shiny::code("{btw}"),
-        "tools",
-        class = "sidebar-title mb-0",
-      ),
+      id = "tools_sidebar",
+      title = btw_title(TRUE),
       width = NULL,
       height = "100%",
       style = bslib::css(max_height = "100%"),
+      open = "closed",
       shiny::div(
         class = "btn-group",
         shiny::actionButton(
@@ -208,6 +221,7 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
       class = "btn-close",
       style = "position: fixed; top: 6px; right: 6px;"
     ),
+    btw_title(FALSE),
     shinychat::chat_mod_ui("chat", client = client),
     shiny::tags$head(
       shiny::tags$style(shiny::HTML(
@@ -215,6 +229,9 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
         :root { --bslib-sidebar-width: max(30vw, 275px); }
         .opacity-100-hover:hover { opacity: 1 !important; }
         :hover > .opacity-100-hover-parent, .opacity-100-hover-parent:hover { opacity: 1 !important; }
+        .bslib-sidebar-layout > .main > main .sidebar-title { display: none; }
+        .sidebar-collapsed > .main > main .sidebar-title { display: block; }
+        .bslib-sidebar-layout.sidebar-collapsed>.collapse-toggle { top: 1.8rem; }
       "
       )),
     )
@@ -224,6 +241,10 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
     shinychat::chat_mod_server("chat", client = client)
     shiny::observeEvent(input$close_btn, {
       shiny::stopApp()
+    })
+
+    shiny::observeEvent(input$show_sidebar, {
+      bslib::sidebar_toggle("tools_sidebar")
     })
 
     tool_groups <- unique(btw_tools_df()$group)
