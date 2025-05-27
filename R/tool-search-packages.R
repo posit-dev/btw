@@ -147,7 +147,7 @@ Bad: Search for `"statistical analysis tools for permutation test"`
       .annotations = ellmer::tool_annotations(
         title = "CRAN Package Search",
         read_only_hint = TRUE,
-        open_world_hint = FALSE,
+        open_world_hint = TRUE,
         idempotent_hint = FALSE
       ),
       query = ellmer::type_string(
@@ -295,7 +295,7 @@ btw_this.cran_package <- function(x, ...) {
       .annotations = ellmer::tool_annotations(
         title = "CRAN Package Info",
         read_only_hint = TRUE,
-        open_world_hint = FALSE,
+        open_world_hint = TRUE,
         idempotent_hint = FALSE
       ),
       package_name = ellmer::type_string(
