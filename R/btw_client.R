@@ -349,7 +349,8 @@ app_tool_group_choice_input <- function(
 }
 
 app_tool_group_choices_labels <- function(title, description, ...) {
-  description <- strsplit(description, "\n\n")[[1]][1]
+  description <- strsplit(description, "\\.\\s")[[1]][1]
+  description <- paste0(sub("\\.$", "", description), ".")
 
   bslib::tooltip(
     shiny::span(
