@@ -333,11 +333,17 @@ app_tool_group_choice_input <- function(
     initial_tool_names <- group_tools_df$name
   }
 
-  label_text <- if (group == "other") {
-    "Other Tools"
-  } else {
+  label_text <- switch(
+    group,
+    "docs" = shiny::span(shiny::icon("book"), "Documentation"),
+    "env" = shiny::span(shiny::icon("globe"), "Environment"),
+    "files" = shiny::span(shiny::icon("folder"), "Files"),
+    "ide" = shiny::span(shiny::icon("code"), "IDE"),
+    "search" = shiny::span(shiny::icon("search"), "Search"),
+    "session" = shiny::span(shiny::icon("desktop"), "Session Info"),
+    "other" = shiny::span(shiny::icon("tools"), "Other Tools"),
     paste0(toupper(substring(group, 1, 1)), substring(group, 2))
-  }
+  )
 
   shiny::checkboxGroupInput(
     inputId = paste0("tools_", group),
