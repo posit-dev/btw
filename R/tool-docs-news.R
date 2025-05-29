@@ -112,7 +112,7 @@ btw_this.news_db <- function(x, ...) {
   news <- dplyr::summarize(
     news,
     md = paste(.data$match, collapse = "\n\n"),
-    .by = c(.data$Version, .data$Category)
+    .by = c("Version", "Category")
   )
   news$md <- pandoc_convert_text(news$md, to = "markdown")
 
@@ -122,7 +122,7 @@ btw_this.news_db <- function(x, ...) {
   news <- dplyr::summarize(
     news,
     md = paste(paste0(.data$Category, .data$md), collapse = "\n\n"),
-    .by = .data$Version
+    .by = "Version"
   )
 
   news <- news[order(news$Version, decreasing = TRUE), ]
