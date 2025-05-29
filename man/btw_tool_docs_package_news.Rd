@@ -26,7 +26,7 @@ btw("@news dplyr", clipboard = FALSE)
 
 btw("@news dplyr join_by", clipboard = FALSE)
 
-if (R.version$major == 4 && R.version$minor > "1.0") {
+if (R.version$major == 4 && R.version$minor > "2.0") {
   # Should find a NEWS entry from R 4.2
   btw("@news R dynamic rd content", clipboard = FALSE)
 }
