@@ -78,6 +78,10 @@ as_btw_capture <- function(x) {
 #'   * `btw_this("?dplyr::across")` includes the reference page for
 #'     `dplyr::across`.
 #'
+#' * `"@news {{package_name}} {{search_term}}"` \cr
+#'   Include the release notes (NEWS) from the latest package release, e.g.
+#'   `"@news dplyr"`, or that match a search term, e.g. `"@news dplyr join_by"`.
+#'
 #' * `"@current_file"` or `"@current_selection"` \cr
 #'   When used in RStudio or Positron, or anywhere else that the
 #'   \pkg{rstudioapi} is supported, `btw("@current_file")` includes the contents
@@ -153,6 +157,24 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
   }
   if (identical(x, "@last_value")) {
     return(btw_this(get_last_value()))
+  }
+  if (identical(substring(x, 1, 5), "@news")) {
+    # Special syntax for @news: '@news dplyr' or '@news dplyr join_by'
+    args <- substring(x, 7)
+    if (!nzchar(args)) {
+      cli::cli_abort(c(
+        "{.code @news} must be followed by a package name and an optional search term.",
+        "i" = 'e.g. {.code "@news dplyr"} or {.code "@news dplyr join_by"}'
+      ))
+    }
+    parts <- strsplit(args, " ", fixed = TRUE)[[1]]
+    package_name <- parts[1]
+    search_term <- if (length(parts) > 1) {
+      paste(parts[-1], collapse = " ")
+    } else {
+      ""
+    }
+    return(I(btw_tool_docs_package_news(package_name, search_term)@value))
   }
 
   if (grepl("^\\./", x)) {

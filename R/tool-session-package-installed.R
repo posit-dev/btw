@@ -76,6 +76,9 @@ check_installed <- function(package_name, call = caller_env()) {
 }
 
 package_version <- function(package_name) {
+  if (identical(package_name, "R")) {
+    return(paste(R.version[c("major", "minor")], collapse = "."))
+  }
   if (is_installed(package_name)) {
     as.character(utils::packageVersion(package_name))
   }

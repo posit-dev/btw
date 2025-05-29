@@ -12,6 +12,14 @@ pandoc_convert <- function(path, ..., from = "html", to = "markdown") {
   readLines(tmp_file)
 }
 
+pandoc_convert_text <- function(text, ..., from = "html", to = "markdown") {
+  map_chr(text, function(x) {
+    tmp_input <- withr::local_tempfile()
+    writeLines(x, tmp_input)
+    paste(pandoc_convert(tmp_input, from = from, to = to, ...), collapse = "\n")
+  })
+}
+
 cli_escape <- function(x) {
   x <- gsub("{", "{{", x, fixed = TRUE)
   gsub("}", "}}", x, fixed = TRUE)

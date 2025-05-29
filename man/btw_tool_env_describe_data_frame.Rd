@@ -55,6 +55,7 @@ btw_tool_env_describe_data_frame(mtcars)
 \code{\link[=btw_this.data.frame]{btw_this.data.frame()}}, \code{\link[=btw_tools]{btw_tools()}}
 
 Other Tools: 
+\code{\link{btw_tool_docs_package_news}()},
 \code{\link{btw_tool_env_describe_environment}()},
 \code{\link{btw_tool_files_list_files}()},
 \code{\link{btw_tool_files_read_text_file}()},

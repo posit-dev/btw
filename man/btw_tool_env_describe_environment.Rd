@@ -34,6 +34,7 @@ my_cars <- mtcars[mtcars$mpg > 25, ]
 \code{\link[=btw_this.environment]{btw_this.environment()}}, \code{\link[=btw_tools]{btw_tools()}}
 
 Other Tools: 
+\code{\link{btw_tool_docs_package_news}()},
 \code{\link{btw_tool_env_describe_data_frame}()},
 \code{\link{btw_tool_files_list_files}()},
 \code{\link{btw_tool_files_read_text_file}()},
