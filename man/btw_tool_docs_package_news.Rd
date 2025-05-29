@@ -26,7 +26,10 @@ btw("@news dplyr", clipboard = FALSE)
 
 btw("@news dplyr join_by", clipboard = FALSE)
 
-btw("@news R dynamic rd content", clipboard = FALSE)
+if (R.version$major == 4 && R.version$minor > "1.0") {
+  # Should find a NEWS entry from R 4.2
+  btw("@news R dynamic rd content", clipboard = FALSE)
+}
 
 # Tool use by LLMs via ellmer or MCP ----
 btw_tool_docs_package_news("dplyr")
