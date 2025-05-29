@@ -70,6 +70,37 @@ test_that("btw_tool_docs_package_news() with R package", {
   )
 })
 
+test_that("btw_tool_docs_package_news() with unmatched search term or version", {
+  if (package_version("dplyr") != "1.1.1") {
+    with_mocked_bindings(
+      package_news = function(package_name) {
+        news <- utils::news(package = package_name)
+        news <- news[news$Version == "1.1.1", ]
+        return(news)
+      },
+      code = {
+        expect_error(
+          btw_tool_docs_package_news("dplyr"),
+          "No NEWS entries"
+        )
+        expect_error(
+          btw("@news dplyr"),
+          "No NEWS entries"
+        )
+      }
+    )
+  }
+
+  expect_error(
+    btw_tool_docs_package_news("dplyr", "asdfsdfgdfghfghj"),
+    "No NEWS entries"
+  )
+  expect_error(
+    btw("@news dplyr asdfsdfgdfghfghj"),
+    "No NEWS entries"
+  )
+})
+
 test_that("btw_tool_docs_package_news() snapshots", {
   skip_if_not_macos()
 
