@@ -9,7 +9,7 @@ btw_tool_docs_package_news(package_name, search_term = "")
 \arguments{
 \item{package_name}{The name of the package as a string, e.g. \code{"shiny"}.}
 
-\item{search_term}{A regular expression to search for in the NEWS entires.
+\item{search_term}{A regular expression to search for in the NEWS entries.
 If empty, the release notes of the current installed version is included.}
 }
 \value{
@@ -26,7 +26,7 @@ btw("@news dplyr", clipboard = FALSE)
 
 btw("@news dplyr join_by", clipboard = FALSE)
 
-if (R.version$major == 4 && R.version$minor > "2.0") {
+if (R.version$major == 4 && R.version$minor > "1.0") {
   # Should find a NEWS entry from R 4.2
   btw("@news R dynamic rd content", clipboard = FALSE)
 }
