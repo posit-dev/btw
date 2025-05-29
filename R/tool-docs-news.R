@@ -13,7 +13,7 @@ NULL
 #'
 #' btw("@news dplyr join_by", clipboard = FALSE)
 #'
-#' if (R.version$major == 4 && R.version$minor > "2.0") {
+#' if (R.version$major == 4 && R.version$minor > "1.0") {
 #'   # Should find a NEWS entry from R 4.2
 #'   btw("@news R dynamic rd content", clipboard = FALSE)
 #' }
@@ -144,11 +144,19 @@ btw_this.news_db <- function(x, ...) {
 }
 
 package_news <- function(package_name) {
-  utils::news(package = package_name)
+  news <- utils::news(package = package_name)
+  if (package_name %in% r_docs_versions()) {
+    news$Version <- map_chr(news$Version, as_package_or_r_version)
+  }
+  news
+}
+
+r_docs_versions <- function() {
+  c("R", sprintf("R-%d", seq_len(R.version$major)))
 }
 
 package_news_search <- function(package_name, search_term = "") {
-  r_docs <- c("R", sprintf("R-%d", seq_len(R.version$major)))
+  r_docs <- r_docs_versions()
   if (!package_name %in% r_docs) {
     check_installed(package_name)
   } else {
@@ -187,6 +195,27 @@ package_news_search <- function(package_name, search_term = "") {
 
   class(news) <- c("btw_filtered_news_db", class(news))
   news
+}
+
+as_package_or_r_version <- function(v) {
+  if (!grepl("[^\\d.-]", v)) {
+    return(v)
+  }
+
+  if (identical(v, "R-devel")) {
+    # Assuming the presence of `R-devel` means we're using dev R
+    return(package_version("R"))
+  }
+
+  if (grepl("patched", v)) {
+    # Remove " patched" suffix
+    v <- sub(" patched", "", v, fixed = TRUE)
+    v <- unclass(base::package_version(v))[[1]]
+    v[3] <- v[3] + 1L
+    return(paste(v, collapse = "."))
+  }
+
+  v
 }
 
 extract_relevant_news <- function(news_html, search_term) {

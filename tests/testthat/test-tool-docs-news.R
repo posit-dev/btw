@@ -35,6 +35,8 @@ test_that("btw_tool_docs_package_news() with R package", {
   r_major <- sprintf("R-%s", R.version$major)
   news_r_major <- sprintf("@news %s", r_major)
 
+  btw_package_news <- package_news
+
   local_mocked_bindings(
     package_news = local({
       cache <- list()
@@ -44,7 +46,7 @@ test_that("btw_tool_docs_package_news() with R package", {
           return(cache[[package_name]])
         }
 
-        (cache[[package_name]] <<- head(utils::news(package = package_name), 2))
+        (cache[[package_name]] <<- head(btw_package_news(package_name), 2))
       }
     }),
   )
