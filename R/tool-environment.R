@@ -123,7 +123,7 @@ btw_tool_env_describe_environment <- function(
   }
 
   if (identical(res, c("## Context", ""))) {
-    return("")
+    return(BtwToolResult(""))
   }
 
   BtwToolResult(res)
