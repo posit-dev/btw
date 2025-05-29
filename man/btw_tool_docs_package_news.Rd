@@ -22,9 +22,11 @@ recent package release or release notes matching a search term.
 }
 \examples{
 # Copy release notes to the clipboard for use in any AI app
-btw("@news dplyr")
-btw("@news dplyr join_by")
-btw("@news R svg")
+btw("@news dplyr", clipboard = FALSE)
+
+btw("@news dplyr join_by", clipboard = FALSE)
+
+btw("@news R dynamic rd content", clipboard = FALSE)
 
 # Tool use by LLMs via ellmer or MCP ----
 btw_tool_docs_package_news("dplyr")
