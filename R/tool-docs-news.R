@@ -24,7 +24,7 @@ NULL
 #' btw_tool_docs_package_news("dplyr", "join_by")
 #'
 #' @param package_name The name of the package as a string, e.g. `"shiny"`.
-#' @param search_term A regular expression to search for in the NEWS entires.
+#' @param search_term A regular expression to search for in the NEWS entries.
 #'   If empty, the release notes of the current installed version is included.
 #'
 #' @returns Returns the release notes for the currently installed version of the
