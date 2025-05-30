@@ -35,7 +35,8 @@ Imports:
     skimr,
     tibble,
     utils,
-    withr
+    withr,
+    xml2
 Suggests:
     bslib (>= 0.7.0),
     gh,
@@ -61,6 +62,7 @@ Collate:
     'import-standalone-types-check.R'
     'tool-data-frame.R'
     'tool-result.R'
+    'tool-docs-news.R'
     'tool-docs.R'
     'tool-environment.R'
     'tool-files.R'

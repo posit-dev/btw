@@ -30,6 +30,7 @@ btw_tool_ide_read_current_editor(consent = TRUE)
 }
 \seealso{
 Other Tools: 
+\code{\link{btw_tool_docs_package_news}()},
 \code{\link{btw_tool_env_describe_data_frame}()},
 \code{\link{btw_tool_env_describe_environment}()},
 \code{\link{btw_tool_files_list_files}()},

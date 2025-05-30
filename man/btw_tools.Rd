@@ -25,16 +25,19 @@ this function have access to the tools:\tabular{lll}{
    btw_tool_docs_available_vignettes \tab docs \tab List available vignettes for an R package. \cr
    btw_tool_docs_help_page \tab docs \tab Get help page from package. \cr
    btw_tool_docs_package_help_topics \tab docs \tab Get available help topics for an R package. \cr
-   btw_tool_docs_vignette \tab docs \tab Get a package vignette in plain text. \cr
-   btw_tool_env_describe_data_frame \tab env \tab Show the data frame or table or get information about the structure of a data frame or table. \cr
-   btw_tool_env_describe_environment \tab env \tab List and describe items in an environment. \cr
-   btw_tool_files_list_files \tab files \tab List files in the current working directory or in subfolders in the current project directory. \cr
-   btw_tool_files_read_text_file \tab files \tab Read an entire text file. \cr
-   btw_tool_ide_read_current_editor \tab ide \tab Read the contents of the editor that is currently open in the user's IDE. \cr
-   btw_tool_search_package_info \tab search \tab Describe a CRAN package. \cr
-   btw_tool_search_packages \tab search \tab Search for an R package on CRAN. \cr
+   btw_tool_docs_package_news \tab docs \tab Read the release notes (NEWS) for a package. \cr
 }
 
+
+Use this tool when you need to learn what changed in a package release, i.e. |
+| btw_tool_docs_vignette | docs | Get a package vignette in plain text. |
+| btw_tool_env_describe_data_frame | env | Show the data frame or table or get information about the structure of a data frame or table. |
+| btw_tool_env_describe_environment | env | List and describe items in an environment. |
+| btw_tool_files_list_files | files | List files in the current working directory or in subfolders in the current project directory. |
+| btw_tool_files_read_text_file | files | Read an entire text file. |
+| btw_tool_ide_read_current_editor | ide | Read the contents of the editor that is currently open in the user's IDE. |
+| btw_tool_search_package_info | search | Describe a CRAN package. |
+| btw_tool_search_packages | search | Search for an R package on CRAN.
 \subsection{Search Behavior}{
 \itemize{
 \item Prioritizes exact phrase matches over individual words
@@ -79,6 +82,7 @@ ch$set_tools(c(ch$get_tools(), btw_tools()))
 }
 \seealso{
 Other Tools: 
+\code{\link{btw_tool_docs_package_news}()},
 \code{\link{btw_tool_env_describe_data_frame}()},
 \code{\link{btw_tool_env_describe_environment}()},
 \code{\link{btw_tool_files_list_files}()},

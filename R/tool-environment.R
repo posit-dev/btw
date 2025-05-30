@@ -76,7 +76,9 @@ btw_tool_env_describe_environment <- function(
     if (identical(class(item), "character")) {
       # Only string literals passed through btw() hit `btw_this.character()`.
       # We rely on `dots_list()` turning `"foo"` into `list('"foo"' = "foo")`.
-      if (!identical(item_name, sprintf('"%s"', item))) {
+      item_name_dots_listed <- gsub("\\", "\\\\", item, fixed = TRUE)
+      item_name_dots_listed <- sprintf('"%s"', item_name_dots_listed)
+      if (!identical(item_name, item_name_dots_listed)) {
         item <- btw_returns_character(item)
       }
     }
@@ -123,7 +125,7 @@ btw_tool_env_describe_environment <- function(
   }
 
   if (identical(res, c("## Context", ""))) {
-    return("")
+    return(BtwToolResult(""))
   }
 
   BtwToolResult(res)
