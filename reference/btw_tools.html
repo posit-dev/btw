@@ -7,18 +7,20 @@ NameGroupDescription
 btw_tool_docs_available_vignettesdocsList available vignettes for an R package.
 btw_tool_docs_help_pagedocsGet help page from package.
 btw_tool_docs_package_help_topicsdocsGet available help topics for an R package.
-btw_tool_docs_vignettedocsGet a package vignette in plain text.
-btw_tool_env_describe_data_frameenvShow the data frame or table or get information about the structure of a data frame or table.
-btw_tool_env_describe_environmentenvList and describe items in an environment.
-btw_tool_files_list_filesfilesList files in the current working directory or in subfolders in the current project directory.
-btw_tool_files_read_text_filefilesRead an entire text file.
-btw_tool_ide_read_current_editorideRead the contents of the editor that is currently open in the user's IDE.
-btw_tool_search_package_infosearchDescribe a CRAN package.
-btw_tool_search_packagessearchSearch for an R package on CRAN.
+btw_tool_docs_package_newsdocsRead the release notes (NEWS) for a package.
 
 
 
 
+Use this tool when you need to learn what changed in a package release, i.e. |
+| btw_tool_docs_vignette | docs | Get a package vignette in plain text. |
+| btw_tool_env_describe_data_frame | env | Show the data frame or table or get information about the structure of a data frame or table. |
+| btw_tool_env_describe_environment | env | List and describe items in an environment. |
+| btw_tool_files_list_files | files | List files in the current working directory or in subfolders in the current project directory. |
+| btw_tool_files_read_text_file | files | Read an entire text file. |
+| btw_tool_ide_read_current_editor | ide | Read the contents of the editor that is currently open in the user's IDE. |
+| btw_tool_search_package_info | search | Describe a CRAN package. |
+| btw_tool_search_packages | search | Search for an R package on CRAN.
 Search Behavior
 
 
@@ -59,18 +61,20 @@ NameGroupDescription
 btw_tool_docs_available_vignettesdocsList available vignettes for an R package.
 btw_tool_docs_help_pagedocsGet help page from package.
 btw_tool_docs_package_help_topicsdocsGet available help topics for an R package.
-btw_tool_docs_vignettedocsGet a package vignette in plain text.
-btw_tool_env_describe_data_frameenvShow the data frame or table or get information about the structure of a data frame or table.
-btw_tool_env_describe_environmentenvList and describe items in an environment.
-btw_tool_files_list_filesfilesList files in the current working directory or in subfolders in the current project directory.
-btw_tool_files_read_text_filefilesRead an entire text file.
-btw_tool_ide_read_current_editorideRead the contents of the editor that is currently open in the user's IDE.
-btw_tool_search_package_infosearchDescribe a CRAN package.
-btw_tool_search_packagessearchSearch for an R package on CRAN.
+btw_tool_docs_package_newsdocsRead the release notes (NEWS) for a package.
 
 
 
 
+Use this tool when you need to learn what changed in a package release, i.e. |
+| btw_tool_docs_vignette | docs | Get a package vignette in plain text. |
+| btw_tool_env_describe_data_frame | env | Show the data frame or table or get information about the structure of a data frame or table. |
+| btw_tool_env_describe_environment | env | List and describe items in an environment. |
+| btw_tool_files_list_files | files | List files in the current working directory or in subfolders in the current project directory. |
+| btw_tool_files_read_text_file | files | Read an entire text file. |
+| btw_tool_ide_read_current_editor | ide | Read the contents of the editor that is currently open in the user's IDE. |
+| btw_tool_search_package_info | search | Describe a CRAN package. |
+| btw_tool_search_packages | search | Search for an R package on CRAN.
 Search Behavior
 
 
@@ -120,6 +124,7 @@ Bad: Search for &quot;statistical analysis tools for permutation test&quot;
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/posit-dev/btw/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -145,7 +150,15 @@ Bad: Search for &quot;statistical analysis tools for permutation test&quot;
     <p>The <code>btw_tools()</code> function provides a list of tools that can be registered
 with an ellmer chat via <code>chat$set_tools()</code> that allow the chat to
 interface with your computational environment. Chats returned by
-this function have access to the tools:</p><table class="table table"><tr><td>Name</td><td>Group</td><td>Description</td></tr><tr><td>btw_tool_docs_available_vignettes</td><td>docs</td><td>List available vignettes for an R package.</td></tr><tr><td>btw_tool_docs_help_page</td><td>docs</td><td>Get help page from package.</td></tr><tr><td>btw_tool_docs_package_help_topics</td><td>docs</td><td>Get available help topics for an R package.</td></tr><tr><td>btw_tool_docs_vignette</td><td>docs</td><td>Get a package vignette in plain text.</td></tr><tr><td>btw_tool_env_describe_data_frame</td><td>env</td><td>Show the data frame or table or get information about the structure of a data frame or table.</td></tr><tr><td>btw_tool_env_describe_environment</td><td>env</td><td>List and describe items in an environment.</td></tr><tr><td>btw_tool_files_list_files</td><td>files</td><td>List files in the current working directory or in subfolders in the current project directory.</td></tr><tr><td>btw_tool_files_read_text_file</td><td>files</td><td>Read an entire text file.</td></tr><tr><td>btw_tool_ide_read_current_editor</td><td>ide</td><td>Read the contents of the editor that is currently open in the user's IDE.</td></tr><tr><td>btw_tool_search_package_info</td><td>search</td><td>Describe a CRAN package.</td></tr><tr><td>btw_tool_search_packages</td><td>search</td><td>Search for an R package on CRAN.</td></tr></table><div class="section">
+this function have access to the tools:</p><table class="table table"><tr><td>Name</td><td>Group</td><td>Description</td></tr><tr><td>btw_tool_docs_available_vignettes</td><td>docs</td><td>List available vignettes for an R package.</td></tr><tr><td>btw_tool_docs_help_page</td><td>docs</td><td>Get help page from package.</td></tr><tr><td>btw_tool_docs_package_help_topics</td><td>docs</td><td>Get available help topics for an R package.</td></tr><tr><td>btw_tool_docs_package_news</td><td>docs</td><td>Read the release notes (NEWS) for a package.</td></tr></table><p>Use this tool when you need to learn what changed in a package release, i.e. |
+| btw_tool_docs_vignette | docs | Get a package vignette in plain text. |
+| btw_tool_env_describe_data_frame | env | Show the data frame or table or get information about the structure of a data frame or table. |
+| btw_tool_env_describe_environment | env | List and describe items in an environment. |
+| btw_tool_files_list_files | files | List files in the current working directory or in subfolders in the current project directory. |
+| btw_tool_files_read_text_file | files | Read an entire text file. |
+| btw_tool_ide_read_current_editor | ide | Read the contents of the editor that is currently open in the user's IDE. |
+| btw_tool_search_package_info | search | Describe a CRAN package. |
+| btw_tool_search_packages | search | Search for an R package on CRAN.</p><div class="section">
 <h3 id="search-behavior">Search Behavior<a class="anchor" aria-label="anchor" href="#search-behavior"></a></h3>
 
 <ul><li><p>Prioritizes exact phrase matches over individual words</p></li>
@@ -199,6 +212,7 @@ place. The <code>chat</code> input is returned invisibly.</p>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other Tools:
+<code><a href="btw_tool_docs_package_news.html">btw_tool_docs_package_news</a>()</code>,
 <code><a href="btw_tool_env_describe_data_frame.html">btw_tool_env_describe_data_frame</a>()</code>,
 <code><a href="btw_tool_env_describe_environment.html">btw_tool_env_describe_environment</a>()</code>,
 <code><a href="btw_tool_files_list_files.html">btw_tool_files_list_files</a>()</code>,
