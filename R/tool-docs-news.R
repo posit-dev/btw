@@ -140,6 +140,8 @@ btw_this.news_db <- function(x, ...) {
 {{news$md}}",
   )
 
+  # Returns as-is so that btw(news(package = package_name)) is treated as
+  # pre-formatted text and not formatted as an object/result pair
   I(paste(news_md, collapse = "\n\n"))
 }
 
