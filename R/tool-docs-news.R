@@ -236,7 +236,7 @@ extract_relevant_news <- function(news_html, search_term) {
   )
   top_level_p <- xml2::xml_find_all(
     doc,
-    "/html/body/p | /body/p | //p[not(ancestor::li)]"
+    "//p[not(ancestor::li)]"
   )
 
   all_elements <- c(li_elements, top_level_p)
