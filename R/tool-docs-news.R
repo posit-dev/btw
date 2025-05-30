@@ -166,6 +166,9 @@ package_news_search <- function(package_name, search_term = "") {
   }
 
   news <- package_news(package_name)
+  if (is.null(news)) {
+    return(data.frame())
+  }
   news$Version <- base::package_version(news$Version)
 
   if (!nzchar(search_term)) {
