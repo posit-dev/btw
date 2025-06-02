@@ -36,6 +36,67 @@ Use this tool when you need to learn what changed in a package release, i.e. |
 | btw_tool_files_list_files | files | List files in the current working directory or in subfolders in the current project directory. |
 | btw_tool_files_read_text_file | files | Read an entire text file. |
 | btw_tool_ide_read_current_editor | ide | Read the contents of the editor that is currently open in the user's IDE. |
+| btw_tool_memory_project_context_add | memory | Store or append information about the project.
+
+Use this when the user provides new information that won't change during the project lifecycle about:
+\itemize{
+\item \strong{problem_description}: The main business problem or research question (replaces existing)
+\item \strong{objectives}: Specific analysis goals or questions to answer (appends to list)
+\item \strong{constraints}: Limitations, requirements, or restrictions (appends to list)
+\item \strong{business_context}: Domain knowledge, organizational background (appends to list)
+}
+
+\strong{When to use:} User mentions project goals, business requirements, analysis objectives, domain constraints, or background context that should be remembered across sessions.
+
+\strong{Examples:}
+\itemize{
+\item User says "I need to predict customer churn" -> store in \code{problem_description} as "Identify customers at risk of churning"
+\item User explains "We need three risk levels" -> add to \code{objectives} as "Segment customers into low, medium, high risk"
+\item User states "We can't use personal data" -> add to \code{constraints} as "No personal data allowed in analysis"
+\item User provides background on company goals -> add to \code{business_context} as "Recent product changes have affected customer retention". |
+| btw_tool_memory_project_context_read | memory | Read project memory.
+}
+
+Retrieves stored project context to understand the analysis requirements and provide contextually appropriate responses.
+
+\strong{When to use:}
+\itemize{
+\item At the start of conversations to understand the project scope
+\item When making analysis recommendations to align with stated objectives
+\item When the user asks about project goals or requirements
+\item Before suggesting approaches to ensure they fit within constraints
+\item When you need to recall business context to interpret results appropriately
+}
+
+\strong{Key scenarios:}
+\itemize{
+\item User asks "What are we trying to accomplish?" -> read \code{objectives}
+\item User wants analysis suggestions -> read constraints and \code{success_criteria}
+\item User asks about project background -> read \code{business_context}
+\item You need full context for recommendations -> read without specifying key
+}
+
+\strong{Best practice:} Check project context early in conversations to provide more relevant and targeted assistance. |
+| btw_tool_memory_project_context_replace | memory | Replace or correct existing project memory.
+
+\strong{When to use:}
+\itemize{
+\item User corrects previously stated objectives or requirements
+\item Project scope changes significantly
+\item User provides more accurate problem description
+\item Need to reorganize or consolidate scattered information
+\item User explicitly asks to "update" or "change" stored project information
+}
+
+\strong{Key scenarios:}
+\itemize{
+\item "Actually, the goal is prediction, not classification" -> replace objectives
+\item "I was wrong about the constraints" -> replace constraints
+\item User provides detailed problem statement to replace vague initial description
+\item Consolidating multiple business_context entries into organized list
+}
+
+\strong{Caution:} Use sparingly - prefer \code{add} for new information. |
 | btw_tool_search_package_info | search | Describe a CRAN package. |
 | btw_tool_search_packages | search | Search for an R package on CRAN.
 \subsection{Search Behavior}{

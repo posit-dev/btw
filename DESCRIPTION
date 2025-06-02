@@ -36,7 +36,8 @@ Imports:
     tibble,
     utils,
     withr,
-    xml2
+    xml2,
+    yaml
 Suggests:
     bslib (>= 0.7.0),
     gh,
@@ -66,6 +67,7 @@ Collate:
     'tool-docs.R'
     'tool-environment.R'
     'tool-files.R'
+    'tool-memory.R'
     'tool-rstudioapi.R'
     'tool-search-packages.R'
     'tool-session-package-installed.R'
