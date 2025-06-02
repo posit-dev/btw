@@ -26,103 +26,20 @@ this function have access to the tools:\tabular{lll}{
    btw_tool_docs_help_page \tab docs \tab Get help page from package. \cr
    btw_tool_docs_package_help_topics \tab docs \tab Get available help topics for an R package. \cr
    btw_tool_docs_package_news \tab docs \tab Read the release notes (NEWS) for a package. \cr
-}
-
-
-Use this tool when you need to learn what changed in a package release, i.e. |
-| btw_tool_docs_vignette | docs | Get a package vignette in plain text. |
-| btw_tool_env_describe_data_frame | env | Show the data frame or table or get information about the structure of a data frame or table. |
-| btw_tool_env_describe_environment | env | List and describe items in an environment. |
-| btw_tool_files_list_files | files | List files in the current working directory or in subfolders in the current project directory. |
-| btw_tool_files_read_text_file | files | Read an entire text file. |
-| btw_tool_ide_read_current_editor | ide | Read the contents of the editor that is currently open in the user's IDE. |
-| btw_tool_memory_project_context_add | memory | Store or append information about the project.
-
-Use this when the user provides new information that won't change during the project lifecycle about:
-\itemize{
-\item \strong{problem_description}: The main business problem or research question (replaces existing)
-\item \strong{objectives}: Specific analysis goals or questions to answer (appends to list)
-\item \strong{constraints}: Limitations, requirements, or restrictions (appends to list)
-\item \strong{business_context}: Domain knowledge, organizational background (appends to list)
-}
-
-\strong{When to use:} User mentions project goals, business requirements, analysis objectives, domain constraints, or background context that should be remembered across sessions.
-
-\strong{Examples:}
-\itemize{
-\item User says "I need to predict customer churn" -> store in \code{problem_description} as "Identify customers at risk of churning"
-\item User explains "We need three risk levels" -> add to \code{objectives} as "Segment customers into low, medium, high risk"
-\item User states "We can't use personal data" -> add to \code{constraints} as "No personal data allowed in analysis"
-\item User provides background on company goals -> add to \code{business_context} as "Recent product changes have affected customer retention". |
-| btw_tool_memory_project_context_read | memory | Read project memory.
-}
-
-Retrieves stored project context to understand the analysis requirements and provide contextually appropriate responses.
-
-\strong{When to use:}
-\itemize{
-\item At the start of conversations to understand the project scope
-\item When making analysis recommendations to align with stated objectives
-\item When the user asks about project goals or requirements
-\item Before suggesting approaches to ensure they fit within constraints
-\item When you need to recall business context to interpret results appropriately
-}
-
-\strong{Key scenarios:}
-\itemize{
-\item User asks "What are we trying to accomplish?" -> read \code{objectives}
-\item User wants analysis suggestions -> read constraints and \code{success_criteria}
-\item User asks about project background -> read \code{business_context}
-\item You need full context for recommendations -> read without specifying key
-}
-
-\strong{Best practice:} Check project context early in conversations to provide more relevant and targeted assistance. |
-| btw_tool_memory_project_context_replace | memory | Replace or correct existing project memory.
-
-\strong{When to use:}
-\itemize{
-\item User corrects previously stated objectives or requirements
-\item Project scope changes significantly
-\item User provides more accurate problem description
-\item Need to reorganize or consolidate scattered information
-\item User explicitly asks to "update" or "change" stored project information
-}
-
-\strong{Key scenarios:}
-\itemize{
-\item "Actually, the goal is prediction, not classification" -> replace objectives
-\item "I was wrong about the constraints" -> replace constraints
-\item User provides detailed problem statement to replace vague initial description
-\item Consolidating multiple business_context entries into organized list
-}
-
-\strong{Caution:} Use sparingly - prefer \code{add} for new information. |
-| btw_tool_search_package_info | search | Describe a CRAN package. |
-| btw_tool_search_packages | search | Search for an R package on CRAN.
-\subsection{Search Behavior}{
-\itemize{
-\item Prioritizes exact phrase matches over individual words
-\item Falls back to word matching only when phrase matching fails
-}
-}
-
-\subsection{Query Strategy}{
-\itemize{
-\item Submit separate searches for distinct concepts (e.g., \code{flights}, \code{airlines})
-\item Break multi-concept queries (e.g., \verb{flights airlines data API}) into multiple searches and synthesize results
-\item Search for single, specific technical terms that package authors would use
-\item If the search result includes more than a 1000 results, refine your query and try again.
-}
-}
-
-\subsection{Examples}{
-
-Good: Search for \code{"permutation test"} or just \code{"permutation"}
-Bad: Search for \code{"statistical analysis tools for permutation test"}
-. |
-| btw_tool_session_check_package_installed | session | Check if a package is installed in the current session. |
-| btw_tool_session_package_info | session | Verify that a specific package is installed, or find out which packages are in use in the current session. |
-| btw_tool_session_platform_info | session | Describes the R version, operating system, language and locale settings for the user's system. |
+   btw_tool_docs_vignette \tab docs \tab Get a package vignette in plain text. \cr
+   btw_tool_env_describe_data_frame \tab env \tab Show the data frame or table or get information about the structure of a data frame or table. \cr
+   btw_tool_env_describe_environment \tab env \tab List and describe items in an environment. \cr
+   btw_tool_files_list_files \tab files \tab List files in the current working directory or in subfolders in the current project directory. \cr
+   btw_tool_files_read_text_file \tab files \tab Read an entire text file. \cr
+   btw_tool_ide_read_current_editor \tab ide \tab Read the contents of the editor that is currently open in the user's IDE. \cr
+   btw_tool_memory_project_context_add \tab memory \tab Store or append information about the project. \cr
+   btw_tool_memory_project_context_read \tab memory \tab Read project memory. \cr
+   btw_tool_memory_project_context_replace \tab memory \tab Replace or correct existing project memory. \cr
+   btw_tool_search_package_info \tab search \tab Describe a CRAN package. \cr
+   btw_tool_search_packages \tab search \tab Search for an R package on CRAN. \cr
+   btw_tool_session_check_package_installed \tab session \tab Check if a package is installed in the current session. \cr
+   btw_tool_session_package_info \tab session \tab Verify that a specific package is installed, or find out which packages are in use in the current session. \cr
+   btw_tool_session_platform_info \tab session \tab Describes the R version, operating system, language and locale settings for the user's system. \cr
 }
 }
 \examples{

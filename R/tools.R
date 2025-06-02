@@ -103,7 +103,7 @@ wrap_with_intent <- function(tool) {
 # nocov start
 .docs_list_tools <- function() {
   x <- map(.btw_tools, function(tool) {
-    desc <- strsplit(S7::prop(tool$tool(), "description"), ". ", fixed = TRUE)
+    desc <- strsplit(S7::prop(tool$tool(), "description"), "[.]( |\n)")
     desc <- desc[[1]][1]
 
     if (!grepl("[.]$", desc)) {
