@@ -61,6 +61,12 @@ btw_memory_keys_project_context <- function() {
         BtwToolResult("Success.")
       },
       .name = "btw_tool_memory_project_context_add",
+      .annotations = ellmer::tool_annotations(
+        title = "Add project context to memory",
+        read_only_hint = FALSE,
+        open_world_hint = FALSE,
+        destructive_hint = FALSE
+      ),
       .description = "Store or append information about the project.
 
 Use this when the user provides new information that won't change during the project lifecycle about:
@@ -153,6 +159,11 @@ btw_tool_memory_project_context_read <- function(key = NULL, ..., path = NULL) {
         btw_tool_memory_project_context_read(key)
       },
       .name = "btw_tool_memory_project_context_read",
+      .annotations = ellmer::tool_annotations(
+        title = "Read project context from memory",
+        read_only_hint = TRUE,
+        open_world_hint = FALSE
+      ),
       .description = "Read project memory.
 
 Retrieves stored project context to understand the analysis requirements and provide contextually appropriate responses.
@@ -232,6 +243,12 @@ btw_tool_memory_project_context_replace <- function(
         BtwToolResult("Success.")
       },
       .name = "btw_tool_memory_project_context_replace",
+      .annotations = ellmer::tool_annotations(
+        title = "Replace project context in memory",
+        read_only_hint = FALSE,
+        open_world_hint = FALSE,
+        destructive_hint = TRUE
+      ),
       .description = "Replace or correct existing project memory.
 
 **When to use:**
