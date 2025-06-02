@@ -77,6 +77,32 @@ path_find_in_project <- function(filename, dir = getwd()) {
   path_find_in_project(filename, dirname(dir))
 }
 
+path_find_project_root <- function(dir = getwd()) {
+  root_files <- c(
+    "DESCRIPTION",
+    ".git",
+    ".vscode",
+    ".here",
+    "btw.md",
+    "btw-memory.yaml",
+    "btw-memory.yml"
+  )
+
+  if (any(file.exists(file.path(dir, root_files)))) {
+    return(normalizePath(dir))
+  }
+
+  if (length(dir(pattern = ".[.]Rproj$")) > 0) {
+    return(normalizePath(dir))
+  }
+
+  if (dirname(dir) == dir) {
+    return(NULL)
+  }
+
+  path_find_project_root(dirname(dir))
+}
+
 local_reproducible_output <- function(
   width = 80L,
   max.print = 100,
