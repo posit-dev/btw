@@ -28,7 +28,11 @@ btw_tool_memory_project_context_add <- function(
   check_character(content)
   path <- path_find_btw_memory(path, must_exist = FALSE)
 
-  mem <- read_btw_memory_yaml(path)
+  if (fs::file_exists(path)) {
+    mem <- read_btw_memory_yaml(path)
+  } else {
+    mem <- as_btw_memory(list())
+  }
 
   if (is.null(mem$project_context)) {
     mem$project_context <- list()
@@ -217,11 +221,15 @@ btw_tool_memory_project_context_replace <- function(
   ...,
   path = NULL
 ) {
-  path <- path_find_btw_memory(path)
+  path <- path_find_btw_memory(path, must_exist = FALSE)
   key <- arg_match(key, btw_memory_keys_project_context())
   check_character(content)
 
-  memory_data <- read_btw_memory_yaml(path)
+  if (fs::file_exists(path)) {
+    memory_data <- read_btw_memory_yaml(path)
+  } else {
+    memory_data <- as_btw_memory(list())
+  }
 
   if (key == "problem_description") {
     memory_data$project_context[[key]] <- paste(contents, collapse = "\n\n")
@@ -385,7 +393,7 @@ path_find_btw_memory <- function(path = NULL, must_exist = TRUE) {
 
   if (!is.null(path)) {
     if (must_exist && !file.exists(path)) {
-      cli::cli_abort("File '{file}' does not exist.")
+      cli::cli_abort("File {.path {path}} does not exist.")
     }
     return(path)
   }
