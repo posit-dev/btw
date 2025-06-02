@@ -29,26 +29,29 @@ btw_tool_memory_project_context_add <- function(
   path <- path_find_btw_memory(path, must_exist = FALSE)
 
   if (fs::file_exists(path)) {
-    mem <- read_btw_memory_yaml(path)
+    memory_data <- read_btw_memory_yaml(path)
   } else {
-    mem <- as_btw_memory(list())
+    memory_data <- as_btw_memory(list())
   }
 
-  if (is.null(mem$project_context)) {
-    mem$project_context <- list()
+  if (is.null(memory_data$project_context)) {
+    memory_data$project_context <- list()
   }
 
   if (key == "problem_description") {
-    mem$project_context[[key]] <- paste(
-      c(mem$project_context[[key]], content),
+    memory_data$project_context[[key]] <- paste(
+      c(memory_data$project_context[[key]], content),
       collapse = "\n\n"
     )
   } else {
-    mem$project_context[[key]] <- c(mem$project_context[[key]], content)
+    memory_data$project_context[[key]] <- c(
+      memory_data$project_context[[key]],
+      content
+    )
   }
 
-  write_btw_memory_yaml(mem, path)
-  invisible(mem)
+  write_btw_memory_yaml(memory_data, path)
+  invisible(memory_data)
 }
 
 btw_memory_keys_project_context <- function() {
