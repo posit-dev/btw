@@ -141,3 +141,176 @@ test_that("btw_client() throws if `path_btw` is provided but doesn't exist", {
     btw_client(path_btw = tempfile())
   )
 })
+
+describe("remove_hidden_content()", {
+  it("removes content after single HIDE comment", {
+    expect_equal(
+      remove_hidden_content(c("one", "<!-- HIDE -->", "two")),
+      "one"
+    )
+  })
+
+  it("removes content after multiple HIDE comments", {
+    expect_equal(
+      remove_hidden_content(c(
+        "one",
+        "<!-- HIDE -->",
+        "two",
+        "<!-- HIDE -->",
+        "three"
+      )),
+      "one"
+    )
+  })
+
+  it("removes content between HIDE and /HIDE with no closing", {
+    expect_equal(
+      remove_hidden_content(c(
+        "one",
+        "<!-- HIDE -->",
+        "two",
+        "<!-- HIDE -->",
+        "three",
+        "<!-- /HIDE -->"
+      )),
+      "one"
+    )
+  })
+
+  it("removes content with nested HIDE comments and single /HIDE", {
+    expect_equal(
+      remove_hidden_content(c(
+        "one",
+        "<!-- HIDE -->",
+        "two",
+        "<!-- HIDE -->",
+        "three",
+        "<!-- /HIDE -->",
+        "four"
+      )),
+      "one"
+    )
+  })
+
+  it("handles properly nested HIDE/HIDE blocks", {
+    expect_equal(
+      remove_hidden_content(c(
+        "one",
+        "<!-- HIDE -->",
+        "two",
+        "<!-- HIDE -->",
+        "three",
+        "<!-- /HIDE -->",
+        "four",
+        "<!-- /HIDE -->",
+        "five"
+      )),
+      c("one", "five")
+    )
+  })
+
+  it("removes all content when HIDE blocks are not properly closed", {
+    expect_equal(
+      remove_hidden_content(c(
+        "one",
+        "<!-- HIDE -->",
+        "two",
+        "<!-- HIDE -->",
+        "three",
+        "<!-- /HIDE -->",
+        "four",
+        "<!-- /HIDE -->"
+      )),
+      "one"
+    )
+  })
+
+  it("returns empty vector when input is empty", {
+    expect_equal(
+      remove_hidden_content(character(0)),
+      character(0)
+    )
+  })
+
+  it("returns original content when no HIDE comments present", {
+    expect_equal(
+      remove_hidden_content(c("one", "two", "three", "four")),
+      c("one", "two", "three", "four")
+    )
+  })
+
+  it("handles single /HIDE without opening HIDE", {
+    expect_equal(
+      remove_hidden_content(c("one", "two", "<!-- /HIDE -->", "three")),
+      c("one", "two", "<!-- /HIDE -->", "three")
+    )
+  })
+
+  it("removes everything when HIDE is at the beginning", {
+    expect_equal(
+      remove_hidden_content(c("<!-- HIDE -->", "one", "two", "three")),
+      character(0)
+    )
+  })
+
+  it("handles multiple separate HIDE/HIDE blocks", {
+    expect_equal(
+      remove_hidden_content(c(
+        "one",
+        "<!-- HIDE -->",
+        "hidden1",
+        "<!-- /HIDE -->",
+        "two",
+        "<!-- HIDE -->",
+        "hidden2",
+        "<!-- /HIDE -->",
+        "three"
+      )),
+      c("one", "two", "three")
+    )
+  })
+
+  it("handles HIDE comment as last element", {
+    expect_equal(
+      remove_hidden_content(c("one", "two", "<!-- HIDE -->")),
+      c("one", "two")
+    )
+  })
+
+  it("handles /HIDE comment as first element", {
+    expect_equal(
+      remove_hidden_content(c("<!-- /HIDE -->", "one", "two")),
+      c("<!-- /HIDE -->", "one", "two")
+    )
+  })
+
+  it("handles unmatched /HIDE comment", {
+    expect_equal(
+      remove_hidden_content(c(
+        "one",
+        "<!-- /HIDE -->",
+        "two",
+        "<!-- HIDE -->",
+        "three"
+      )),
+      c("one", "<!-- /HIDE -->", "two")
+    )
+  })
+
+  it("preserves content between multiple closed HIDE blocks", {
+    expect_equal(
+      remove_hidden_content(c(
+        "start",
+        "<!-- HIDE -->",
+        "hidden1",
+        "<!-- /HIDE -->",
+        "middle",
+        "<!-- HIDE -->",
+        "hidden2",
+        "<!-- /HIDE -->",
+        "end"
+      )),
+      c("start", "middle", "end")
+    )
+  })
+})

@@ -81,8 +81,14 @@ Follow these important style rules for any R code in this project:
 * Prefer solutions that use \{tidyverse\}
 * Always use `<-` for assignment
 * Always use the native base-R pipe `|>` for piped expressions
-
 }\if{html}{\out{</div>}}
+
+You can hide parts of the \code{btw.md} file from the system prompt by wrapping
+them in HTML \verb{<!-- HIDE -->} and \verb{<!-- /HIDE -->} comment tags. A single
+\verb{<!-- HIDE -->} comment tag will hide all content after it until the next
+\verb{<!-- /HIDE -->} tag, or the end of the file. This is particularly useful
+when your system prompt contains notes to yourself or future tasks that you
+do not want to be included in the system prompt.
 }
 
 \subsection{Client Options}{

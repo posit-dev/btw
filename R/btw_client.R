@@ -48,8 +48,14 @@
 #' * Prefer solutions that use {tidyverse}
 #' * Always use `<-` for assignment
 #' * Always use the native base-R pipe `|>` for piped expressions
-#'
 #' ````
+#'
+#' You can hide parts of the `btw.md` file from the system prompt by wrapping
+#' them in HTML `<!-- HIDE -->` and `<!-- /HIDE -->` comment tags. A single
+#' `<!-- HIDE -->` comment tag will hide all content after it until the next
+#' `<!-- /HIDE -->` tag, or the end of the file. This is particularly useful
+#' when your system prompt contains notes to yourself or future tasks that you
+#' do not want to be included in the system prompt.
 #'
 #' ## Client Options
 #'
@@ -119,11 +125,11 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
         ""
       )
     },
-    if (!is.null(config$btw_context)) {
+    if (!is.null(config$system_prompt)) {
       c(
         "# Project Context",
         "",
-        trimws(paste(config$btw_context, collapse = "\n")),
+        trimws(paste(config$system_prompt, collapse = "\n")),
         ""
       )
     },
@@ -488,11 +494,26 @@ read_btw_file <- function(path = NULL) {
 
   config <- rmarkdown::yaml_front_matter(path)
 
-  remove_yaml <- function(path) {
+  read_without_yaml <- function(path) {
     pyfm <- asNamespace("rmarkdown")[["partition_yaml_front_matter"]]
     pyfm(readLines(path, warn = FALSE))$body
   }
 
-  config$btw_context <- remove_yaml(path)
+  system_prompt <- read_without_yaml(path)
+  config$system_prompt <- remove_hidden_content(system_prompt)
   config
+}
+
+remove_hidden_content <- function(lines) {
+  if (length(lines) == 0) return(character(0))
+
+  starts <- cumsum(trimws(lines) == "<!-- HIDE -->")
+  ends <- trimws(lines) == "<!-- /HIDE -->"
+
+  # Shift ends to avoid including /HIDE
+  shift <- function(x) c(0, x[-length(x)])
+
+  ends[starts - cumsum(ends) < 0 & ends] <- FALSE
+
+  lines[starts - shift(cumsum(ends)) <= 0]
 }
