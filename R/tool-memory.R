@@ -194,7 +194,7 @@ Retrieves stored project context to understand the analysis requirements and pro
         items = ellmer::type_enum(
           values = c("all", btw_memory_keys_project_context()),
           description = "
-* all:  All project context keys
+* all: All project context keys
 * problem_description: High-level description of the business problem to solve
 * objectives: Specific analysis goals and questions to answer
 * success_criteria: How to measure if the analysis was successful
@@ -235,9 +235,9 @@ btw_tool_memory_project_context_replace <- function(
   }
 
   if (key == "problem_description") {
-    memory_data$project_context[[key]] <- paste(contents, collapse = "\n\n")
+    memory_data$project_context[[key]] <- paste(content, collapse = "\n\n")
   } else {
-    memory_data$project_context[[key]] <- as.character(contents)
+    memory_data$project_context[[key]] <- as.character(content)
   }
 
   write_btw_memory_yaml(memory_data, path)
@@ -318,9 +318,7 @@ as_btw_memory <- function(x) {
 #' @param path Path to the YAML file. Defaults to "btw-memory.yaml"
 #' @noRd
 write_btw_memory_yaml <- function(x, path = NULL) {
-  if (!inherits(x, "btw_memory")) {
-    stop("Object must have class 'btw_memory'")
-  }
+  check_inherits(x, "btw_memory")
 
   data <- unclass(x)
   path <- path_find_btw_memory(path, must_exist = FALSE)
