@@ -162,23 +162,32 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
     path_btw = path_btw
   )
 
-  shiny::addResourcePath(
-    "figures",
-    system.file("man", "figures", package = "btw")
-  )
+  path_figures_installed <- system.file("help", "figures", package = "btw")
+  path_figures_dev <- system.file("man", "figures", package = "btw")
+  path_logo <- "btw_figures/logo.png"
+
+  if (nzchar(path_figures_installed)) {
+    shiny::addResourcePath("btw_figures", path_figures_installed)
+  } else if (nzchar(path_figures_dev)) {
+    shiny::addResourcePath("btw_figures", path_figures_dev)
+  } else {
+    path_logo <- NULL
+  }
 
   btw_title <- function(in_sidebar) {
     logo <- shiny::img(
-      src = "figures/logo.png",
+      src = path_logo,
       class = "me-2 dib",
       style = bslib::css(max_width = "35px"),
       .noWS = c("before", "after")
     )
     shiny::tags$header(
-      if (in_sidebar) {
-        shiny::span(logo)
-      } else {
-        shiny::actionLink("show_sidebar", logo)
+      if (!is.null(path_logo)) {
+        if (in_sidebar) {
+          shiny::span(logo)
+        } else {
+          shiny::actionLink("show_sidebar", logo)
+        }
       },
       "Chat with",
       shiny::code("{btw}"),
