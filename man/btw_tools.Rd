@@ -33,6 +33,7 @@ this function have access to the tools:\tabular{lll}{
    btw_tool_files_read_text_file \tab files \tab Read an entire text file. \cr
    btw_tool_files_write_text_file \tab files \tab Write content to a text file. \cr
    btw_tool_ide_read_current_editor \tab ide \tab Read the contents of the editor that is currently open in the user's IDE. \cr
+   btw_tool_files_search_ddg \tab search \tab Search DuckDuckGo for web pages. \cr
    btw_tool_search_package_info \tab search \tab Describe a CRAN package. \cr
    btw_tool_search_packages \tab search \tab Search for an R package on CRAN. \cr
    btw_tool_session_check_package_installed \tab session \tab Check if a package is installed in the current session. \cr
@@ -63,6 +64,7 @@ Other Tools:
 \code{\link{btw_tool_env_describe_environment}()},
 \code{\link{btw_tool_files_list_files}()},
 \code{\link{btw_tool_files_read_text_file}()},
+\code{\link{btw_tool_files_search_ddg}()},
 \code{\link{btw_tool_files_write_text_file}()},
 \code{\link{btw_tool_ide_read_current_editor}()},
 \code{\link{btw_tool_package_docs}},
