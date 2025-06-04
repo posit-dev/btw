@@ -39,8 +39,10 @@ Imports:
     xml2
 Suggests:
     bslib (>= 0.7.0),
+    ddgsearch (>= 0.0.0.9000),
     gh,
     pandoc,
+    ragnar,
     shiny,
     shinychat (>= 0.2.0),
     testthat (>= 3.0.0)
@@ -68,9 +70,12 @@ Collate:
     'tool-files.R'
     'tool-rstudioapi.R'
     'tool-search-packages.R'
+    'tool-search-web.R'
     'tool-session-package-installed.R'
     'tool-sessioninfo.R'
     'tools.R'
     'utils-md.R'
     'utils.R'
     'zzz.R'
+Remotes: 
+    gadenbuie/ddgsearch
