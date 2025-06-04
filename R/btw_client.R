@@ -125,11 +125,11 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
         ""
       )
     },
-    if (!is.null(config$system_prompt)) {
+    if (!is.null(config$btw_system_prompt)) {
       c(
         "# Project Context",
         "",
-        trimws(paste(config$system_prompt, collapse = "\n")),
+        trimws(paste(config$btw_system_prompt, collapse = "\n")),
         ""
       )
     },
@@ -473,7 +473,7 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
   if (!is.null(config$provider)) {
     chat_args <- config[setdiff(
       names(config),
-      c("tools", "provider", "btw_context")
+      c("tools", "provider", "btw_system_prompt")
     )]
     chat_fn <- gsub(" ", "_", tolower(config$provider))
     if (!grepl("^chat_", chat_fn)) {
@@ -508,8 +508,8 @@ read_btw_file <- function(path = NULL) {
     pyfm(readLines(path, warn = FALSE))$body
   }
 
-  system_prompt <- read_without_yaml(path)
-  config$system_prompt <- remove_hidden_content(system_prompt)
+  btw_system_prompt <- read_without_yaml(path)
+  config$btw_system_prompt <- remove_hidden_content(btw_system_prompt)
   config
 }
 
