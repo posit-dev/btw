@@ -383,7 +383,7 @@ make your changes to the text, then write back the complete modified content.
       .annotations = ellmer::tool_annotations(
         title = "Write File",
         read_only_hint = FALSE,
-        open_world_hint = TRUE,
+        open_world_hint = FALSE,
         idempotent_hint = TRUE
       ),
       path = ellmer::type_string(
