@@ -1,10 +1,10 @@
 #' @include tool-result.R
 NULL
 
-#' Tool: Search DuckDuckGo
+#' Tool: Web Search via DuckDuckGo
 #'
 #' @examples
-#' btw_tool_files_search_ddg("R programming language", max_results = 3)
+#' btw_tool_search_web("R programming language", max_results = 3)
 #'
 #' @param keywords Search keywords
 #' @param max_results Maximum number of results to return, between 1 and 10.
@@ -13,7 +13,7 @@ NULL
 #'
 #' @family Tools
 #' @export
-btw_tool_files_search_ddg <- function(keywords, max_results = 3) {
+btw_tool_search_web <- function(keywords, max_results = 3) {
   check_string(keywords, allow_empty = FALSE)
   check_number_whole(max_results, min = 1, max = 10)
 
@@ -55,15 +55,15 @@ BtwWebSearchToolResult <- S7::new_class(
 )
 
 .btw_add_to_tools(
-  name = "btw_tool_files_search_ddg",
+  name = "btw_tool_search_web",
   group = "search",
   tool = function() {
     if (!is_installed("ragnar")) return()
     if (!is_installed("ddgsearch")) return()
 
     ellmer::tool(
-      btw_tool_files_search_ddg,
-      .description = "Search DuckDuckGo for web pages.
+      btw_tool_search_web,
+      .description = "Search the web.
 
 Returns the full text content of the search result.
 Results are cached to avoid repeated requests.

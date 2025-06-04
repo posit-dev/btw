@@ -1,9 +1,9 @@
-test_that("btw_tool_files_search_ddg() works", {
+test_that("btw_tool_search_web() works", {
   skip_if_offline()
   skip_if_not_installed("ddgsearch")
   skip_if_not_installed("ragnar")
 
-  result <- btw_tool_files_search_ddg("dplyr", max_results = 2)
+  result <- btw_tool_search_web("dplyr", max_results = 2)
 
   expect_btw_tool_result(result)
 
@@ -11,7 +11,7 @@ test_that("btw_tool_files_search_ddg() works", {
   expect_equal(nrow(result@extra$data), 2)
   expect_named(result@extra$data, c("title", "href", "summary", "body"))
 
-  result_full <- btw_tool_files_search_ddg(
+  result_full <- btw_tool_search_web(
     "R programming language",
     max_results = 1
   )

@@ -35,10 +35,10 @@ Other Tools:
 \code{\link{btw_tool_env_describe_environment}()},
 \code{\link{btw_tool_files_list_files}()},
 \code{\link{btw_tool_files_read_text_file}()},
-\code{\link{btw_tool_files_search_ddg}()},
 \code{\link{btw_tool_files_write_text_file}()},
 \code{\link{btw_tool_package_docs}},
 \code{\link{btw_tool_search_packages}()},
+\code{\link{btw_tool_search_web}()},
 \code{\link{btw_tool_session_package_info}()},
 \code{\link{btw_tool_session_platform_info}()},
 \code{\link{btw_tools}()}
