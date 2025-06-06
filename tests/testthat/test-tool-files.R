@@ -100,3 +100,75 @@ test_that("btw_tool_files_write_text_file() works", {
     error = TRUE
   )
 })
+
+
+test_that("is_common_ignorable_files identifies ignorable files by name", {
+  expect_true(is_common_ignorable_files(".DS_Store"))
+  expect_true(is_common_ignorable_files("Thumbs.db"))
+
+  expect_false(is_common_ignorable_files("data.csv"))
+  expect_false(is_common_ignorable_files("script.R"))
+
+  expect_equal(
+    is_common_ignorable_files(c(".DS_Store", "data.csv", "Thumbs.db")),
+    c(TRUE, FALSE, TRUE)
+  )
+})
+
+test_that("is_common_ignorable_files identifies files in ignorable directories", {
+  # files in ignorable directories
+  expect_true(is_common_ignorable_files(".git/config"))
+  expect_true(is_common_ignorable_files("node_modules/react/index.js"))
+  expect_true(is_common_ignorable_files(".svn/entries"))
+  expect_true(is_common_ignorable_files(".hg/dirstate"))
+  expect_true(is_common_ignorable_files(".venv/bin/python"))
+  expect_true(is_common_ignorable_files("venv/bin/activate"))
+
+  # nested paths with ignorable directories
+  expect_true(is_common_ignorable_files("project/.git/HEAD"))
+  expect_true(is_common_ignorable_files("src/node_modules/lodash/index.js"))
+  expect_true(is_common_ignorable_files("path/to/.venv/lib/python3.9"))
+
+  # renv/library special case
+  expect_true(is_common_ignorable_files("renv/library/R-4.1/packages"))
+  expect_true(is_common_ignorable_files("project/renv/library/something"))
+
+  # regular directories
+  expect_false(is_common_ignorable_files("src/components/Button.js"))
+  expect_false(is_common_ignorable_files("data/processed/results.csv"))
+
+  # The directory itself is not ignorable
+  expect_false(is_common_ignorable_files("node_modules/"))
+  expect_false(is_common_ignorable_files(".git/"))
+  expect_false(is_common_ignorable_files("renv/library"))
+})
+
+test_that("is_common_ignorable_files handles edge cases correctly", {
+  # empty string
+  expect_false(is_common_ignorable_files(""))
+
+  # both ignorable file name and directory
+  expect_true(is_common_ignorable_files("node_modules/.DS_Store"))
+  expect_true(is_common_ignorable_files(".git/Thumbs.db"))
+
+  # similar but not exact matches
+  expect_false(is_common_ignorable_files("my.DS_Store"))
+  expect_false(is_common_ignorable_files("fake_node_modules/file.js"))
+  expect_false(is_common_ignorable_files("renv/not_library/file.txt"))
+})
+
+test_that("is_common_ignorable_files works with different path formats", {
+  # forward slashes
+  expect_true(is_common_ignorable_files("path/to/node_modules/file.js"))
+
+  # backslashes (Windows-style paths)
+  expect_true(
+    is_common_ignorable_files(
+      # The paths are already normalized by fs::dir_info()
+      fs::path_norm("C:\\path\\to\\node_modules\\file.js")
+    )
+  )
+
+  # mixed slashes
+  expect_true(is_common_ignorable_files("path/to\\node_modules/file.js"))
+})

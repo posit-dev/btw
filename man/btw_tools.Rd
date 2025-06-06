@@ -29,7 +29,7 @@ this function have access to the tools:\tabular{lll}{
    btw_tool_docs_vignette \tab docs \tab Get a package vignette in plain text. \cr
    btw_tool_env_describe_data_frame \tab env \tab Show the data frame or table or get information about the structure of a data frame or table. \cr
    btw_tool_env_describe_environment \tab env \tab List and describe items in an environment. \cr
-   btw_tool_files_list_files \tab files \tab List files in the current working directory or in subfolders in the current project directory. \cr
+   btw_tool_files_list_files \tab files \tab List files or directories in the project. \cr
    btw_tool_files_read_text_file \tab files \tab Read an entire text file. \cr
    btw_tool_files_write_text_file \tab files \tab Write content to a text file. \cr
    btw_tool_ide_read_current_editor \tab ide \tab Read the contents of the editor that is currently open in the user's IDE. \cr
