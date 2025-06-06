@@ -54,6 +54,8 @@ btw_tool_files_list_files <- function(
       fs::dir_info(path, type = type, regexp = regexp, recurse = TRUE)
     }
 
+  info <- info[!is_common_ignorable_files(info$path), ]
+
   if (nrow(info) == 0) {
     return(sprintf("No %s found in %s", paste(type, collapse = "/"), path))
   }
@@ -236,4 +238,73 @@ check_path_within_current_wd <- function(path) {
       "You are not allowed to list or read files outside of the project directory. Make sure that `path` is relative to the current working directory."
     )
   }
+}
+
+is_common_ignorable_files <- function(paths) {
+  ignorable_files <- c(".DS_Store", "Thumbs.db")
+
+  ignorable_dir <- c(
+    # Version control
+    ".git",
+    ".svn",
+    ".hg",
+    ".bzr",
+
+    # Package management
+    "node_modules",
+    "bower_components",
+    "jspm_packages",
+
+    # Python
+    ".venv",
+    "venv",
+    "__pycache__",
+    ".pytest_cache",
+    "eggs",
+    ".eggs",
+    ".tox",
+    ".nox",
+    "*.egg-info",
+    "*.egg",
+
+    # R specific
+    "renv/library",
+    ".Rproj.user",
+    "packrat/lib",
+    "packrat/src",
+
+    # JavaScript/TypeScript
+    "out",
+    ".next",
+    ".nuxt",
+    ".cache",
+
+    # Docker
+    ".docker",
+
+    # Documentation builds
+    "_site",
+    "site",
+    "docs/_build",
+    "docs/build",
+    "public"
+  )
+  is_ignorable_file <- fs::path_file(paths) %in% ignorable_files
+  ignorable_dir_combo <- grep("/", ignorable_dir, fixed = TRUE, value = TRUE)
+  ignorable_dir_simple <- setdiff(ignorable_dir, ignorable_dir_combo)
+
+  is_in_ignorable_dir <- map_lgl(
+    fs::path_split(fs::path_dir(paths)),
+    function(path_parts) {
+      some(path_parts, function(part) part %in% ignorable_dir_simple) ||
+        # R Markdown built files
+        any(grepl("_files$", path_parts)) ||
+        some(
+          ignorable_dir_combo,
+          function(id) grepl(id, fs::path_join(path_parts), fixed = TRUE)
+        )
+    }
+  )
+
+  is_ignorable_file | is_in_ignorable_dir
 }
