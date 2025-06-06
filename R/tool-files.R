@@ -80,7 +80,7 @@ WHEN TO USE:
 * When you want to understand the project structure, use `type = "directory"` to list all directories.
 * When you want to find a specific file, use `type = "file"` and `regexp` to filter files by name or extension.
 
-CAUTION: Do not list all files, instead prefer listing files in a specific directory with a `regexp` to filter to files of interest.
+CAUTION: Do not list all files in a project, instead prefer listing files in a specific directory with a `regexp` to filter to files of interest.
       )---",
       .annotations = ellmer::tool_annotations(
         title = "Project Files",
