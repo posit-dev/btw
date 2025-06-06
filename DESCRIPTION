@@ -19,6 +19,8 @@ Description: Provides a number of utilities for describing R objects and
 License: MIT + file LICENSE
 URL: https://github.com/posit-dev/btw, https://posit-dev.github.io/btw/
 BugReports: https://github.com/posit-dev/btw/issues
+Depends:
+    R (>= 4.1.0)
 Imports:
     cli,
     clipr,
