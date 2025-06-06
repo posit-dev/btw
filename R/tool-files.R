@@ -73,13 +73,15 @@ btw_tool_files_list_files <- function(
   tool = function() {
     ellmer::tool(
       btw_tool_files_list_files,
-      .description = paste0(
-        "List files in the current working directory or in subfolders in the current project directory. ",
-        "Examples:\n\n",
-        "* `btw_tool_files_list_files()`: List all files and directories in the current working directory.\n",
-        "* `btw_tool_files_list_files(\"data\")`: List all files in the `data/` directory.\n",
-        "* `btw_tool_files_list_files(\"data\", type = \"file\", regexp = \"csv$\"): List all `.csv` files in the `data/` directory."
-      ),
+      .description = r"---(List files or directories in the project.
+
+WHEN TO USE:
+* Use this tool to discover the file structure of a project.
+* When you want to understand the project structure, use `type = "directory"` to list all directories.
+* When you want to find a specific file, use `type = "file"` and `regexp` to filter files by name or extension.
+
+CAUTION: Do not list all files, instead prefer listing files in a specific directory with a `regexp` to filter to files of interest.
+      )---",
       .annotations = ellmer::tool_annotations(
         title = "Project Files",
         read_only_hint = TRUE,
@@ -96,7 +98,7 @@ btw_tool_files_list_files <- function(
         required = FALSE
       ),
       type = ellmer::type_enum(
-        "Whether to list files, directories or any file type.",
+        "Whether to list files, directories or any file type, default is `any`.",
         values = c("any", "file", "directory"),
         required = FALSE
       ),
