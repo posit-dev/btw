@@ -52,6 +52,9 @@ topics using \code{\link[=btw_tool_docs_help_page]{btw_tool_docs_help_page()}}.
 \item \code{"@news {{package_name}} {{search_term}}"} \cr
 Include the release notes (NEWS) from the latest package release, e.g.
 \code{"@news dplyr"}, or that match a search term, e.g. \code{"@news dplyr join_by"}.
+\item \code{"@url {{url}}"} \cr
+Include the contents of a web page at the specified URL as markdown, e.g.
+\code{"@url https://cran.r-project.org/doc/FAQ/R-FAQ.html"}.
 \item \code{"@current_file"} or \code{"@current_selection"} \cr
 When used in RStudio or Positron, or anywhere else that the
 \pkg{rstudioapi} is supported, \code{btw("@current_file")} includes the contents

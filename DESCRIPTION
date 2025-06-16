@@ -41,6 +41,7 @@ Imports:
     xml2
 Suggests:
     bslib (>= 0.7.0),
+    chromote (>= 0.5.1.9000),
     gh,
     pandoc,
     shiny,
@@ -68,6 +69,7 @@ Collate:
     'tool-docs.R'
     'tool-environment.R'
     'tool-files.R'
+    'tool-read-web.R'
     'tool-rstudioapi.R'
     'tool-search-packages.R'
     'tool-session-package-installed.R'
@@ -76,3 +78,5 @@ Collate:
     'utils-md.R'
     'utils.R'
     'zzz.R'
+Remotes:  
+    rstudio/chromote

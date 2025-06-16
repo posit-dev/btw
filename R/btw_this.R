@@ -82,6 +82,10 @@ as_btw_capture <- function(x) {
 #'   Include the release notes (NEWS) from the latest package release, e.g.
 #'   `"@news dplyr"`, or that match a search term, e.g. `"@news dplyr join_by"`.
 #'
+#' * `"@url {{url}}"` \cr
+#'   Include the contents of a web page at the specified URL as markdown, e.g.
+#'   `"@url https://cran.r-project.org/doc/FAQ/R-FAQ.html"`.
+#'
 #' * `"@current_file"` or `"@current_selection"` \cr
 #'   When used in RStudio or Positron, or anywhere else that the
 #'   \pkg{rstudioapi} is supported, `btw("@current_file")` includes the contents
@@ -175,6 +179,17 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
       ""
     }
     return(I(btw_tool_docs_package_news(package_name, search_term)@value))
+  }
+  if (identical(substring(x, 1, 4), "@url")) {
+    # Special syntax for @url: '@url https://example.com'
+    url <- trimws(substring(x, 5))
+    if (!nzchar(url)) {
+      cli::cli_abort(c(
+        "{.code @url} must be followed by a valid URL.",
+        "i" = 'e.g. {.code "@url https://example.com"}'
+      ))
+    }
+    return(I(btw_tool_web_read_url(url)@value))
   }
 
   if (grepl("^\\./", x)) {
