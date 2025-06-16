@@ -376,6 +376,8 @@ BtwWriteFileToolResult <- S7::new_class(
 
 If the file doesn\'t exist, it will be created, along with any necessary parent directories.
 
+WHEN TO USE: Use this tool only when the user has explicitly asked you to write or create a file. Before using this tool, ensure that the file path is correct and that the user wants you to write the file.
+
 CAUTION: This completely overwrites any existing file content.
 To modify an existing file, first read its content using btw_tool_files_read_text_file(),
 make your changes to the text, then write back the complete modified content.
