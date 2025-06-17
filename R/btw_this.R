@@ -84,7 +84,8 @@ as_btw_capture <- function(x) {
 #'
 #' * `"@url {{url}}"` \cr
 #'   Include the contents of a web page at the specified URL as markdown, e.g.
-#'   `"@url https://cran.r-project.org/doc/FAQ/R-FAQ.html"`.
+#'   `"@url https://cran.r-project.org/doc/FAQ/R-FAQ.html"`. Requires the
+#'   \pkg{chromote} package to be installed.
 #'
 #' * `"@current_file"` or `"@current_selection"` \cr
 #'   When used in RStudio or Positron, or anywhere else that the
