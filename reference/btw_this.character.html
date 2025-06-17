@@ -29,6 +29,10 @@ dplyr::across.
 &quot;@news {{package_name}} {{search_term}}&quot;
 Include the release notes (NEWS) from the latest package release, e.g.
 &quot;@news dplyr&quot;, or that match a search term, e.g. &quot;@news dplyr join_by&quot;.
+&quot;@url {{url}}&quot;
+Include the contents of a web page at the specified URL as markdown, e.g.
+&quot;@url https://cran.r-project.org/doc/FAQ/R-FAQ.html&quot;. Requires the
+chromote package to be installed.
 &quot;@current_file&quot; or &quot;@current_selection&quot;
 When used in RStudio or Positron, or anywhere else that the
 rstudioapi is supported, btw(&quot;@current_file&quot;) includes the contents
@@ -81,6 +85,10 @@ dplyr::across.
 &quot;@news {{package_name}} {{search_term}}&quot;
 Include the release notes (NEWS) from the latest package release, e.g.
 &quot;@news dplyr&quot;, or that match a search term, e.g. &quot;@news dplyr join_by&quot;.
+&quot;@url {{url}}&quot;
+Include the contents of a web page at the specified URL as markdown, e.g.
+&quot;@url https://cran.r-project.org/doc/FAQ/R-FAQ.html&quot;. Requires the
+chromote package to be installed.
 &quot;@current_file&quot; or &quot;@current_selection&quot;
 When used in RStudio or Positron, or anywhere else that the
 rstudioapi is supported, btw(&quot;@current_file&quot;) includes the contents
@@ -169,6 +177,10 @@ topics using <code><a href="btw_tool_package_docs.html">btw_tool_docs_help_page(
 <li><p><code>"@news {{package_name}} {{search_term}}"</code> <br>
 Include the release notes (NEWS) from the latest package release, e.g.
 <code>"@news dplyr"</code>, or that match a search term, e.g. <code>"@news dplyr join_by"</code>.</p></li>
+<li><p><code>"@url {{url}}"</code> <br>
+Include the contents of a web page at the specified URL as markdown, e.g.
+<code>"@url https://cran.r-project.org/doc/FAQ/R-FAQ.html"</code>. Requires the
+<span class="pkg">chromote</span> package to be installed.</p></li>
 <li><p><code>"@current_file"</code> or <code>"@current_selection"</code> <br>
 When used in RStudio or Positron, or anywhere else that the
 <span class="pkg">rstudioapi</span> is supported, <code>btw("@current_file")</code> includes the contents

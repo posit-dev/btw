@@ -20,6 +20,7 @@ btw_tool_search_packagessearchSearch for an R package on CRAN.
 btw_tool_session_check_package_installedsessionCheck if a package is installed in the current session.
 btw_tool_session_package_infosessionVerify that a specific package is installed, or find out which packages are in use in the current session.
 btw_tool_session_platform_infosessionDescribes the R version, operating system, language and locale settings for the user's system.
+btw_tool_web_read_urlwebRead a web page and convert it to Markdown format.
 
 
 "><meta property="og:description" content="The btw_tools() function provides a list of tools that can be registered
@@ -43,6 +44,7 @@ btw_tool_search_packagessearchSearch for an R package on CRAN.
 btw_tool_session_check_package_installedsessionCheck if a package is installed in the current session.
 btw_tool_session_package_infosessionVerify that a specific package is installed, or find out which packages are in use in the current session.
 btw_tool_session_platform_infosessionDescribes the R version, operating system, language and locale settings for the user's system.
+btw_tool_web_read_urlwebRead a web page and convert it to Markdown format.
 
 
 "><meta property="og:image" content="https://posit-dev.github.io/btw/logo.png"></head><body>
@@ -88,7 +90,7 @@ btw_tool_session_platform_infosessionDescribes the R version, operating system, 
     <p>The <code>btw_tools()</code> function provides a list of tools that can be registered
 with an ellmer chat via <code>chat$set_tools()</code> that allow the chat to
 interface with your computational environment. Chats returned by
-this function have access to the tools:</p><table class="table table"><tr><td>Name</td><td>Group</td><td>Description</td></tr><tr><td>btw_tool_docs_available_vignettes</td><td>docs</td><td>List available vignettes for an R package.</td></tr><tr><td>btw_tool_docs_help_page</td><td>docs</td><td>Get help page from package.</td></tr><tr><td>btw_tool_docs_package_help_topics</td><td>docs</td><td>Get available help topics for an R package.</td></tr><tr><td>btw_tool_docs_package_news</td><td>docs</td><td>Read the release notes (NEWS) for a package.</td></tr><tr><td>btw_tool_docs_vignette</td><td>docs</td><td>Get a package vignette in plain text.</td></tr><tr><td>btw_tool_env_describe_data_frame</td><td>env</td><td>Show the data frame or table or get information about the structure of a data frame or table.</td></tr><tr><td>btw_tool_env_describe_environment</td><td>env</td><td>List and describe items in an environment.</td></tr><tr><td>btw_tool_files_list_files</td><td>files</td><td>List files or directories in the project.</td></tr><tr><td>btw_tool_files_read_text_file</td><td>files</td><td>Read an entire text file.</td></tr><tr><td>btw_tool_files_write_text_file</td><td>files</td><td>Write content to a text file.</td></tr><tr><td>btw_tool_ide_read_current_editor</td><td>ide</td><td>Read the contents of the editor that is currently open in the user's IDE.</td></tr><tr><td>btw_tool_search_package_info</td><td>search</td><td>Describe a CRAN package.</td></tr><tr><td>btw_tool_search_packages</td><td>search</td><td>Search for an R package on CRAN.</td></tr><tr><td>btw_tool_session_check_package_installed</td><td>session</td><td>Check if a package is installed in the current session.</td></tr><tr><td>btw_tool_session_package_info</td><td>session</td><td>Verify that a specific package is installed, or find out which packages are in use in the current session.</td></tr><tr><td>btw_tool_session_platform_info</td><td>session</td><td>Describes the R version, operating system, language and locale settings for the user's system.</td></tr></table></div>
+this function have access to the tools:</p><table class="table table"><tr><td>Name</td><td>Group</td><td>Description</td></tr><tr><td>btw_tool_docs_available_vignettes</td><td>docs</td><td>List available vignettes for an R package.</td></tr><tr><td>btw_tool_docs_help_page</td><td>docs</td><td>Get help page from package.</td></tr><tr><td>btw_tool_docs_package_help_topics</td><td>docs</td><td>Get available help topics for an R package.</td></tr><tr><td>btw_tool_docs_package_news</td><td>docs</td><td>Read the release notes (NEWS) for a package.</td></tr><tr><td>btw_tool_docs_vignette</td><td>docs</td><td>Get a package vignette in plain text.</td></tr><tr><td>btw_tool_env_describe_data_frame</td><td>env</td><td>Show the data frame or table or get information about the structure of a data frame or table.</td></tr><tr><td>btw_tool_env_describe_environment</td><td>env</td><td>List and describe items in an environment.</td></tr><tr><td>btw_tool_files_list_files</td><td>files</td><td>List files or directories in the project.</td></tr><tr><td>btw_tool_files_read_text_file</td><td>files</td><td>Read an entire text file.</td></tr><tr><td>btw_tool_files_write_text_file</td><td>files</td><td>Write content to a text file.</td></tr><tr><td>btw_tool_ide_read_current_editor</td><td>ide</td><td>Read the contents of the editor that is currently open in the user's IDE.</td></tr><tr><td>btw_tool_search_package_info</td><td>search</td><td>Describe a CRAN package.</td></tr><tr><td>btw_tool_search_packages</td><td>search</td><td>Search for an R package on CRAN.</td></tr><tr><td>btw_tool_session_check_package_installed</td><td>session</td><td>Check if a package is installed in the current session.</td></tr><tr><td>btw_tool_session_package_info</td><td>session</td><td>Verify that a specific package is installed, or find out which packages are in use in the current session.</td></tr><tr><td>btw_tool_session_platform_info</td><td>session</td><td>Describes the R version, operating system, language and locale settings for the user's system.</td></tr><tr><td>btw_tool_web_read_url</td><td>web</td><td>Read a web page and convert it to Markdown format.</td></tr></table></div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
@@ -124,7 +126,8 @@ place. The <code>chat</code> input is returned invisibly.</p>
 <code><a href="btw_tool_package_docs.html">btw_tool_package_docs</a></code>,
 <code><a href="btw_tool_search_packages.html">btw_tool_search_packages</a>()</code>,
 <code><a href="btw_tool_session_package_info.html">btw_tool_session_package_info</a>()</code>,
-<code><a href="btw_tool_session_platform_info.html">btw_tool_session_platform_info</a>()</code></p></div>
+<code><a href="btw_tool_session_platform_info.html">btw_tool_session_platform_info</a>()</code>,
+<code><a href="btw_tool_web_read_url.html">btw_tool_web_read_url</a>()</code></p></div>
     </div>
 
     <div class="section level2">
