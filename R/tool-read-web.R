@@ -44,13 +44,10 @@ BtwWebPageResult <- S7::new_class(
 has_chromote <- function() {
   tryCatch(
     {
-      rlang::check_installed("chromote", version = "0.5.1.9000")
+      rlang::check_installed("chromote")
       TRUE
     },
     error = function(e) {
-      cli::cli_warn(
-        "The `chromote` package is required to use the web reading tool."
-      )
       FALSE
     }
   )
@@ -61,6 +58,9 @@ has_chromote <- function() {
   group = "web",
   tool = function() {
     if (!has_chromote()) {
+      cli::cli_warn(
+        "The `chromote` package is required to use the web reading tool."
+      )
       return(NULL)
     }
 

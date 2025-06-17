@@ -183,6 +183,10 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
   }
   if (identical(substring(x, 1, 4), "@url")) {
     if (!has_chromote()) {
+      cli::cli_abort(c(
+        "{.strong @url} requires the {.pkg chromote} package to be installed.",
+        "i" = "Please install it with {.run install.packages('chromote')}."
+      ))
       return(btw_ignore())
     }
 
@@ -190,7 +194,7 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
     url <- trimws(substring(x, 5))
     if (!nzchar(url)) {
       cli::cli_abort(c(
-        "{.code @url} must be followed by a valid URL.",
+        "{.strong @url} must be followed by a valid URL.",
         "i" = 'e.g. {.code "@url https://example.com"}'
       ))
     }
