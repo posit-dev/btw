@@ -19,7 +19,7 @@ btw_tool_web_read_url <- function(
   ...,
   max_wait_for_page_load_s = getOption("btw.max_wait_for_page_load_s", 10)
 ) {
-  html <- read_url_main_content(url)
+  html <- read_url_main_content(url, timeout = max_wait_for_page_load_s)
 
   if (is.null(html) || !nzchar(html)) {
     cli::cli_abort(
@@ -81,12 +81,15 @@ WHEN TO USE: Use this tool when you need to access and analyze the content of a 
   }
 )
 
-read_url_main_content <- function(url, timeout = 30) {
+read_url_main_content <- function(url, timeout = 10) {
   b <- chromote::ChromoteSession$new()
-  b$go_to(url)
   withr::defer(b$close())
 
-  wait_for_network_idle(b)
+  p <- b$Page$loadEventFired(wait_ = FALSE, timeout_ = timeout)
+  b$Page$navigate(url, wait_ = FALSE)
+  b$wait_for(p)
+
+  wait_for_network_idle(b, timeout = timeout)
 
   conversion_script <- paste(
     readLines(system.file("js", "clean-url.js", package = "btw")),
@@ -102,14 +105,15 @@ read_url_main_content <- function(url, timeout = 30) {
 #' Wait for Network Idle in Chromote Session
 #'
 #' @param session A chromote session object
-#' @param idle_time Time in seconds to wait for no network activity (default: 0.5)
-#' @param timeout Maximum time in seconds to wait (default: 10)
-#' @param max_requests Maximum number of active requests to consider "idle" (default: 0)
+#' @param idle_time Time in seconds to wait for no network activity
+#' @param timeout Maximum time in seconds to wait
+#' @param max_requests Maximum number of active requests to consider "idle"
 #' @return List with success status and final metrics
+#'
 #' @noRd
 wait_for_network_idle <- function(
   session,
-  idle_time = 0.5,
+  idle_time = 1,
   timeout = 10,
   max_requests = 0
 ) {
