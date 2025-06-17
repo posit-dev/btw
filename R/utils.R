@@ -20,6 +20,20 @@ pandoc_convert_text <- function(text, ..., from = "html", to = "markdown") {
   })
 }
 
+pandoc_html_simplify <- function(
+  html,
+  ...,
+  options = c(
+    "--markdown-headings=atx",
+    "--embed-resources=false",
+  ),
+  to = "markdown_strict-raw_html+pipe_tables+backtick_code_blocks"
+) {
+  tmp_input <- withr::local_tempfile()
+  writeLines(html, tmp_input)
+  pandoc_convert(tmp_input, from = "html", to = to, ...)
+}
+
 cli_escape <- function(x) {
   x <- gsub("{", "{{", x, fixed = TRUE)
   gsub("}", "}}", x, fixed = TRUE)

@@ -41,6 +41,7 @@ Other Tools:
 \code{\link{btw_tool_package_docs}},
 \code{\link{btw_tool_search_packages}()},
 \code{\link{btw_tool_session_platform_info}()},
+\code{\link{btw_tool_web_read_url}()},
 \code{\link{btw_tools}()}
 }
 \concept{Tools}

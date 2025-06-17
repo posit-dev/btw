@@ -41,6 +41,7 @@ Imports:
     xml2
 Suggests:
     bslib (>= 0.7.0),
+    chromote,
     gh,
     pandoc,
     shiny,
@@ -72,6 +73,7 @@ Collate:
     'tool-search-packages.R'
     'tool-session-package-installed.R'
     'tool-sessioninfo.R'
+    'tool-web.R'
     'tools.R'
     'utils-md.R'
     'utils.R'

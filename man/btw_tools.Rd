@@ -38,6 +38,7 @@ this function have access to the tools:\tabular{lll}{
    btw_tool_session_check_package_installed \tab session \tab Check if a package is installed in the current session. \cr
    btw_tool_session_package_info \tab session \tab Verify that a specific package is installed, or find out which packages are in use in the current session. \cr
    btw_tool_session_platform_info \tab session \tab Describes the R version, operating system, language and locale settings for the user's system. \cr
+   btw_tool_web_read_url \tab web \tab Read a web page and convert it to Markdown format. \cr
 }
 }
 \examples{
@@ -68,6 +69,7 @@ Other Tools:
 \code{\link{btw_tool_package_docs}},
 \code{\link{btw_tool_search_packages}()},
 \code{\link{btw_tool_session_package_info}()},
-\code{\link{btw_tool_session_platform_info}()}
+\code{\link{btw_tool_session_platform_info}()},
+\code{\link{btw_tool_web_read_url}()}
 }
 \concept{Tools}
