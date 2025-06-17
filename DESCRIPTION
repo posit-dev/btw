@@ -78,5 +78,3 @@ Collate:
     'utils-md.R'
     'utils.R'
     'zzz.R'
-Remotes:
-    rstudio/chromote
