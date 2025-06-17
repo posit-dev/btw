@@ -376,11 +376,14 @@ BtwWriteFileToolResult <- S7::new_class(
 
 If the file doesn\'t exist, it will be created, along with any necessary parent directories.
 
-WHEN TO USE: Use this tool only when the user has explicitly asked you to write or create a file. Before using this tool, ensure that the file path is correct and that the user wants you to write the file.
+WHEN TO USE:
+Use this tool only when the user has explicitly asked you to write or create a file.
+Do not use for temporary or one-off content; prefer direct responses for those cases.
+Consider checking with the user to ensure that the file path is correct and that they want to write to a file before calling this tool.
 
-CAUTION: This completely overwrites any existing file content.
-To modify an existing file, first read its content using btw_tool_files_read_text_file(),
-make your changes to the text, then write back the complete modified content.
+CAUTION:
+This completely overwrites any existing file content.
+To modify an existing file, first read its content using `btw_tool_files_read_text_file`, make your changes to the text, then write back the complete modified content.
 ',
       .annotations = ellmer::tool_annotations(
         title = "Write File",
