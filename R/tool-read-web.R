@@ -30,24 +30,26 @@ BtwWebPageResult <- S7::new_class(
   parent = BtwToolResult
 )
 
+has_chromote <- function() {
+  tryCatch(
+    {
+      rlang::check_installed("chromote", version = "0.5.1.9000")
+      TRUE
+    },
+    error = function(e) {
+      cli::cli_warn(
+        "The `chromote` package is required to use the web reading tool."
+      )
+      FALSE
+    }
+  )
+}
+
 .btw_add_to_tools(
   name = "btw_tool_web_read_url",
   group = "web",
   tool = function() {
-    ok <- tryCatch(
-      {
-        rlang::check_installed("chromote", version = "0.5.1.9000")
-        TRUE
-      },
-      error = function(e) {
-        cli::cli_warn(
-          "The `chromote` package is required to use the web reading tool."
-        )
-        FALSE
-      }
-    )
-
-    if (!ok) {
+    if (!has_chromote()) {
       return(NULL)
     }
 

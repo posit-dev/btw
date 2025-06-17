@@ -182,6 +182,10 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
     return(I(btw_tool_docs_package_news(package_name, search_term)@value))
   }
   if (identical(substring(x, 1, 4), "@url")) {
+    if (!has_chromote()) {
+      return(btw_ignore())
+    }
+
     # Special syntax for @url: '@url https://example.com'
     url <- trimws(substring(x, 5))
     if (!nzchar(url)) {
