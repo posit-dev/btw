@@ -20,6 +20,13 @@ btw_tool_web_read_url <- function(
   max_wait_for_page_load_s = getOption("btw.max_wait_for_page_load_s", 10)
 ) {
   html <- read_url_main_content(url)
+
+  if (is.null(html) || !nzchar(html)) {
+    cli::cli_abort(
+      "Failed to read web page at {.url {url}}. Please check the URL."
+    )
+  }
+
   md <- paste(pandoc_html_simplify(html), collapse = "\n")
 
   BtwWebPageResult(md)
