@@ -5,6 +5,9 @@ NULL
 #'
 #' @examplesIf rlang::is_installed("chromote") && rlang::is_interactive()
 #' btw_tool_web_read_url("https://www.r-project.org/")
+#' btw_tool_web_read_url(
+#'   "https://posit.co/blog/easy-tool-calls-with-ellmer-and-chatlas/"
+#' )
 #'
 #' @param url The URL of the web page to read.
 #' @param ... Ignored, for future features.
@@ -130,10 +133,12 @@ wait_for_network_idle <- function(
     ignored_patterns <- c(
       "google-analytics",
       "doubleclick",
+      "wistia",
       "facebook\\.com/tr",
       "googletagmanager",
-      "\\.gif(\\?|$)",
-      "analytics"
+      "\\.(gif|mp4|m4v|webp|jpg|jpeg|mov|avi|mp3)(\\?|$)",
+      "analytics",
+      "^data:"
     )
     any(grepl(paste(ignored_patterns, collapse = "|"), url, ignore.case = TRUE))
   }
@@ -153,6 +158,8 @@ wait_for_network_idle <- function(
         url = params$request$url,
         timestamp = Sys.time()
       )
+      # Uncomment to debug requests that block loading
+      # cli::cli_inform("Requesting: {params$request$url}")
       last_activity_time <<- Sys.time()
     }
   })
