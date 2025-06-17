@@ -28,8 +28,9 @@ btw_tool_web_read_url <- function(
   }
 
   md <- paste(pandoc_html_simplify(html), collapse = "\n")
+  res <- glue_('<web_page_content url="{{url}}">\n{{md}}\n</web_page_content>')
 
-  BtwWebPageResult(md)
+  BtwWebPageResult(res)
 }
 
 BtwWebPageResult <- S7::new_class(
