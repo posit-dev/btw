@@ -427,11 +427,7 @@ app_tool_group_choices_labels <- function(
           class = "small text-danger opacity-50 opacity-100-hover"
         ),
         shiny::HTML(
-          if (is.na(is_read_only)) {
-            "<strong>May Modify Files</strong><br>This tool does not explicitly report that it is read-only."
-          } else {
-            "<strong>Read-Write</strong><br>This tool self-reports that it can modify files."
-          }
+          "<strong>Not Read-Only</strong><br>This tool self-reports that it can modify files."
         )
       )
     },

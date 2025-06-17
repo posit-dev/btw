@@ -310,3 +310,93 @@ is_common_ignorable_files <- function(paths) {
 
   is_ignorable_file | is_in_ignorable_dir
 }
+
+#' Tool: Write a text file
+#'
+#' @examples
+#' withr::with_tempdir({
+#'   btw_tool_files_write_text_file("example.txt", "Hello\nWorld!")
+#'   readLines("example.txt")
+#' })
+#'
+#' @param path Path to the file to write. The `path` must be in the current
+#'   working directory.
+#' @param content The text content to write to the file. This should be the
+#'   complete content as the file will be overwritten.
+#'
+#' @return Returns a message confirming the file was written.
+#'
+#' @family Tools
+#' @export
+btw_tool_files_write_text_file <- function(path, content) {
+  check_string(path)
+  check_string(content)
+  check_path_within_current_wd(path)
+
+  if (fs::is_dir(path)) {
+    cli::cli_abort(
+      "Path {.path {path}} is a directory, not a file. Please provide a file path."
+    )
+  }
+
+  # Ensure the directory exists
+  dir_path <- fs::path_dir(path)
+  if (dir_path != "." && !fs::dir_exists(dir_path)) {
+    fs::dir_create(dir_path, recurse = TRUE)
+  }
+
+  previous_content <- if (fs::file_exists(path)) {
+    paste(readLines(path, warn = FALSE), collapse = "\n")
+  }
+
+  writeLines(content, path)
+
+  BtwWriteFileToolResult(
+    "Success",
+    extra = list(
+      path = path,
+      content = content,
+      previous_content = previous_content
+    )
+  )
+}
+
+BtwWriteFileToolResult <- S7::new_class(
+  "BtwWriteFileToolResult",
+  parent = BtwToolResult
+)
+
+.btw_add_to_tools(
+  name = "btw_tool_files_write_text_file",
+  group = "files",
+  tool = function() {
+    ellmer::tool(
+      btw_tool_files_write_text_file,
+      .description = 'Write content to a text file.
+
+If the file doesn\'t exist, it will be created, along with any necessary parent directories.
+
+WHEN TO USE:
+Use this tool only when the user has explicitly asked you to write or create a file.
+Do not use for temporary or one-off content; prefer direct responses for those cases.
+Consider checking with the user to ensure that the file path is correct and that they want to write to a file before calling this tool.
+
+CAUTION:
+This completely overwrites any existing file content.
+To modify an existing file, first read its content using `btw_tool_files_read_text_file`, make your changes to the text, then write back the complete modified content.
+',
+      .annotations = ellmer::tool_annotations(
+        title = "Write File",
+        read_only_hint = FALSE,
+        open_world_hint = FALSE,
+        idempotent_hint = TRUE
+      ),
+      path = ellmer::type_string(
+        "The relative path to the file to write. The file will be created if it doesn't exist, or overwritten if it does."
+      ),
+      content = ellmer::type_string(
+        "The complete text content to write to the file."
+      )
+    )
+  }
+)
