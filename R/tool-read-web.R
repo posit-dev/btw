@@ -3,7 +3,7 @@ NULL
 
 #' Tool: Read a Web Page as Markdown
 #'
-#' @examples
+#' @examplesIf rlang::is_installed("chromote") && rlang::is_interactive()
 #' btw_tool_web_read_url("https://www.r-project.org/")
 #'
 #' @param url The URL of the web page to read.

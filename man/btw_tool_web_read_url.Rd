@@ -23,8 +23,9 @@ option.}
 Tool: Read a Web Page as Markdown
 }
 \examples{
+\dontshow{if (rlang::is_installed("chromote") && rlang::is_interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 btw_tool_web_read_url("https://www.r-project.org/")
-
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Other Tools: 
