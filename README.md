@@ -95,16 +95,20 @@ The following would be attached to your clipboard:
       {"topic_id":"btw_this.character","title":"Describe objects","aliases":["btw_this.character"]},
       {"topic_id":"btw_this.data.frame","title":"Describe a data frame in plain text","aliases":["btw_this.data.frame","btw_this.tbl"]},
       {"topic_id":"btw_this.environment","title":"Describe the contents of an environment","aliases":["btw_this.environment"]},
+      {"topic_id":"btw_tool_docs_package_news","title":"Tool: Package Release Notes","aliases":["btw_tool_docs_package_news"]},
       {"topic_id":"btw_tool_env_describe_data_frame","title":"Tool: Describe data frame","aliases":["btw_tool_env_describe_data_frame"]},
       {"topic_id":"btw_tool_env_describe_environment","title":"Tool: Describe an environment","aliases":["btw_tool_env_describe_environment"]},
       {"topic_id":"btw_tool_files_list_files","title":"Tool: List files","aliases":["btw_tool_files_list_files"]},
       {"topic_id":"btw_tool_files_read_text_file","title":"Tool: Read a file","aliases":["btw_tool_files_read_text_file"]},
+      {"topic_id":"btw_tool_files_write_text_file","title":"Tool: Write a text file","aliases":["btw_tool_files_write_text_file"]},
       {"topic_id":"btw_tool_ide_read_current_editor","title":"Tool: Read current file","aliases":["btw_tool_ide_read_current_editor"]},
       {"topic_id":"btw_tool_package_docs","title":"Tool: Describe R package documentation","aliases":["btw_tool_package_docs","btw_tool_docs_package_help_topics","btw_tool_docs_help_page","btw_tool_docs_available_vignettes","btw_tool_docs_vignette"]},
       {"topic_id":"btw_tool_search_package_info","title":"Tool: Describe a CRAN package","aliases":["btw_tool_search_package_info"]},
       {"topic_id":"btw_tool_search_packages","title":"Tool: Search for an R package on CRAN","aliases":["btw_tool_search_packages"]},
+      {"topic_id":"btw_tool_session_check_package_installed","title":"Tool: Check if a package is installed","aliases":["btw_tool_session_check_package_installed"]},
       {"topic_id":"btw_tool_session_package_info","title":"Tool: Gather information about a package or currently loaded packages","aliases":["btw_tool_session_package_info"]},
       {"topic_id":"btw_tool_session_platform_info","title":"Tool: Describe user's platform","aliases":["btw_tool_session_platform_info"]},
+      {"topic_id":"btw_tool_web_read_url","title":"Tool: Read a Web Page as Markdown","aliases":["btw_tool_web_read_url"]},
       {"topic_id":"btw_tools","title":"Tools: Register tools from btw","aliases":["btw_tools"]}
     ]
     ```
@@ -240,7 +244,7 @@ ch$chat("Write base R code to summarize average mpg of cars with 4-6 cylinders."
     Given the data shown in the context, this will include cars with 4 and 6
     cylinders (as the `cyl` column only contains values 4, 6, and 8).
 
-`btw_client()` uses `ellmer::chat_claude()` by default, or you can
+`btw_client()` uses `ellmer::chat_anthropic()` by default, or you can
 customize the chat client used in one of two ways:
 
 - Set the `btw.chat_client` option (possibly in your `.Rprofile` with
