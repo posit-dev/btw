@@ -22,6 +22,7 @@ BugReports: https://github.com/posit-dev/btw/issues
 Depends:
     R (>= 4.1.0)
 Imports:
+    acquaint,
     cli,
     clipr,
     dplyr,
@@ -47,6 +48,8 @@ Suggests:
     shiny,
     shinychat (>= 0.2.0),
     testthat (>= 3.0.0)
+Remotes:
+    posit-dev/acquaint
 Config/Needs/website: tidyverse/tidytemplate
 Config/testthat/edition: 3
 Config/testthat/parallel: true
@@ -63,6 +66,7 @@ Collate:
     'import-standalone-obj-type.R'
     'import-standalone-purrr.R'
     'import-standalone-types-check.R'
+    'mcp.R'
     'tool-data-frame.R'
     'tool-result.R'
     'tool-docs-news.R'
