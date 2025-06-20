@@ -49,7 +49,7 @@ Suggests:
     shinychat (>= 0.2.0),
     testthat (>= 3.0.0)
 Remotes:
-    posit-dev/acquaint
+    posit-dev/acquaint#44
 Config/Needs/website: tidyverse/tidytemplate
 Config/testthat/edition: 3
 Config/testthat/parallel: true
