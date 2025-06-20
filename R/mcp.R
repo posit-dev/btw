@@ -58,7 +58,7 @@
 #' # sessions, call `btw_mcp_session()` in that session:
 #' btw_mcp_session()
 #' 
-#' @rdname mcp
+#' @name mcp
 #' @export 
 btw_mcp_server <- function(tools = NULL) {
   # evaluate eagerly so that `btw_tools()` will check `tools`
