@@ -43,6 +43,7 @@ Suggests:
     bslib (>= 0.7.0),
     chromote,
     gh,
+    mirai,
     pandoc,
     shiny,
     shinychat (>= 0.2.0),
@@ -63,6 +64,7 @@ Collate:
     'import-standalone-obj-type.R'
     'import-standalone-purrr.R'
     'import-standalone-types-check.R'
+    'tool-agent.R'
     'tool-data-frame.R'
     'tool-result.R'
     'tool-docs-news.R'
