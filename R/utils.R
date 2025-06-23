@@ -86,9 +86,32 @@ path_find_in_project <- function(filename, dir = getwd()) {
     length(dir(pattern = ".[.]Rproj$")) > 0 ||
     dirname(dir) == dir
 
-  if (at_project_root) return(NULL)
+  if (at_project_root) {
+    return(NULL)
+  }
 
   path_find_in_project(filename, dirname(dir))
+}
+
+path_find_user <- function(filename) {
+  if (identical(Sys.getenv("TESTTHAT"), "true")) {
+    # In testthat, we don't want to use the home directory
+    return(NULL)
+  }
+
+  possibilities <- c(
+    fs::path_home(filename),
+    fs::path_home_r(filename),
+    fs::path_home(".config", "btw", filename)
+  )
+
+  for (path in possibilities) {
+    if (fs::file_exists(path)) {
+      return(fs::path_norm(path))
+    }
+  }
+
+  NULL
 }
 
 local_reproducible_output <- function(

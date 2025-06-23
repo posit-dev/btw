@@ -89,6 +89,12 @@ them in HTML \verb{<!-- HIDE -->} and \verb{<!-- /HIDE -->} comment tags. A sing
 \verb{<!-- /HIDE -->} tag, or the end of the file. This is particularly useful
 when your system prompt contains notes to yourself or future tasks that you
 do not want to be included in the system prompt.
+
+For project-specific configuration, store your \code{btw.md} file in the root of
+your project directory. For global configuration, you can maintain a \code{btw.md}
+file in your home directory (at \code{btw.md} or \code{.config/btw/btw.md} in your home
+directory, using \code{fs::path_home()}). This file will be used by default when a
+project-specific \code{btw.md} file is not found.
 }
 
 \subsection{Client Options}{

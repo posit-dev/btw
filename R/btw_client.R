@@ -57,6 +57,12 @@
 #' when your system prompt contains notes to yourself or future tasks that you
 #' do not want to be included in the system prompt.
 #'
+#' For project-specific configuration, store your `btw.md` file in the root of
+#' your project directory. For global configuration, you can maintain a `btw.md`
+#' file in your home directory (at `btw.md` or `.config/btw/btw.md` in your home
+#' directory, using `fs::path_home()`). This file will be used by default when a
+#' project-specific `btw.md` file is not found.
+#'
 #' ## Client Options
 #'
 #' * `btw.client`: The [ellmer::Chat] client to use as the basis for new
@@ -340,7 +346,9 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
 btw_tools_df <- function() {
   .btw_tools <- map(.btw_tools, function(def) {
     tool <- def$tool()
-    if (is.null(tool)) return()
+    if (is.null(tool)) {
+      return()
+    }
     dplyr::tibble(
       group = def$group,
       name = tool@name,
@@ -487,7 +495,7 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
 read_btw_file <- function(path = NULL) {
   must_find <- !is.null(path)
 
-  path <- path %||% path_find_in_project("btw.md")
+  path <- path %||% path_find_in_project("btw.md") %||% path_find_user("btw.md")
 
   if (!must_find && is.null(path)) {
     return(list())
@@ -510,7 +518,9 @@ read_btw_file <- function(path = NULL) {
 }
 
 remove_hidden_content <- function(lines) {
-  if (length(lines) == 0) return(character(0))
+  if (length(lines) == 0) {
+    return(character(0))
+  }
 
   starts <- cumsum(trimws(lines) == "<!-- HIDE -->")
   ends <- trimws(lines) == "<!-- /HIDE -->"

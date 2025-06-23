@@ -58,7 +58,9 @@ btw_tool_ide_read_current_editor <- function(
     )
   } else {
     for (selection in cf$selection) {
-      if (!nzchar(selection$text)) next
+      if (!nzchar(selection$text)) {
+        next
+      }
 
       line_column <- function(range) {
         sprintf("L%dC%d", range[1], range[2])
@@ -95,7 +97,9 @@ BtwEditorContextToolResult <- S7::new_class(
   name = "btw_tool_ide_read_current_editor",
   group = "ide",
   tool = function() {
-    if (!rstudioapi_has_source_editor_context()) return(NULL)
+    if (!rstudioapi_has_source_editor_context()) {
+      return(NULL)
+    }
     ellmer::tool(
       btw_tool_ide_read_current_editor,
       .description = paste(

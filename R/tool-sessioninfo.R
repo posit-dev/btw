@@ -128,8 +128,12 @@ btw_tool_session_package_info <- function(
   }
 
   string_with_comma <- function(x) {
-    if (!is.character(x)) return(FALSE)
-    if (length(x) != 1) return(FALSE)
+    if (!is.character(x)) {
+      return(FALSE)
+    }
+    if (length(x) != 1) {
+      return(FALSE)
+    }
     grepl(",", x, fixed = TRUE)
   }
 

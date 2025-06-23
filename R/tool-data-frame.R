@@ -270,7 +270,9 @@ describe_data_frame_skim <- function(df) {
         col$values <- values[seq_len(min(length(values), 10))]
       }
       col$values <- vapply(col$values, FUN.VALUE = character(1), function(x) {
-        if (is.na(x) || nchar(x) <= 140) return(x)
+        if (is.na(x) || nchar(x) <= 140) {
+          return(x)
+        }
         paste(substring(x, 1, 140), "...")
       })
     } else if (col$type == "factor") {
