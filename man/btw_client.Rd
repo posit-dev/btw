@@ -92,8 +92,8 @@ do not want to be included in the system prompt.
 
 For project-specific configuration, store your \code{btw.md} file in the root of
 your project directory. For global configuration, you can maintain a \code{btw.md}
-file in your home directory (at \code{fs::path_home("btw.md")} or
-\code{fs::path_home_r("btw.md")}). This file will be used by default when a
+file in your home directory (at \code{btw.md} or \code{.config/btw/btw.md} in your home
+directory, using \code{fs::path_home()}). This file will be used by default when a
 project-specific \code{btw.md} file is not found.
 }
 

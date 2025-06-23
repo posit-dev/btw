@@ -59,8 +59,8 @@
 #'
 #' For project-specific configuration, store your `btw.md` file in the root of
 #' your project directory. For global configuration, you can maintain a `btw.md`
-#' file in your home directory (at `fs::path_home("btw.md")` or
-#' `fs::path_home_r("btw.md")`). This file will be used by default when a
+#' file in your home directory (at `btw.md` or `.config/btw/btw.md` in your home
+#' directory, using `fs::path_home()`). This file will be used by default when a
 #' project-specific `btw.md` file is not found.
 #'
 #' ## Client Options

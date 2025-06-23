@@ -101,7 +101,8 @@ path_find_user <- function(filename) {
 
   possibilities <- c(
     fs::path_home(filename),
-    fs::path_home_r(filename)
+    fs::path_home_r(filename),
+    fs::path_home(".config", "btw", filename)
   )
 
   for (path in possibilities) {
