@@ -246,8 +246,11 @@ btw_this.cran_package <- function(x, ...) {
       if (dep_name == "R") {
         return(paste0("* R ", deps[[dep_name]]))
       } else {
-        ver <- if (deps[[dep_name]] == "*") "" else
+        ver <- if (deps[[dep_name]] == "*") {
+          ""
+        } else {
           paste0(" (", deps[[dep_name]], ")")
+        }
         return(paste0("* ", dep_name, ver))
       }
     })

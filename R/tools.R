@@ -67,10 +67,18 @@ btw_tools <- function(tools = NULL) {
 }
 
 is_tool_match <- function(tool, labels = NULL) {
-  if (is.null(labels)) return(TRUE)
-  if (tool$name %in% labels) return(TRUE)
-  if (tool$group %in% labels) return(TRUE)
-  if (sub("btw_tool_", "", tool$name) %in% labels) return(TRUE)
+  if (is.null(labels)) {
+    return(TRUE)
+  }
+  if (tool$name %in% labels) {
+    return(TRUE)
+  }
+  if (tool$group %in% labels) {
+    return(TRUE)
+  }
+  if (sub("btw_tool_", "", tool$name) %in% labels) {
+    return(TRUE)
+  }
   FALSE
 }
 
@@ -82,7 +90,9 @@ as_ellmer_tools <- function(x) {
 }
 
 wrap_with_intent <- function(tool) {
-  if ("intent" %in% names(tool@arguments@properties)) return(tool)
+  if ("intent" %in% names(tool@arguments@properties)) {
+    return(tool)
+  }
 
   tool_fun <- tool@fun
   wrapped_tool <- new_function(
