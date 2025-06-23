@@ -123,6 +123,11 @@ btw_client <- function(
 
   client <- config$client
 
+  withr::local_options(
+    btw.__agent_client__ = client,
+    btw.__agent_turns__ = client
+  )
+
   sys_prompt <- client$get_system_prompt()
   sys_prompt <- c(
     "# System and Session Context",
@@ -173,19 +178,19 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
 
   config$tools <- flatten_and_check_tools(config$tools)
 
+  # 1. Client was provided explicitly
   if (!is.null(client)) {
     check_inherits(client, "Chat")
-    config$client <- client
-    return(config)
+  } else {
+    # 2. Client wasn't provided, check the `btw.client` R option
+    default <- getOption("btw.client")
+    if (!is.null(default)) {
+      check_inherits(default, "Chat")
+      config$client <- default$clone()
+    }
   }
 
-  default <- getOption("btw.client")
-  if (!is.null(default)) {
-    check_inherits(default, "Chat")
-    config$client <- default$clone()
-    return(config)
-  }
-
+  # 3a. Check for usage of deprecated btw.md fields
   if (!is.null(config$provider)) {
     lifecycle::deprecate_stop(
       when = "0.0.3",
@@ -202,31 +207,66 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
     )
   }
 
-  if (!is.null(config$client)) {
-    chat_args <- utils::modifyList(
-      list(echo = "output"), # defaults
-      config$client
-    )
-
-    chat_fn <- gsub(" ", "_", tolower(chat_args$provider))
-    if (!grepl("^chat_", chat_fn)) {
-      chat_fn <- paste0("chat_", chat_fn)
-    }
-    chat_args$provider <- NULL
-
-    chat_client <- call2(.ns = "ellmer", chat_fn, !!!chat_args)
-    config$client <- eval(chat_client)
-
-    if (!is.null(chat_args$model)) {
-      cli::cli_inform(
-        "Using {.field {chat_args$model}} from {.strong {config$client$get_provider()@name}}."
-      )
-    }
-    return(config)
+  # 3b. Use the `btw.md` file to configure the client
+  if (is.null(client) && !is.null(config$client)) {
+    client <- btw_config_client(config$client)
   }
 
-  config$client <- ellmer::chat_anthropic(echo = "output")
+  # 4. Default to Claude from Anthropic
+  if (is.null(client)) {
+    client <- ellmer::chat_anthropic(echo = "output")
+  }
+
+  withr::local_options(
+    btw.__agent_client__ = client,
+    btw.__agent_turns__ = client
+  )
+
+  # ---- Agents ----
+  if (!is.null(config$agents)) {
+    for (config_agent in config$agents) {
+      # The agent inherits from the base btw client
+      config_agent$client <- utils::modifyList(
+        config$client,
+        config_agent$client %||% list()
+      )
+
+      config_agent$client <- btw_config_client(
+        config_agent$client,
+        quiet = TRUE
+      )
+
+      agent_tool <- do.call(btw_tool_agent, config_agent)
+      client$register_tool(agent_tool)
+    }
+  }
+
+  config$client <- client
   config
+}
+
+btw_config_client <- function(config_client, quiet = FALSE) {
+  chat_args <- utils::modifyList(
+    list(echo = "output"), # defaults
+    config_client
+  )
+
+  chat_fn <- gsub(" ", "_", tolower(chat_args$provider))
+  if (!grepl("^chat_", chat_fn)) {
+    chat_fn <- paste0("chat_", chat_fn)
+  }
+  chat_args$provider <- NULL
+
+  chat_client <- call2(.ns = "ellmer", chat_fn, !!!chat_args)
+  client <- eval(chat_client)
+
+  if (isFALSE(quiet) && !is.null(chat_args$model)) {
+    cli::cli_inform(
+      "Using {.field {chat_args$model}} from {.strong {client$get_provider()@name}}."
+    )
+  }
+
+  client
 }
 
 flatten_and_check_tools <- function(tools) {
@@ -270,6 +310,10 @@ flatten_and_check_tools <- function(tools) {
 }
 
 read_btw_file <- function(path = NULL) {
+  if (isFALSE(path)) {
+    return(list())
+  }
+
   must_find <- !is.null(path)
 
   path <- path %||% path_find_in_project("btw.md") %||% path_find_user("btw.md")
