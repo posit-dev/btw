@@ -474,15 +474,19 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
     return(config)
   }
 
+  not_chat_args <- c("tools", "provider", "btw_system_prompt")
+
   if (!is.null(config$provider)) {
-    chat_args <- config[setdiff(
-      names(config),
-      c("tools", "provider", "btw_system_prompt")
-    )]
+    chat_args <- utils::modifyList(
+      list(echo = "output"), # defaults
+      config[setdiff(names(config), not_chat_args)] # user config
+    )
+
     chat_fn <- gsub(" ", "_", tolower(config$provider))
     if (!grepl("^chat_", chat_fn)) {
       chat_fn <- paste0("chat_", chat_fn)
     }
+
     chat_client <- call2(.ns = "ellmer", chat_fn, !!!chat_args)
     config$client <- eval(chat_client)
     return(config)
