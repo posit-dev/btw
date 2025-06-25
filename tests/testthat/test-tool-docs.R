@@ -21,7 +21,7 @@ test_that("btw_tool_docs_help_page() works", {
 
 test_that("btw_tool_docs_help_page() with unknown topic", {
   expect_snapshot(error = TRUE, {
-    btw_tool_docs_help_page("unknown-topic", "ggplot2")
+    btw_tool_docs_help_page("unknown-topic", "dplyr")
     btw_tool_docs_help_page("unknown-topic")
   })
 })

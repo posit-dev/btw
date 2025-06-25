@@ -138,10 +138,10 @@
 # btw_tool_docs_help_page() with unknown topic
 
     Code
-      btw_tool_docs_help_page("unknown-topic", "ggplot2")
+      btw_tool_docs_help_page("unknown-topic", "dplyr")
     Condition
       Error in `btw_tool_docs_help_page()`:
-      ! No help page found for topic "unknown-topic" in package ggplot2.
+      ! No help page found for topic "unknown-topic" in package dplyr.
       i To search in all packages, call `btw_tool_docs_help_page()` with an empty string for `package_name`.
     Code
       btw_tool_docs_help_page("unknown-topic")
