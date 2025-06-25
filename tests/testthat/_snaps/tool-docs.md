@@ -135,6 +135,20 @@
       erfcinv <- function (x) qnorm(x/2, lower = FALSE)/sqrt(2)
       ```
 
+# btw_tool_docs_help_page() with unknown topic
+
+    Code
+      btw_tool_docs_help_page("unknown-topic", "ggplot2")
+    Condition
+      Error in `btw_tool_docs_help_page()`:
+      ! No help page found for topic "unknown-topic" in package ggplot2.
+      i To search in all packages, call `btw_tool_docs_help_page()` with an empty string for `package_name`.
+    Code
+      btw_tool_docs_help_page("unknown-topic")
+    Condition
+      Error in `btw_tool_docs_help_page()`:
+      ! No help page found for topic "unknown-topic" in all installed packages.
+
 # btw_tool_docs_help_page() with multiple help topics
 
     Code

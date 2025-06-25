@@ -19,6 +19,13 @@ test_that("btw_tool_docs_help_page() works", {
   expect_snapshot(cli::cat_line(res@value))
 })
 
+test_that("btw_tool_docs_help_page() with unknown topic", {
+  expect_snapshot(error = TRUE, {
+    btw_tool_docs_help_page("unknown-topic", "ggplot2")
+    btw_tool_docs_help_page("unknown-topic")
+  })
+})
+
 test_that("btw_tool_docs_available_vignettes() works", {
   skip_on_cran()
 
