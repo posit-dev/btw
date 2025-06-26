@@ -43,6 +43,7 @@ reference:
   - btw_this
   - btw_client
   - btw_tools
+  - mcp
 
 - title: Describe R stuff
   contents:
