@@ -41,6 +41,8 @@
 #' ```
 #' 
 #' @inheritParams btw_tools
+#' @param ... Named ellmer tools from [ellmer::tool] to include in addition to 
+#' those specified in `tools`.
 #'
 #' @examples
 #' # Should only be run non-interactively, and 
@@ -60,10 +62,12 @@
 #' 
 #' @name mcp
 #' @export 
-btw_mcp_server <- function(tools = NULL) {
+btw_mcp_server <- function(tools = NULL, ...) {
   # evaluate eagerly so that `btw_tools()` will check `tools`
-  tls <- btw::btw_tools(tools = tools)
-  acquaint::mcp_server(tools = tls)
+  btw_tools <- btw::btw_tools(tools = tools)
+  dots <- dots_list(...)
+  
+  acquaint::mcp_server(tools = utils::modifyList(btw_tools, dots))
 }
 
 #' @rdname mcp

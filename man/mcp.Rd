@@ -6,7 +6,7 @@
 \alias{btw_mcp_session}
 \title{Start a Model Context Protocol server with btw tools}
 \usage{
-btw_mcp_server(tools = NULL)
+btw_mcp_server(tools = NULL, ...)
 
 btw_mcp_session()
 }
@@ -15,6 +15,9 @@ btw_mcp_session()
 registering tools. By default all btw tools are included. For example, use
 \code{tools = "docs"} to include only the documentation related tools, or
 \code{tools = c("env", "docs", "session")}, etc.}
+
+\item{...}{Named ellmer tools from \link[ellmer:tool]{ellmer::tool} to include in addition to
+those specified in \code{tools}.}
 }
 \description{
 \code{btw_mcp_server()} starts an MCP server with tools from \code{\link[=btw_tools]{btw_tools()}}, which
