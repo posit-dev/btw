@@ -19,8 +19,9 @@
 #'
 #' @section Configuration:
 #' To configure this server with MCP clients, use the command `Rscript` and the
-#' args `-e "btw::btw_mcp_server()"`. For example, in Claude Desktop's
-#' configuration format:
+#' args `-e "btw::btw_mcp_server()"`. For example, in [Claude Desktop's
+#' configuration
+#' format](https://docs.anthropic.com/en/docs/claude-code/mcp#add-mcp-servers-from-json-configuration):
 #'
 #' ```json
 #' {
@@ -33,7 +34,7 @@
 #' }
 #' ```
 #'
-#' For Claude Code:
+#' For [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview):
 #'
 #' ```bash
 #' claude mcp add -s "user" r-btw -- Rscript -e "btw::btw_mcp_server()"
