@@ -9,9 +9,18 @@
 #' `r .docs_list_tools()`
 #'
 #' @param ... Optional names of tools or tool groups to include when registering
-#'   tools. By default all btw tools are included. For example, use `tools =
-#'   "docs"` to include only the documentation related tools, or `tools =
-#'   c("env", "docs", "session")`, etc.
+#'   tools. By default all btw tools are included. For example, use `"docs"` to
+#'   include only the documentation related tools, or `"env", "docs",
+#'   "session"` for the collection of environment, documentation and session
+#'   tools, and so on.
+#'
+#'   The names provided can be:
+#'
+#'   1. The name of a tool, such as `"btw_tool_env_describe_data_frame"`.
+#'   2. The name of a tool group, such as `"env"`, which will include all tools
+#'      in that group.
+#'   3. The tool name without the `btw_tool_` prefix, such as
+#'      `"env_describe_data_frame"`.
 #'
 #' @returns Registers the tools with `chat`, updating the `chat` object in
 #'   place. The `chat` input is returned invisibly.
