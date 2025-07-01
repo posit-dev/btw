@@ -59,6 +59,7 @@ Collate:
     'btw-package.R'
     'btw.R'
     'btw_client.R'
+    'btw_client_app.R'
     'btw_this.R'
     'clipboard.R'
     'import-standalone-obj-type.R'
