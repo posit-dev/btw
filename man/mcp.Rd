@@ -11,17 +11,11 @@ btw_mcp_server(tools = btw_tools())
 btw_mcp_session()
 }
 \arguments{
-\item{tools}{A list of tools to include in the chat, defaults to
-\code{\link[=btw_tools]{btw_tools()}}. Join \code{\link[=btw_tools]{btw_tools()}} with additional tools defined by
-\code{\link[ellmer:tool]{ellmer::tool()}} to include additional tools in the chat client.
-Alternatively, you can use a character values to refer to specific btw
-tools by name or by group. For example, use \code{tools = "docs"} to include
-only the documentation related tools, or \code{tools = c("env", "docs")} to
-include the environment and documentation tools, and so on. You can also
-refer to btw tools by name, e.g. \code{tools = "btw_tool_docs_help_page"} or
-alternatively in the shorter form \code{tools = "docs_help_page"}. Finally,
-set \code{tools = FALSE} to skip registering \pkg{btw} tools with the chat
-client.}
+\item{tools}{A list of \code{\link[ellmer:tool]{ellmer::tool()}}s to use in the MCP server, defaults
+to the tools provided by \code{\link[=btw_tools]{btw_tools()}}. Use \code{\link[=btw_tools]{btw_tools()}} to subset to
+specific list of \pkg{btw} tools that can be augmented with additional
+tools. Alternatively, you can pass a path to an R script that returns a
+list of tools as supported by \code{\link[acquaint:mcp]{acquaint::mcp_server()}}.}
 }
 \description{
 \code{btw_mcp_server()} starts an MCP server with tools from \code{\link[=btw_tools]{btw_tools()}}, which

@@ -39,7 +39,11 @@
 #' claude mcp add -s "user" r-acquaint -- Rscript -e "btw::btw_mcp_server()"
 #' ```
 #'
-#' @inheritParams btw_client
+#' @param tools A list of [ellmer::tool()]s to use in the MCP server, defaults
+#'   to the tools provided by [btw_tools()]. Use [btw_tools()] to subset to
+#'   specific list of \pkg{btw} tools that can be augmented with additional
+#'   tools. Alternatively, you can pass a path to an R script that returns a
+#'   list of tools as supported by [acquaint::mcp_server()].
 #'
 #' @examples
 #' # Should only be run non-interactively, and
@@ -60,7 +64,16 @@
 #' @name mcp
 #' @export
 btw_mcp_server <- function(tools = btw_tools()) {
-  tools <- flatten_and_check_tools(tools)
+  # If given a path to an R script, we'll pass it on to mcp_server()
+  is_likely_r_file <-
+    is.character(tools) &&
+    file.exists(tools) &&
+    grepl("[.]r$", tools, ignore.case = TRUE)
+
+  if (!is_likely_r_file) {
+    tools <- flatten_and_check_tools(tools)
+  }
+
   acquaint::mcp_server(tools = tools)
 }
 
