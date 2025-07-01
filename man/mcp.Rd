@@ -37,7 +37,7 @@ configuration format:
 
 \if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
   "mcpServers": \{
-    "r-acquaint": \{
+    "r-btw": \{
       "command": "Rscript",
       "args": ["-e", "btw::btw_mcp_server()"]
     \}
@@ -45,9 +45,28 @@ configuration format:
 \}
 }\if{html}{\out{</div>}}
 
-Or, with Claude Code:
+For Claude Code:
 
-\if{html}{\out{<div class="sourceCode bash">}}\preformatted{claude mcp add -s "user" r-acquaint -- Rscript -e "btw::btw_mcp_server()"
+\if{html}{\out{<div class="sourceCode bash">}}\preformatted{claude mcp add -s "user" r-btw -- Rscript -e "btw::btw_mcp_server()"
+}\if{html}{\out{</div>}}
+
+For \href{https://continue.dev}{Continue}, include the following in your \href{https://docs.continue.dev/customize/deep-dives/configuration}{config file}:
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{"experimental": \{
+  "modelContextProtocolServers": [
+    \{
+      "transport": \{
+        "name": "r-btw",
+        "type": "stdio",
+        "command": "Rscript",
+        "args": [
+          "-e",
+          "btw::btw_mcp_server()"
+        ]
+      \}
+    \}
+  ]
+\}
 }\if{html}{\out{</div>}}
 }
 

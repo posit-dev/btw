@@ -25,7 +25,7 @@
 #' ```json
 #' {
 #'   "mcpServers": {
-#'     "r-acquaint": {
+#'     "r-btw": {
 #'       "command": "Rscript",
 #'       "args": ["-e", "btw::btw_mcp_server()"]
 #'     }
@@ -33,10 +33,31 @@
 #' }
 #' ```
 #'
-#' Or, with Claude Code:
+#' For Claude Code:
 #'
 #' ```bash
-#' claude mcp add -s "user" r-acquaint -- Rscript -e "btw::btw_mcp_server()"
+#' claude mcp add -s "user" r-btw -- Rscript -e "btw::btw_mcp_server()"
+#' ```
+#'
+#' For [Continue](https://continue.dev), include the following in your [config
+#' file](https://docs.continue.dev/customize/deep-dives/configuration):
+#'
+#' ```json
+#' "experimental": {
+#'   "modelContextProtocolServers": [
+#'     {
+#'       "transport": {
+#'         "name": "r-btw",
+#'         "type": "stdio",
+#'         "command": "Rscript",
+#'         "args": [
+#'           "-e",
+#'           "btw::btw_mcp_server()"
+#'         ]
+#'       }
+#'     }
+#'   ]
+#' }
 #' ```
 #'
 #' @param tools A list of [ellmer::tool()]s to use in the MCP server, defaults
