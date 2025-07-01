@@ -93,9 +93,10 @@ test_that("btw_client() uses `btw.md` context file for client settings", {
     con = file.path(wd, "..", "btw.md"),
     c(
       "---",
-      "provider: openai",
-      "model: gpt-4o",
-      "system_prompt: I like to have my own system prompt",
+      "client:",
+      "  provider: openai",
+      "  model: gpt-4o",
+      "  system_prompt: I like to have my own system prompt",
       "tools: docs",
       "---",
       "",
