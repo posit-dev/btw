@@ -143,6 +143,51 @@ test_that("btw_client() throws if `path_btw` is provided but doesn't exist", {
   )
 })
 
+test_that("btw_client() throws for deprecated `model` and `provider` fields in btw.md", {
+  withr::local_envvar(list(OPENAI_API_KEY = "beep"))
+
+  wd <- withr::local_tempdir(
+    tmpdir = file.path(tempdir(), "btw-test-client-deprecated")
+  )
+  withr::local_dir(wd)
+
+  writeLines(
+    con = "btw.md",
+    c(
+      "---",
+      "provider: openai",
+      "---",
+      "",
+      "* Prefer solutions that use {tidyverse}",
+      "* Always use `=` for assignment",
+      "* Always use the native base-R pipe `|>` for piped expressions"
+    )
+  )
+
+  expect_error(
+    btw_client(),
+    "provider"
+  )
+
+  writeLines(
+    con = "btw.md",
+    c(
+      "---",
+      "model: gpt-4.1-mini",
+      "---",
+      "",
+      "* Prefer solutions that use {tidyverse}",
+      "* Always use `=` for assignment",
+      "* Always use the native base-R pipe `|>` for piped expressions"
+    )
+  )
+
+  expect_error(
+    btw_client(),
+    "model"
+  )
+})
+
 describe("remove_hidden_content()", {
   it("removes content after single HIDE comment", {
     expect_equal(
