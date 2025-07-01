@@ -25,7 +25,7 @@ pandoc_html_simplify <- function(
   ...,
   options = c(
     "--markdown-headings=atx",
-    "--embed-resources=false",
+    "--embed-resources=false"
   ),
   to = "markdown_strict-raw_html+pipe_tables+backtick_code_blocks"
 ) {
