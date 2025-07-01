@@ -380,13 +380,14 @@ test_that("btw_client() accepts a list of tools in `tools` argument", {
   )
 
   tool <- ellmer::tool(function(x) x + 1, "Add one")
-  chat <- btw_client(tools = tool)
-  chat2 <- btw_client(tools = list(tool))
+  expect_error(
+    btw_client(tools = tool)
+  )
 
-  expect_identical(chat$get_tools(), chat2$get_tools())
+  chat <- btw_client(tools = list(tool))
+  expect_identical(chat$get_tools()[[1]], tool)
 
   chat_combo <- btw_client(tools = list("docs_vignette", tool))
-
   expect_identical(chat_combo$get_tools()[[1]], btw_tools("docs_vignette")[[1]])
   expect_identical(chat_combo$get_tools()[[2]], tool)
 

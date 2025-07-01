@@ -538,7 +538,9 @@ flatten_and_check_tools <- function(tools) {
   }
 
   if (inherits(tools, "ellmer::ToolDef")) {
-    tools <- list(tools)
+    cli::cli_abort(
+      "{.arg tools} should be a list of {.help ellmer::tool} tools or character names for {.pkg btw} tools."
+    )
   }
 
   if (is.character(tools)) {
@@ -549,7 +551,7 @@ flatten_and_check_tools <- function(tools) {
   if (!is.list(tools)) {
     cli::cli_abort(c(
       "Invalid {.arg tools}: Must be a character vector of {.pkg btw} tool names, or list of Tool objects and {.pkg btw} tool names.",
-      i = "See {.help btw::btw_tools()} for more information about available tools and names."
+      i = "See {.help btw::btw_tools} for more information about available tools and names."
     ))
   }
 
