@@ -4,13 +4,22 @@
 \alias{btw_tools}
 \title{Tools: Register tools from btw}
 \usage{
-btw_tools(tools = NULL)
+btw_tools(...)
 }
 \arguments{
-\item{tools}{Optional names of tools or tool groups to include when
-registering tools. By default all btw tools are included. For example, use
-\code{tools = "docs"} to include only the documentation related tools, or
-\code{tools = c("env", "docs", "session")}, etc.}
+\item{...}{Optional names of tools or tool groups to include when registering
+tools. By default all btw tools are included. For example, use \code{"docs"} to
+include only the documentation related tools, or \verb{"env", "docs", "session"} for the collection of environment, documentation and session
+tools, and so on.
+
+The names provided can be:
+\enumerate{
+\item The name of a tool, such as \code{"btw_tool_env_describe_data_frame"}.
+\item The name of a tool group, such as \code{"env"}, which will include all tools
+in that group.
+\item The tool name without the \code{btw_tool_} prefix, such as
+\code{"env_describe_data_frame"}.
+}}
 }
 \value{
 Registers the tools with \code{chat}, updating the \code{chat} object in
@@ -50,7 +59,7 @@ ch <- ellmer::chat_anthropic()
 ch$set_tools(btw_tools())
 
 # or register only the tools related to fetching documentation
-ch$set_tools(btw_tools(tools = "docs"))
+ch$set_tools(btw_tools("docs"))
 
 # ensure that the current tools persist
 ch$set_tools(c(ch$get_tools(), btw_tools()))

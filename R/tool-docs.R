@@ -111,8 +111,25 @@ btw_tool_docs_help_page <- function(topic, package_name = "") {
     package = !!package_name,
     topic = !!topic,
     help_type = "text",
-    try.all.packages = FALSE
+    try.all.packages = !!(is.null(package_name))
   ))
+
+  if (!length(help_page)) {
+    cli::cli_abort(c(
+      paste0(
+        "No help page found for topic {.val {topic}}",
+        if (!is.null(package_name)) {
+          " in package {.pkg {package_name}}"
+        } else {
+          " in all installed packages"
+        },
+        "."
+      ),
+      "i" = if (!is.null(package_name)) {
+        "To search in all packages, call `btw_tool_docs_help_page()` with an empty string for {.code package_name}."
+      }
+    ))
+  }
 
   resolved <- help_package_topic(help_page)
 
@@ -187,7 +204,7 @@ help_package_topic <- function(help_page) {
   list(
     topic = rep_along(topic, help_path),
     resolved = basename(help_path)[sort_indices],
-    package = package[sort_indices]
+    package = if (length(package)) package[sort_indices]
   )
 }
 

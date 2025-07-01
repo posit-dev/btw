@@ -175,6 +175,8 @@ btw_item_with_description <- function(item_name, description, header = NULL) {
     item_name <- NULL
   }
 
-  if (!is.null(header)) header <- c(header, "")
+  if (!is.null(header)) {
+    header <- c(header, "")
+  }
   paste(c(header, item_name, description), collapse = "\n")
 }

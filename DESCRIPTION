@@ -1,6 +1,6 @@
 Package: btw
 Title: Describe R Stuff to Large Language Models
-Version: 0.0.2.9000
+Version: 0.0.3.9000
 Authors@R: c(
     person("Garrick", "Aden-Buie", , "garrick@adenbuie.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-7111-0077")),
@@ -29,6 +29,7 @@ Imports:
     ellmer (>= 0.2.0),
     fs,
     jsonlite,
+    lifecycle,
     pkgsearch,
     rlang (>= 1.1.0),
     rmarkdown,
@@ -61,6 +62,7 @@ Collate:
     'btw-package.R'
     'btw.R'
     'btw_client.R'
+    'btw_client_app.R'
     'btw_this.R'
     'clipboard.R'
     'import-standalone-obj-type.R'

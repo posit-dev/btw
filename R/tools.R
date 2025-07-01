@@ -8,10 +8,19 @@
 #'
 #' `r .docs_list_tools()`
 #'
-#' @param tools Optional names of tools or tool groups to include when
-#'   registering tools. By default all btw tools are included. For example, use
-#'   `tools = "docs"` to include only the documentation related tools, or
-#'   `tools = c("env", "docs", "session")`, etc.
+#' @param ... Optional names of tools or tool groups to include when registering
+#'   tools. By default all btw tools are included. For example, use `"docs"` to
+#'   include only the documentation related tools, or `"env", "docs",
+#'   "session"` for the collection of environment, documentation and session
+#'   tools, and so on.
+#'
+#'   The names provided can be:
+#'
+#'   1. The name of a tool, such as `"btw_tool_env_describe_data_frame"`.
+#'   2. The name of a tool group, such as `"env"`, which will include all tools
+#'      in that group.
+#'   3. The tool name without the `btw_tool_` prefix, such as
+#'      `"env_describe_data_frame"`.
 #'
 #' @returns Registers the tools with `chat`, updating the `chat` object in
 #'   place. The `chat` input is returned invisibly.
@@ -25,7 +34,7 @@
 #' ch$set_tools(btw_tools())
 #'
 #' # or register only the tools related to fetching documentation
-#' ch$set_tools(btw_tools(tools = "docs"))
+#' ch$set_tools(btw_tools("docs"))
 #'
 #' # ensure that the current tools persist
 #' ch$set_tools(c(ch$get_tools(), btw_tools()))
@@ -33,8 +42,11 @@
 #'
 #' @family Tools
 #' @export
-btw_tools <- function(tools = NULL) {
-  if (is.null(tools)) {
+btw_tools <- function(...) {
+  tools <- c(...)
+  check_character(tools, allow_null = TRUE)
+
+  if (length(tools) == 0) {
     return(as_ellmer_tools(.btw_tools))
   }
 
@@ -67,10 +79,18 @@ btw_tools <- function(tools = NULL) {
 }
 
 is_tool_match <- function(tool, labels = NULL) {
-  if (is.null(labels)) return(TRUE)
-  if (tool$name %in% labels) return(TRUE)
-  if (tool$group %in% labels) return(TRUE)
-  if (sub("btw_tool_", "", tool$name) %in% labels) return(TRUE)
+  if (is.null(labels)) {
+    return(TRUE)
+  }
+  if (tool$name %in% labels) {
+    return(TRUE)
+  }
+  if (tool$group %in% labels) {
+    return(TRUE)
+  }
+  if (sub("btw_tool_", "", tool$name) %in% labels) {
+    return(TRUE)
+  }
   FALSE
 }
 
@@ -82,7 +102,9 @@ as_ellmer_tools <- function(x) {
 }
 
 wrap_with_intent <- function(tool) {
-  if ("intent" %in% names(tool@arguments@properties)) return(tool)
+  if ("intent" %in% names(tool@arguments@properties)) {
+    return(tool)
+  }
 
   tool_fun <- tool@fun
   wrapped_tool <- new_function(
