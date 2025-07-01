@@ -241,9 +241,9 @@ btw chat, see <code><a href="btw_tools.html">btw_tools()</a></code> for details.
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">btw_client</span><span class="op">(</span><span class="va">...</span>, client <span class="op">=</span> <span class="cn">NULL</span>, tools <span class="op">=</span> <span class="cn">NULL</span>, path_btw <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">btw_client</span><span class="op">(</span><span class="va">...</span>, client <span class="op">=</span> <span class="cn">NULL</span>, tools <span class="op">=</span> <span class="fu"><a href="btw_tools.html">btw_tools</a></span><span class="op">(</span><span class="op">)</span>, path_btw <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">btw_app</span><span class="op">(</span><span class="va">...</span>, client <span class="op">=</span> <span class="cn">NULL</span>, tools <span class="op">=</span> <span class="cn">NULL</span>, path_btw <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">btw_app</span><span class="op">(</span><span class="va">...</span>, client <span class="op">=</span> <span class="cn">NULL</span>, tools <span class="op">=</span> <span class="fu"><a href="btw_tools.html">btw_tools</a></span><span class="op">(</span><span class="op">)</span>, path_btw <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -266,11 +266,17 @@ is available.</p></dd>
 
 
 <dt id="arg-tools">tools<a class="anchor" aria-label="anchor" href="#arg-tools"></a></dt>
-<dd><p>Optional names of tools or tool groups to include in the chat
-client. By default, all btw tools are included. For example, use
-<code>include = "docs"</code> to include only the documentation related tools, or
-<code>include = c("env", "docs")</code>, etc. <code>btw_client()</code> also supports
-<code>tools = FALSE</code> to skip registering <span class="pkg">btw</span> tools with the chat client.</p></dd>
+<dd><p>A list of tools to include in the chat, defaults to
+<code><a href="btw_tools.html">btw_tools()</a></code>. Join <code><a href="btw_tools.html">btw_tools()</a></code> with additional tools defined by
+<code><a href="https://ellmer.tidyverse.org/reference/tool.html" class="external-link">ellmer::tool()</a></code> to include additional tools in the chat client.
+Alternatively, you can use a character values to refer to specific btw
+tools by name or by group. For example, use <code>tools = "docs"</code> to include
+only the documentation related tools, or <code>tools = c("env", "docs")</code> to
+include the environment and documentation tools, and so on. You can also
+refer to btw tools by name, e.g. <code>tools = "btw_tool_docs_help_page"</code> or
+alternatively in the shorter form <code>tools = "docs_help_page"</code>. Finally,
+set <code>tools = FALSE</code> to skip registering <span class="pkg">btw</span> tools with the chat
+client.</p></dd>
 
 
 <dt id="arg-path-btw">path_btw<a class="anchor" aria-label="anchor" href="#arg-path-btw"></a></dt>
