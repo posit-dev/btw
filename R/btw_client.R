@@ -87,11 +87,17 @@
 #'   `client` argument, then the `btw.client` R option, and finally the `btw.md`
 #'   project file, using only the client definition from the first of these that
 #'   is available.
-#' @param tools Optional names of tools or tool groups to include in the chat
-#'   client. By default, all btw tools are included. For example, use
-#'   `include = "docs"` to include only the documentation related tools, or
-#'   `include = c("env", "docs")`, etc. `btw_client()` also supports
-#'   `tools = FALSE` to skip registering \pkg{btw} tools with the chat client.
+#' @param tools A list of tools to include in the chat, defaults to
+#'   [btw_tools()]. Join [btw_tools()] with additional tools defined by
+#'   [ellmer::tool()] to include additional tools in the chat client.
+#'   Alternatively, you can use a character values to refer to specific btw
+#'   tools by name or by group. For example, use `tools = "docs"` to include
+#'   only the documentation related tools, or `tools = c("env", "docs")` to
+#'   include the environment and documentation tools, and so on. You can also
+#'   refer to btw tools by name, e.g. `tools = "btw_tool_docs_help_page"` or
+#'   alternatively in the shorter form `tools = "docs_help_page"`. Finally,
+#'   set `tools = FALSE` to skip registering \pkg{btw} tools with the chat
+#'   client.
 #' @param path_btw A path to a `btw.md` project context file. If `NULL`, btw
 #'   will find a project-specific `btw.md` file in the parents of the current
 #'   working directory.
@@ -104,7 +110,12 @@
 #'
 #' @describeIn btw_client Create a btw-enhanced [ellmer::Chat] client
 #' @export
-btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
+btw_client <- function(
+  ...,
+  client = NULL,
+  tools = btw_tools(),
+  path_btw = NULL
+) {
   check_dots_empty()
 
   config <- btw_client_config(client, tools, config = read_btw_file(path_btw))
@@ -147,7 +158,7 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
   client$set_system_prompt(paste(sys_prompt, collapse = "\n"))
 
   if (!skip_tools) {
-    client$set_tools(tools = c(client$get_tools(), btw_tools(config$tools)))
+    client$set_tools(tools = c(client$get_tools(), config$tools))
   }
 
   client
@@ -158,7 +169,7 @@ btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
 #' @describeIn btw_client Create a btw-enhanced client and launch a Shiny app to
 #'   chat
 #' @export
-btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
+btw_app <- function(..., client = NULL, tools = btw_tools(), path_btw = NULL) {
   check_dots_empty()
   rlang::check_installed("shiny")
   rlang::check_installed("bslib")
@@ -463,6 +474,8 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
     getOption("btw.tools") %||%
     config$tools
 
+  config$tools <- flatten_and_check_tools(config$tools)
+
   if (!is.null(client)) {
     check_inherits(client, "Chat")
     config$client <- client
@@ -517,6 +530,46 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
 
   config$client <- ellmer::chat_anthropic(echo = "output")
   config
+}
+
+flatten_and_check_tools <- function(tools) {
+  if (isFALSE(tools)) {
+    return(list())
+  }
+
+  if (inherits(tools, "ellmer::ToolDef")) {
+    cli::cli_abort(
+      "{.arg tools} should be a list of {.help ellmer::tool} tools or character names for {.pkg btw} tools."
+    )
+  }
+
+  if (is.character(tools)) {
+    tools <- btw_tools(tools)
+    return(tools)
+  }
+
+  if (!is.list(tools)) {
+    cli::cli_abort(c(
+      "Invalid {.arg tools}: Must be a character vector of {.pkg btw} tool names, or list of Tool objects and {.pkg btw} tool names.",
+      i = "See {.help btw::btw_tools} for more information about available tools and names."
+    ))
+  }
+
+  flat_tools <- list()
+  for (i in seq_along(tools)) {
+    tool <- tools[[i]]
+    if (inherits(tool, "ellmer::ToolDef")) {
+      flat_tools <- c(flat_tools, list(tool))
+    } else if (is.character(tool)) {
+      flat_tools <- c(flat_tools, btw_tools(tool))
+    } else {
+      cli::cli_abort(
+        "Invalid tool in {.arg tools[[{i}]]}: Must be a character vector or Tool object, not {.obj_type_friendly {tools[[i]]}}."
+      )
+    }
+  }
+
+  flat_tools
 }
 
 read_btw_file <- function(path = NULL) {

@@ -360,3 +360,57 @@ describe("remove_hidden_content()", {
     )
   })
 })
+
+test_that("btw_client() accepts a list of tools in `tools` argument", {
+  withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
+
+  chat <- btw_client(tools = btw_tools("docs"))
+
+  expect_true(
+    all(vapply(
+      chat$get_tools(),
+      inherits,
+      logical(1),
+      "ellmer::ToolDef"
+    ))
+  )
+
+  expect_true(
+    all(grepl("btw_tool_docs", names(chat$get_tools())))
+  )
+
+  tool <- ellmer::tool(function(x) x + 1, "Add one")
+  expect_error(
+    btw_client(tools = tool)
+  )
+
+  chat <- btw_client(tools = list(tool))
+  expect_identical(chat$get_tools()[[1]], tool)
+
+  chat_combo <- btw_client(tools = list("docs_vignette", tool))
+  expect_identical(chat_combo$get_tools()[[1]], btw_tools("docs_vignette")[[1]])
+  expect_identical(chat_combo$get_tools()[[2]], tool)
+
+  chat_no_tools <- btw_client(tools = FALSE)
+  expect_identical(chat_no_tools$get_tools(), list())
+
+  chat_btw_tools <- btw_client(tools = "docs")
+  expect_identical(chat_btw_tools$get_tools(), btw_tools("docs"))
+})
+
+test_that("btw_client() throws for invalid `tools` argument", {
+  withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
+
+  expect_error(
+    btw_client(tools = "not_a_tool")
+  )
+
+  expect_error(
+    btw_client(tools = 42)
+  )
+
+  expect_error(
+    btw_client(tools = c(btw_tools()[[1]], list(42))),
+    "tools\\[\\[2\\]\\]"
+  )
+})
