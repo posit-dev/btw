@@ -27,7 +27,8 @@
 #'
 #' You can also use the `btw.md` file to choose default chat settings for your
 #' project in a YAML block at the top of the file. In this YAML block you can
-#' choose the default `provider`, `model` and `tools` for `btw_client()` or
+#' choose settings for the default ellmer chat `client`, e.g. `provider`,
+#' `model`, as well as choose with \pkg{btw} `tools` to use in `btw_client()` or
 #' `btw_app()`. `provider` chooses the `ellmer::chat_*()` function, e.g.
 #' `provider: openai` or `provider: chat_openai` to use [ellmer::chat_openai()].
 #' `tools` chooses which btw tools are included in the chat, and all other
@@ -38,8 +39,9 @@
 #'
 #' ````
 #' ---
-#' provider: claude
-#' model: claude-3-7-sonnet-20250219
+#' client:
+#'   provider: claude
+#'   model: claude-3-7-sonnet-20250219
 #' tools: [data, docs, environment]
 #' ---
 #'
@@ -474,18 +476,33 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
     return(config)
   }
 
-  not_chat_args <- c("tools", "provider", "btw_system_prompt")
-
   if (!is.null(config$provider)) {
+    lifecycle::deprecate_stop(
+      when = "0.0.3",
+      what = I("`provider`"),
+      details = "Use the `client` field instead, e.g. `client: {provider: 'openai'}`."
+    )
+  }
+
+  if (!is.null(config$model)) {
+    lifecycle::deprecate_stop(
+      when = "0.0.3",
+      what = I("`model`"),
+      details = "Use the `client` field instead, e.g. `client: {model: 'gpt-4.1-mini`}`."
+    )
+  }
+
+  if (!is.null(config$client)) {
     chat_args <- utils::modifyList(
       list(echo = "output"), # defaults
-      config[setdiff(names(config), not_chat_args)] # user config
+      config$client
     )
 
-    chat_fn <- gsub(" ", "_", tolower(config$provider))
+    chat_fn <- gsub(" ", "_", tolower(chat_args$provider))
     if (!grepl("^chat_", chat_fn)) {
       chat_fn <- paste0("chat_", chat_fn)
     }
+    chat_args$provider <- NULL
 
     chat_client <- call2(.ns = "ellmer", chat_fn, !!!chat_args)
     config$client <- eval(chat_client)

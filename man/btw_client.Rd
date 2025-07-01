@@ -62,7 +62,8 @@ your chat conversation. You can structure the file in any way you wish.
 
 You can also use the \code{btw.md} file to choose default chat settings for your
 project in a YAML block at the top of the file. In this YAML block you can
-choose the default \code{provider}, \code{model} and \code{tools} for \code{btw_client()} or
+choose settings for the default ellmer chat \code{client}, e.g. \code{provider},
+\code{model}, as well as choose with \pkg{btw} \code{tools} to use in \code{btw_client()} or
 \code{btw_app()}. \code{provider} chooses the \verb{ellmer::chat_*()} function, e.g.
 \code{provider: openai} or \code{provider: chat_openai} to use \code{\link[ellmer:chat_openai]{ellmer::chat_openai()}}.
 \code{tools} chooses which btw tools are included in the chat, and all other
@@ -71,8 +72,9 @@ values are passed to the \verb{ellmer::chat_*()} constructor, e.g. \verb{model: 
 Here's an example \code{btw.md} file:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{---
-provider: claude
-model: claude-3-7-sonnet-20250219
+client:
+  provider: claude
+  model: claude-3-7-sonnet-20250219
 tools: [data, docs, environment]
 ---
 

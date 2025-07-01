@@ -93,9 +93,10 @@ test_that("btw_client() uses `btw.md` context file for client settings", {
     con = file.path(wd, "..", "btw.md"),
     c(
       "---",
-      "provider: openai",
-      "model: gpt-4o",
-      "system_prompt: I like to have my own system prompt",
+      "client:",
+      "  provider: openai",
+      "  model: gpt-4o",
+      "  system_prompt: I like to have my own system prompt",
       "tools: docs",
       "---",
       "",
@@ -139,6 +140,51 @@ test_that("btw_client() uses `btw.md` context file for client settings", {
 test_that("btw_client() throws if `path_btw` is provided but doesn't exist", {
   expect_error(
     btw_client(path_btw = tempfile())
+  )
+})
+
+test_that("btw_client() throws for deprecated `model` and `provider` fields in btw.md", {
+  withr::local_envvar(list(OPENAI_API_KEY = "beep"))
+
+  wd <- withr::local_tempdir(
+    tmpdir = file.path(tempdir(), "btw-test-client-deprecated")
+  )
+  withr::local_dir(wd)
+
+  writeLines(
+    con = "btw.md",
+    c(
+      "---",
+      "provider: openai",
+      "---",
+      "",
+      "* Prefer solutions that use {tidyverse}",
+      "* Always use `=` for assignment",
+      "* Always use the native base-R pipe `|>` for piped expressions"
+    )
+  )
+
+  expect_error(
+    btw_client(),
+    "provider"
+  )
+
+  writeLines(
+    con = "btw.md",
+    c(
+      "---",
+      "model: gpt-4.1-mini",
+      "---",
+      "",
+      "* Prefer solutions that use {tidyverse}",
+      "* Always use `=` for assignment",
+      "* Always use the native base-R pipe `|>` for piped expressions"
+    )
+  )
+
+  expect_error(
+    btw_client(),
+    "model"
   )
 })
 
