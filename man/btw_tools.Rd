@@ -4,13 +4,11 @@
 \alias{btw_tools}
 \title{Tools: Register tools from btw}
 \usage{
-btw_tools(tools = NULL)
+btw_tools(...)
 }
 \arguments{
-\item{tools}{Optional names of tools or tool groups to include when
-registering tools. By default all btw tools are included. For example, use
-\code{tools = "docs"} to include only the documentation related tools, or
-\code{tools = c("env", "docs", "session")}, etc.}
+\item{...}{Optional names of tools or tool groups to include when registering
+tools. By default all btw tools are included. For example, use \code{tools = "docs"} to include only the documentation related tools, or \code{tools = c("env", "docs", "session")}, etc.}
 }
 \value{
 Registers the tools with \code{chat}, updating the \code{chat} object in
@@ -20,26 +18,9 @@ place. The \code{chat} input is returned invisibly.
 The \code{btw_tools()} function provides a list of tools that can be registered
 with an ellmer chat via \code{chat$set_tools()} that allow the chat to
 interface with your computational environment. Chats returned by
-this function have access to the tools:\tabular{lll}{
-   Name \tab Group \tab Description \cr
-   btw_tool_docs_available_vignettes \tab docs \tab List available vignettes for an R package. \cr
-   btw_tool_docs_help_page \tab docs \tab Get help page from package. \cr
-   btw_tool_docs_package_help_topics \tab docs \tab Get available help topics for an R package. \cr
-   btw_tool_docs_package_news \tab docs \tab Read the release notes (NEWS) for a package. \cr
-   btw_tool_docs_vignette \tab docs \tab Get a package vignette in plain text. \cr
-   btw_tool_env_describe_data_frame \tab env \tab Show the data frame or table or get information about the structure of a data frame or table. \cr
-   btw_tool_env_describe_environment \tab env \tab List and describe items in an environment. \cr
-   btw_tool_files_list_files \tab files \tab List files or directories in the project. \cr
-   btw_tool_files_read_text_file \tab files \tab Read an entire text file. \cr
-   btw_tool_files_write_text_file \tab files \tab Write content to a text file. \cr
-   btw_tool_ide_read_current_editor \tab ide \tab Read the contents of the editor that is currently open in the user's IDE. \cr
-   btw_tool_search_package_info \tab search \tab Describe a CRAN package. \cr
-   btw_tool_search_packages \tab search \tab Search for an R package on CRAN. \cr
-   btw_tool_session_check_package_installed \tab session \tab Check if a package is installed in the current session. \cr
-   btw_tool_session_package_info \tab session \tab Verify that a specific package is installed, or find out which packages are in use in the current session. \cr
-   btw_tool_session_platform_info \tab session \tab Describes the R version, operating system, language and locale settings for the user's system. \cr
-   btw_tool_web_read_url \tab web \tab Read a web page and convert it to Markdown format. \cr
-}
+this function have access to the tools:
+
+\verb{r .docs_list_tools()}
 }
 \examples{
 # requires an ANTHROPIC_API_KEY
@@ -50,7 +31,7 @@ ch <- ellmer::chat_anthropic()
 ch$set_tools(btw_tools())
 
 # or register only the tools related to fetching documentation
-ch$set_tools(btw_tools(tools = "docs"))
+ch$set_tools(btw_tools("docs"))
 
 # ensure that the current tools persist
 ch$set_tools(c(ch$get_tools(), btw_tools()))

@@ -8,10 +8,10 @@
 #'
 #' `r .docs_list_tools()`
 #'
-#' @param tools Optional names of tools or tool groups to include when
-#'   registering tools. By default all btw tools are included. For example, use
-#'   `tools = "docs"` to include only the documentation related tools, or
-#'   `tools = c("env", "docs", "session")`, etc.
+#' @param ... Optional names of tools or tool groups to include when registering
+#'   tools. By default all btw tools are included. For example, use `tools =
+#'   "docs"` to include only the documentation related tools, or `tools =
+#'   c("env", "docs", "session")`, etc.
 #'
 #' @returns Registers the tools with `chat`, updating the `chat` object in
 #'   place. The `chat` input is returned invisibly.
@@ -25,7 +25,7 @@
 #' ch$set_tools(btw_tools())
 #'
 #' # or register only the tools related to fetching documentation
-#' ch$set_tools(btw_tools(tools = "docs"))
+#' ch$set_tools(btw_tools("docs"))
 #'
 #' # ensure that the current tools persist
 #' ch$set_tools(c(ch$get_tools(), btw_tools()))
@@ -33,8 +33,11 @@
 #'
 #' @family Tools
 #' @export
-btw_tools <- function(tools = NULL) {
-  if (is.null(tools)) {
+btw_tools <- function(...) {
+  tools <- c(...)
+  check_character(tools, allow_null = TRUE)
+
+  if (length(tools) == 0) {
     return(as_ellmer_tools(.btw_tools))
   }
 

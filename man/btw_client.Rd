@@ -5,9 +5,9 @@
 \alias{btw_app}
 \title{Create a btw-enhanced ellmer chat client}
 \usage{
-btw_client(..., client = NULL, tools = NULL, path_btw = NULL)
+btw_client(..., client = NULL, tools = btw_tools(), path_btw = NULL)
 
-btw_app(..., client = NULL, tools = NULL, path_btw = NULL)
+btw_app(..., client = NULL, tools = btw_tools(), path_btw = NULL)
 }
 \arguments{
 \item{...}{Additional arguments are ignored. \code{...} are included for future
@@ -21,11 +21,17 @@ for default chat client settings, like provider and model. We check the
 project file, using only the client definition from the first of these that
 is available.}
 
-\item{tools}{Optional names of tools or tool groups to include in the chat
-client. By default, all btw tools are included. For example, use
-\code{include = "docs"} to include only the documentation related tools, or
-\code{include = c("env", "docs")}, etc. \code{btw_client()} also supports
-\code{tools = FALSE} to skip registering \pkg{btw} tools with the chat client.}
+\item{tools}{A list of tools to include in the chat, defaults to
+\code{\link[=btw_tools]{btw_tools()}}. Join \code{\link[=btw_tools]{btw_tools()}} with additional tools defined by
+\code{\link[ellmer:tool]{ellmer::tool()}} to include additional tools in the chat client.
+Alternatively, you can use a character values to refer to specific btw
+tools by name or by group. For example, use \code{tools = "docs"} to include
+only the documentation related tools, or \code{tools = c("env", "docs")} to
+include the environment and documentation tools, and so on. You can also
+refer to btw tools by name, e.g. \code{tools = "btw_tool_docs_help_page"} or
+alternatively in the shorter form \code{tools = "docs_help_page"}. Finally,
+set \code{tools = FALSE} to skip registering \pkg{btw} tools with the chat
+client.}
 
 \item{path_btw}{A path to a \code{btw.md} project context file. If \code{NULL}, btw
 will find a project-specific \code{btw.md} file in the parents of the current
