@@ -6,18 +6,22 @@
 \alias{btw_mcp_session}
 \title{Start a Model Context Protocol server with btw tools}
 \usage{
-btw_mcp_server(tools = NULL, ...)
+btw_mcp_server(tools = btw_tools())
 
 btw_mcp_session()
 }
 \arguments{
-\item{tools}{Optional names of tools or tool groups to include when
-registering tools. By default all btw tools are included. For example, use
-\code{tools = "docs"} to include only the documentation related tools, or
-\code{tools = c("env", "docs", "session")}, etc.}
-
-\item{...}{Named ellmer tools from \link[ellmer:tool]{ellmer::tool} to include in addition to
-those specified in \code{tools}.}
+\item{tools}{A list of tools to include in the chat, defaults to
+\code{\link[=btw_tools]{btw_tools()}}. Join \code{\link[=btw_tools]{btw_tools()}} with additional tools defined by
+\code{\link[ellmer:tool]{ellmer::tool()}} to include additional tools in the chat client.
+Alternatively, you can use a character values to refer to specific btw
+tools by name or by group. For example, use \code{tools = "docs"} to include
+only the documentation related tools, or \code{tools = c("env", "docs")} to
+include the environment and documentation tools, and so on. You can also
+refer to btw tools by name, e.g. \code{tools = "btw_tool_docs_help_page"} or
+alternatively in the shorter form \code{tools = "docs_help_page"}. Finally,
+set \code{tools = FALSE} to skip registering \pkg{btw} tools with the chat
+client.}
 }
 \description{
 \code{btw_mcp_server()} starts an MCP server with tools from \code{\link[=btw_tools]{btw_tools()}}, which
@@ -54,18 +58,18 @@ Or, with Claude Code:
 }
 
 \examples{
-# Should only be run non-interactively, and 
+# Should only be run non-interactively, and
 # will block the current R process once called.
 if (FALSE) {
   # To start a server with btw tools:
   btw_mcp_server()
- 
-  # To only do so with a subset of btw's tools, e.g. those 
+
+  # To only do so with a subset of btw's tools, e.g. those
   # that fetch package documentation:
-  btw_mcp_server(tools = "docs")
+  btw_mcp_server(tools = btw_tools("docs"))
 }
 
-# To allow the server to access variables in specific 
+# To allow the server to access variables in specific
 # sessions, call `btw_mcp_session()` in that session:
 btw_mcp_session()
 
