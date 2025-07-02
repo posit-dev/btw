@@ -5,9 +5,9 @@
 \alias{btw_app}
 \title{Create a btw-enhanced ellmer chat client}
 \usage{
-btw_client(..., client = NULL, tools = btw_tools(), path_btw = NULL)
+btw_client(..., client = NULL, tools = NULL, path_btw = NULL)
 
-btw_app(..., client = NULL, tools = btw_tools(), path_btw = NULL)
+btw_app(..., client = NULL, tools = NULL, path_btw = NULL)
 }
 \arguments{
 \item{...}{Additional arguments are ignored. \code{...} are included for future

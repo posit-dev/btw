@@ -3,7 +3,7 @@
 #' @describeIn btw_client Create a btw-enhanced client and launch a Shiny app to
 #'   chat
 #' @export
-btw_app <- function(..., client = NULL, tools = btw_tools(), path_btw = NULL) {
+btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
   check_dots_empty()
   rlang::check_installed("shiny")
   rlang::check_installed("bslib")

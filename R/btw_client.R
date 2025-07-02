@@ -113,7 +113,7 @@
 btw_client <- function(
   ...,
   client = NULL,
-  tools = btw_tools(),
+  tools = NULL,
   path_btw = NULL
 ) {
   check_dots_empty()
