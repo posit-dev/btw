@@ -168,7 +168,8 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
   config$tools <-
     tools %||%
     getOption("btw.tools") %||%
-    config$tools
+    config$tools %||%
+    btw_tools()
 
   config$tools <- flatten_and_check_tools(config$tools)
 
