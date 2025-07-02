@@ -13,7 +13,7 @@
 #' environment.
 #'
 #' @seealso
-#' These functions use [acquaint::mcp_server()] and [acquaint::mcp_session()]
+#' These functions use [mcptools::mcp_server()] and [mcptools::mcp_session()]
 #' under the hood. To configure arbitrary tools with an MCP client, see the
 #' documentation of those functions.
 #'
@@ -65,7 +65,7 @@
 #'   to the tools provided by [btw_tools()]. Use [btw_tools()] to subset to
 #'   specific list of \pkg{btw} tools that can be augmented with additional
 #'   tools. Alternatively, you can pass a path to an R script that returns a
-#'   list of tools as supported by [acquaint::mcp_server()].
+#'   list of tools as supported by [mcptools::mcp_server()].
 #'
 #' @examples
 #' # Should only be run non-interactively, and
@@ -96,11 +96,11 @@ btw_mcp_server <- function(tools = btw_tools()) {
     tools <- flatten_and_check_tools(tools)
   }
 
-  acquaint::mcp_server(tools = tools)
+  mcptools::mcp_server(tools = tools)
 }
 
 #' @rdname mcp
 #' @export
 btw_mcp_session <- function() {
-  acquaint::mcp_session()
+  mcptools::mcp_session()
 }

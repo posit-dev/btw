@@ -22,7 +22,7 @@ BugReports: https://github.com/posit-dev/btw/issues
 Depends:
     R (>= 4.1.0)
 Imports:
-    acquaint,
+    mcptools,
     cli,
     clipr,
     dplyr,
@@ -50,7 +50,7 @@ Suggests:
     shinychat (>= 0.2.0),
     testthat (>= 3.0.0)
 Remotes:
-    posit-dev/acquaint#44
+    posit-dev/mcptools
 Config/Needs/website: tidyverse/tidytemplate
 Config/testthat/edition: 3
 Config/testthat/parallel: true
