@@ -40,7 +40,8 @@ Imports:
     tibble,
     utils,
     withr,
-    xml2
+    xml2,
+    promises
 Suggests:
     bslib (>= 0.7.0),
     chromote,
