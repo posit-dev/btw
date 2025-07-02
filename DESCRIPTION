@@ -1,6 +1,6 @@
 Package: btw
 Title: Describe R Stuff to Large Language Models
-Version: 0.0.3.9000
+Version: 0.0.4.9000
 Authors@R: c(
     person("Garrick", "Aden-Buie", , "garrick@adenbuie.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-7111-0077")),
@@ -22,6 +22,7 @@ BugReports: https://github.com/posit-dev/btw/issues
 Depends:
     R (>= 4.1.0)
 Imports:
+    mcptools,
     cli,
     clipr,
     dplyr,
@@ -48,6 +49,8 @@ Suggests:
     shiny,
     shinychat (>= 0.2.0),
     testthat (>= 3.0.0)
+Remotes:
+    posit-dev/mcptools
 Config/Needs/website: tidyverse/tidytemplate
 Config/testthat/edition: 3
 Config/testthat/parallel: true
@@ -65,6 +68,7 @@ Collate:
     'import-standalone-obj-type.R'
     'import-standalone-purrr.R'
     'import-standalone-types-check.R'
+    'mcp.R'
     'tool-data-frame.R'
     'tool-result.R'
     'tool-docs-news.R'

@@ -66,6 +66,7 @@ btw_tools <- function(...) {
       tryCatch(
         arg_match(tools, allowed, multiple = TRUE),
         error = function(err_long) {
+          class(err_short) <- c("btw_unmatched_tool_error", class(err_short))
           cnd_signal(err_short)
         }
       )
