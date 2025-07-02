@@ -186,7 +186,7 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
     default <- getOption("btw.client")
     if (!is.null(default)) {
       check_inherits(default, "Chat")
-      config$client <- default$clone()
+      client <- default$clone()
     }
   }
 
@@ -227,14 +227,18 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
     for (config_agent in config$agents) {
       # The agent inherits from the base btw client
       config_agent$client <- utils::modifyList(
-        config$client,
+        config$client %||% list(),
         config_agent$client %||% list()
       )
 
-      config_agent$client <- btw_config_client(
-        config_agent$client,
-        quiet = TRUE
-      )
+      if (length(config_agent$client) == 0) {
+        config_agent$client <- client
+      } else {
+        config_agent$client <- btw_config_client(
+          config_agent$client,
+          quiet = TRUE
+        )
+      }
 
       agent_tool <- do.call(btw_tool_agent, config_agent)
       client$register_tool(agent_tool)
