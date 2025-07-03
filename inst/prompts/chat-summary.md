@@ -17,10 +17,11 @@ Consider organizing your summary around themes like:
 GUIDELINES
 - Be ruthlessly concise while maintaining accuracy
 - Use clear, direct language
-- Focus on actionable insights and concrete outcomes
+- Focus on actionable insights, concrete outcomes, and high-quality context
 - Eliminate conversational filler and process details unless they're crucial
 - If code was involved, include final working solutions but not debugging iterations
 - If research was conducted, focus on conclusions rather than the search process
+- If coding research was involved include example code snippets and summarize documentation in a way that teaches the key points discovered in the research.
 
 Remember: Your summary should allow someone else (human or AI) to quickly understand what was accomplished and learned without needing to read the full conversation.
 
