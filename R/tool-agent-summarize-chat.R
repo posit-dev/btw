@@ -54,12 +54,15 @@ btw_task_summarize_chat <- function(
 
   summary_client$set_system_prompt(NULL)
 
-  summary_client$chat(
+  res <- summary_client$chat(
     ellmer::interpolate_file(
       system.file("prompts", "chat-summary.md", package = "btw"),
       additional_guidance = additional_guidance
     )
   )
+
+  attr(res, "client") <- summary_client
+  invisible(res)
 }
 
 turns_simplify <- function(turns) {
