@@ -5,19 +5,19 @@
 \title{Summarize Chat Conversation}
 \usage{
 btw_task_summarize_chat(
-  client,
-  turns = client,
+  turns,
+  client = NULL,
   additional_guidance = "",
   start_turn = 0
 )
 }
 \arguments{
-\item{client}{An \link[ellmer:Chat]{ellmer::Chat} client that will be used to summarize the
-chat.}
-
 \item{turns}{A list of \link[ellmer:Turn]{ellmer::Turn}s or an \link[ellmer:Chat]{ellmer::Chat} object that
 provides the conversation history to summarize. If not provided, uses the
 chat history from \code{client}.}
+
+\item{client}{An \link[ellmer:Chat]{ellmer::Chat} client that will be used to summarize the
+chat. Must be provided if \code{turns} is not an \link[ellmer:Chat]{ellmer::Chat} object.}
 
 \item{additional_guidance}{Optional prompt to guide the summarization focus.
 If not provided, creates a general comprehensive summary.}

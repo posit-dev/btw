@@ -4,11 +4,11 @@
 #' focusing on key outcomes and findings. This is a direct function that can be
 #' called without the agent wrapper.
 #'
-#' @param client An [ellmer::Chat] client that will be used to summarize the
-#'   chat.
 #' @param turns A list of [ellmer::Turn]s or an [ellmer::Chat] object that
 #'   provides the conversation history to summarize. If not provided, uses the
 #'   chat history from `client`.
+#' @param client An [ellmer::Chat] client that will be used to summarize the
+#'   chat. Must be provided if `turns` is not an [ellmer::Chat] object.
 #' @param additional_guidance Optional prompt to guide the summarization focus.
 #'   If not provided, creates a general comprehensive summary.
 #' @param start_turn Integer specifying which turn to start summarizing from.
@@ -31,12 +31,21 @@
 #' @family tasks
 #' @export
 btw_task_summarize_chat <- function(
-  client,
-  turns = client,
+  turns,
+  client = NULL,
   additional_guidance = "",
   start_turn = 0
 ) {
-  check_inherits(client, "Chat")
+  if (inherits(turns, "Chat")) {
+    if (is.null(client)) {
+      client <- turns
+    } else {
+      check_inherits(client, "Chat")
+    }
+  } else if (is.null(client)) {
+    stop("If 'turns' is not a Chat object, 'client' must be provided.")
+  }
+
   check_string(additional_guidance)
   turns <- turns_simplify(turns)
   check_number_whole(start_turn, min = 0, max = as.numeric(length(turns)))
