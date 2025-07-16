@@ -41,6 +41,7 @@ BtwSessionInfoToolResult <- S7::new_class(
   tool = function() {
     ellmer::tool(
       btw_tool_session_platform_info,
+      name = "btw_tool_session_platform_info",
       description = paste(
         "Describes the R version, operating system, language and locale settings",
         "for the user's system."

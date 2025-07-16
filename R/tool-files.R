@@ -73,6 +73,7 @@ btw_tool_files_list_files <- function(
   tool = function() {
     ellmer::tool(
       btw_tool_files_list_files,
+      name = "btw_tool_files_list_files",
       description = r"---(List files or directories in the project.
 
 WHEN TO USE:

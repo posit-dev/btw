@@ -128,6 +128,7 @@ BtwSearchPackageToolResult <- S7::new_class(
   tool = function() {
     ellmer::tool(
       btw_tool_search_packages,
+      name = "btw_tool_search_packages",
       description = 'Search for an R package on CRAN.
 
 ## Search Behavior

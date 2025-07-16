@@ -57,6 +57,7 @@ btw_tool_docs_package_news <- function(package_name, search_term = "") {
   tool = function() {
     ellmer::tool(
       btw_tool_docs_package_news,
+      name = "btw_tool_docs_package_news",
       description = paste0(
         "Read the release notes (NEWS) for a package.",
         "\n\n",

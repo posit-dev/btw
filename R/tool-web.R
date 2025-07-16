@@ -68,6 +68,7 @@ has_chromote <- function() {
       function(url) {
         btw_tool_web_read_url(url = url)
       },
+      name = "btw_tool_web_read_url",
       description = 'Read a web page and convert it to Markdown format.
 
 This tool fetches the content of a web page and returns it as a simplified Markdown representation.

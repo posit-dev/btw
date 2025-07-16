@@ -102,6 +102,7 @@ BtwEditorContextToolResult <- S7::new_class(
     }
     ellmer::tool(
       btw_tool_ide_read_current_editor,
+      name = "btw_tool_ide_read_current_editor",
       description = paste(
         "Read the contents of the editor that is currently open in the user's IDE.",
         "Only use this tool when specifically asked to do so by the user.",

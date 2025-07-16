@@ -139,6 +139,7 @@ btw_tool_env_describe_environment <- function(
       function(items) {
         btw_tool_env_describe_environment(items = items)
       },
+      name = "btw_tool_env_describe_environment",
       description = "List and describe items in an environment.",
       annotations = ellmer::tool_annotations(
         title = "Object in Session",
