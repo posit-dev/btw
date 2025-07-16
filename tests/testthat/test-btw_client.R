@@ -379,7 +379,14 @@ test_that("btw_client() accepts a list of tools in `tools` argument", {
     all(grepl("btw_tool_docs", names(chat$get_tools())))
   )
 
-  tool <- ellmer::tool(function(x) x + 1, "Add one")
+  tool <- ellmer::tool(
+    function(x) x + 1,
+    name = "add_one",
+    description = "Add one",
+    arguments = list(
+      x = ellmer::type_number("A number")
+    )
+  )
   expect_error(
     btw_client(tools = tool)
   )
