@@ -65,7 +65,9 @@ has_chromote <- function() {
     }
 
     ellmer::tool(
-      btw_tool_web_read_url,
+      function(url) {
+        btw_tool_web_read_url(url = url)
+      },
       description = 'Read a web page and convert it to Markdown format.
 
 This tool fetches the content of a web page and returns it as a simplified Markdown representation.
