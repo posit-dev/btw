@@ -107,12 +107,12 @@ wrap_with_intent <- function(tool) {
     return(tool)
   }
 
-  tool_fun <- tool@fun
+  tool_fun <- S7::S7_data(tool)
   wrapped_tool <- new_function(
     c(fn_fmls(tool_fun), list(intent = "")),
     fn_body(tool_fun)
   )
-  tool@fun <- wrapped_tool
+  S7::S7_data(tool) <- wrapped_tool
   tool@arguments@properties$intent <- ellmer::type_string(
     paste(
       "The intent of the tool call that describes why you called this tool.",
