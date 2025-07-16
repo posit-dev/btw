@@ -79,14 +79,16 @@ btw_tool_docs_package_help_topics <- function(package_name) {
   tool = function() {
     ellmer::tool(
       btw_tool_docs_package_help_topics,
-      .description = "Get available help topics for an R package.",
-      .annotations = ellmer::tool_annotations(
+      description = "Get available help topics for an R package.",
+      annotations = ellmer::tool_annotations(
         title = "Package Help Topics",
         read_only_hint = TRUE,
         open_world_hint = FALSE
       ),
-      package_name = ellmer::type_string(
-        "The exact name of the package, e.g. \"shiny\"."
+      arguments = list(
+        package_name = ellmer::type_string(
+          "The exact name of the package, e.g. \"shiny\"."
+        )
       )
     )
   }
@@ -272,17 +274,20 @@ format_help_page_text <- function(help_page) {
   tool = function() {
     ellmer::tool(
       btw_tool_docs_help_page,
-      .description = "Get help page from package.",
-      .annotations = ellmer::tool_annotations(
+      name = "btw_tool_docs_help_page",
+      description = "Get help page from package.",
+      annotations = ellmer::tool_annotations(
         title = "Help Page",
         read_only_hint = TRUE,
         open_world_hint = FALSE
       ),
-      package_name = ellmer::type_string(
-        "The exact name of the package, e.g. 'shiny'. Can be an empty string to search for a help topic across all packages."
-      ),
-      topic = ellmer::type_string(
-        "The topic_id or alias of the help page, e.g. 'withProgress' or 'incProgress'."
+      arguments = list(
+        package_name = ellmer::type_string(
+          "The exact name of the package, e.g. 'shiny'. Can be an empty string to search for a help topic across all packages."
+        ),
+        topic = ellmer::type_string(
+          "The topic_id or alias of the help page, e.g. 'withProgress' or 'incProgress'."
+        )
       )
     )
   }
@@ -313,19 +318,22 @@ btw_tool_docs_available_vignettes <- function(package_name) {
   tool = function() {
     ellmer::tool(
       btw_tool_docs_available_vignettes,
-      .description = paste(
+      name = "btw_tool_docs_available_vignettes",
+      description = paste(
         "List available vignettes for an R package.",
         "Vignettes are articles describing key concepts or features of an R package.",
         "Returns the listing as a JSON array of `vignette` and `title`.",
         "To read a vignette, use `btw_tool_docs_vignette(package_name, vignette)`."
       ),
-      .annotations = ellmer::tool_annotations(
+      annotations = ellmer::tool_annotations(
         title = "Available Vignettes",
         read_only_hint = TRUE,
         open_world_hint = FALSE
       ),
-      package_name = ellmer::type_string(
-        "The exact name of the package, e.g. 'shiny'."
+      arguments = list(
+        package_name = ellmer::type_string(
+          "The exact name of the package, e.g. 'shiny'."
+        )
       )
     )
   }
@@ -364,20 +372,23 @@ btw_tool_docs_vignette <- function(
   tool = function() {
     ellmer::tool(
       btw_tool_docs_vignette,
-      .description = "Get a package vignette in plain text.",
-      .annotations = ellmer::tool_annotations(
+      name = "btw_tool_docs_vignette",
+      description = "Get a package vignette in plain text.",
+      annotations = ellmer::tool_annotations(
         title = "Vignette",
         read_only_hint = TRUE,
         open_world_hint = FALSE
       ),
-      package_name = ellmer::type_string(
-        "The exact name of the package, e.g. 'shiny'."
-      ),
-      vignette = ellmer::type_string(
-        "The name or index of the vignette to retrieve. This is optional; if you
+      arguments = list(
+        package_name = ellmer::type_string(
+          "The exact name of the package, e.g. 'shiny'."
+        ),
+        vignette = ellmer::type_string(
+          "The name or index of the vignette to retrieve. This is optional; if you
       do not provide a value, the function retrieves the introductory vignette
       for the package.",
-        required = FALSE
+          required = FALSE
+        )
       )
     )
   }

@@ -73,7 +73,7 @@ btw_tool_files_list_files <- function(
   tool = function() {
     ellmer::tool(
       btw_tool_files_list_files,
-      .description = r"---(List files or directories in the project.
+      description = r"---(List files or directories in the project.
 
 WHEN TO USE:
 * Use this tool to discover the file structure of a project.
@@ -82,32 +82,34 @@ WHEN TO USE:
 
 CAUTION: Do not list all files in a project, instead prefer listing files in a specific directory with a `regexp` to filter to files of interest.
       )---",
-      .annotations = ellmer::tool_annotations(
+      annotations = ellmer::tool_annotations(
         title = "Project Files",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE
       ),
-      path = ellmer::type_string(
-        paste(
-          "The relative path to a folder or file.",
-          "If `path` is a directory, all files or directories (see `type`) are listed.",
-          'Use `"."` to refer to the current working directory.',
-          "If `path` is a file, information for just the selected file is listed."
+      arguments = list(
+        path = ellmer::type_string(
+          paste(
+            "The relative path to a folder or file.",
+            "If `path` is a directory, all files or directories (see `type`) are listed.",
+            'Use `"."` to refer to the current working directory.',
+            "If `path` is a file, information for just the selected file is listed."
+          ),
+          required = FALSE
         ),
-        required = FALSE
-      ),
-      type = ellmer::type_enum(
-        "Whether to list files, directories or any file type, default is `any`.",
-        values = c("any", "file", "directory"),
-        required = FALSE
-      ),
-      regexp = ellmer::type_string(
-        paste(
-          'A regular expression to use to identify files, e.g. `regexp="[.]csv$"` to find files with a `.csv` extension.',
-          "Note that it's best to be as general as possible to find the file you want."
+        type = ellmer::type_enum(
+          "Whether to list files, directories or any file type, default is `any`.",
+          values = c("any", "file", "directory"),
+          required = FALSE
         ),
-        required = FALSE
+        regexp = ellmer::type_string(
+          paste(
+            'A regular expression to use to identify files, e.g. `regexp="[.]csv$"` to find files with a `.csv` extension.',
+            "Note that it's best to be as general as possible to find the file you want."
+          ),
+          required = FALSE
+        )
       )
     )
   }
@@ -165,19 +167,22 @@ BtwTextFileToolResult <- S7::new_class(
   tool = function() {
     ellmer::tool(
       btw_tool_files_read_text_file,
-      .description = "Read an entire text file.",
-      .annotations = ellmer::tool_annotations(
+      name = "btw_tool_files_read_text_file",
+      description = "Read an entire text file.",
+      annotations = ellmer::tool_annotations(
         title = "Read File",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE
       ),
-      path = ellmer::type_string(
-        "The relative path to a file that can be read as text, such as a CSV, JSON, HTML, markdown file, etc.",
-      ),
-      max_lines = ellmer::type_number(
-        "How many lines to include from the file? The default is 100 and is likely already too high.",
-        required = FALSE
+      arguments = list(
+        path = ellmer::type_string(
+          "The relative path to a file that can be read as text, such as a CSV, JSON, HTML, markdown file, etc.",
+        ),
+        max_lines = ellmer::type_number(
+          "How many lines to include from the file? The default is 100 and is likely already too high.",
+          required = FALSE
+        )
       )
     )
   }
@@ -372,7 +377,8 @@ BtwWriteFileToolResult <- S7::new_class(
   tool = function() {
     ellmer::tool(
       btw_tool_files_write_text_file,
-      .description = 'Write content to a text file.
+      name = "btw_tool_files_write_text_file",
+      description = 'Write content to a text file.
 
 If the file doesn\'t exist, it will be created, along with any necessary parent directories.
 
@@ -385,17 +391,19 @@ CAUTION:
 This completely overwrites any existing file content.
 To modify an existing file, first read its content using `btw_tool_files_read_text_file`, make your changes to the text, then write back the complete modified content.
 ',
-      .annotations = ellmer::tool_annotations(
+      annotations = ellmer::tool_annotations(
         title = "Write File",
         read_only_hint = FALSE,
         open_world_hint = FALSE,
         idempotent_hint = TRUE
       ),
-      path = ellmer::type_string(
-        "The relative path to the file to write. The file will be created if it doesn't exist, or overwritten if it does."
-      ),
-      content = ellmer::type_string(
-        "The complete text content to write to the file."
+      arguments = list(
+        path = ellmer::type_string(
+          "The relative path to the file to write. The file will be created if it doesn't exist, or overwritten if it does."
+        ),
+        content = ellmer::type_string(
+          "The complete text content to write to the file."
+        )
       )
     )
   }

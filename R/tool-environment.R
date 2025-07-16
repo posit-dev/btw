@@ -137,16 +137,18 @@ btw_tool_env_describe_environment <- function(
   tool = function() {
     ellmer::tool(
       btw_tool_env_describe_environment,
-      .description = "List and describe items in an environment.",
-      .annotations = ellmer::tool_annotations(
+      description = "List and describe items in an environment.",
+      annotations = ellmer::tool_annotations(
         title = "Object in Session",
         read_only_hint = TRUE,
         open_world_hint = FALSE
       ),
-      items = ellmer::type_array(
-        "The names of items to describe from the environment. Defaults to `NULL`, indicating all items.",
-        items = ellmer::type_string(),
-        required = FALSE
+      arguments = list(
+        items = ellmer::type_array(
+          "The names of items to describe from the environment. Defaults to `NULL`, indicating all items.",
+          items = ellmer::type_string(),
+          required = FALSE
+        )
       )
     )
   }
