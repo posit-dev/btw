@@ -26,7 +26,7 @@ Imports:
     cli,
     clipr,
     dplyr,
-    ellmer (>= 0.2.0),
+    ellmer (>= 0.2.1.9000),
     fs,
     jsonlite,
     lifecycle,
@@ -50,7 +50,8 @@ Suggests:
     shinychat (>= 0.2.0),
     testthat (>= 3.0.0)
 Remotes:
-    posit-dev/mcptools
+    posit-dev/mcptools,
+    tidyverse/ellmer
 Config/Needs/website: tidyverse/tidytemplate
 Config/testthat/edition: 3
 Config/testthat/parallel: true
