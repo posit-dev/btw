@@ -43,16 +43,19 @@ btw_tool_session_check_package_installed <- function(package_name) {
   tool = function() {
     ellmer::tool(
       btw_tool_session_check_package_installed,
-      .description = "Check if a package is installed in the current session.",
-      .annotations = ellmer::tool_annotations(
+      name = "btw_tool_session_check_package_installed",
+      description = "Check if a package is installed in the current session.",
+      annotations = ellmer::tool_annotations(
         title = "Package Check",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE
       ),
-      package_name = ellmer::type_string(
-        "The exact name of the package.",
-        required = TRUE
+      arguments = list(
+        package_name = ellmer::type_string(
+          "The exact name of the package.",
+          required = TRUE
+        )
       )
     )
   }

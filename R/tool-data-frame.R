@@ -170,48 +170,50 @@ get_dataset_from_package <- function(name, package = NULL) {
   tool = function() {
     ellmer::tool(
       btw_tool_env_describe_data_frame,
-      .name = "btw_tool_env_describe_data_frame",
-      .description = "Show the data frame or table or get information about the structure of a data frame or table.",
-      .annotations = ellmer::tool_annotations(
+      name = "btw_tool_env_describe_data_frame",
+      description = "Show the data frame or table or get information about the structure of a data frame or table.",
+      annotations = ellmer::tool_annotations(
         title = "Show a data frame",
         read_only_hint = TRUE,
         open_world_hint = FALSE
       ),
-      data_frame = ellmer::type_string("The name of the data frame."),
-      package = ellmer::type_string(
-        paste(
-          "The package that provides the data set.",
-          "If not provided, `data_frame` must be loaded in the current environment."
+      arguments = list(
+        data_frame = ellmer::type_string("The name of the data frame."),
+        package = ellmer::type_string(
+          paste(
+            "The package that provides the data set.",
+            "If not provided, `data_frame` must be loaded in the current environment."
+          ),
+          required = FALSE
         ),
-        required = FALSE
-      ),
-      format = ellmer::type_enum(
-        paste(
-          "The output format of the data frame: 'skim' or 'json'. 'skim' is the most information-dense and is the default.",
-          "",
-          "* skim: Returns a JSON object with information about every column in the table.",
-          "* json: Returns the data frame as JSON",
-          sep = "\n"
+        format = ellmer::type_enum(
+          paste(
+            "The output format of the data frame: 'skim' or 'json'. 'skim' is the most information-dense and is the default.",
+            "",
+            "* skim: Returns a JSON object with information about every column in the table.",
+            "* json: Returns the data frame as JSON",
+            sep = "\n"
+          ),
+          values = c("skim", "json"),
+          required = FALSE
         ),
-        values = c("skim", "json"),
-        required = FALSE
-      ),
-      max_rows = ellmer::type_integer(
-        paste(
-          "The maximum number of rows to show in the data frame.",
-          "Defaults to 5.",
-          "Only applies when `format=\"json\"`."
+        max_rows = ellmer::type_integer(
+          paste(
+            "The maximum number of rows to show in the data frame.",
+            "Defaults to 5.",
+            "Only applies when `format=\"json\"`."
+          ),
+          required = FALSE
         ),
-        required = FALSE
-      ),
-      max_cols = ellmer::type_integer(
-        paste(
-          "The maximum number of columns to show in the data frame.",
-          "Defaults to 100.",
-          "Only applies when `format=\"json\"`."
-        ),
-        required = FALSE
-      ),
+        max_cols = ellmer::type_integer(
+          paste(
+            "The maximum number of columns to show in the data frame.",
+            "Defaults to 100.",
+            "Only applies when `format=\"json\"`."
+          ),
+          required = FALSE
+        )
+      )
     )
   }
 )

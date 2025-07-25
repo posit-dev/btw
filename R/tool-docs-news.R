@@ -57,7 +57,8 @@ btw_tool_docs_package_news <- function(package_name, search_term = "") {
   tool = function() {
     ellmer::tool(
       btw_tool_docs_package_news,
-      .description = paste0(
+      name = "btw_tool_docs_package_news",
+      description = paste0(
         "Read the release notes (NEWS) for a package.",
         "\n\n",
         "Use this tool when you need to learn what changed in a package release, i.e. when code no longer works after a package update, or when the user asks to learn about new features.",
@@ -68,23 +69,25 @@ btw_tool_docs_package_news <- function(package_name, search_term = "") {
         "Use a search term to learn about recent changes to a function, feature or argument over the last few package releases. ",
         "For example, if a user recently updated a package and asks why a function no longer works, you can use this tool to find out what changed in the package release notes."
       ),
-      .annotations = ellmer::tool_annotations(
+      annotations = ellmer::tool_annotations(
         title = "Package Release Notes",
         read_only_hint = TRUE,
         open_world_hint = FALSE
       ),
-      package_name = ellmer::type_string(
-        "The name of the package.",
-        required = TRUE
-      ),
-      search_term = ellmer::type_string(
-        paste(
-          "A regular expression to use to search the NEWS entries.",
-          "Use simple regular expressions (perl style is supported).",
-          "The search term is case-insensitive.",
-          "If empty, the tool returns the release notes for the current installed version."
+      arguments = list(
+        package_name = ellmer::type_string(
+          "The name of the package.",
+          required = TRUE
         ),
-        required = FALSE
+        search_term = ellmer::type_string(
+          paste(
+            "A regular expression to use to search the NEWS entries.",
+            "Use simple regular expressions (perl style is supported).",
+            "The search term is case-insensitive.",
+            "If empty, the tool returns the release notes for the current installed version."
+          ),
+          required = FALSE
+        )
       )
     )
   }

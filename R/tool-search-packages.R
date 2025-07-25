@@ -128,7 +128,8 @@ BtwSearchPackageToolResult <- S7::new_class(
   tool = function() {
     ellmer::tool(
       btw_tool_search_packages,
-      .description = 'Search for an R package on CRAN.
+      name = "btw_tool_search_packages",
+      description = 'Search for an R package on CRAN.
 
 ## Search Behavior
 - Prioritizes exact phrase matches over individual words
@@ -144,32 +145,34 @@ BtwSearchPackageToolResult <- S7::new_class(
 Good: Search for `"permutation test"` or just `"permutation"`
 Bad: Search for `"statistical analysis tools for permutation test"`
 ',
-      .annotations = ellmer::tool_annotations(
+      annotations = ellmer::tool_annotations(
         title = "CRAN Package Search",
         read_only_hint = TRUE,
         open_world_hint = TRUE,
         idempotent_hint = FALSE
       ),
-      query = ellmer::type_string(
-        paste(
-          "The search query, e.g. \"network visualization\", \"literate programming\".",
-          "The search uses stemming to find related terms and weights phrases higher than individual terms."
+      arguments = list(
+        query = ellmer::type_string(
+          paste(
+            "The search query, e.g. \"network visualization\", \"literate programming\".",
+            "The search uses stemming to find related terms and weights phrases higher than individual terms."
+          )
+        ),
+        format = ellmer::type_string(
+          paste(
+            "The format of the search results, either \"long\" or \"short\".",
+            "Default is 'short' for discovery with a higher number of results.",
+            "Switch to \"long\" to gather more details about each package."
+          ),
+          required = FALSE
+        ),
+        n_results = ellmer::type_number(
+          paste(
+            "The number of search results to include, defaults to 20 for 'short' format and 5 for 'long' format.",
+            "Limited to 10 results for the 'long' format or 50 results for 'short' format."
+          ),
+          required = FALSE
         )
-      ),
-      format = ellmer::type_string(
-        paste(
-          "The format of the search results, either \"long\" or \"short\".",
-          "Default is 'short' for discovery with a higher number of results.",
-          "Switch to \"long\" to gather more details about each package."
-        ),
-        required = FALSE
-      ),
-      n_results = ellmer::type_number(
-        paste(
-          "The number of search results to include, defaults to 20 for 'short' format and 5 for 'long' format.",
-          "Limited to 10 results for the 'long' format or 50 results for 'short' format."
-        ),
-        required = FALSE
       )
     )
   }
@@ -291,20 +294,23 @@ btw_this.cran_package <- function(x, ...) {
   tool = function() {
     ellmer::tool(
       btw_tool_search_package_info,
-      .description = paste(
+      name = "btw_tool_search_package_info",
+      description = paste(
         "Describe a CRAN package.",
         "Shows the title, description, dependencies and author information for a package on CRAN, regardless of whether the package is installed or not."
       ),
-      .annotations = ellmer::tool_annotations(
+      annotations = ellmer::tool_annotations(
         title = "CRAN Package Info",
         read_only_hint = TRUE,
         open_world_hint = TRUE,
         idempotent_hint = FALSE
       ),
-      package_name = ellmer::type_string(
-        paste(
-          "The name of a package on CRAN.",
-          "The package does not need to be installed locally."
+      arguments = list(
+        package_name = ellmer::type_string(
+          paste(
+            "The name of a package on CRAN.",
+            "The package does not need to be installed locally."
+          )
         )
       )
     )

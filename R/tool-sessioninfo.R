@@ -41,15 +41,16 @@ BtwSessionInfoToolResult <- S7::new_class(
   tool = function() {
     ellmer::tool(
       btw_tool_session_platform_info,
-      .description = paste(
+      name = "btw_tool_session_platform_info",
+      description = paste(
         "Describes the R version, operating system, language and locale settings",
         "for the user's system."
       ),
-      .annotations = ellmer::tool_annotations(
+      annotations = ellmer::tool_annotations(
         title = "Platform Info",
         read_only_hint = TRUE,
         open_world_hint = FALSE
-      ),
+      )
     )
   }
 )
@@ -196,50 +197,53 @@ package_info <- function(pkgs = NULL, dependencies = NA) {
   tool = function() {
     ellmer::tool(
       btw_tool_session_package_info,
-      .description = paste(
+      name = "btw_tool_session_package_info",
+      description = paste(
         "Verify that a specific package is installed,",
         "or find out which packages are in use in the current session.",
         "As a last resort, this function can also list all installed packages."
       ),
-      .annotations = ellmer::tool_annotations(
+      annotations = ellmer::tool_annotations(
         title = "Package Info",
         read_only_hint = TRUE,
         open_world_hint = FALSE
       ),
-      .convert = TRUE,
-      packages = ellmer::type_array(
-        required = TRUE,
-        items = ellmer::type_string(),
-        description = paste(
-          "Provide an array of package names to check that these packages are",
-          "installed and to confirm which versions of the packages are available.",
-          "Use the single string \"attached\" to show packages that have been attached by the user,",
-          "i.e. are explicitly in use in the session. Use the single string \"loaded\" to show all",
-          "packages, including implicitly loaded packages, that are in use in the",
-          "session (useful for debugging). Finally, the string \"installed\" lists all",
-          "installed packages. Try using the other available options prior to",
-          "listing all installed packages."
-        )
-      ),
-      dependencies = ellmer::type_array(
-        required = FALSE,
-        description = paste(
-          "The dependencies to include when listing package information.",
-          "You can use `dependencies = \"true\"` to list all dependencies of the package.",
-          "Alternatively, you can request an array of dependency types."
+      arguments = list(
+        packages = ellmer::type_array(
+          required = TRUE,
+          items = ellmer::type_string(),
+          description = paste(
+            "Provide an array of package names to check that these packages are",
+            "installed and to confirm which versions of the packages are available.",
+            "Use the single string \"attached\" to show packages that have been attached by the user,",
+            "i.e. are explicitly in use in the session. Use the single string \"loaded\" to show all",
+            "packages, including implicitly loaded packages, that are in use in the",
+            "session (useful for debugging). Finally, the string \"installed\" lists all",
+            "installed packages. Try using the other available options prior to",
+            "listing all installed packages."
+          )
         ),
-        items = ellmer::type_enum(
-          values = c(
-            "true",
-            "false",
-            "Depends",
-            "Imports",
-            "Suggests",
-            "LinkingTo",
-            "Enhances"
+        dependencies = ellmer::type_array(
+          required = FALSE,
+          description = paste(
+            "The dependencies to include when listing package information.",
+            "You can use `dependencies = \"true\"` to list all dependencies of the package.",
+            "Alternatively, you can request an array of dependency types."
+          ),
+          items = ellmer::type_enum(
+            values = c(
+              "true",
+              "false",
+              "Depends",
+              "Imports",
+              "Suggests",
+              "LinkingTo",
+              "Enhances"
+            )
           )
         )
-      )
+      ),
+      convert = TRUE
     )
   }
 )

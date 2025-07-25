@@ -102,28 +102,31 @@ BtwEditorContextToolResult <- S7::new_class(
     }
     ellmer::tool(
       btw_tool_ide_read_current_editor,
-      .description = paste(
+      name = "btw_tool_ide_read_current_editor",
+      description = paste(
         "Read the contents of the editor that is currently open in the user's IDE.",
         "Only use this tool when specifically asked to do so by the user.",
         "'@current_file' and '@current_selection' are considered explicit consent."
       ),
-      .annotations = ellmer::tool_annotations(
+      annotations = ellmer::tool_annotations(
         title = "Editor Contents",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE
       ),
-      selection = ellmer::type_boolean(
-        paste(
-          "Include only the selected region(s) of the current file?",
-          "Default is `true`; set to `false` to retrieve the entire file contents.",
-          "Always use `true` when the user requests '@current_selection'."
+      arguments = list(
+        selection = ellmer::type_boolean(
+          paste(
+            "Include only the selected region(s) of the current file?",
+            "Default is `true`; set to `false` to retrieve the entire file contents.",
+            "Always use `true` when the user requests '@current_selection'."
+          ),
+          required = FALSE
         ),
-        required = FALSE
-      ),
-      consent = ellmer::type_boolean(
-        "Did the user specifically request you read from their current file or editor?",
-        required = FALSE
+        consent = ellmer::type_boolean(
+          "Did the user specifically request you read from their current file or editor?",
+          required = FALSE
+        )
       )
     )
   }
