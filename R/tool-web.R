@@ -65,11 +65,11 @@ has_chromote <- function() {
         btw_tool_web_read_url_impl(url = url)
       },
       name = "btw_tool_web_read_url",
-      description = 'Read a web page and convert it to Markdown format.
+      description = r'---(Read a web page and convert it to Markdown format.
 
-      This tool fetches the content of a web page and returns it as a simplified Markdown representation.
+This tool fetches the content of a web page and returns it as a simplified Markdown representation.
 
-      WHEN TO USE: Use this tool when you need to access and analyze the content of a web page, e.g. when the user asks you to read the contents of a webpage.',
+WHEN TO USE: Use this tool when you need to access and analyze the content of a web page, e.g. when the user asks you to read the contents of a webpage.)---',
       annotations = ellmer::tool_annotations(
         title = "Read Web Page",
         read_only_hint = TRUE,
