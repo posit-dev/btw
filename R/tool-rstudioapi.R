@@ -97,9 +97,6 @@ BtwEditorContextToolResult <- S7::new_class(
   name = "btw_tool_ide_read_current_editor",
   group = "ide",
   tool = function() {
-    if (!rstudioapi_has_source_editor_context()) {
-      return(NULL)
-    }
     ellmer::tool(
       btw_tool_ide_read_current_editor,
       name = "btw_tool_ide_read_current_editor",
@@ -112,7 +109,8 @@ BtwEditorContextToolResult <- S7::new_class(
         title = "Editor Contents",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
-        idempotent_hint = FALSE
+        idempotent_hint = FALSE,
+        btw_can_register = function() rstudioapi_has_source_editor_context()
       ),
       arguments = list(
         selection = ellmer::type_boolean(

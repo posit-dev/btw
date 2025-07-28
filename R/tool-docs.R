@@ -84,7 +84,8 @@ btw_tool_docs_package_help_topics <- function(package_name) {
       annotations = ellmer::tool_annotations(
         title = "Package Help Topics",
         read_only_hint = TRUE,
-        open_world_hint = FALSE
+        open_world_hint = FALSE,
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         package_name = ellmer::type_string(
@@ -280,7 +281,8 @@ format_help_page_text <- function(help_page) {
       annotations = ellmer::tool_annotations(
         title = "Help Page",
         read_only_hint = TRUE,
-        open_world_hint = FALSE
+        open_world_hint = FALSE,
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         package_name = ellmer::type_string(
@@ -329,7 +331,8 @@ btw_tool_docs_available_vignettes <- function(package_name) {
       annotations = ellmer::tool_annotations(
         title = "Available Vignettes",
         read_only_hint = TRUE,
-        open_world_hint = FALSE
+        open_world_hint = FALSE,
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         package_name = ellmer::type_string(
@@ -378,7 +381,8 @@ btw_tool_docs_vignette <- function(
       annotations = ellmer::tool_annotations(
         title = "Vignette",
         read_only_hint = TRUE,
-        open_world_hint = FALSE
+        open_world_hint = FALSE,
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         package_name = ellmer::type_string(

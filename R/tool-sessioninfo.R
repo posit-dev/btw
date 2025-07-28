@@ -49,7 +49,8 @@ BtwSessionInfoToolResult <- S7::new_class(
       annotations = ellmer::tool_annotations(
         title = "Platform Info",
         read_only_hint = TRUE,
-        open_world_hint = FALSE
+        open_world_hint = FALSE,
+        btw_can_register = function() TRUE
       )
     )
   }
@@ -206,7 +207,8 @@ package_info <- function(pkgs = NULL, dependencies = NA) {
       annotations = ellmer::tool_annotations(
         title = "Package Info",
         read_only_hint = TRUE,
-        open_world_hint = FALSE
+        open_world_hint = FALSE,
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         packages = ellmer::type_array(

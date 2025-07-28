@@ -49,7 +49,8 @@ btw_tool_session_check_package_installed <- function(package_name) {
         title = "Package Check",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
-        idempotent_hint = FALSE
+        idempotent_hint = FALSE,
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         package_name = ellmer::type_string(

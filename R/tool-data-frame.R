@@ -175,7 +175,8 @@ get_dataset_from_package <- function(name, package = NULL) {
       annotations = ellmer::tool_annotations(
         title = "Show a data frame",
         read_only_hint = TRUE,
-        open_world_hint = FALSE
+        open_world_hint = FALSE,
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         data_frame = ellmer::type_string("The name of the data frame."),

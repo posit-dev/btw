@@ -149,7 +149,9 @@ Bad: Search for `"statistical analysis tools for permutation test"`
         title = "CRAN Package Search",
         read_only_hint = TRUE,
         open_world_hint = TRUE,
-        idempotent_hint = FALSE
+        idempotent_hint = FALSE,
+        # Could move pkgsearch to Suggests...
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         query = ellmer::type_string(
@@ -303,7 +305,8 @@ btw_this.cran_package <- function(x, ...) {
         title = "CRAN Package Info",
         read_only_hint = TRUE,
         open_world_hint = TRUE,
-        idempotent_hint = FALSE
+        idempotent_hint = FALSE,
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         package_name = ellmer::type_string(

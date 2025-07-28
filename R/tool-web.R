@@ -57,13 +57,6 @@ has_chromote <- function() {
   name = "btw_tool_web_read_url",
   group = "web",
   tool = function() {
-    if (!has_chromote()) {
-      cli::cli_warn(
-        "The `chromote` package is required to use the web reading tool."
-      )
-      return(NULL)
-    }
-
     ellmer::tool(
       function(url) {
         btw_tool_web_read_url(url = url)
@@ -71,14 +64,23 @@ has_chromote <- function() {
       name = "btw_tool_web_read_url",
       description = 'Read a web page and convert it to Markdown format.
 
-This tool fetches the content of a web page and returns it as a simplified Markdown representation.
+      This tool fetches the content of a web page and returns it as a simplified Markdown representation.
 
-WHEN TO USE: Use this tool when you need to access and analyze the content of a web page, e.g. when the user asks you to read the contents of a webpage.',
+      WHEN TO USE: Use this tool when you need to access and analyze the content of a web page, e.g. when the user asks you to read the contents of a webpage.',
       annotations = ellmer::tool_annotations(
         title = "Read Web Page",
         read_only_hint = TRUE,
         open_world_hint = TRUE,
-        idempotent_hint = FALSE
+        idempotent_hint = FALSE,
+        btw_can_register = function() {
+          if (has_chromote()) {
+            return(TRUE)
+          }
+          cli::cli_warn(
+            "The `chromote` package is required to use the web reading tool."
+          )
+          FALSE
+        }
       ),
       arguments = list(
         url = ellmer::type_string(

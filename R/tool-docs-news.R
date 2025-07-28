@@ -72,7 +72,8 @@ btw_tool_docs_package_news <- function(package_name, search_term = "") {
       annotations = ellmer::tool_annotations(
         title = "Package Release Notes",
         read_only_hint = TRUE,
-        open_world_hint = FALSE
+        open_world_hint = FALSE,
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         package_name = ellmer::type_string(

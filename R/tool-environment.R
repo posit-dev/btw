@@ -144,7 +144,8 @@ btw_tool_env_describe_environment <- function(
       annotations = ellmer::tool_annotations(
         title = "Object in Session",
         read_only_hint = TRUE,
-        open_world_hint = FALSE
+        open_world_hint = FALSE,
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         items = ellmer::type_array(

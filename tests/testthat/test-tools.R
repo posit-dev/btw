@@ -74,3 +74,36 @@ test_that("All btw tools have annotations", {
     )
   }
 })
+
+test_that("All btw tools have a btw_can_register() annotation function", {
+  local_mocked_bindings(
+    # Force conditional tools to always be included in this test
+    rstudioapi_has_source_editor_context = function() TRUE
+  )
+
+  tools <- btw_tools()
+  expect_setequal(names(tools), names(.btw_tools))
+
+  missing <- c()
+
+  for (name in names(tools)) {
+    if (!is.function(tools[[name]]@annotations$btw_can_register)) {
+      missing <- c(missing, name)
+    }
+  }
+
+  missing_btw_can_register <- missing
+  expect_equal(missing_btw_can_register, c())
+})
+
+test_that("$tool() returns a tool definition for all .btw_tools", {
+  local_mocked_bindings(
+    has_chromote = function() FALSE,
+    rstudioapi_has_source_editor_context = function() FALSE
+  )
+
+  for (name in names(.btw_tools)) {
+    expect_s3_class(.btw_tools[[!!name]]$tool(), "ellmer::ToolDef")
+    expect_equal(.btw_tools[[!!name]]$tool()@name, name)
+  }
+})

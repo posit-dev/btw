@@ -87,7 +87,8 @@ CAUTION: Do not list all files in a project, instead prefer listing files in a s
         title = "Project Files",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
-        idempotent_hint = FALSE
+        idempotent_hint = FALSE,
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         path = ellmer::type_string(
@@ -174,7 +175,8 @@ BtwTextFileToolResult <- S7::new_class(
         title = "Read File",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
-        idempotent_hint = FALSE
+        idempotent_hint = FALSE,
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         path = ellmer::type_string(
@@ -396,7 +398,8 @@ To modify an existing file, first read its content using `btw_tool_files_read_te
         title = "Write File",
         read_only_hint = FALSE,
         open_world_hint = FALSE,
-        idempotent_hint = TRUE
+        idempotent_hint = TRUE,
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         path = ellmer::type_string(
