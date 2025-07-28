@@ -46,7 +46,7 @@ btw_this.data.frame <- function(
   max_cols = 100,
   package = NULL
 ) {
-  result <- btw_tool_env_describe_data_frame(
+  result <- btw_tool_env_describe_data_frame_impl(
     x,
     format = format,
     max_rows = max_rows,
@@ -67,7 +67,7 @@ btw_this.tbl <- function(
   max_cols = 100,
   package = NULL
 ) {
-  result <- btw_tool_env_describe_data_frame(
+  result <- btw_tool_env_describe_data_frame_impl(
     x,
     format = format,
     max_rows = max_rows,
