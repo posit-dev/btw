@@ -16,25 +16,51 @@ template:
     brand:
       color:
         palette:
-          green: "#356955"
-          blue: "#084468"
-        primary: green
+          # Core colors from the logo
+          white: "#FFFFFF"
+          black: "#030711"
+          navy: "#0A1433"      # Deep navy from background
+          grey-dark: "#4A4F5E" # Darker grey from raccoon
+          grey-light: "#8C92A3" # Lighter grey from raccoon
+          cream: "#F7EFEB"     # Paper color
+
+          # Bootstrap standard colors (matched to brand style)
+          blue: navy      # Using the navy as the blue
+          indigo: "#2A3B7C"    # Lighter than navy but still professional
+          purple: "#6B5B95"    # Matches the purple dots in background
+          pink: "#FF9ECD"      # Soft pink matching the style
+          red: "#FF6B6B"       # Warm red that fits the palette
+          orange: "#e36209"    # From the raccoon's bag
+          yellow: "#FFD93D"    # Bright but soft yellow
+          green: "#6BCB77"     # Fresh, playful green
+          teal: "#40E0D0"      # From the accent dots
+          cyan: "#4DC9FF"      # Bright blue accent
+
+        # Semantic color assignments
+        foreground: black
+        background: white
+        primary: purple
+        secondary: grey-light
+        tertiary: grey-light
+        success: green
+        info: cyan
+        warning: yellow
+        danger: red
+        light: white
+        dark: black
+
       typography:
-        fonts:
-          - family: Neuton
-            source: google
-            weight: 400
-        headings:
-          family: Neuton
         link:
-          color: green
+          color: orange
+        monospace-inline:
+          color: purple
     navbar-padding-y: 1rem
     pkgdown-nav-height: 72px
-    # navbar-light-bg: "#E8F3EF"
-    # navbar-dark-bg: "#356955"
-    navbar-light-bg: "linear-gradient(90deg, hsla(203, 87%, 88%, 1) -50%, hsla(158, 31%, 93%, 1) 100%);"
-    navbar-dark-bg: "linear-gradient(90deg, hsla(203, 86%, 22%, 1) -50%, hsla(157, 33%, 31%, 1) 100%)"
-    link-color-dark: "#A0CFBD"
+    navbar-light-bg: "#F6EFEA"
+    navbar-dark-bg: "#2E273F"
+    code-color-dark: "var(--brand-pink)"
+    code-bg: "HSL(256.55deg 24.17% 47.06% / 7%)"
+    link-color-dark: "#FC995F"
 
 reference:
 - title: Core functions
