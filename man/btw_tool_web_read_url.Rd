@@ -4,14 +4,14 @@
 \alias{btw_tool_web_read_url}
 \title{Tool: Read a Web Page as Markdown}
 \usage{
-btw_tool_web_read_url(
-  url,
-  ...,
-  max_wait_for_page_load_s = getOption("btw.max_wait_for_page_load_s", 10)
-)
+btw_tool_web_read_url(url, .intent = "")
 }
 \arguments{
 \item{url}{The URL of the web page to read.}
+
+\item{.intent}{An optional string describing the intent of the tool use. When
+the tool is used by an LLM, the model will use this argument to explain why
+it called the tool.}
 
 \item{...}{Ignored, for future features.}
 

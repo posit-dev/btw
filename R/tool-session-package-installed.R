@@ -15,13 +15,17 @@
 #' )
 #'
 #' @param package_name The name of the package.
+#' @inheritParams btw_tool_docs_package_news
+#'
 #' @returns A message indicating whether the package is installed and
 #'   its version, or an error indicating that the package is not installed.
 #'
 #' @seealso [btw_tools()]
 #' @family tools
 #' @export
-btw_tool_session_check_package_installed <- function(package_name) {
+btw_tool_session_check_package_installed <- function(package_name, .intent) {}
+
+btw_tool_session_check_package_installed_impl <- function(package_name) {
   check_installed(package_name)
 
   version <- package_version(package_name)
@@ -42,7 +46,7 @@ btw_tool_session_check_package_installed <- function(package_name) {
   group = "session",
   tool = function() {
     ellmer::tool(
-      btw_tool_session_check_package_installed,
+      btw_tool_session_check_package_installed_impl,
       name = "btw_tool_session_check_package_installed",
       description = "Check if a package is installed in the current session.",
       annotations = ellmer::tool_annotations(

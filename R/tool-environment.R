@@ -31,13 +31,16 @@ btw_this.environment <- function(x, ..., items = NULL) {
 #' @param environment An environment to describe.
 #' @param ... Ignored.
 #' @inheritParams btw_this.environment
+#' @inheritParams btw_tool_docs_package_news
 #'
 #' @inherit btw_this.environment return
 #'
 #' @seealso [btw_this.environment()], [btw_tools()]
 #' @family Tools
 #' @export
-btw_tool_env_describe_environment <- function(
+btw_tool_env_describe_environment <- function(items, .intent) {}
+
+btw_tool_env_describe_environment_impl <- function(
   items = NULL,
   ...,
   environment = global_env()
@@ -137,7 +140,7 @@ btw_tool_env_describe_environment <- function(
   tool = function() {
     ellmer::tool(
       function(items) {
-        btw_tool_env_describe_environment(items = items)
+        btw_tool_env_describe_environment_impl(items = items)
       },
       name = "btw_tool_env_describe_environment",
       description = "List and describe items in an environment.",

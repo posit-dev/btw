@@ -8,16 +8,20 @@
 \alias{btw_tool_docs_vignette}
 \title{Tool: Describe R package documentation}
 \usage{
-btw_tool_docs_package_help_topics(package_name)
+btw_tool_docs_package_help_topics(package_name, .intent = "")
 
-btw_tool_docs_help_page(topic, package_name = "")
+btw_tool_docs_help_page(topic, package_name = "", .intent = "")
 
-btw_tool_docs_available_vignettes(package_name)
+btw_tool_docs_available_vignettes(package_name, .intent = "")
 
-btw_tool_docs_vignette(package_name, vignette = package_name)
+btw_tool_docs_vignette(package_name, vignette = package_name, .intent = "")
 }
 \arguments{
 \item{package_name}{The name of the package as a string, e.g. \code{"shiny"}.}
+
+\item{.intent}{An optional string describing the intent of the tool use. When
+the tool is used by an LLM, the model will use this argument to explain why
+it called the tool.}
 
 \item{topic}{The \code{topic_id} or \code{alias} of the help page, e.g.
 \code{"withProgress"} or \code{"incProgress"}. Find \code{topic_id}s or \code{alias}es using

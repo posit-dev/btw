@@ -84,6 +84,7 @@ btw_this.tbl <- function(
 #'
 #' @param data_frame The data frame to describe
 #' @inheritParams btw_this.data.frame
+#' @inheritParams btw_tool_docs_package_news
 #'
 #' @inherit btw_this.data.frame return
 #'
@@ -91,6 +92,15 @@ btw_this.tbl <- function(
 #' @family Tools
 #' @export
 btw_tool_env_describe_data_frame <- function(
+  data_frame,
+  format,
+  max_rows,
+  max_cols,
+  package,
+  .intent
+) {}
+
+btw_tool_env_describe_data_frame_impl <- function(
   data_frame,
   format = c("skim", "glimpse", "print", "json"),
   max_rows = 5,
@@ -169,7 +179,7 @@ get_dataset_from_package <- function(name, package = NULL) {
   group = "env",
   tool = function() {
     ellmer::tool(
-      btw_tool_env_describe_data_frame,
+      btw_tool_env_describe_data_frame_impl,
       name = "btw_tool_env_describe_data_frame",
       description = "Show the data frame or table or get information about the structure of a data frame or table.",
       annotations = ellmer::tool_annotations(

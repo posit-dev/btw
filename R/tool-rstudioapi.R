@@ -17,12 +17,15 @@ NULL
 #'   confirm with the user before calling the tool. Not all models will follow
 #'   these instructions. Users can also include the string `@current_file` to
 #'   induce the tool.
+#' @inheritParams btw_tool_docs_package_news
 #'
 #' @return Returns the contents of the current editor.
 #'
 #' @family Tools
 #' @export
-btw_tool_ide_read_current_editor <- function(
+btw_tool_ide_read_current_editor <- function(selection, consent, .intent) {}
+
+btw_tool_ide_read_current_editor_impl <- function(
   selection = TRUE,
   consent = FALSE
 ) {
@@ -98,7 +101,7 @@ BtwEditorContextToolResult <- S7::new_class(
   group = "ide",
   tool = function() {
     ellmer::tool(
-      btw_tool_ide_read_current_editor,
+      btw_tool_ide_read_current_editor_impl,
       name = "btw_tool_ide_read_current_editor",
       description = paste(
         "Read the contents of the editor that is currently open in the user's IDE.",

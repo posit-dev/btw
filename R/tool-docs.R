@@ -31,6 +31,7 @@ NULL
 #' @param vignette The name (or index) of the vignette to
 #'   retrieve. Defaults to the "intro" vignette to the package (by the same
 #'   rules as pkgdown.)
+#' @inheritParams btw_tool_docs_package_news
 #'
 #' @returns
 #' * `btw_tool_docs_package_help_topics()` returns the `topic_id`, `title`, and
@@ -43,7 +44,9 @@ NULL
 #' @family Tools
 #' @name btw_tool_package_docs
 #' @export
-btw_tool_docs_package_help_topics <- function(package_name) {
+btw_tool_docs_package_help_topics <- function(package_name, .intent) {}
+
+btw_tool_docs_package_help_topics_impl <- function(package_name) {
   check_installed(package_name)
 
   help_db <- help.search(
@@ -78,7 +81,7 @@ btw_tool_docs_package_help_topics <- function(package_name) {
   group = "docs",
   tool = function() {
     ellmer::tool(
-      btw_tool_docs_package_help_topics,
+      btw_tool_docs_package_help_topics_impl,
       name = "btw_tool_docs_package_help_topics",
       description = "Get available help topics for an R package.",
       annotations = ellmer::tool_annotations(
@@ -100,7 +103,9 @@ btw_tool_docs_package_help_topics <- function(package_name) {
 # TODO: should there just be a way to get examples?
 #' @name btw_tool_package_docs
 #' @export
-btw_tool_docs_help_page <- function(topic, package_name = "") {
+btw_tool_docs_help_page <- function(topic, package_name, .intent) {}
+
+btw_tool_docs_help_page_impl <- function(topic, package_name = "") {
   if (identical(package_name, "")) {
     package_name <- NULL
   }
@@ -275,7 +280,7 @@ format_help_page_text <- function(help_page) {
   group = "docs",
   tool = function() {
     ellmer::tool(
-      btw_tool_docs_help_page,
+      btw_tool_docs_help_page_impl,
       name = "btw_tool_docs_help_page",
       description = "Get help page from package.",
       annotations = ellmer::tool_annotations(
@@ -298,7 +303,9 @@ format_help_page_text <- function(help_page) {
 
 #' @name btw_tool_package_docs
 #' @export
-btw_tool_docs_available_vignettes <- function(package_name) {
+btw_tool_docs_available_vignettes <- function(package_name, .intent) {}
+
+btw_tool_docs_available_vignettes_impl <- function(package_name) {
   check_installed(package_name)
 
   vignettes <- as.data.frame(tools::getVignetteInfo(package = package_name))
@@ -320,7 +327,7 @@ btw_tool_docs_available_vignettes <- function(package_name) {
   group = "docs",
   tool = function() {
     ellmer::tool(
-      btw_tool_docs_available_vignettes,
+      btw_tool_docs_available_vignettes_impl,
       name = "btw_tool_docs_available_vignettes",
       description = paste(
         "List available vignettes for an R package.",
@@ -345,7 +352,9 @@ btw_tool_docs_available_vignettes <- function(package_name) {
 
 #' @name btw_tool_package_docs
 #' @export
-btw_tool_docs_vignette <- function(
+btw_tool_docs_vignette <- function(package_name, vignette, .intent) {}
+
+btw_tool_docs_vignette_impl <- function(
   package_name,
   vignette = package_name
 ) {
@@ -375,7 +384,7 @@ btw_tool_docs_vignette <- function(
   group = "docs",
   tool = function() {
     ellmer::tool(
-      btw_tool_docs_vignette,
+      btw_tool_docs_vignette_impl,
       name = "btw_tool_docs_vignette",
       description = "Get a package vignette in plain text.",
       annotations = ellmer::tool_annotations(

@@ -14,10 +14,13 @@ NULL
 #' @param max_wait_for_page_load_s Maximum time to wait for the page to load, in
 #'   seconds. Can be set globally using the `btw.max_wait_for_page_load_s`
 #'   option.
+#' @inheritParams btw_tool_docs_package_news
 #'
 #' @family Tools
 #' @export
-btw_tool_web_read_url <- function(
+btw_tool_web_read_url <- function(url, .intent) {}
+
+btw_tool_web_read_url_impl <- function(
   url,
   ...,
   max_wait_for_page_load_s = getOption("btw.max_wait_for_page_load_s", 10)
@@ -59,7 +62,7 @@ has_chromote <- function() {
   tool = function() {
     ellmer::tool(
       function(url) {
-        btw_tool_web_read_url(url = url)
+        btw_tool_web_read_url_impl(url = url)
       },
       name = "btw_tool_web_read_url",
       description = 'Read a web page and convert it to Markdown format.

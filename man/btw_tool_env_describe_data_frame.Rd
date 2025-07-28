@@ -9,7 +9,8 @@ btw_tool_env_describe_data_frame(
   format = c("skim", "glimpse", "print", "json"),
   max_rows = 5,
   max_cols = 100,
-  package = NULL
+  package = NULL,
+  .intent = ""
 )
 }
 \arguments{
@@ -39,6 +40,10 @@ applies when \code{format = "json"}.}
 \item{package}{The name of the package that provides the data set. If not
 provided, \code{data_frame} must be loaded in the current environment, or may
 also be inferred from the name of the data frame, e.g. \code{"dplyr::storms"}.}
+
+\item{.intent}{An optional string describing the intent of the tool use. When
+the tool is used by an LLM, the model will use this argument to explain why
+it called the tool.}
 }
 \value{
 A character vector containing a representation of the data frame.
