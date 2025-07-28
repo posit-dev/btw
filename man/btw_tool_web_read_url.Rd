@@ -12,15 +12,13 @@ btw_tool_web_read_url(url, .intent = "")
 \item{.intent}{An optional string describing the intent of the tool use. When
 the tool is used by an LLM, the model will use this argument to explain why
 it called the tool.}
-
-\item{...}{Ignored, for future features.}
-
-\item{max_wait_for_page_load_s}{Maximum time to wait for the page to load, in
-seconds. Can be set globally using the \code{btw.max_wait_for_page_load_s}
-option.}
 }
 \description{
 Tool: Read a Web Page as Markdown
+}
+\details{
+You can control the maximum time to wait for the page to load by setting
+the \code{btw.max_wait_for_page_load_s} option globally in your R session.
 }
 \examples{
 \dontshow{if (rlang::is_installed("chromote") && rlang::is_interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}

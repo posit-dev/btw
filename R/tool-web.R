@@ -10,11 +10,11 @@ NULL
 #' )
 #'
 #' @param url The URL of the web page to read.
-#' @param ... Ignored, for future features.
-#' @param max_wait_for_page_load_s Maximum time to wait for the page to load, in
-#'   seconds. Can be set globally using the `btw.max_wait_for_page_load_s`
-#'   option.
 #' @inheritParams btw_tool_docs_package_news
+#'
+#' @details
+#' You can control the maximum time to wait for the page to load by setting
+#' the `btw.max_wait_for_page_load_s` option globally in your R session.
 #'
 #' @family Tools
 #' @export

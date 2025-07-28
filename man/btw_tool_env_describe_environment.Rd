@@ -13,10 +13,6 @@ describe.}
 \item{.intent}{An optional string describing the intent of the tool use. When
 the tool is used by an LLM, the model will use this argument to explain why
 it called the tool.}
-
-\item{environment}{An environment to describe.}
-
-\item{...}{Ignored.}
 }
 \value{
 A string describing the environment contents with \verb{#>} prefixing
