@@ -36,16 +36,23 @@ btw_task_summarize_chat <- function(
   additional_guidance = "",
   start_turn = 0
 ) {
-  if (inherits(turns, "Chat")) {
-    if (is.null(client)) {
-      client <- turns
-    } else {
-      check_inherits(client, "Chat")
+  if (is.null(client)) {
+    summarizer_client <- getOption("btw.client.summarizer", NULL)
+    if (!is.null(summarizer_client)) {
+      client <- summarizer_client
     }
-  } else if (is.null(client)) {
-    stop("If 'turns' is not a Chat object, 'client' must be provided.")
   }
 
+  if (is.null(client)) {
+    if (!inherits(turns, "Chat")) {
+      stop(
+        "If 'turns' is not a Chat object, 'client' must be provided or set via the `btw.client.summarizer` option."
+      )
+    }
+    client <- turns
+  }
+
+  check_inherits(client, "Chat")
   check_string(additional_guidance)
   turns <- turns_simplify(turns)
   check_number_whole(start_turn, min = 0, max = as.numeric(length(turns)))
