@@ -19,24 +19,23 @@ template:
           # Core colors from the logo
           white: "#FFFFFF"
           black: "#030711"
-          navy: "#0A1433"      # Deep navy from background
-          grey-dark: "#4A4F5E" # Darker grey from raccoon
+          navy: "#0A1433"       # Deep navy
+          grey-dark: "#4A4F5E"  # Darker grey from raccoon
           grey-light: "#8C92A3" # Lighter grey from raccoon
-          cream: "#F7EFEB"     # Paper color
+          cream: "#F7EFEB"      # Paper color
 
-          # Bootstrap standard colors (matched to brand style)
-          blue: navy      # Using the navy as the blue
-          indigo: "#2A3B7C"    # Lighter than navy but still professional
-          purple: "#6B5B95"    # Matches the purple dots in background
-          pink: "#FF9ECD"      # Soft pink matching the style
-          red: "#FF6B6B"       # Warm red that fits the palette
-          orange: "#e36209"    # From the raccoon's bag
-          yellow: "#FFD93D"    # Bright but soft yellow
-          green: "#6BCB77"     # Fresh, playful green
-          teal: "#40E0D0"      # From the accent dots
-          cyan: "#4DC9FF"      # Bright blue accent
+          # Bootstrap colors
+          blue: navy
+          indigo: "#2A3B7C"
+          purple: "#6B5B95"
+          pink: "#FF9ECD"
+          red: "#FF6B6B"
+          orange: "#e36209"
+          yellow: "#FFD93D"
+          green: "#6BCB77"
+          teal: "#40E0D0"
+          cyan: "#4DC9FF"
 
-        # Semantic color assignments
         foreground: black
         background: white
         primary: purple
