@@ -270,6 +270,10 @@ flatten_and_check_tools <- function(tools) {
 }
 
 read_btw_file <- function(path = NULL) {
+  if (isFALSE(path)) {
+    return(list())
+  }
+
   must_find <- !is.null(path)
 
   path <- path %||% path_find_in_project("btw.md") %||% path_find_user("btw.md")
