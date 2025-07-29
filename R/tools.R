@@ -73,8 +73,8 @@ btw_tools <- function(...) {
     }
   )
 
-  tools_is_match <- map_lgl(.btw_tools, is_tool_match, tools)
-  res <- .btw_tools[tools_is_match]
+  tools_to_keep <- map_lgl(.btw_tools, is_tool_match, tools)
+  res <- .btw_tools[tools_to_keep]
   res <- as_ellmer_tools(res)
 
   tools_can_register <- map_lgl(res, function(tool) {
