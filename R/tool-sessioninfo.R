@@ -9,6 +9,8 @@ NULL
 #'
 #' @seealso [btw_tools()]
 #'
+#' @inheritParams btw_tool_docs_package_news
+#'
 #' @returns Returns a string describing the user's platform.
 #'
 #' @examples
@@ -16,7 +18,9 @@ NULL
 #'
 #' @family Tools
 #' @export
-btw_tool_session_platform_info <- function() {
+btw_tool_session_platform_info <- function(.intent) {}
+
+btw_tool_session_platform_info_impl <- function() {
   platform_list <- platform_info()
   platform <- trimws(capture.output(platform_list)[-1])
   platform <- sub(" +", " ", platform)
@@ -40,7 +44,7 @@ BtwSessionInfoToolResult <- S7::new_class(
   group = "session",
   tool = function() {
     ellmer::tool(
-      btw_tool_session_platform_info,
+      btw_tool_session_platform_info_impl,
       name = "btw_tool_session_platform_info",
       description = paste(
         "Describes the R version, operating system, language and locale settings",
@@ -49,7 +53,8 @@ BtwSessionInfoToolResult <- S7::new_class(
       annotations = ellmer::tool_annotations(
         title = "Platform Info",
         read_only_hint = TRUE,
-        open_world_hint = FALSE
+        open_world_hint = FALSE,
+        btw_can_register = function() TRUE
       )
     )
   }
@@ -103,6 +108,8 @@ platform_info <- function() {
 #'   show all installed packages.
 #' @param dependencies Whether to include the dependencies when listing package
 #'   information.
+#' @inheritParams btw_tool_docs_package_news
+#'
 #' @returns Returns a string describing the selected packages.
 #'
 #' @examples
@@ -110,7 +117,9 @@ platform_info <- function() {
 #'
 #' @family Tools
 #' @export
-btw_tool_session_package_info <- function(
+btw_tool_session_package_info <- function(packages, dependencies, .intent) {}
+
+btw_tool_session_package_info_impl <- function(
   packages = "attached",
   dependencies = ""
 ) {
@@ -196,7 +205,7 @@ package_info <- function(pkgs = NULL, dependencies = NA) {
   group = "session",
   tool = function() {
     ellmer::tool(
-      btw_tool_session_package_info,
+      btw_tool_session_package_info_impl,
       name = "btw_tool_session_package_info",
       description = paste(
         "Verify that a specific package is installed,",
@@ -206,7 +215,8 @@ package_info <- function(pkgs = NULL, dependencies = NA) {
       annotations = ellmer::tool_annotations(
         title = "Package Info",
         read_only_hint = TRUE,
-        open_world_hint = FALSE
+        open_world_hint = FALSE,
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         packages = ellmer::type_array(

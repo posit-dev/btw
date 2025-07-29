@@ -19,7 +19,7 @@
 #' @family `btw_this()` methods
 #' @export
 btw_this.environment <- function(x, ..., items = NULL) {
-  btw_tool_env_describe_environment(environment = x, items = items)@value
+  btw_tool_env_describe_environment_impl(environment = x, items = items)@value
 }
 
 #' Tool: Describe an environment
@@ -28,16 +28,17 @@ btw_this.environment <- function(x, ..., items = NULL) {
 #' my_cars <- mtcars[mtcars$mpg > 25, ]
 #'  btw_tool_env_describe_environment("my_cars")
 #'
-#' @param environment An environment to describe.
-#' @param ... Ignored.
 #' @inheritParams btw_this.environment
+#' @inheritParams btw_tool_docs_package_news
 #'
 #' @inherit btw_this.environment return
 #'
 #' @seealso [btw_this.environment()], [btw_tools()]
 #' @family Tools
 #' @export
-btw_tool_env_describe_environment <- function(
+btw_tool_env_describe_environment <- function(items, .intent) {}
+
+btw_tool_env_describe_environment_impl <- function(
   items = NULL,
   ...,
   environment = global_env()
@@ -137,14 +138,15 @@ btw_tool_env_describe_environment <- function(
   tool = function() {
     ellmer::tool(
       function(items) {
-        btw_tool_env_describe_environment(items = items)
+        btw_tool_env_describe_environment_impl(items = items)
       },
       name = "btw_tool_env_describe_environment",
       description = "List and describe items in an environment.",
       annotations = ellmer::tool_annotations(
         title = "Object in Session",
         read_only_hint = TRUE,
-        open_world_hint = FALSE
+        open_world_hint = FALSE,
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         items = ellmer::type_array(

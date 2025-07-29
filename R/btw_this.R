@@ -131,28 +131,34 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
 
   if (identical(x, "@current_file")) {
     return(I(
-      btw_tool_ide_read_current_editor(selection = FALSE, consent = TRUE)@value
+      btw_tool_ide_read_current_editor_impl(
+        selection = FALSE,
+        consent = TRUE
+      )@value
     ))
   }
   if (identical(x, "@current_selection")) {
     return(I(
-      btw_tool_ide_read_current_editor(selection = TRUE, consent = TRUE)@value
+      btw_tool_ide_read_current_editor_impl(
+        selection = TRUE,
+        consent = TRUE
+      )@value
     ))
   }
   if (identical(x, "@clipboard")) {
     return(I(clipr::read_clip()))
   }
   if (identical(x, "@platform_info")) {
-    return(btw_tool_session_platform_info()@value)
+    return(btw_tool_session_platform_info_impl()@value)
   }
   if (identical(x, "@attached_packages")) {
-    return(I(btw_tool_session_package_info("attached")@value))
+    return(I(btw_tool_session_package_info_impl("attached")@value))
   }
   if (identical(x, "@loaded_packages")) {
-    return(I(btw_tool_session_package_info("loaded")@value))
+    return(I(btw_tool_session_package_info_impl("loaded")@value))
   }
   if (identical(x, "@installed_packages")) {
-    return(I(btw_tool_session_package_info("installed")@value))
+    return(I(btw_tool_session_package_info_impl("installed")@value))
   }
   if (identical(x, "@last_error")) {
     err <- get_last_error()
@@ -179,7 +185,7 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
     } else {
       ""
     }
-    return(I(btw_tool_docs_package_news(package_name, search_term)@value))
+    return(I(btw_tool_docs_package_news_impl(package_name, search_term)@value))
   }
   if (identical(substring(x, 1, 4), "@url")) {
     if (!has_chromote()) {
@@ -198,7 +204,7 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
         "i" = 'e.g. {.code "@url https://example.com"}'
       ))
     }
-    return(I(btw_tool_web_read_url(url)@value))
+    return(I(btw_tool_web_read_url_impl(url)@value))
   }
 
   if (grepl("^\\./", x)) {
@@ -207,9 +213,9 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
       path <- "."
     }
     if (fs::is_file(path)) {
-      return(btw_tool_files_read_text_file(path)@value)
+      return(btw_tool_files_read_text_file_impl(path)@value)
     } else {
-      return(btw_tool_files_list_files(path)@value)
+      return(btw_tool_files_list_files_impl(path)@value)
     }
   }
 
@@ -221,9 +227,9 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
     # * be two or more characters long
     pkg <- substring(x, 2, nchar(x) - 1)
     res <- c(
-      btw_tool_docs_package_help_topics(pkg)@value,
+      btw_tool_docs_package_help_topics_impl(pkg)@value,
       tryCatch(
-        c("", btw_tool_docs_vignette(pkg)@value),
+        c("", btw_tool_docs_vignette_impl(pkg)@value),
         error = function(e) NULL
       )
     )
@@ -259,13 +265,16 @@ btw_this.function <- function(x, ...) {
 
 #' @export
 btw_this.btw_docs_topic <- function(x, ...) {
-  btw_tool_docs_help_page(package_name = x$package, topic = x$topic)@value
+  btw_tool_docs_help_page_impl(package_name = x$package, topic = x$topic)@value
 }
 
 #' @export
 btw_this.help_files_with_topic <- function(x, ...) {
   args <- call_args(attr(x, "call")) # help(topic = {topic}, package = {package})
-  btw_tool_docs_help_page(package_name = args$package, topic = args$topic)@value
+  btw_tool_docs_help_page_impl(
+    package_name = args$package,
+    topic = args$topic
+  )@value
 }
 
 as_btw_docs_topic <- function(package, topic) {
@@ -279,7 +288,7 @@ as_btw_docs_topic <- function(package, topic) {
 btw_this.btw_docs_package <- function(x, ...) {
   c(
     sprintf("Documented functions and help topics in package %s:", x$package),
-    btw_tool_docs_package_help_topics(x$package)@value
+    btw_tool_docs_package_help_topics_impl(x$package)@value
   )
 }
 
@@ -291,17 +300,17 @@ as_btw_docs_package <- function(package) {
 btw_this.packageIQR <- function(x, ...) {
   # vignette(package = "btw")
   package_name <- unique(x$results[, "Package"])
-  btw_tool_docs_available_vignettes(package_name)@value
+  btw_tool_docs_available_vignettes_impl(package_name)@value
 }
 
 #' @export
 btw_this.btw_docs_vignettes <- function(x, ...) {
-  btw_tool_docs_available_vignettes(package_name = x$package)@value
+  btw_tool_docs_available_vignettes_impl(package_name = x$package)@value
 }
 
 #' @export
 btw_this.btw_docs_vignette <- function(x, ...) {
-  btw_tool_docs_vignette(
+  btw_tool_docs_vignette_impl(
     package_name = x$package,
     vignette = x$vignette %||% x$package
   )@value
@@ -309,7 +318,7 @@ btw_this.btw_docs_vignette <- function(x, ...) {
 
 #' @export
 btw_this.vignette <- function(x, ...) {
-  btw_tool_docs_vignette(
+  btw_tool_docs_vignette_impl(
     package_name = x$Package,
     vignette = x$Topic
   )@value

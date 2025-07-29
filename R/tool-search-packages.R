@@ -25,6 +25,7 @@ NULL
 #' @inheritParams pkgsearch::pkg_search
 #' @param n_results Number of search results to include. Defaults to 10 for
 #'   'short' format and 5 for 'long' format.
+#' @inheritParams btw_tool_docs_package_news
 #'
 #' @returns A listing of packages matching the search term.
 #'
@@ -32,7 +33,9 @@ NULL
 #' @family Tools
 #' @name btw_tool_search_packages
 #' @export
-btw_tool_search_packages <- function(
+btw_tool_search_packages <- function(query, format, n_results, .intent) {}
+
+btw_tool_search_packages_impl <- function(
   query,
   format = c("short", "long"),
   n_results = NULL
@@ -127,7 +130,7 @@ BtwSearchPackageToolResult <- S7::new_class(
   group = "search",
   tool = function() {
     ellmer::tool(
-      btw_tool_search_packages,
+      btw_tool_search_packages_impl,
       name = "btw_tool_search_packages",
       description = 'Search for an R package on CRAN.
 
@@ -149,7 +152,9 @@ Bad: Search for `"statistical analysis tools for permutation test"`
         title = "CRAN Package Search",
         read_only_hint = TRUE,
         open_world_hint = TRUE,
-        idempotent_hint = FALSE
+        idempotent_hint = FALSE,
+        # Could move pkgsearch to Suggests...
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         query = ellmer::type_string(
@@ -194,10 +199,13 @@ Bad: Search for `"statistical analysis tools for permutation test"`
 #' }
 #'
 #' @param package_name The name of a package on CRAN.
+#' @inheritParams btw_tool_docs_package_news
 #'
 #' @returns An info sheet about the package.
 #' @export
-btw_tool_search_package_info <- function(package_name) {
+btw_tool_search_package_info <- function(package_name, .intent) {}
+
+btw_tool_search_package_info_impl <- function(package_name) {
   check_string(package_name)
 
   pkg <- cran_package(package_name)
@@ -293,7 +301,7 @@ btw_this.cran_package <- function(x, ...) {
   group = "search",
   tool = function() {
     ellmer::tool(
-      btw_tool_search_package_info,
+      btw_tool_search_package_info_impl,
       name = "btw_tool_search_package_info",
       description = paste(
         "Describe a CRAN package.",
@@ -303,7 +311,8 @@ btw_this.cran_package <- function(x, ...) {
         title = "CRAN Package Info",
         read_only_hint = TRUE,
         open_world_hint = TRUE,
-        idempotent_hint = FALSE
+        idempotent_hint = FALSE,
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         package_name = ellmer::type_string(

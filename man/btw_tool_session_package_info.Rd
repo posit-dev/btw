@@ -4,7 +4,11 @@
 \alias{btw_tool_session_package_info}
 \title{Tool: Gather information about a package or currently loaded packages}
 \usage{
-btw_tool_session_package_info(packages = "attached", dependencies = "")
+btw_tool_session_package_info(
+  packages = "attached",
+  dependencies = "",
+  .intent = ""
+)
 }
 \arguments{
 \item{packages}{Which packages to show, or \code{"loaded"} to show all loaded
@@ -13,6 +17,10 @@ show all installed packages.}
 
 \item{dependencies}{Whether to include the dependencies when listing package
 information.}
+
+\item{.intent}{An optional string describing the intent of the tool use. When
+the tool is used by an LLM, the model will use this argument to explain why
+it called the tool.}
 }
 \value{
 Returns a string describing the selected packages.

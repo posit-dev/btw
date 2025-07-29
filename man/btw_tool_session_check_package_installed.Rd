@@ -4,10 +4,14 @@
 \alias{btw_tool_session_check_package_installed}
 \title{Tool: Check if a package is installed}
 \usage{
-btw_tool_session_check_package_installed(package_name)
+btw_tool_session_check_package_installed(package_name, .intent = "")
 }
 \arguments{
 \item{package_name}{The name of the package.}
+
+\item{.intent}{An optional string describing the intent of the tool use. When
+the tool is used by an LLM, the model will use this argument to explain why
+it called the tool.}
 }
 \value{
 A message indicating whether the package is installed and

@@ -4,13 +4,17 @@
 \alias{btw_tool_files_read_text_file}
 \title{Tool: Read a file}
 \usage{
-btw_tool_files_read_text_file(path, max_lines = 1000)
+btw_tool_files_read_text_file(path, max_lines = 1000, .intent = "")
 }
 \arguments{
 \item{path}{Path to a file for which to get information. The \code{path} must be
 in the current working directory.}
 
 \item{max_lines}{Number of lines to include. Defaults to 1,000 lines.}
+
+\item{.intent}{An optional string describing the intent of the tool use. When
+the tool is used by an LLM, the model will use this argument to explain why
+it called the tool.}
 }
 \value{
 Returns a character vector of lines from the file.

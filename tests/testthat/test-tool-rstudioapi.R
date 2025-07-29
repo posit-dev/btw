@@ -15,8 +15,10 @@ test_that("btw_tool_ide_read_current_editor() has informative errors", {
         error = TRUE
       )
 
-      expect_null(
-        .btw_tools[["btw_tool_ide_read_current_editor"]]$tool()
+      expect_false(
+        .btw_tools[[
+          "btw_tool_ide_read_current_editor"
+        ]]$tool()@annotations$btw_can_register()
       )
     }
   )

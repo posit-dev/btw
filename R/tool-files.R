@@ -18,12 +18,15 @@ NULL
 #' @param type File type(s) to return, one of `"any"` or `"file"` or
 #'   `"directory"`.
 #' @inheritParams fs::dir_ls
+#' @inheritParams btw_tool_docs_package_news
 #'
 #' @return Returns a character table of file information.
 #'
 #' @family Tools
 #' @export
-btw_tool_files_list_files <- function(
+btw_tool_files_list_files <- function(path, type, regexp, .intent) {}
+
+btw_tool_files_list_files_impl <- function(
   path = NULL,
   type = c("any", "file", "directory"),
   regexp = ""
@@ -72,7 +75,7 @@ btw_tool_files_list_files <- function(
   group = "files",
   tool = function() {
     ellmer::tool(
-      btw_tool_files_list_files,
+      btw_tool_files_list_files_impl,
       name = "btw_tool_files_list_files",
       description = r"---(List files or directories in the project.
 
@@ -87,7 +90,8 @@ CAUTION: Do not list all files in a project, instead prefer listing files in a s
         title = "Project Files",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
-        idempotent_hint = FALSE
+        idempotent_hint = FALSE,
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         path = ellmer::type_string(
@@ -128,12 +132,15 @@ CAUTION: Do not list all files in a project, instead prefer listing files in a s
 #' @param path Path to a file for which to get information. The `path` must be
 #'   in the current working directory.
 #' @param max_lines Number of lines to include. Defaults to 1,000 lines.
+#' @inheritParams btw_tool_docs_package_news
 #'
 #' @return Returns a character vector of lines from the file.
 #'
 #' @family Tools
 #' @export
-btw_tool_files_read_text_file <- function(path, max_lines = 1000) {
+btw_tool_files_read_text_file <- function(path, max_lines, .intent) {}
+
+btw_tool_files_read_text_file_impl <- function(path, max_lines = 1000) {
   check_path_within_current_wd(path)
 
   if (!fs::is_file(path) || !fs::file_exists(path)) {
@@ -167,14 +174,15 @@ BtwTextFileToolResult <- S7::new_class(
   group = "files",
   tool = function() {
     ellmer::tool(
-      btw_tool_files_read_text_file,
+      btw_tool_files_read_text_file_impl,
       name = "btw_tool_files_read_text_file",
       description = "Read an entire text file.",
       annotations = ellmer::tool_annotations(
         title = "Read File",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
-        idempotent_hint = FALSE
+        idempotent_hint = FALSE,
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         path = ellmer::type_string(
@@ -329,12 +337,15 @@ is_common_ignorable_files <- function(paths) {
 #'   working directory.
 #' @param content The text content to write to the file. This should be the
 #'   complete content as the file will be overwritten.
+#' @inheritParams btw_tool_docs_package_news
 #'
 #' @return Returns a message confirming the file was written.
 #'
 #' @family Tools
 #' @export
-btw_tool_files_write_text_file <- function(path, content) {
+btw_tool_files_write_text_file <- function(path, content, .intent) {}
+
+btw_tool_files_write_text_file_impl <- function(path, content) {
   check_string(path)
   check_string(content)
   check_path_within_current_wd(path)
@@ -377,7 +388,7 @@ BtwWriteFileToolResult <- S7::new_class(
   group = "files",
   tool = function() {
     ellmer::tool(
-      btw_tool_files_write_text_file,
+      btw_tool_files_write_text_file_impl,
       name = "btw_tool_files_write_text_file",
       description = 'Write content to a text file.
 
@@ -396,7 +407,8 @@ To modify an existing file, first read its content using `btw_tool_files_read_te
         title = "Write File",
         read_only_hint = FALSE,
         open_world_hint = FALSE,
-        idempotent_hint = TRUE
+        idempotent_hint = TRUE,
+        btw_can_register = function() TRUE
       ),
       arguments = list(
         path = ellmer::type_string(

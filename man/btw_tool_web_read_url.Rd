@@ -4,23 +4,21 @@
 \alias{btw_tool_web_read_url}
 \title{Tool: Read a Web Page as Markdown}
 \usage{
-btw_tool_web_read_url(
-  url,
-  ...,
-  max_wait_for_page_load_s = getOption("btw.max_wait_for_page_load_s", 10)
-)
+btw_tool_web_read_url(url, .intent = "")
 }
 \arguments{
 \item{url}{The URL of the web page to read.}
 
-\item{...}{Ignored, for future features.}
-
-\item{max_wait_for_page_load_s}{Maximum time to wait for the page to load, in
-seconds. Can be set globally using the \code{btw.max_wait_for_page_load_s}
-option.}
+\item{.intent}{An optional string describing the intent of the tool use. When
+the tool is used by an LLM, the model will use this argument to explain why
+it called the tool.}
 }
 \description{
 Tool: Read a Web Page as Markdown
+}
+\details{
+You can control the maximum time to wait for the page to load by setting
+the \code{btw.max_wait_for_page_load_s} option globally in your R session.
 }
 \examples{
 \dontshow{if (rlang::is_installed("chromote") && rlang::is_interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}

@@ -75,8 +75,14 @@ btw_tools <- function(...) {
 
   tools_to_keep <- map_lgl(.btw_tools, is_tool_match, tools)
   res <- .btw_tools[tools_to_keep]
+  res <- as_ellmer_tools(res)
 
-  as_ellmer_tools(res)
+  tools_can_register <- map_lgl(res, function(tool) {
+    is.null(tool@annotations$btw_can_register) ||
+      tool@annotations$btw_can_register()
+  })
+
+  res[tools_can_register]
 }
 
 is_tool_match <- function(tool, labels = NULL) {
@@ -103,17 +109,17 @@ as_ellmer_tools <- function(x) {
 }
 
 wrap_with_intent <- function(tool) {
-  if ("intent" %in% names(tool@arguments@properties)) {
+  if (".intent" %in% names(tool@arguments@properties)) {
     return(tool)
   }
 
   tool_fun <- S7::S7_data(tool)
   wrapped_tool <- new_function(
-    c(fn_fmls(tool_fun), list(intent = "")),
+    c(fn_fmls(tool_fun), list(.intent = "")),
     fn_body(tool_fun)
   )
   S7::S7_data(tool) <- wrapped_tool
-  tool@arguments@properties$intent <- ellmer::type_string(
+  tool@arguments@properties[[".intent"]] <- ellmer::type_string(
     paste(
       "The intent of the tool call that describes why you called this tool.",
       "This should be a single, short phrase that explains this tool call to the user."

@@ -32,6 +32,9 @@ test_that("btw_this.environment() correctly separates items", {
 test_that("btw_tool_env_describe_environment()", {
   env <- new_environment(list(mtcars = mtcars, boop = "bop"))
 
-  res <- btw_tool_env_describe_environment(items = "mtcars", environment = env)
+  res <- btw_tool_env_describe_environment_impl(
+    items = "mtcars",
+    environment = env
+  )
   expect_btw_tool_result(res, has_data = FALSE)
 })
