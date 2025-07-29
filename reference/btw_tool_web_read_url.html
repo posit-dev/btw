@@ -44,11 +44,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">btw_tool_web_read_url</span><span class="op">(</span></span>
-<span>  <span class="va">url</span>,</span>
-<span>  <span class="va">...</span>,</span>
-<span>  max_wait_for_page_load_s <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"btw.max_wait_for_page_load_s"</span>, <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">btw_tool_web_read_url</span><span class="op">(</span><span class="va">url</span>, .intent <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -59,16 +55,17 @@
 <dd><p>The URL of the web page to read.</p></dd>
 
 
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Ignored, for future features.</p></dd>
-
-
-<dt id="arg-max-wait-for-page-load-s">max_wait_for_page_load_s<a class="anchor" aria-label="anchor" href="#arg-max-wait-for-page-load-s"></a></dt>
-<dd><p>Maximum time to wait for the page to load, in
-seconds. Can be set globally using the <code>btw.max_wait_for_page_load_s</code>
-option.</p></dd>
+<dt id="arg--intent">.intent<a class="anchor" aria-label="anchor" href="#arg--intent"></a></dt>
+<dd><p>An optional string describing the intent of the tool use. When
+the tool is used by an LLM, the model will use this argument to explain why
+it called the tool.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>You can control the maximum time to wait for the page to load by setting
+the <code>btw.max_wait_for_page_load_s</code> option globally in your R session.</p>
+    </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other Tools:
