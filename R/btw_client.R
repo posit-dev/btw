@@ -101,8 +101,8 @@
 #' @param path_btw A path to a `btw.md` project context file. If `NULL`, btw
 #'   will find a project-specific `btw.md` file in the parents of the current
 #'   working directory.
-#' @param ... Additional arguments are ignored. `...` are included for future
-#'   feature expansion.
+#' @param ... In `btw_app()`, additional arguments are passed to
+#'   [shiny::shinyApp()]. In `btw_client()`, additional arguments are ignored.
 #'
 #' @return Returns an [ellmer::Chat] object with additional tools registered
 #'   from [btw_tools()]. `btw_app()` returns the chat object invisibly, and

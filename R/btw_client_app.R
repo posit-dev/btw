@@ -4,7 +4,6 @@
 #'   chat
 #' @export
 btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
-  check_dots_empty()
   rlang::check_installed("shiny")
   rlang::check_installed("bslib")
   rlang::check_installed("shinychat", version = "0.2.0")
@@ -49,51 +48,52 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
     )
   }
 
-  ui <- bslib::page_sidebar(
-    window_title = "Chat with {btw} tools",
-    sidebar = bslib::sidebar(
-      id = "tools_sidebar",
-      title = btw_title(TRUE),
-      width = NULL,
-      height = "100%",
-      style = bslib::css(max_height = "100%"),
-      open = "closed",
-      shiny::div(
-        class = "btn-group",
-        shiny::actionButton(
-          "select_all",
-          "Select All",
-          icon = shiny::icon("check-square"),
-          class = "btn-sm"
+  ui <- function(req) {
+    bslib::page_sidebar(
+      window_title = "Chat with {btw} tools",
+      sidebar = bslib::sidebar(
+        id = "tools_sidebar",
+        title = btw_title(TRUE),
+        width = NULL,
+        height = "100%",
+        style = bslib::css(max_height = "100%"),
+        open = "closed",
+        shiny::div(
+          class = "btn-group",
+          shiny::actionButton(
+            "select_all",
+            "Select All",
+            icon = shiny::icon("check-square"),
+            class = "btn-sm"
+          ),
+          shiny::actionButton(
+            "deselect_all",
+            "Select none",
+            icon = shiny::icon("square"),
+            class = "btn-sm"
+          )
         ),
-        shiny::actionButton(
-          "deselect_all",
-          "Select none",
-          icon = shiny::icon("square"),
-          class = "btn-sm"
-        )
-      ),
-      shiny::div(
-        class = "overflow-y-auto overflow-x-visible",
-        app_tool_group_inputs(
-          btw_tools_df(),
-          initial_tool_names = map_chr(client$get_tools(), function(.x) .x@name)
+        shiny::div(
+          class = "overflow-y-auto overflow-x-visible",
+          app_tool_group_inputs(
+            btw_tools_df(),
+            initial_tool_names = map_chr(client$get_tools(), S7::prop, "name")
+          ),
+          shiny::uiOutput("ui_other_tools")
         ),
-        shiny::uiOutput("ui_other_tools")
+        bslib::input_dark_mode(style = "display: none")
       ),
-      bslib::input_dark_mode(style = "display: none")
-    ),
-    shiny::actionButton(
-      "close_btn",
-      label = "",
-      class = "btn-close",
-      style = "position: fixed; top: 6px; right: 6px;"
-    ),
-    btw_title(FALSE),
-    shinychat::chat_mod_ui("chat", client = client),
-    shiny::tags$head(
-      shiny::tags$style(shiny::HTML(
-        "
+      shiny::actionButton(
+        "close_btn",
+        label = "",
+        class = "btn-close",
+        style = "position: fixed; top: 6px; right: 6px;"
+      ),
+      btw_title(FALSE),
+      shinychat::chat_mod_ui("chat"),
+      shiny::tags$head(
+        shiny::tags$style(shiny::HTML(
+          "
         :root { --bslib-sidebar-width: max(30vw, 275px); }
         .opacity-100-hover:hover { opacity: 1 !important; }
         :hover > .opacity-100-hover-parent, .opacity-100-hover-parent:hover { opacity: 1 !important; }
@@ -101,9 +101,10 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
         .sidebar-collapsed > .main > main .sidebar-title { display: block; }
         .bslib-sidebar-layout.sidebar-collapsed>.collapse-toggle { top: 1.8rem; }
       "
-      )),
+        )),
+      )
     )
-  )
+  }
 
   server <- function(input, output, session) {
     shinychat::chat_mod_server("chat", client = client)
@@ -185,7 +186,18 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
     })
   }
 
-  app <- shiny::shinyApp(ui, server)
+  old_load <- shiny::getShinyOption("load.interface")
+  old_save <- shiny::getShinyOption("save.interface")
+  opts <- shiny::shinyOptions(
+    load.interface = btw_shiny_bookmark_load,
+    save.interface = btw_shiny_bookmark_save
+  )
+  on.exit(shiny::shinyOptions(
+    load.interface = old_load,
+    save.interface = old_save
+  ))
+
+  app <- shiny::shinyApp(ui, server, ...)
   tryCatch(shiny::runGadget(app), interrupt = function(cnd) NULL)
   invisible(client)
 }
@@ -298,6 +310,55 @@ app_tool_group_choices_labels <- function(
       )
     }
   )
+}
+
+btw_shiny_bookmarks_clean <- function(max_age_d = 30) {
+  dirs_og <- fs::dir_info(btw_shiny_bookmark_path(""))
+  dirs <- dirs_og[
+    dirs_og$modification_time < (Sys.time() - max_age_d * 24 * 3600),
+  ]
+
+  if (nrow(dirs) == 0) {
+    cli::cli_inform("No shiny bookmarks older than {max_age_d} days found.")
+    return(invisible(dirs_og))
+  }
+
+  cli::cli_inform(
+    "Clean up shiny {nrow(dirs)} bookmark{?s} older than {max_age_d} days?"
+  )
+  is_ok <- utils::menu(choices = c("Yes", "No"), graphics = FALSE)
+  if (identical(is_ok, 1L)) {
+    fs::dir_delete(dirs$path)
+  } else {
+    cli::cli_inform("Cancelled.")
+  }
+  invisible(dirs)
+}
+
+btw_shiny_bookmark_path <- function(id) {
+  path_btw_cache <- normalizePath(
+    tools::R_user_dir("btw", which = "cache"),
+    mustWork = FALSE,
+    winslash = "/"
+  )
+
+  fs::path(path_btw_cache, "shiny_bookmarks", id)
+}
+
+btw_shiny_bookmark_save <- function(id, callback) {
+  stateDir <- btw_shiny_bookmark_path(id)
+  if (!fs::dir_exists(stateDir)) {
+    fs::dir_create(stateDir)
+  }
+
+  cli::cli_inform("Saving bookmark state to {.path {stateDir}}")
+  callback(stateDir)
+}
+
+btw_shiny_bookmark_load <- function(id, callback) {
+  stateDir <- btw_shiny_bookmark_path(id)
+  cli::cli_inform("Loading bookmark state from {.path {stateDir}}")
+  callback(stateDir)
 }
 
 # nocov end

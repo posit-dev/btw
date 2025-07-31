@@ -10,8 +10,8 @@ btw_client(..., client = NULL, tools = NULL, path_btw = NULL)
 btw_app(..., client = NULL, tools = NULL, path_btw = NULL)
 }
 \arguments{
-\item{...}{Additional arguments are ignored. \code{...} are included for future
-feature expansion.}
+\item{...}{In \code{btw_app()}, additional arguments are passed to
+\code{\link[shiny:shinyApp]{shiny::shinyApp()}}. In \code{btw_client()}, additional arguments are ignored.}
 
 \item{client}{An \link[ellmer:Chat]{ellmer::Chat} client, defaults to
 \code{\link[ellmer:chat_anthropic]{ellmer::chat_anthropic()}}. You can use the \code{btw.client} option to set a
