@@ -137,7 +137,7 @@ btw_tool_env_describe_environment_impl <- function(
   group = "env",
   tool = function() {
     ellmer::tool(
-      function(items) {
+      function(items = NULL) {
         btw_tool_env_describe_environment_impl(items = items)
       },
       name = "btw_tool_env_describe_environment",
