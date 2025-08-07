@@ -21,7 +21,7 @@ NULL
 btw_tool_session_platform_info <- function(.intent) {}
 
 btw_tool_session_platform_info_impl <- function() {
-  platform_list <- platform_info()
+  platform_list <- suppressWarnings(platform_info())
   platform <- trimws(capture.output(platform_list)[-1])
   platform <- sub(" +", " ", platform)
   platform <- paste(platform, collapse = "\n")
