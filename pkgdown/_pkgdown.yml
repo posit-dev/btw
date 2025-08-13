@@ -16,49 +16,48 @@ template:
     brand:
       color:
         palette:
-          # Core colors from the logo
+          # Core colors from the image
           white: "#FFFFFF"
-          black: "#030711"
-          navy: "#0A1433"       # Deep navy
-          grey-dark: "#4A4F5E"  # Darker grey from raccoon
-          grey-light: "#8C92A3" # Lighter grey from raccoon
-          cream: "#F7EFEB"      # Paper color
+          black: "#000000"
+          mint: "#CAE0D1"  # Light background color
+          raccoon-grey: "#808080"  # Main grey from raccoon
+          raccoon-dark: "#404040"  # Darker grey from raccoon
 
-          # Bootstrap colors
-          blue: navy
-          indigo: "#2A3B7C"
-          purple: "#6B5B95"
-          pink: "#FF9ECD"
-          red: "#FF6B6B"
-          orange: "#e36209"
-          yellow: "#FFD93D"
-          green: "#6BCB77"
-          teal: "#40E0D0"
-          cyan: "#4DC9FF"
+          # Chart colors mapped to Bootstrap standards
+          blue: "#4B9CD3"  # From the charts
+          indigo: "#6610f2"  # Bootstrap standard
+          purple: "#6d35bb"  # From the purple chart elements
+          pink: "#E683A9"  # Soft pink from elements
+          red: "#E57B7B"  # Soft red from chart elements
+          orange: "#F4B183"  # Muted orange from charts
+          yellow: "#F8C471"  # From chart elements
+          green: "#75B798"  # From chart elements
+          teal: "#83C5BE"  # Soft teal from chart elements
+          cyan: "#A7D5E5"  # Light blue/cyan from charts
 
         foreground: black
         background: white
-        primary: purple
-        secondary: grey-light
-        tertiary: grey-light
+        primary: blue
+        secondary: raccoon-grey
         success: green
         info: cyan
-        warning: yellow
+        warning: orange
         danger: red
-        light: white
-        dark: black
+        light: mint
+        dark: raccoon-dark
+
 
       typography:
         link:
-          color: orange
+          color: "#246794"
         monospace-inline:
           color: purple
     navbar-padding-y: 1rem
     pkgdown-nav-height: 72px
-    navbar-light-bg: "#F6EFEA"
+    navbar-light-bg: "#e5f0e9"
     navbar-dark-bg: "#2E273F"
     code-color-dark: "var(--brand-pink)"
-    code-bg: "HSL(256.55deg 24.17% 47.06% / 7%)"
+    code-bg: "HSL(265 16% 97% / 1)"
     link-color-dark: "#FC995F"
 
 reference:
