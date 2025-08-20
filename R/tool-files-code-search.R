@@ -38,6 +38,11 @@ btw_tool_files_search_factory <- function(
   con <- NULL
 
   .index_files <- function() {
+    if (identical(Sys.getenv("TESTTHAT"), "true")) {
+      # In testthat, we don't want to create a DuckDB database
+      return(NULL)
+    }
+
     withr::local_options(cli.progress_handlers_only = "cli")
     cli::cli_progress_step(
       "Creating DuckDB database for code search of {.path {path}}"
