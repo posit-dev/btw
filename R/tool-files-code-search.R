@@ -37,13 +37,15 @@ btw_tool_files_search_factory <- function(
   env <- rlang::current_env()
   con <- NULL
 
-  delayedAssign("con", assign.env = env, {
+  .index_files <- function() {
     cli::cli_progress_step(
       "Creating DuckDB database for code search of {.path {path}}"
     )
-    con <- db_create_local_files(path, extensions)
-    cli::cli_process_done()
-    con
+    db_create_local_files(path, extensions)
+  }
+
+  delayedAssign("con", assign.env = env, {
+    .index_files()
   })
 
   function(term, limit = 100, case_sensitive = TRUE, use_regex = FALSE) {
