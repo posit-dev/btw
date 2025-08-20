@@ -116,7 +116,8 @@ wrap_with_intent <- function(tool) {
   tool_fun <- S7::S7_data(tool)
   wrapped_tool <- new_function(
     c(fn_fmls(tool_fun), list(.intent = "")),
-    fn_body(tool_fun)
+    fn_body(tool_fun),
+    env = fn_env(tool_fun)
   )
   S7::S7_data(tool) <- wrapped_tool
   tool@arguments@properties[[".intent"]] <- ellmer::type_string(
