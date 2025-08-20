@@ -38,6 +38,7 @@ btw_tool_files_search_factory <- function(
   con <- NULL
 
   .index_files <- function() {
+    withr::local_options(cli.progress_handlers_only = "cli")
     cli::cli_progress_step(
       "Creating DuckDB database for code search of {.path {path}}"
     )
