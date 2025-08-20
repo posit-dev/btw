@@ -9,6 +9,7 @@
 #'   `FALSE`).
 #' @param use_regex Whether to interpret the search term as a regular expression
 #'   (default is `FALSE`).
+#' @inheritParams btw_tool_docs_package_news
 #'
 #' @return Returns a tool result with a data frame of search results, with
 #'   columns for `filename`, `size`, `last_modified`, `content` and `line`.

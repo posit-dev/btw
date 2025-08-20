@@ -23,6 +23,10 @@ default 100).}
 
 \item{use_regex}{Whether to interpret the search term as a regular expression
 (default is \code{FALSE}).}
+
+\item{.intent}{An optional string describing the intent of the tool use. When
+the tool is used by an LLM, the model will use this argument to explain why
+it called the tool.}
 }
 \value{
 Returns a tool result with a data frame of search results, with
