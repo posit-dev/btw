@@ -123,7 +123,8 @@ btw_tool_files_code_search_factory <- function(
     needle <- if (case_sensitive) term else tolower(term)
 
     if (show_lines) {
-      query_select <- "filename, size, last_modified, content, line"
+      # truncate the content to 100 characters to avoid overly large results
+      query_select <- "filename, size, last_modified, SUBSTR(content, 1, 100) AS content, line"
       query_group_by <- ""
       query_order_by <- "ORDER BY last_modified DESC, filename ASC, line ASC"
     } else {
