@@ -25,15 +25,18 @@ btw_tool_files_code_search <- function(
 ) {}
 
 
-btw_tool_files_search_factory <- function(
+btw_tool_files_code_search_factory <- function(
   path = getwd(),
-  extensions = c("R", "Rmd", "qmd", "py", "js", "ts", "md", "scss", "css")
+  extensions = files_code_search_extensions(),
+  exclude_dirs = files_code_search_exclude_dirs()
 ) {
   rlang::check_installed("DBI")
   rlang::check_installed("duckdb")
 
+  check_path_exists(path)
   check_path_within_current_wd(path)
   check_character(extensions, allow_na = FALSE)
+  check_character(exclude_dirs, allow_na = FALSE, allow_null = TRUE)
 
   env <- rlang::current_env()
   con <- NULL
@@ -48,7 +51,7 @@ btw_tool_files_search_factory <- function(
     cli::cli_progress_step(
       "Creating DuckDB database for code search of {.path {path}}"
     )
-    db_create_local_files(path, extensions)
+    db_create_local_files(path, extensions, exclude_dirs)
   }
 
   delayedAssign("con", assign.env = env, {
@@ -88,7 +91,7 @@ btw_tool_files_search_factory <- function(
   tool = function() {
     project_code_search <- NULL
     delayedAssign("project_code_search", assign.env = current_env(), {
-      btw_tool_files_search_factory()
+      btw_tool_files_code_search_factory()
     })
     ellmer::tool(
       function(term, limit = 100, case_sensitive = TRUE, use_regex = FALSE) {
@@ -136,27 +139,63 @@ Use the `btw_tool_files_read_text_file` tool, if available, to read the full con
 
 db_create_local_files <- function(
   path = getwd(),
-  extensions = c("R", "Rmd", "qmd", "py", "js", "ts", "md", "scss", "css")
+  extensions = files_code_search_extensions(),
+  exclude_dirs = files_code_search_exclude_dirs()
 ) {
   check_path_within_current_wd(path)
   check_character(extensions, allow_na = FALSE)
+  check_character(exclude_dirs, allow_na = FALSE, allow_null = TRUE)
+
+  # Validate extensions contain only letters, numbers, underscore, or dash
+  # and no regex-special characters. Throw if invalid.
+  bad_ext <- !grepl("^[[:alnum:]_-]+$", extensions)
+  if (any(bad_ext)) {
+    cli::cli_abort(c(
+      "Invalid file extensions: {.val {extensions[bad_ext]}}",
+      "i" = "Only alphanumeric characters, underscores, and dashes are allowed.",
+    ))
+  }
+
+  ext_regex <- sprintf("[.](%s)$", paste(extensions, collapse = "|"))
+
+  # Enumerate files with regex filter
+  all_files <- fs::dir_ls(
+    path,
+    recurse = TRUE,
+    type = "file",
+    regexp = ext_regex,
+    fail = FALSE
+  )
+
+  # Exclude files whose path components include any of exclude_dirs
+  if (length(exclude_dirs)) {
+    if (length(all_files)) {
+      path_parts <- fs::path_split(all_files)
+      keep <- map_lgl(path_parts, function(pp) !any(pp %in% exclude_dirs))
+      all_files <- all_files[keep]
+    }
+  }
+
+  if (length(all_files) == 0) {
+    cli::cli_warn(c(
+      "No code files found in {.path {path}} with extensions {.val {extensions}}.",
+      "i" = "Consider adjusting the search path or file extensions."
+    ))
+  }
 
   con <- DBI::dbConnect(duckdb::duckdb())
   DBI::dbExecute(con, "INSTALL fts")
   DBI::dbExecute(con, "LOAD fts")
 
-  root_glob <- sprintf("'*.%s'", extensions)
-  any_glob <- sprintf("'**/*.%s'", extensions)
-
-  # https://duckdb.org/docs/stable/guides/file_formats/read_file.html
-  sql <- sprintf(
-    "CREATE TABLE code_files AS SELECT '%s/' || filename AS filename, size, last_modified, content FROM read_text([%s]);",
-    getwd(),
-    paste(c(root_glob, any_glob), collapse = ", ")
+  # Create the `code_files` table
+  query <- sprintf(
+    "CREATE TABLE code_files AS SELECT filename, size, last_modified, content FROM read_text([%s]);",
+    paste(sprintf("'%s'", all_files), collapse = ", ")
   )
 
-  DBI::dbExecute(con, sql)
+  DBI::dbExecute(con, query)
 
+  # Create the `code_file_lines` table
   DBI::dbExecute(
     con,
     "
@@ -178,5 +217,32 @@ JOIN (
 ON code_files.filename = code_lines.filename;"
   )
 
-  con
+  invisible(con)
+}
+
+files_code_search_extensions <- function() {
+  getOption(
+    "btw.files_code_search.extensions",
+    # fmt: skip
+    c("R", "Rmd", "qmd", "py", "js", "ts", "md", "scss", "css")
+  )
+}
+
+files_code_search_exclude_dirs <- function() {
+  getOption(
+    "btw.files_code_search.exclude_dirs",
+    # fmt: skip
+    c(
+      # VCS / IDE / cache
+      ".git", ".github", ".gitlab", ".vscode", ".idea", ".cache", ".DS_Store",
+      # JS/TS
+      "node_modules", "dist", "build", "target", "out", ".next", ".nuxt", ".pnpm-store", "coverage",
+      # Python
+      "venv", ".venv", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache",
+      # R
+      "renv", ".Rproj.user", ".Rcheck",
+      # Other site/artifacts
+      "site", ".sass-cache"
+    )
+  )
 }
