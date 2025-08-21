@@ -247,6 +247,11 @@ is_text_file <- function(file_path) {
   )
 }
 
+check_path_exists <- function(path) {
+  if (!fs::file_exists(path) && !fs::dir_exists(path)) {
+    cli::cli_abort("The path {.path {path}} does not exist.")
+  }
+}
 
 check_path_within_current_wd <- function(path) {
   if (!fs::path_has_parent(path, getwd())) {

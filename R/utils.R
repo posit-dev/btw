@@ -114,6 +114,15 @@ path_find_user <- function(filename) {
   NULL
 }
 
+path_btw_cache <- function(...) {
+  cache_base <- normalizePath(
+    tools::R_user_dir("btw", which = "cache"),
+    mustWork = FALSE,
+    winslash = "/"
+  )
+  fs::path(cache_base, ...)
+}
+
 local_reproducible_output <- function(
   width = 80L,
   max.print = 100,

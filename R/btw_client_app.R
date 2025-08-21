@@ -336,13 +336,7 @@ btw_shiny_bookmarks_clean <- function(max_age_d = 30) {
 }
 
 btw_shiny_bookmark_path <- function(id) {
-  path_btw_cache <- normalizePath(
-    tools::R_user_dir("btw", which = "cache"),
-    mustWork = FALSE,
-    winslash = "/"
-  )
-
-  fs::path(path_btw_cache, "shiny_bookmarks", id)
+  path_btw_cache("shiny_bookmarks", id)
 }
 
 btw_shiny_bookmark_save <- function(id, callback) {

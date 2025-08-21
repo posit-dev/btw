@@ -22,7 +22,6 @@ BugReports: https://github.com/posit-dev/btw/issues
 Depends:
     R (>= 4.1.0)
 Imports:
-    mcptools,
     cli,
     clipr,
     dplyr,
@@ -30,6 +29,7 @@ Imports:
     fs,
     jsonlite,
     lifecycle,
+    mcptools,
     pkgsearch,
     rlang (>= 1.1.0),
     rmarkdown,
@@ -44,6 +44,9 @@ Imports:
 Suggests:
     bslib (>= 0.7.0),
     chromote,
+    DBI,
+    duckdb,
+    gert,
     gh,
     pandoc,
     shiny,
@@ -72,6 +75,7 @@ Collate:
     'tool-docs-news.R'
     'tool-docs.R'
     'tool-environment.R'
+    'tool-files-code-search.R'
     'tool-files.R'
     'tool-rstudioapi.R'
     'tool-search-packages.R'
@@ -79,6 +83,7 @@ Collate:
     'tool-sessioninfo.R'
     'tool-web.R'
     'tools.R'
+    'utils-gitignore.R'
     'utils-md.R'
     'utils.R'
     'zzz.R'
