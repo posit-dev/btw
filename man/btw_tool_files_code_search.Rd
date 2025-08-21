@@ -64,9 +64,12 @@ tools: [files_code_search]
 options:
   files_code_search:
     extensions: ["R", "Rmd", "py", "qmd"]
-    exclusions: [".venv/", ".quarto/"]
+    exclusions: ["DEFAULT", ".quarto/"]
 ---
 }\if{html}{\out{</div>}}
+
+Include \code{"DEFAULT"} in the \code{exclusions} option to use btw's default
+exclusions, which cover common directories like \verb{.git/}, \verb{.vscode/}.
 
 If the \pkg{gert} package is installed and the project is a Git repository,
 the tool will also respect the \code{.gitignore} file and exclude any ignored

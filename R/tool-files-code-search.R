@@ -25,9 +25,12 @@
 #' options:
 #'   files_code_search:
 #'     extensions: ["R", "Rmd", "py", "qmd"]
-#'     exclusions: [".venv/", ".quarto/"]
+#'     exclusions: ["DEFAULT", ".quarto/"]
 #' ---
 #' ```
+#'
+#' Include `"DEFAULT"` in the `exclusions` option to use btw's default
+#' exclusions, which cover common directories like `.git/`, `.vscode/`.
 #'
 #' If the \pkg{gert} package is installed and the project is a Git repository,
 #' the tool will also respect the `.gitignore` file and exclude any ignored
@@ -309,20 +312,26 @@ files_code_search_extensions <- function() {
 }
 
 files_code_search_exclusions <- function() {
-  getOption(
-    "btw.files_code_search.exclusions",
-    # fmt: skip
-    c(
-      # VCS / IDE / cache
-      ".git/", ".github/", ".gitlab/", ".vscode/", ".idea/", ".cache/", ".DS_Store/",
-      # JS/TS
-      "node_modules/", "dist/", "build/", "target/", "out/", ".next/", ".nuxt/", ".pnpm-store/", "coverage/",
-      # Python
-      "venv/", ".venv/", "__pycache__/", ".pytest_cache/", ".mypy_cache/", ".ruff_cache/",
-      # R
-      "renv/", ".Rproj.user/", ".Rcheck/",
-      # Other site/artifacts
-      "site/", ".sass-cache/"
-    )
+  # fmt: skip
+  default <- c(
+    # VCS / IDE / cache
+    ".git/", ".github/", ".gitlab/", ".vscode/", ".idea/", ".cache/", ".DS_Store/",
+    # JS/TS
+    "node_modules/", "dist/", ".next/", ".nuxt/", ".pnpm-store/",
+    # Python
+    "venv/", ".venv/", "__pycache__/", ".pytest_cache/", ".mypy_cache/", ".ruff_cache/",
+    # R
+    "renv/", ".Rproj.user/", ".Rcheck/",
+    # Other site/artifacts
+    ".sass-cache/"
   )
+
+  res <- getOption("btw.files_code_search.exclusions", default)
+
+  if ("DEFAULT" %in% res) {
+    idx <- which(res == "DEFAULT")
+    res <- c(res[seq_len(idx - 1)], default, res[-seq_len(idx)])
+  }
+
+  res
 }
