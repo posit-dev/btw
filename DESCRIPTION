@@ -46,6 +46,7 @@ Suggests:
     chromote,
     DBI,
     duckdb,
+    gert,
     gh,
     pandoc,
     shiny,

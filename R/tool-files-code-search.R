@@ -28,7 +28,7 @@ btw_tool_files_code_search <- function(
 btw_tool_files_code_search_factory <- function(
   path = getwd(),
   extensions = files_code_search_extensions(),
-  exclude_dirs = files_code_search_exclude_dirs()
+  exclusions = files_code_search_exclusions()
 ) {
   rlang::check_installed("DBI")
   rlang::check_installed("duckdb")
@@ -36,7 +36,7 @@ btw_tool_files_code_search_factory <- function(
   check_path_exists(path)
   check_path_within_current_wd(path)
   check_character(extensions, allow_na = FALSE)
-  check_character(exclude_dirs, allow_na = FALSE, allow_null = TRUE)
+  check_character(exclusions, allow_na = FALSE, allow_null = TRUE)
 
   env <- rlang::current_env()
   con <- NULL
@@ -51,7 +51,7 @@ btw_tool_files_code_search_factory <- function(
     cli::cli_progress_step(
       "Creating DuckDB database for code search of {.path {path}}"
     )
-    db_create_local_files(path, extensions, exclude_dirs)
+    db_create_local_files(path, extensions, exclusions)
   }
 
   delayedAssign("con", assign.env = env, {
@@ -140,11 +140,11 @@ Use the `btw_tool_files_read_text_file` tool, if available, to read the full con
 db_create_local_files <- function(
   path = getwd(),
   extensions = files_code_search_extensions(),
-  exclude_dirs = files_code_search_exclude_dirs()
+  exclusions = files_code_search_exclusions()
 ) {
   check_path_within_current_wd(path)
   check_character(extensions, allow_na = FALSE)
-  check_character(exclude_dirs, allow_na = FALSE, allow_null = TRUE)
+  check_character(exclusions, allow_na = FALSE, allow_null = TRUE)
 
   # Validate extensions contain only letters, numbers, underscore, or dash
   # and no regex-special characters. Throw if invalid.
@@ -167,13 +167,16 @@ db_create_local_files <- function(
     fail = FALSE
   )
 
-  # Exclude files whose path components include any of exclude_dirs
-  if (length(exclude_dirs)) {
-    if (length(all_files)) {
-      path_parts <- fs::path_split(all_files)
-      keep <- map_lgl(path_parts, function(pp) !any(pp %in% exclude_dirs))
-      all_files <- all_files[keep]
-    }
+  all_files <- filter_paths_with_gitignore(all_files, exclusions)
+
+  git_repo <- path_find_in_project(".git", path)
+  if (!is.null(git_repo) && is_installed("gert")) {
+    discard <- map_lgl(
+      all_files,
+      gert::git_ignore_path_is_ignored,
+      repo = git_repo
+    )
+    all_files <- all_files[!discard]
   }
 
   if (length(all_files) == 0) {
@@ -228,21 +231,21 @@ files_code_search_extensions <- function() {
   )
 }
 
-files_code_search_exclude_dirs <- function() {
+files_code_search_exclusions <- function() {
   getOption(
-    "btw.files_code_search.exclude_dirs",
+    "btw.files_code_search.exclusions",
     # fmt: skip
     c(
       # VCS / IDE / cache
-      ".git", ".github", ".gitlab", ".vscode", ".idea", ".cache", ".DS_Store",
+      ".git/", ".github/", ".gitlab/", ".vscode/", ".idea/", ".cache/", ".DS_Store/",
       # JS/TS
-      "node_modules", "dist", "build", "target", "out", ".next", ".nuxt", ".pnpm-store", "coverage",
+      "node_modules/", "dist/", "build/", "target/", "out/", ".next/", ".nuxt/", ".pnpm-store/", "coverage/",
       # Python
-      "venv", ".venv", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache",
+      "venv/", ".venv/", "__pycache__/", ".pytest_cache/", ".mypy_cache/", ".ruff_cache/",
       # R
-      "renv", ".Rproj.user", ".Rcheck",
+      "renv/", ".Rproj.user/", ".Rcheck/",
       # Other site/artifacts
-      "site", ".sass-cache"
+      "site/", ".sass-cache/"
     )
   )
 }
