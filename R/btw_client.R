@@ -120,6 +120,7 @@ btw_client <- function(
 
   config <- btw_client_config(client, tools, config = read_btw_file(path_btw))
   skip_tools <- isFALSE(config$tools) || identical(config$tools, "none")
+  withr::local_options(config$options)
 
   client <- config$client
 
@@ -165,6 +166,9 @@ btw_client <- function(
 }
 
 btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
+  config$options <- flatten_config_options(config$options)
+  withr::local_options(config$options)
+
   config$tools <-
     tools %||%
     getOption("btw.tools") %||%
@@ -267,6 +271,31 @@ flatten_and_check_tools <- function(tools) {
   }
 
   flat_tools
+}
+
+flatten_config_options <- function(opts, prefix = "btw", sep = ".") {
+  out <- list()
+
+  recurse <- function(x, key_prefix) {
+    # If x is a list, dive deeper
+    if (is.list(x) && !is.data.frame(x)) {
+      nm <- names2(x)
+      if (!all(nzchar(nm))) {
+        cli::cli_abort("All options must be named.")
+      }
+
+      for (i in seq_along(x)) {
+        new_key <- paste(key_prefix, nm[i], sep = sep)
+        recurse(x[[i]], new_key)
+      }
+    } else {
+      # Leaf: assign it directly
+      out[[key_prefix]] <<- x
+    }
+  }
+
+  recurse(opts, prefix)
+  out
 }
 
 read_btw_file <- function(path = NULL) {

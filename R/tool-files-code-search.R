@@ -89,10 +89,7 @@ btw_tool_files_code_search_factory <- function(
   name = "btw_tool_files_code_search",
   group = "files",
   tool = function() {
-    project_code_search <- NULL
-    delayedAssign("project_code_search", assign.env = current_env(), {
-      btw_tool_files_code_search_factory()
-    })
+    project_code_search <- btw_tool_files_code_search_factory()
     ellmer::tool(
       function(term, limit = 100, case_sensitive = TRUE, use_regex = FALSE) {
         project_code_search(term, limit, case_sensitive, use_regex)
