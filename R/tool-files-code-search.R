@@ -61,9 +61,6 @@ btw_tool_files_code_search_factory <- function(
   extensions = files_code_search_extensions(),
   exclusions = files_code_search_exclusions()
 ) {
-  rlang::check_installed("DBI")
-  rlang::check_installed("duckdb")
-
   check_path_exists(path)
   check_path_within_current_wd(path)
   path <- fs::path_rel(path)
@@ -78,6 +75,8 @@ btw_tool_files_code_search_factory <- function(
       # In testthat, we don't want to create a DuckDB database
       return(NULL)
     }
+    rlang::check_installed("DBI")
+    rlang::check_installed("duckdb")
 
     withr::local_options(cli.progress_handlers_only = "cli")
     cli::cli_progress_step(
