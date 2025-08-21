@@ -117,8 +117,10 @@ value includes a set of common version control, IDE, and cache folders.</p></li>
 <span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="an">options:</span></span>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">  files_code_search:</span></span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">    extensions: ["R", "Rmd", "py", "qmd"]</span></span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">    exclusions: [".venv/", ".quarto/"]</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">    exclusions: ["DEFAULT", ".quarto/"]</span></span>
 <span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">---</span></span></code></pre><p></p></div>
+<p>Include <code>"DEFAULT"</code> in the <code>exclusions</code> option to use btw's default
+exclusions, which cover common directories like <code>.git/</code>, <code>.vscode/</code>.</p>
 <p>If the <span class="pkg">gert</span> package is installed and the project is a Git repository,
 the tool will also respect the <code>.gitignore</code> file and exclude any ignored
 paths, regardless of the <code>btw.files_code_search.exclusions</code> option.</p>
@@ -157,13 +159,13 @@ paths, regardless of the <code>btw.files_code_search.exclusions</code> option.</
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Creating DuckDB database for code search of <span style="color: #0000BB;">.</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Creating DuckDB database for code search of <span style="color: #0000BB;">.</span> <span style="color: #B2B2B2;">[363ms]</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Creating DuckDB database for code search of <span style="color: #0000BB;">.</span> <span style="color: #B2B2B2;">[1.2s]</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;btw::BtwToolResult&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ value  :'data.frame':	1 obs. of  5 variables:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ filename     : chr "state_names_1.md"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ size         : num 219</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ last_modified: POSIXct, format: "2025-08-21 19:50:13"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ last_modified: POSIXct, format: "2025-08-21 20:00:28"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ content      : chr "Kentucky"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ line         : num 17</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ error  : NULL</span>
