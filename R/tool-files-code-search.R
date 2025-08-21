@@ -33,6 +33,19 @@
 #' the tool will also respect the `.gitignore` file and exclude any ignored
 #' paths, regardless of the `btw.files_code_search.exclusions` option.
 #'
+#' @examples
+#' withr::with_tempdir({
+#'   writeLines(state.name[1:25], "state_names_1.md")
+#'   writeLines(state.name[26:50], "state_names_2.md")
+#'
+#'   tools <- btw_tools("files_code_search")
+#'   tools$btw_tool_files_code_search(
+#'     term = "kentucky",
+#'     case_sensitive = FALSE,
+#'     show_lines = TRUE
+#'   )
+#' })
+#'
 #' @param term The term to search for in the code files.
 #' @param limit Maximum number of matching lines to return (between 1 and 1000,
 #'   default 100).
@@ -40,6 +53,9 @@
 #'   `FALSE`).
 #' @param use_regex Whether to interpret the search term as a regular expression
 #'   (default is `FALSE`).
+#' @param show_lines Whether to show the matching lines in the results. Defaults
+#'   to `FALSE`, which means only the file names and count of matching lines
+#'   are returned.
 #' @inheritParams btw_tool_docs_package_news
 #'
 #' @return Returns a tool result with a data frame of search results, with
@@ -52,6 +68,7 @@ btw_tool_files_code_search <- function(
   limit = 100,
   case_sensitive = TRUE,
   use_regex = FALSE,
+  show_lines = FALSE,
   .intent = ""
 ) {}
 
@@ -89,7 +106,13 @@ btw_tool_files_code_search_factory <- function(
     .index_files()
   })
 
-  function(term, limit = 100, case_sensitive = TRUE, use_regex = FALSE) {
+  function(
+    term,
+    limit = 100,
+    case_sensitive = TRUE,
+    use_regex = FALSE,
+    show_lines = FALSE
+  ) {
     check_string(term, allow_empty = FALSE)
     check_number_whole(limit, min = 1, max = 1000)
     check_bool(case_sensitive)
@@ -99,19 +122,28 @@ btw_tool_files_code_search_factory <- function(
     haystack <- if (case_sensitive) "content" else "lower(content)"
     needle <- if (case_sensitive) term else tolower(term)
 
-    query_search <- sprintf(
-      "SELECT * FROM code_file_lines WHERE %s(%s, ?)",
+    if (show_lines) {
+      query_select <- "filename, size, last_modified, content, line"
+      query_group_by <- ""
+      query_order_by <- "ORDER BY last_modified DESC, filename ASC, line ASC"
+    } else {
+      # size and last_modified are not in the GROUP BY clause
+      query_select <- "filename, MAX(size) AS size, MAX(last_modified) AS last_modified, COUNT(*) AS n_matching_lines"
+      query_group_by <- "GROUP BY filename"
+      query_order_by <- "ORDER BY n_matching_lines DESC, last_modified DESC"
+    }
+
+    query <- sprintf(
+      "SELECT %s FROM code_file_lines WHERE %s(%s, ?) %s %s LIMIT ?",
+      query_select,
       compare_fn,
-      haystack
-    )
-    query <- paste(
-      query_search,
-      "ORDER BY last_modified DESC, filename ASC, line ASC",
-      "LIMIT ?"
+      haystack,
+      query_group_by,
+      query_order_by
     )
 
     BtwToolResult(
-      DBI::dbGetQuery(con, query, params = list(needle, limit)),
+      DBI::dbGetQuery(con, query, params = list(needle, limit))
     )
   }
 }
@@ -122,8 +154,20 @@ btw_tool_files_code_search_factory <- function(
   tool = function() {
     project_code_search <- btw_tool_files_code_search_factory()
     ellmer::tool(
-      function(term, limit = 100, case_sensitive = TRUE, use_regex = FALSE) {
-        project_code_search(term, limit, case_sensitive, use_regex)
+      function(
+        term,
+        limit = 100,
+        case_sensitive = TRUE,
+        use_regex = FALSE,
+        show_lines = FALSE
+      ) {
+        project_code_search(
+          term,
+          limit = limit,
+          case_sensitive = case_sensitive,
+          use_regex = use_regex,
+          show_lines = show_lines
+        )
       },
       name = "btw_tool_files_code_search",
       description = r"---(Search code files in the project.
@@ -153,11 +197,15 @@ Use the `btw_tool_files_read_text_file` tool, if available, to read the full con
           required = FALSE
         ),
         case_sensitive = ellmer::type_boolean(
-          description = "Whether the search should be case-sensitive (default is FALSE).",
-          required = FALSE
+          description = "Whether the search should be case-sensitive (default is true).",
+          required = TRUE
         ),
         use_regex = ellmer::type_boolean(
-          description = "Whether to interpret the search term as a regular expression (default is FALSE).",
+          description = "Whether to interpret the search term as a regular expression (default is false).",
+          required = FALSE
+        ),
+        show_lines = ellmer::type_boolean(
+          description = "Whether to show the matching lines in the results (default is false).",
           required = FALSE
         )
       )
