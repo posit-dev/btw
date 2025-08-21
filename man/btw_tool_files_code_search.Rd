@@ -9,6 +9,7 @@ btw_tool_files_code_search(
   limit = 100,
   case_sensitive = TRUE,
   use_regex = FALSE,
+  show_lines = FALSE,
   .intent = ""
 )
 }
@@ -23,6 +24,10 @@ default 100).}
 
 \item{use_regex}{Whether to interpret the search term as a regular expression
 (default is \code{FALSE}).}
+
+\item{show_lines}{Whether to show the matching lines in the results. Defaults
+to \code{FALSE}, which means only the file names and count of matching lines
+are returned.}
 
 \item{.intent}{An optional string describing the intent of the tool use. When
 the tool is used by an LLM, the model will use this argument to explain why
@@ -67,6 +72,20 @@ If the \pkg{gert} package is installed and the project is a Git repository,
 the tool will also respect the \code{.gitignore} file and exclude any ignored
 paths, regardless of the \code{btw.files_code_search.exclusions} option.
 }
+}
+\examples{
+withr::with_tempdir({
+  writeLines(state.name[1:25], "state_names_1.md")
+  writeLines(state.name[26:50], "state_names_2.md")
+
+  tools <- btw_tools("files_code_search")
+  tools$btw_tool_files_code_search(
+    term = "kentucky",
+    case_sensitive = FALSE,
+    show_lines = TRUE
+  )
+})
+
 }
 \seealso{
 Other Tools: 
