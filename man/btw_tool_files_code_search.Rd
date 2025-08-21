@@ -35,6 +35,39 @@ columns for \code{filename}, \code{size}, \code{last_modified}, \code{content} a
 \description{
 Search through code files in the project directory for specific terms.
 }
+\details{
+\subsection{Options}{
+
+You can configure which file extensions are included and which paths are
+excluded from code search by using two options:
+\itemize{
+\item \code{btw.files_code_search.extensions}: A character vector of file extensions
+to search in (default includes R, Python, JavaScript, TypeScript, Markdown,
+SCSS, and CSS files).
+\item \code{btw.files_code_search.exclusions}: A character vector of gitignore-style
+patterns to exclude paths and directories from the search. The default
+value includes a set of common version control, IDE, and cache folders.
+}
+
+Alternatively, you can also set these options in your \code{btw.md} file under the
+\code{options} section, like this:
+
+\if{html}{\out{<div class="sourceCode markdown">}}\preformatted{---
+client:
+  provider: anthropic
+tools: [files_code_search]
+options:
+  files_code_search:
+    extensions: ["R", "Rmd", "py", "qmd"]
+    exclusions: [".venv/", ".quarto/"]
+---
+}\if{html}{\out{</div>}}
+
+If the \pkg{gert} package is installed and the project is a Git repository,
+the tool will also respect the \code{.gitignore} file and exclude any ignored
+paths, regardless of the \code{btw.files_code_search.exclusions} option.
+}
+}
 \seealso{
 Other Tools: 
 \code{\link{btw_tool_docs_package_news}()},

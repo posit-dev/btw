@@ -2,6 +2,37 @@
 #'
 #' Search through code files in the project directory for specific terms.
 #'
+#' ## Options
+#'
+#' You can configure which file extensions are included and which paths are
+#' excluded from code search by using two options:
+#'
+#' * `btw.files_code_search.extensions`: A character vector of file extensions
+#'   to search in (default includes R, Python, JavaScript, TypeScript, Markdown,
+#'   SCSS, and CSS files).
+#' * `btw.files_code_search.exclusions`: A character vector of gitignore-style
+#'   patterns to exclude paths and directories from the search. The default
+#'   value includes a set of common version control, IDE, and cache folders.
+#'
+#' Alternatively, you can also set these options in your `btw.md` file under the
+#' `options` section, like this:
+#'
+#' ```markdown
+#' ---
+#' client:
+#'   provider: anthropic
+#' tools: [files_code_search]
+#' options:
+#'   files_code_search:
+#'     extensions: ["R", "Rmd", "py", "qmd"]
+#'     exclusions: [".venv/", ".quarto/"]
+#' ---
+#' ```
+#'
+#' If the \pkg{gert} package is installed and the project is a Git repository,
+#' the tool will also respect the `.gitignore` file and exclude any ignored
+#' paths, regardless of the `btw.files_code_search.exclusions` option.
+#'
 #' @param term The term to search for in the code files.
 #' @param limit Maximum number of matching lines to return (between 1 and 1000,
 #'   default 100).
@@ -35,6 +66,7 @@ btw_tool_files_code_search_factory <- function(
 
   check_path_exists(path)
   check_path_within_current_wd(path)
+  path <- fs::path_rel(path)
   check_character(extensions, allow_na = FALSE)
   check_character(exclusions, allow_na = FALSE, allow_null = TRUE)
 
