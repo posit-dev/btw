@@ -4,7 +4,7 @@
 \alias{btw_tool_files_write_text_file}
 \title{Tool: Write a text file}
 \usage{
-btw_tool_files_write_text_file(path, content, .intent = "")
+btw_tool_files_write_text_file(path, content, `_intent` = "")
 }
 \arguments{
 \item{path}{Path to the file to write. The \code{path} must be in the current
@@ -12,10 +12,6 @@ working directory.}
 
 \item{content}{The text content to write to the file. This should be the
 complete content as the file will be overwritten.}
-
-\item{.intent}{An optional string describing the intent of the tool use. When
-the tool is used by an LLM, the model will use this argument to explain why
-it called the tool.}
 }
 \value{
 Returns a message confirming the file was written.

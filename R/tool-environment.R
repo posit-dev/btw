@@ -36,7 +36,7 @@ btw_this.environment <- function(x, ..., items = NULL) {
 #' @seealso [btw_this.environment()], [btw_tools()]
 #' @family Tools
 #' @export
-btw_tool_env_describe_environment <- function(items, .intent) {}
+btw_tool_env_describe_environment <- function(items, `_intent`) {}
 
 btw_tool_env_describe_environment_impl <- function(
   items = NULL,

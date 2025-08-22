@@ -18,7 +18,7 @@ NULL
 #'
 #' @family Tools
 #' @export
-btw_tool_web_read_url <- function(url, .intent) {}
+btw_tool_web_read_url <- function(url, `_intent`) {}
 
 btw_tool_web_read_url_impl <- function(
   url,

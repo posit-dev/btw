@@ -18,7 +18,7 @@ NULL
 #'
 #' @family Tools
 #' @export
-btw_tool_session_platform_info <- function(.intent) {}
+btw_tool_session_platform_info <- function(`_intent`) {}
 
 btw_tool_session_platform_info_impl <- function() {
   platform_list <- suppressWarnings(platform_info())
@@ -117,7 +117,7 @@ platform_info <- function() {
 #'
 #' @family Tools
 #' @export
-btw_tool_session_package_info <- function(packages, dependencies, .intent) {}
+btw_tool_session_package_info <- function(packages, dependencies, `_intent`) {}
 
 btw_tool_session_package_info_impl <- function(
   packages = "attached",

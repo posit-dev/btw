@@ -7,7 +7,7 @@
 btw_tool_ide_read_current_editor(
   selection = TRUE,
   consent = FALSE,
-  .intent = ""
+  `_intent` = ""
 )
 }
 \arguments{
@@ -19,10 +19,6 @@ the current file. The tool definition includes language to induce LLMs to
 confirm with the user before calling the tool. Not all models will follow
 these instructions. Users can also include the string \verb{@current_file} to
 induce the tool.}
-
-\item{.intent}{An optional string describing the intent of the tool use. When
-the tool is used by an LLM, the model will use this argument to explain why
-it called the tool.}
 }
 \value{
 Returns the contents of the current editor.

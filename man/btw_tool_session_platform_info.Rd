@@ -4,12 +4,7 @@
 \alias{btw_tool_session_platform_info}
 \title{Tool: Describe user's platform}
 \usage{
-btw_tool_session_platform_info(.intent = "")
-}
-\arguments{
-\item{.intent}{An optional string describing the intent of the tool use. When
-the tool is used by an LLM, the model will use this argument to explain why
-it called the tool.}
+btw_tool_session_platform_info(`_intent` = "")
 }
 \value{
 Returns a string describing the user's platform.

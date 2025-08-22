@@ -23,7 +23,7 @@
 #' @seealso [btw_tools()]
 #' @family tools
 #' @export
-btw_tool_session_check_package_installed <- function(package_name, .intent) {}
+btw_tool_session_check_package_installed <- function(package_name, `_intent`) {}
 
 btw_tool_session_check_package_installed_impl <- function(package_name) {
   check_installed(package_name)

@@ -26,9 +26,9 @@ NULL
 #' @param package_name The name of the package as a string, e.g. `"shiny"`.
 #' @param search_term A regular expression to search for in the NEWS entries.
 #'   If empty, the release notes of the current installed version is included.
-#' @param .intent An optional string describing the intent of the tool use. When
-#'   the tool is used by an LLM, the model will use this argument to explain why
-#'   it called the tool.
+#' @param `_intent` An optional string describing the intent of the tool use.
+#'   When the tool is used by an LLM, the model will use this argument to
+#'   explain why it called the tool.
 #'
 #' @returns Returns the release notes for the currently installed version of the
 #'   package, or the release notes matching the search term.
@@ -37,7 +37,7 @@ NULL
 #' @family Tools
 #' @export
 #' @rdname btw_tool_docs_package_news
-btw_tool_docs_package_news <- function(package_name, search_term, .intent) {}
+btw_tool_docs_package_news <- function(package_name, search_term, `_intent`) {}
 
 btw_tool_docs_package_news_impl <- function(package_name, search_term = "") {
   news <- package_news_search(package_name, search_term %||% "")

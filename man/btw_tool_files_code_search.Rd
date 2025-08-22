@@ -10,7 +10,7 @@ btw_tool_files_code_search(
   case_sensitive = TRUE,
   use_regex = FALSE,
   show_lines = FALSE,
-  .intent = ""
+  `_intent` = ""
 )
 }
 \arguments{
@@ -28,10 +28,6 @@ default 100).}
 \item{show_lines}{Whether to show the matching lines in the results. Defaults
 to \code{FALSE}, which means only the file names and count of matching lines
 are returned.}
-
-\item{.intent}{An optional string describing the intent of the tool use. When
-the tool is used by an LLM, the model will use this argument to explain why
-it called the tool.}
 }
 \value{
 Returns a tool result with a data frame of search results, with
