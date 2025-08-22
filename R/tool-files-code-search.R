@@ -232,7 +232,7 @@ db_create_local_files <- function(
   if (any(bad_ext)) {
     cli::cli_abort(c(
       "Invalid file extensions: {.val {extensions[bad_ext]}}",
-      "i" = "Only alphanumeric characters, underscores, and dashes are allowed.",
+      "i" = "Only alphanumeric characters, underscores, and dashes are allowed."
     ))
   }
 
