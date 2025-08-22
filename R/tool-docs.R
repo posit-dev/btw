@@ -44,7 +44,7 @@ NULL
 #' @family Tools
 #' @name btw_tool_package_docs
 #' @export
-btw_tool_docs_package_help_topics <- function(package_name, .intent) {}
+btw_tool_docs_package_help_topics <- function(package_name, `_intent`) {}
 
 btw_tool_docs_package_help_topics_impl <- function(package_name) {
   check_installed(package_name)
@@ -103,7 +103,7 @@ btw_tool_docs_package_help_topics_impl <- function(package_name) {
 # TODO: should there just be a way to get examples?
 #' @name btw_tool_package_docs
 #' @export
-btw_tool_docs_help_page <- function(topic, package_name, .intent) {}
+btw_tool_docs_help_page <- function(topic, package_name, `_intent`) {}
 
 btw_tool_docs_help_page_impl <- function(topic, package_name = "") {
   if (identical(package_name, "")) {
@@ -303,7 +303,7 @@ format_help_page_text <- function(help_page) {
 
 #' @name btw_tool_package_docs
 #' @export
-btw_tool_docs_available_vignettes <- function(package_name, .intent) {}
+btw_tool_docs_available_vignettes <- function(package_name, `_intent`) {}
 
 btw_tool_docs_available_vignettes_impl <- function(package_name) {
   check_installed(package_name)
@@ -352,7 +352,7 @@ btw_tool_docs_available_vignettes_impl <- function(package_name) {
 
 #' @name btw_tool_package_docs
 #' @export
-btw_tool_docs_vignette <- function(package_name, vignette, .intent) {}
+btw_tool_docs_vignette <- function(package_name, vignette, `_intent`) {}
 
 btw_tool_docs_vignette_impl <- function(
   package_name,

@@ -24,7 +24,7 @@ NULL
 #'
 #' @family Tools
 #' @export
-btw_tool_files_list_files <- function(path, type, regexp, .intent) {}
+btw_tool_files_list_files <- function(path, type, regexp, `_intent`) {}
 
 btw_tool_files_list_files_impl <- function(
   path = NULL,
@@ -138,7 +138,7 @@ CAUTION: Do not list all files in a project, instead prefer listing files in a s
 #'
 #' @family Tools
 #' @export
-btw_tool_files_read_text_file <- function(path, max_lines, .intent) {}
+btw_tool_files_read_text_file <- function(path, max_lines, `_intent`) {}
 
 btw_tool_files_read_text_file_impl <- function(path, max_lines = 1000) {
   check_path_within_current_wd(path)
@@ -348,7 +348,7 @@ is_common_ignorable_files <- function(paths) {
 #'
 #' @family Tools
 #' @export
-btw_tool_files_write_text_file <- function(path, content, .intent) {}
+btw_tool_files_write_text_file <- function(path, content, `_intent`) {}
 
 btw_tool_files_write_text_file_impl <- function(path, content) {
   check_string(path)

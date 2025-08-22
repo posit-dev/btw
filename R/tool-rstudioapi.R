@@ -23,7 +23,7 @@ NULL
 #'
 #' @family Tools
 #' @export
-btw_tool_ide_read_current_editor <- function(selection, consent, .intent) {}
+btw_tool_ide_read_current_editor <- function(selection, consent, `_intent`) {}
 
 btw_tool_ide_read_current_editor_impl <- function(
   selection = TRUE,

@@ -4,7 +4,7 @@
 \alias{btw_tool_docs_package_news}
 \title{Tool: Package Release Notes}
 \usage{
-btw_tool_docs_package_news(package_name, search_term = "", .intent = "")
+btw_tool_docs_package_news(package_name, search_term = "", `_intent` = "")
 }
 \arguments{
 \item{package_name}{The name of the package as a string, e.g. \code{"shiny"}.}
@@ -12,9 +12,9 @@ btw_tool_docs_package_news(package_name, search_term = "", .intent = "")
 \item{search_term}{A regular expression to search for in the NEWS entries.
 If empty, the release notes of the current installed version is included.}
 
-\item{.intent}{An optional string describing the intent of the tool use. When
-the tool is used by an LLM, the model will use this argument to explain why
-it called the tool.}
+\item{_intent}{An optional string describing the intent of the tool use.
+When the tool is used by an LLM, the model will use this argument to
+explain why it called the tool.}
 }
 \value{
 Returns the release notes for the currently installed version of the

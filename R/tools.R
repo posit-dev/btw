@@ -109,18 +109,18 @@ as_ellmer_tools <- function(x) {
 }
 
 wrap_with_intent <- function(tool) {
-  if (".intent" %in% names(tool@arguments@properties)) {
+  if ("_intent" %in% names(tool@arguments@properties)) {
     return(tool)
   }
 
   tool_fun <- S7::S7_data(tool)
   wrapped_tool <- new_function(
-    c(fn_fmls(tool_fun), list(.intent = "")),
+    c(fn_fmls(tool_fun), list(`_intent` = "")),
     fn_body(tool_fun),
     env = fn_env(tool_fun)
   )
   S7::S7_data(tool) <- wrapped_tool
-  tool@arguments@properties[[".intent"]] <- ellmer::type_string(
+  tool@arguments@properties[["_intent"]] <- ellmer::type_string(
     paste(
       "The intent of the tool call that describes why you called this tool.",
       "This should be a single, short phrase that explains this tool call to the user."

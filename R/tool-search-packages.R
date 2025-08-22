@@ -33,7 +33,7 @@ NULL
 #' @family Tools
 #' @name btw_tool_search_packages
 #' @export
-btw_tool_search_packages <- function(query, format, n_results, .intent) {}
+btw_tool_search_packages <- function(query, format, n_results, `_intent`) {}
 
 btw_tool_search_packages_impl <- function(
   query,
@@ -203,7 +203,7 @@ Bad: Search for `"statistical analysis tools for permutation test"`
 #'
 #' @returns An info sheet about the package.
 #' @export
-btw_tool_search_package_info <- function(package_name, .intent) {}
+btw_tool_search_package_info <- function(package_name, `_intent`) {}
 
 btw_tool_search_package_info_impl <- function(package_name) {
   check_string(package_name)

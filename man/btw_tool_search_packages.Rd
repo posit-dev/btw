@@ -8,7 +8,7 @@ btw_tool_search_packages(
   query,
   format = c("short", "long"),
   n_results = NULL,
-  .intent = ""
+  `_intent` = ""
 )
 }
 \arguments{
@@ -28,9 +28,9 @@ here.}
 \item{n_results}{Number of search results to include. Defaults to 10 for
 'short' format and 5 for 'long' format.}
 
-\item{.intent}{An optional string describing the intent of the tool use. When
-the tool is used by an LLM, the model will use this argument to explain why
-it called the tool.}
+\item{_intent}{An optional string describing the intent of the tool use.
+When the tool is used by an LLM, the model will use this argument to
+explain why it called the tool.}
 }
 \value{
 A listing of packages matching the search term.
