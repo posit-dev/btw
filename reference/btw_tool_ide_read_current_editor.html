@@ -50,7 +50,7 @@ Positron and VS Code (with the vscode-r extension).</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">btw_tool_ide_read_current_editor</span><span class="op">(</span></span>
 <span>  selection <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  consent <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  .intent <span class="op">=</span> <span class="st">""</span></span>
+<span>  `_intent` <span class="op">=</span> <span class="st">""</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -71,10 +71,10 @@ these instructions. Users can also include the string <code>@current_file</code>
 induce the tool.</p></dd>
 
 
-<dt id="arg--intent">.intent<a class="anchor" aria-label="anchor" href="#arg--intent"></a></dt>
-<dd><p>An optional string describing the intent of the tool use. When
-the tool is used by an LLM, the model will use this argument to explain why
-it called the tool.</p></dd>
+<dt id="arg--intent">_intent<a class="anchor" aria-label="anchor" href="#arg--intent"></a></dt>
+<dd><p>An optional string describing the intent of the tool use.
+When the tool is used by an LLM, the model will use this argument to
+explain why it called the tool.</p></dd>
 
 </dl></div>
     <div class="section level2">

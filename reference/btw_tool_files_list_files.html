@@ -48,7 +48,7 @@
 <span>  path <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"any"</span>, <span class="st">"file"</span>, <span class="st">"directory"</span><span class="op">)</span>,</span>
 <span>  regexp <span class="op">=</span> <span class="st">""</span>,</span>
-<span>  .intent <span class="op">=</span> <span class="st">""</span></span>
+<span>  `_intent` <span class="op">=</span> <span class="st">""</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -73,10 +73,10 @@ show information about that file.</p></dd>
 <dd><p>A regular expression (e.g. <code>[.]csv$</code>) passed on to <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep()</a></code> to filter paths.</p></dd>
 
 
-<dt id="arg--intent">.intent<a class="anchor" aria-label="anchor" href="#arg--intent"></a></dt>
-<dd><p>An optional string describing the intent of the tool use. When
-the tool is used by an LLM, the model will use this argument to explain why
-it called the tool.</p></dd>
+<dt id="arg--intent">_intent<a class="anchor" aria-label="anchor" href="#arg--intent"></a></dt>
+<dd><p>An optional string describing the intent of the tool use.
+When the tool is used by an LLM, the model will use this argument to
+explain why it called the tool.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -116,7 +116,7 @@ it called the tool.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ path             : 'fs_path' chr "mtcars.csv"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ type             : Factor w/ 8 levels "any","block_device",..: 7</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ size             : 'fs_bytes' num 1.74K</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ modification_time: POSIXct[1:1], format: "2025-08-22 14:29:58"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ modification_time: POSIXct[1:1], format: "2025-08-22 16:58:03"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ request: NULL</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

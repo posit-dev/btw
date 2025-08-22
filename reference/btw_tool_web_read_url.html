@@ -44,7 +44,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">btw_tool_web_read_url</span><span class="op">(</span><span class="va">url</span>, .intent <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">btw_tool_web_read_url</span><span class="op">(</span><span class="va">url</span>, `_intent` <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -55,10 +55,10 @@
 <dd><p>The URL of the web page to read.</p></dd>
 
 
-<dt id="arg--intent">.intent<a class="anchor" aria-label="anchor" href="#arg--intent"></a></dt>
-<dd><p>An optional string describing the intent of the tool use. When
-the tool is used by an LLM, the model will use this argument to explain why
-it called the tool.</p></dd>
+<dt id="arg--intent">_intent<a class="anchor" aria-label="anchor" href="#arg--intent"></a></dt>
+<dd><p>An optional string describing the intent of the tool use.
+When the tool is used by an LLM, the model will use this argument to
+explain why it called the tool.</p></dd>
 
 </dl></div>
     <div class="section level2">
