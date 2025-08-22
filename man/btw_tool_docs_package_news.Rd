@@ -12,7 +12,7 @@ btw_tool_docs_package_news(package_name, search_term = "", `_intent` = "")
 \item{search_term}{A regular expression to search for in the NEWS entries.
 If empty, the release notes of the current installed version is included.}
 
-\item{`_intent`}{An optional string describing the intent of the tool use.
+\item{_intent}{An optional string describing the intent of the tool use.
 When the tool is used by an LLM, the model will use this argument to
 explain why it called the tool.}
 }

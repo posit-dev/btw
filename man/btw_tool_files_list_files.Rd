@@ -22,6 +22,10 @@ show information about that file.}
 \code{"directory"}.}
 
 \item{regexp}{A regular expression (e.g. \verb{[.]csv$}) passed on to \code{\link[=grep]{grep()}} to filter paths.}
+
+\item{_intent}{An optional string describing the intent of the tool use.
+When the tool is used by an LLM, the model will use this argument to
+explain why it called the tool.}
 }
 \value{
 Returns a character table of file information.

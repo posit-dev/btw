@@ -8,6 +8,10 @@ btw_tool_web_read_url(url, `_intent` = "")
 }
 \arguments{
 \item{url}{The URL of the web page to read.}
+
+\item{_intent}{An optional string describing the intent of the tool use.
+When the tool is used by an LLM, the model will use this argument to
+explain why it called the tool.}
 }
 \description{
 Tool: Read a Web Page as Markdown

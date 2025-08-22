@@ -9,6 +9,10 @@ btw_tool_env_describe_environment(items = NULL, `_intent` = "")
 \arguments{
 \item{items}{Optional. A character vector of objects in the environment to
 describe.}
+
+\item{_intent}{An optional string describing the intent of the tool use.
+When the tool is used by an LLM, the model will use this argument to
+explain why it called the tool.}
 }
 \value{
 A string describing the environment contents with \verb{#>} prefixing

@@ -12,6 +12,10 @@ working directory.}
 
 \item{content}{The text content to write to the file. This should be the
 complete content as the file will be overwritten.}
+
+\item{_intent}{An optional string describing the intent of the tool use.
+When the tool is used by an LLM, the model will use this argument to
+explain why it called the tool.}
 }
 \value{
 Returns a message confirming the file was written.

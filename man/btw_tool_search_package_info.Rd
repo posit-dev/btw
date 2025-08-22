@@ -8,6 +8,10 @@ btw_tool_search_package_info(package_name, `_intent` = "")
 }
 \arguments{
 \item{package_name}{The name of a package on CRAN.}
+
+\item{_intent}{An optional string describing the intent of the tool use.
+When the tool is used by an LLM, the model will use this argument to
+explain why it called the tool.}
 }
 \value{
 An info sheet about the package.
