@@ -67,7 +67,13 @@ btw_tool_files_list_files_impl <- function(
 
   fields <- c("path", "type", "size", "modification_time")
 
-  btw_tool_result(md_table(info[fields]), data = info[fields])
+  md_res <- md_table(info[fields])
+
+  btw_tool_result(
+    md_res,
+    data = info[fields],
+    display = list(markdown = md_res)
+  )
 }
 
 .btw_add_to_tools(
@@ -155,12 +161,25 @@ btw_tool_files_read_text_file_impl <- function(path, max_lines = 1000) {
     )
   }
 
+  value <- md_code_block(
+    fs::path_ext(path),
+    readLines(path, warn = FALSE, n = max_lines)
+  )
+  value <- paste(value, collapse = "\n")
+
   BtwTextFileToolResult(
-    md_code_block(
-      fs::path_ext(path),
-      readLines(path, warn = FALSE, n = max_lines)
-    ),
-    extra = list(path = fs::path_rel(path))
+    value,
+    extra = list(
+      path = fs::path_rel(path),
+      display = list(
+        markdown = value,
+        title = shiny::HTML(sprintf(
+          "Read <code>%s</code>",
+          fs::path_file(path)
+        )),
+        show_request = FALSE
+      )
+    )
   )
 }
 
@@ -378,7 +397,13 @@ btw_tool_files_write_text_file_impl <- function(path, content) {
     extra = list(
       path = path,
       content = content,
-      previous_content = previous_content
+      previous_content = previous_content,
+      display = list(
+        markdown = md_code_block(fs::path_ext(path), content),
+        title = shiny::HTML(sprintf("Write <code>%s</code>", path)),
+        show_request = FALSE,
+        icon = tool_icon("file-save")
+      )
     )
   )
 }

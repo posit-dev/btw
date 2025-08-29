@@ -180,7 +180,12 @@ btw_tool_session_package_info_impl <- function(
 
   BtwPackageInfoToolResult(
     value = paste(c(title, packages), collapse = "\n"),
-    extra = list(data = packages_df)
+    extra = list(
+      data = packages_df,
+      display = list(
+        markdown = md_table(packages_df)
+      )
+    )
   )
 }
 

@@ -54,7 +54,14 @@ btw_tool_docs_package_news_impl <- function(package_name, search_term = "") {
     }
   }
 
-  BtwPackageNewsToolResult(unclass(btw_this(news)))
+  result <- unclass(btw_this(news))
+
+  BtwPackageNewsToolResult(
+    result,
+    extra = list(
+      display = list(markdown = result, show_request = FALSE)
+    )
+  )
 }
 
 .btw_add_to_tools(

@@ -67,12 +67,18 @@ btw_tool_docs_package_help_topics_impl <- function(package_name) {
   res <- dplyr::ungroup(res)
   res <- dplyr::select(res, topic_id, title, aliases)
 
-  btw_tool_env_describe_data_frame_impl(
+  ret <- btw_tool_env_describe_data_frame_impl(
     res,
     format = "json",
     max_rows = Inf,
     max_cols = Inf
   )
+  ret@extra$display <- list(
+    title = sprintf("{%s} Help Topics", package_name),
+    show_request = FALSE,
+    markdown = md_table(res)
+  )
+  ret
 }
 
 
@@ -173,12 +179,19 @@ btw_tool_docs_help_page_impl <- function(topic, package_name = "") {
     topic
   )
 
+  help_call <- format(call2("::", sym(resolved$package), sym(topic)))
+
   BtwHelpPageToolResult(
     value = c(heading, md),
     extra = list(
       help_text = md,
       topic = basename(resolved$topic),
-      package = resolved$package
+      package = resolved$package,
+      display = list(
+        title = shiny::HTML(sprintf('<code>?%s</code>', help_call)),
+        show_request = FALSE,
+        markdown = paste(md, collapse = "\n")
+      )
     )
   )
 }
@@ -318,7 +331,12 @@ btw_tool_docs_available_vignettes_impl <- function(package_name) {
 
   btw_tool_result(
     value = strsplit(as_json_rowwise(df), "\n")[[1]],
-    data = df
+    data = df,
+    display = list(
+      title = sprintf("{%s} Vignettes", package_name),
+      show_request = FALSE,
+      markdown = md_table(df)
+    )
   )
 }
 
@@ -373,9 +391,20 @@ btw_tool_docs_vignette_impl <- function(
     )
   }
 
+  html_vignette <- pandoc_convert(
+    file.path(vignette_info$Dir, "doc", vignette_info$PDF),
+    to = "html"
+  )
+  md_vignette <- pandoc_html_simplify(html_vignette)
+
   btw_tool_result(
-    pandoc_convert(file.path(vignette_info$Dir, "doc", vignette_info$PDF)),
-    data = vignette_info
+    md_vignette,
+    data = vignette_info,
+    display = list(
+      title = sprintf("{%s} Vignette: %s", package_name, vignette_info$Title),
+      show_request = FALSE,
+      markdown = paste(md_vignette, collapse = "\n")
+    )
   )
 }
 

@@ -146,8 +146,23 @@ btw_tool_files_code_search_factory <- function(
       query_order_by
     )
 
+    max_display <- 20L
+
+    res <- DBI::dbGetQuery(con, query, params = list(needle, limit))
+    res$size <- fs::as_fs_bytes(res$size)
+
     BtwToolResult(
-      DBI::dbGetQuery(con, query, params = list(needle, limit))
+      res,
+      extra = list(
+        display = list(
+          markdown = paste0(
+            md_table(res[1:min(nrow(res), max_display), ]),
+            if (nrow(res) > max_display) {
+              paste0("\n\n... and ", nrow(res) - max_display, " more matches.")
+            }
+          )
+        )
+      )
     )
   }
 }

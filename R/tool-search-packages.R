@@ -52,6 +52,7 @@ btw_tool_search_packages_impl <- function(
   btw_tool_result(
     value = btw_this(res, for_tool_use = TRUE),
     data = res,
+    display = list(markdown = md_table(res)),
     cls = BtwSearchPackageToolResult
   )
 }
@@ -209,10 +210,18 @@ btw_tool_search_package_info_impl <- function(package_name) {
   check_string(package_name)
 
   pkg <- cran_package(package_name)
+  value <- btw_this(pkg)
 
   BtwSearchPackageInfoToolResult(
-    value = btw_this(pkg),
-    extra = pkg
+    value = value,
+    extra = list(
+      info = pkg,
+      display = list(
+        title = sprintf("{%s} Package Info", pkg$Package),
+        markdown = value,
+        show_request = FALSE
+      )
+    )
   )
 }
 
