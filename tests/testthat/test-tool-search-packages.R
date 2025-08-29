@@ -63,7 +63,7 @@ test_that("btw_tool_search_package_info()", {
   )
 
   expect_equal(
-    tool_result@extra,
+    tool_result@extra$info,
     search_result
   )
 })
