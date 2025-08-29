@@ -113,8 +113,8 @@ string.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;btw::BtwToolResult&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ value  : chr [1:3] "```json" ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ error  : NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  @ extra  :List of 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ data: tibble [24 × 3] (S3: tbl_df/tbl/data.frame)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  @ extra  :List of 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ data   : tibble [24 × 3] (S3: tbl_df/tbl/data.frame)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ topic_id: chr [1:24] "btw" "btw-package" "btw_client" "btw_this" ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ title   : chr [1:24] "Plain-text descriptions of R objects" "btw: Describe R Stuff to Large Language Models" "Create a btw-enhanced ellmer chat client" "Describe something for use by an LLM" ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ aliases :List of 24</span>
@@ -142,16 +142,25 @@ string.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  .. ..$ : 'AsIs' chr "btw_tool_web_read_url"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  .. ..$ : 'AsIs' chr "btw_tools"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  .. ..$ : 'AsIs' chr [1:3] "mcp" "btw_mcp_server" "btw_mcp_session"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ display:List of 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ title       : chr "{btw} Help Topics"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ show_request: logi FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ markdown    : chr "| topic_id | title | aliases |\n|----------|-------|---------|\n| btw | Plain-text descriptions of R objects | "| __truncated__</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ request: NULL</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">btw_tool_docs_help_page</span><span class="op">(</span><span class="st">"btw"</span>, <span class="st">"btw"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;btw::BtwHelpPageToolResult&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ value  : chr [1:76] "## `help(package = \"btw\", \"btw\")`" "" ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ error  : NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  @ extra  :List of 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  @ extra  :List of 4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ help_text: chr [1:75] "" "### Plain-text descriptions of R objects" "" "#### Description" ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ topic    : chr "btw"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ package  : chr "btw"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ display  :List of 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ title       : 'html' chr "&lt;code&gt;?btw::btw&lt;/code&gt;"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  .. ..- attr(*, "html")= logi TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ show_request: logi FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ markdown    : chr "\n### Plain-text descriptions of R objects\n\n#### Description\n\nThis function allows you to quickly describe "| __truncated__</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ request: NULL</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># show the TOC of vignettes in the dplyr package</span></span></span>
@@ -159,10 +168,14 @@ string.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;btw::BtwToolResult&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ value  : chr [1:11] "[" ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ error  : NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  @ extra  :List of 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ data:'data.frame':	9 obs. of  2 variables:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  @ extra  :List of 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ data   :'data.frame':	9 obs. of  2 variables:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ vignette: chr [1:9] "colwise" "grouping" "dplyr" "programming" ...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ title   : chr [1:9] "Column-wise operations" "Grouped data" "Introduction to dplyr" "Programming with dplyr" ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ display:List of 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ title       : chr "{dplyr} Vignettes"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ show_request: logi FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ markdown    : chr "| vignette | title |\n|----------|-------|\n| colwise | Column-wise operations |\n| grouping | Grouped data |\n"| __truncated__</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ request: NULL</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># returns a whole bunch of output and relies on</span></span></span>
