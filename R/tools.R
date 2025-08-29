@@ -104,7 +104,9 @@ is_tool_match <- function(tool, labels = NULL) {
 # Convert from .btw_tools (or a filtered version of it)
 # to a format compatible with `client$set_tools()`
 as_ellmer_tools <- function(x) {
+  groups <- map_chr(x, function(.x) .x$group)
   tools <- compact(map(x, function(.x) .x$tool()))
+  tools <- map2(tools, groups, set_tool_icon)
   map(tools, wrap_with_intent)
 }
 
@@ -129,6 +131,43 @@ wrap_with_intent <- function(tool) {
 
   tool
 }
+
+set_tool_icon <- function(tool, group) {
+  icon <- switch(
+    group,
+    "docs" = tool_icon("dictionary"),
+    "env" = tool_icon("source-environment"),
+    "files" = tool_icon("folder-open"),
+    "ide" = tool_icon("code-blocks"),
+    "search" = tool_icon("search"),
+    "session" = tool_icon("screen-search-desktop"),
+    "web" = tool_icon("globe-book"),
+    NULL
+  )
+
+  if (!is.list(tool@annotations)) {
+    tool@annotations <- list()
+  }
+
+  tool@annotations$icon <- icon
+  tool
+}
+
+tool_icon <- local({
+  icons <- list()
+  function(name) {
+    if (!is.null(icons[[name]])) {
+      return(icons[[name]])
+    }
+
+    icon <- shiny::HTML(readLines(
+      fs::path_package("btw", "icons", paste0(name, ".svg")),
+      warn = FALSE
+    ))
+    icons[[name]] <<- icon
+    return(icon)
+  }
+})
 
 # nocov start
 .docs_list_tools <- function() {

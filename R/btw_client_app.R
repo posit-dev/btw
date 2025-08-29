@@ -242,15 +242,28 @@ app_tool_group_choice_input <- function(
     initial_tool_names <- group_tools_df$name
   }
 
+  label_icon <- switch(
+    group,
+    "docs" = tool_icon("dictionary"),
+    "env" = tool_icon("source-environment"),
+    "files" = tool_icon("folder-open"),
+    "ide" = tool_icon("code-blocks"),
+    "search" = tool_icon("search"),
+    "session" = tool_icon("screen-search-desktop"),
+    "web" = tool_icon("globe-book"),
+    tool_icon("construction")
+  )
+
   label_text <- switch(
     group,
-    "docs" = shiny::span(shiny::icon("book"), "Documentation"),
-    "env" = shiny::span(shiny::icon("globe"), "Environment"),
-    "files" = shiny::span(shiny::icon("folder"), "Files"),
-    "ide" = shiny::span(shiny::icon("code"), "IDE"),
-    "search" = shiny::span(shiny::icon("search"), "Search"),
-    "session" = shiny::span(shiny::icon("desktop"), "Session Info"),
-    "other" = shiny::span(shiny::icon("tools"), "Other Tools"),
+    "docs" = shiny::span(label_icon, "Documentation"),
+    "env" = shiny::span(label_icon, "Environment"),
+    "files" = shiny::span(label_icon, "Files"),
+    "ide" = shiny::span(label_icon, "IDE"),
+    "search" = shiny::span(label_icon, "Search"),
+    "session" = shiny::span(label_icon, "Session Info"),
+    "web" = shiny::span(label_icon, "Web Tools"),
+    "other" = shiny::span(label_icon, "Other Tools"),
     paste0(toupper(substring(group, 1, 1)), substring(group, 2))
   )
 
