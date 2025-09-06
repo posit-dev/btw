@@ -87,10 +87,7 @@ btw_tool_files_code_search_factory <- function(
   check_character(extensions, allow_na = FALSE)
   check_character(exclusions, allow_na = FALSE, allow_null = TRUE)
 
-  env <- rlang::current_env()
-  con <- NULL
-
-  .index_files <- function() {
+  .db_create_local_file_index <- function() {
     if (identical(Sys.getenv("TESTTHAT"), "true")) {
       # In testthat, we don't want to create a DuckDB database
       return(NULL)
@@ -100,14 +97,10 @@ btw_tool_files_code_search_factory <- function(
 
     withr::local_options(cli.progress_handlers_only = "cli")
     cli::cli_progress_step(
-      "Creating DuckDB database for code search of {.path {path}}"
+      "Indexing files in {.path {path}} for code search"
     )
     db_create_local_files(path, extensions, exclusions)
   }
-
-  delayedAssign("con", assign.env = env, {
-    .index_files()
-  })
 
   function(
     term,
@@ -136,6 +129,8 @@ btw_tool_files_code_search_factory <- function(
       query_group_by <- "GROUP BY filename"
       query_order_by <- "ORDER BY n_matching_lines DESC, last_modified DESC"
     }
+
+    con <- .db_create_local_file_index()
 
     query <- sprintf(
       "SELECT %s FROM code_file_lines WHERE %s(%s, ?) %s %s LIMIT ?",
