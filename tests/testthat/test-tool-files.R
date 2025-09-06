@@ -39,7 +39,7 @@ test_that("btw_tool_files_list_files() works", {
 test_that("btw_tool_files_read_text_file() works", {
   withr::local_dir(withr::local_tempdir())
 
-  write.csv(mtcars, "mtcars.csv")
+  write.csv(mtcars, "mtcars.csv", row.names = FALSE)
   saveRDS(mtcars, "mtcars.rds")
 
   expect_btw_tool_result(
@@ -56,6 +56,24 @@ test_that("btw_tool_files_read_text_file() works", {
   expect_equal(
     btw_tool_files_read_text_file("mtcars.csv")@value,
     btw_this("./mtcars.csv")
+  )
+
+  expect_equal(
+    btw_tool_files_read_text_file(
+      "mtcars.csv",
+      line_start = 1,
+      line_end = 1
+    )@value,
+    '```csv\n"mpg","cyl","disp","hp","drat","wt","qsec","vs","am","gear","carb"\n```'
+  )
+
+  expect_equal(
+    btw_tool_files_read_text_file(
+      "mtcars.csv",
+      line_start = 32,
+      line_end = 35
+    )@value,
+    "```csv\n15,8,301,335,3.54,3.57,14.6,0,1,5,8\n21.4,4,121,109,4.11,2.78,18.6,1,1,4,2\n```"
   )
 
   skip_if_not_macos()

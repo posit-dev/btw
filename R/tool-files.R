@@ -137,7 +137,11 @@ CAUTION: Do not list all files in a project, instead prefer listing files in a s
 #'
 #' @param path Path to a file for which to get information. The `path` must be
 #'   in the current working directory.
-#' @param max_lines Number of lines to include. Defaults to 1,000 lines.
+#' @param line_start Starting line to read, defaults to 1 (starting from the
+#'   first line).
+#' @param line_end Ending line to read, defaults to 1000. Change only this value
+#'   if you want to read more or fewer lines. Use in combination with
+#'   `line_start` to read a specific line range of the file.
 #' @inheritParams btw_tool_docs_package_news
 #'
 #' @return Returns a character vector of lines from the file.
@@ -146,7 +150,11 @@ CAUTION: Do not list all files in a project, instead prefer listing files in a s
 #' @export
 btw_tool_files_read_text_file <- function(path, max_lines, `_intent`) {}
 
-btw_tool_files_read_text_file_impl <- function(path, max_lines = 1000) {
+btw_tool_files_read_text_file_impl <- function(
+  path,
+  line_start = 1,
+  line_end = 1000
+) {
   check_path_within_current_wd(path)
 
   if (!fs::is_file(path) || !fs::file_exists(path)) {
@@ -161,10 +169,10 @@ btw_tool_files_read_text_file_impl <- function(path, max_lines = 1000) {
     )
   }
 
-  value <- md_code_block(
-    fs::path_ext(path),
-    readLines(path, warn = FALSE, n = max_lines)
-  )
+  contents <- readLines(path, warn = FALSE, n = line_end)
+  contents <- contents[seq(max(line_start, 1), min(line_end, length(contents)))]
+
+  value <- md_code_block(fs::path_ext(path), contents)
   value <- paste(value, collapse = "\n")
 
   BtwTextFileToolResult(
@@ -207,8 +215,16 @@ BtwTextFileToolResult <- S7::new_class(
         path = ellmer::type_string(
           "The relative path to a file that can be read as text, such as a CSV, JSON, HTML, markdown file, etc.",
         ),
-        max_lines = ellmer::type_number(
-          "How many lines to include from the file? The default is 100 and is likely already too high.",
+        line_start = ellmer::type_number(
+          "Starting line to read, defaults to 1 (starting from the first line).",
+          required = FALSE
+        ),
+        line_end = ellmer::type_number(
+          paste(
+            "Ending line to read, defaults to 1000.",
+            "Change only this value if you want to read more or fewer lines.",
+            "Use in combination with `line_start` to read a specific line range of the file."
+          ),
           required = FALSE
         )
       )
