@@ -67,8 +67,9 @@
 #'
 #' ## Client Options
 #'
-#' * `btw.client`: The [ellmer::Chat] client to use as the basis for new
-#'   `btw_client()` or `btw_app()` chats.
+#' * `btw.client`: The [ellmer::Chat] client or a `provider/model` string (see
+#'    [ellmer::chat()]) to use as the basis for new `btw_client()` or
+#'    `btw_app()` chats.
 #' * `btw.tools`: The btw tools to include by default when starting a new
 #'   btw chat, see [btw_tools()] for details.
 #'
@@ -80,7 +81,8 @@
 #' chat <- btw_client()
 #' chat$chat("How can I replace `stop()` calls with functions from the cli package?")
 #'
-#' @param client An [ellmer::Chat] client, defaults to
+#' @param client An [ellmer::Chat] client or a `provider/model` string to be
+#'   passed to [ellmer::chat()] to create a chat client. Defaults to
 #'   [ellmer::chat_anthropic()]. You can use the `btw.client` option to set a
 #'   default client for new `btw_client()` calls, or use a `btw.md` project file
 #'   for default chat client settings, like provider and model. We check the
@@ -178,15 +180,13 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
   config$tools <- flatten_and_check_tools(config$tools)
 
   if (!is.null(client)) {
-    check_inherits(client, "Chat")
-    config$client <- client
+    config$client <- as_ellmer_client(client)
     return(config)
   }
 
   default <- getOption("btw.client")
   if (!is.null(default)) {
-    check_inherits(default, "Chat")
-    config$client <- default$clone()
+    config$client <- as_ellmer_client(default)$clone()
     return(config)
   }
 
@@ -207,6 +207,11 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
   }
 
   if (!is.null(config$client)) {
+    if (is_string(config$client)) {
+      config$client <- as_ellmer_client(config$client)
+      return(config)
+    }
+
     chat_args <- utils::modifyList(
       list(echo = "output"), # defaults
       config$client
@@ -231,6 +236,21 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
 
   config$client <- ellmer::chat_anthropic(echo = "output")
   config
+}
+
+as_ellmer_client <- function(client) {
+  if (inherits(client, "Chat")) {
+    return(client)
+  }
+
+  if (!is_string(client)) {
+    cli::cli_abort(c(
+      "{.arg client} must be an {.help ellmer::Chat} client or a string naming a chat provider and model to pass to {.fn ellmer::chat}, not {.obj_type_friendly {client}}.",
+      "i" = "Examples: {.or {.val {c('openai/gpt-5-mini', 'anthropic/claude-3-7-sonnet-20250219')}}}."
+    ))
+  }
+
+  ellmer::chat(client, echo = "output")
 }
 
 flatten_and_check_tools <- function(tools) {

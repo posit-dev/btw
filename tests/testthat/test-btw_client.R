@@ -45,6 +45,24 @@ test_that("btw_client() modifies `client` argument in place", {
   expect_identical(chat, client)
 })
 
+test_that("btw_client() accepts a provider string", {
+  withr::local_envvar(ANTHROPIC_API_KEY = "beep")
+
+  expected_client <- ellmer::chat_anthropic()
+  chat <- btw_client(client = "anthropic")
+  expect_equal(chat$get_provider(), expected_client$get_provider())
+})
+
+test_that("btw_client() accepts a provider/model string", {
+  withr::local_envvar(ANTHROPIC_API_KEY = "beep")
+
+  expected_client <- ellmer::chat_anthropic(
+    model = "claude-3-7-sonnet-20250219"
+  )
+  chat <- btw_client(client = "anthropic/claude-3-7-sonnet-20250219")
+  expect_equal(chat$get_provider(), expected_client$get_provider())
+})
+
 test_that("btw_client() adds `btw.md` context file to system prompt", {
   withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
 
@@ -135,6 +153,31 @@ test_that("btw_client() uses `btw.md` context file for client settings", {
 
   skip_if_not_macos()
   expect_snapshot(print(chat), transform = scrub_system_info)
+})
+
+test_that("btw_client() uses `btw.md` with client string", {
+  withr::local_envvar(list(OPENAI_API_KEY = "beep"))
+
+  wd <- withr::local_tempdir()
+  withr::local_dir(wd)
+
+  writeLines(
+    con = "btw.md",
+    c(
+      "---",
+      "client: openai/gpt-4.1-nano",
+      "tools: docs",
+      "---",
+      "",
+      "* Prefer solutions that use {tidyverse}",
+      "* Always use `=` for assignment",
+      "* Always use the native base-R pipe `|>` for piped expressions"
+    )
+  )
+
+  expected_client <- ellmer::chat_openai(model = "gpt-4.1-nano")
+  chat <- btw_client()
+  expect_equal(chat$get_provider(), expected_client$get_provider())
 })
 
 test_that("btw_client() throws if `path_btw` is provided but doesn't exist", {

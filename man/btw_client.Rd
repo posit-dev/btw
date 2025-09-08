@@ -13,7 +13,8 @@ btw_app(..., client = NULL, tools = NULL, path_btw = NULL)
 \item{...}{In \code{btw_app()}, additional arguments are passed to
 \code{\link[shiny:shinyApp]{shiny::shinyApp()}}. In \code{btw_client()}, additional arguments are ignored.}
 
-\item{client}{An \link[ellmer:Chat]{ellmer::Chat} client, defaults to
+\item{client}{An \link[ellmer:Chat]{ellmer::Chat} client or a \code{provider/model} string to be
+passed to \code{\link[ellmer:chat-any]{ellmer::chat()}} to create a chat client. Defaults to
 \code{\link[ellmer:chat_anthropic]{ellmer::chat_anthropic()}}. You can use the \code{btw.client} option to set a
 default client for new \code{btw_client()} calls, or use a \code{btw.md} project file
 for default chat client settings, like provider and model. We check the
@@ -107,8 +108,9 @@ project-specific \code{btw.md} file is not found.
 
 \subsection{Client Options}{
 \itemize{
-\item \code{btw.client}: The \link[ellmer:Chat]{ellmer::Chat} client to use as the basis for new
-\code{btw_client()} or \code{btw_app()} chats.
+\item \code{btw.client}: The \link[ellmer:Chat]{ellmer::Chat} client or a \code{provider/model} string (see
+\code{\link[ellmer:chat-any]{ellmer::chat()}}) to use as the basis for new \code{btw_client()} or
+\code{btw_app()} chats.
 \item \code{btw.tools}: The btw tools to include by default when starting a new
 btw chat, see \code{\link[=btw_tools]{btw_tools()}} for details.
 }
