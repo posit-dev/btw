@@ -160,7 +160,7 @@ tool_icon <- local({
       return(icons[[name]])
     }
 
-    icon <- shiny::HTML(readLines(
+    icon <- HTML(readLines(
       fs::path_package("btw", "icons", paste0(name, ".svg")),
       warn = FALSE
     ))

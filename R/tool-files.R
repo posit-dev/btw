@@ -181,7 +181,7 @@ btw_tool_files_read_text_file_impl <- function(
       path = fs::path_rel(path),
       display = list(
         markdown = value,
-        title = shiny::HTML(sprintf(
+        title = HTML(sprintf(
           "Read <code>%s</code>",
           fs::path_file(path)
         )),
@@ -416,7 +416,7 @@ btw_tool_files_write_text_file_impl <- function(path, content) {
       previous_content = previous_content,
       display = list(
         markdown = md_code_block(fs::path_ext(path), content),
-        title = shiny::HTML(sprintf("Write <code>%s</code>", path)),
+        title = HTML(sprintf("Write <code>%s</code>", path)),
         show_request = FALSE,
         icon = tool_icon("file-save")
       )
