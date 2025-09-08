@@ -40,7 +40,8 @@ Imports:
     tibble,
     utils,
     withr,
-    xml2
+    xml2,
+    promises
 Suggests:
     bslib (>= 0.7.0),
     chromote,
@@ -48,6 +49,7 @@ Suggests:
     duckdb,
     gert,
     gh,
+    mirai,
     pandoc,
     shiny,
     shinychat (>= 0.2.0),
@@ -70,6 +72,9 @@ Collate:
     'import-standalone-purrr.R'
     'import-standalone-types-check.R'
     'mcp.R'
+    'tool-agent-researcher-r-task.R'
+    'tool-agent-summarize-chat.R'
+    'tool-agent.R'
     'tool-data-frame.R'
     'tool-result.R'
     'tool-docs-news.R'
