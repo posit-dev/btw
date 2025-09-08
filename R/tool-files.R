@@ -132,7 +132,7 @@ CAUTION: Do not list all files in a project, instead prefer listing files in a s
 #' withr::with_tempdir({
 #'   write.csv(mtcars, "mtcars.csv")
 #'
-#'   btw_tool_files_read_text_file("mtcars.csv", max_lines = 5)
+#'   btw_tool_files_read_text_file("mtcars.csv", line_end = 5)
 #' })
 #'
 #' @param path Path to a file for which to get information. The `path` must be
@@ -148,7 +148,12 @@ CAUTION: Do not list all files in a project, instead prefer listing files in a s
 #'
 #' @family Tools
 #' @export
-btw_tool_files_read_text_file <- function(path, max_lines, `_intent`) {}
+btw_tool_files_read_text_file <- function(
+  path,
+  line_start,
+  line_end,
+  `_intent`
+) {}
 
 btw_tool_files_read_text_file_impl <- function(
   path,

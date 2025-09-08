@@ -32,7 +32,7 @@ Reads the current file using the \pkg{rstudioapi}, which works in RStudio,
 Positron and VS Code (with the vscode-r extension).
 }
 \examples{
-\dontshow{if (rstudioapi::hasFun("getSourceEditorContext")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (rstudioapi::hasFun("getSourceEditorContext")) withAutoprint(\{ # examplesIf}
 btw_tool_ide_read_current_editor(consent = TRUE)
 \dontshow{\}) # examplesIf}
 }

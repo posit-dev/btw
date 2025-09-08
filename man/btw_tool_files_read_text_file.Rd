@@ -36,7 +36,7 @@ Tool: Read a file
 withr::with_tempdir({
   write.csv(mtcars, "mtcars.csv")
 
-  btw_tool_files_read_text_file("mtcars.csv", max_lines = 5)
+  btw_tool_files_read_text_file("mtcars.csv", line_end = 5)
 })
 
 }

@@ -21,7 +21,7 @@ You can control the maximum time to wait for the page to load by setting
 the \code{btw.max_wait_for_page_load_s} option globally in your R session.
 }
 \examples{
-\dontshow{if (rlang::is_installed("chromote") && rlang::is_interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (rlang::is_installed("chromote") && rlang::is_interactive()) withAutoprint(\{ # examplesIf}
 btw_tool_web_read_url("https://www.r-project.org/")
 btw_tool_web_read_url(
   "https://posit.co/blog/easy-tool-calls-with-ellmer-and-chatlas/"
