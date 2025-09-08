@@ -59,8 +59,9 @@ project-specific btw.md file is not found.
 Client Options
 
 
-btw.client: The ellmer::Chat client to use as the basis for new
-btw_client() or btw_app() chats.
+btw.client: The ellmer::Chat client or a provider/model string (see
+ellmer::chat()) to use as the basis for new btw_client() or
+btw_app() chats.
 btw.tools: The btw tools to include by default when starting a new
 btw chat, see btw_tools() for details.
 
@@ -126,8 +127,9 @@ project-specific btw.md file is not found.
 Client Options
 
 
-btw.client: The ellmer::Chat client to use as the basis for new
-btw_client() or btw_app() chats.
+btw.client: The ellmer::Chat client or a provider/model string (see
+ellmer::chat()) to use as the basis for new btw_client() or
+btw_app() chats.
 btw.tools: The btw tools to include by default when starting a new
 btw chat, see btw_tools() for details.
 
@@ -231,8 +233,9 @@ project-specific <code>btw.md</code> file is not found.</p>
 <div class="section">
 <h3 id="client-options">Client Options<a class="anchor" aria-label="anchor" href="#client-options"></a></h3>
 
-<ul><li><p><code>btw.client</code>: The <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client to use as the basis for new
-<code>btw_client()</code> or <code>btw_app()</code> chats.</p></li>
+<ul><li><p><code>btw.client</code>: The <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client or a <code>provider/model</code> string (see
+<code><a href="https://ellmer.tidyverse.org/reference/chat-any.html" class="external-link">ellmer::chat()</a></code>) to use as the basis for new <code>btw_client()</code> or
+<code>btw_app()</code> chats.</p></li>
 <li><p><code>btw.tools</code>: The btw tools to include by default when starting a new
 btw chat, see <code><a href="btw_tools.html">btw_tools()</a></code> for details.</p></li>
 </ul></div>
@@ -256,7 +259,8 @@ btw chat, see <code><a href="btw_tools.html">btw_tools()</a></code> for details.
 
 
 <dt id="arg-client">client<a class="anchor" aria-label="anchor" href="#arg-client"></a></dt>
-<dd><p>An <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client, defaults to
+<dd><p>An <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client or a <code>provider/model</code> string to be
+passed to <code><a href="https://ellmer.tidyverse.org/reference/chat-any.html" class="external-link">ellmer::chat()</a></code> to create a chat client. Defaults to
 <code><a href="https://ellmer.tidyverse.org/reference/chat_anthropic.html" class="external-link">ellmer::chat_anthropic()</a></code>. You can use the <code>btw.client</code> option to set a
 default client for new <code>btw_client()</code> calls, or use a <code>btw.md</code> project file
 for default chat client settings, like provider and model. We check the
