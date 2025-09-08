@@ -105,9 +105,19 @@ explain why it called the tool.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_tempfile.html" class="external-link">with_tempdir</a></span><span class="op">(</span><span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="st">"mtcars.csv"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>  <span class="fu">btw_tool_files_read_text_file</span><span class="op">(</span><span class="st">"mtcars.csv"</span>, max_lines <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">btw_tool_files_read_text_file</span><span class="op">(</span><span class="st">"mtcars.csv"</span>, line_end <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in btw_tool_files_read_text_file("mtcars.csv", max_lines = 5):</span> unused argument (max_lines = 5)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;btw::BtwTextFileToolResult&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  @ value  : chr "```csv\n\"\",\"mpg\",\"cyl\",\"disp\",\"hp\",\"drat\",\"wt\",\"qsec\",\"vs\",\"am\",\"gear\",\"carb\"\n\"Mazda "| __truncated__</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  @ error  : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  @ extra  :List of 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ path   : 'fs_path' chr "mtcars.csv"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ display:List of 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ markdown    : chr "```csv\n\"\",\"mpg\",\"cyl\",\"disp\",\"hp\",\"drat\",\"wt\",\"qsec\",\"vs\",\"am\",\"gear\",\"carb\"\n\"Mazda "| __truncated__</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ title       : 'html' chr "Read &lt;code&gt;mtcars.csv&lt;/code&gt;"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  .. ..- attr(*, "html")= logi TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ show_request: logi FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  @ request: NULL</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
