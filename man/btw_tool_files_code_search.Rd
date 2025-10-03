@@ -77,6 +77,7 @@ paths, regardless of the \code{btw.files_code_search.exclusions} option.
 }
 }
 \examples{
+\dontshow{if (getRversion() >= "4.2.0") withAutoprint(\{ # examplesIf}
 withr::with_tempdir({
   writeLines(state.name[1:25], "state_names_1.md")
   writeLines(state.name[26:50], "state_names_2.md")
@@ -88,7 +89,7 @@ withr::with_tempdir({
     show_lines = TRUE
   )
 })
-
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Other Tools: 
