@@ -102,7 +102,12 @@
 #'   client.
 #' @param path_btw A path to a `btw.md` project context file. If `NULL`, btw
 #'   will find a project-specific `btw.md` file in the parents of the current
-#'   working directory.
+#'   working directory. Set `path_btw = FALSE` to create a chat client without
+#'   using a `btw.md` file.
+#' @param path_llms_txt A path to an `llms.txt` file containing context about
+#'   the current project. By default, btw will look for an `llms.txt` file in
+#'   the your current working directory or its parents. Set `path_llms_txt =
+#'   FALSE` to skip looking for an `llms.txt` file.
 #' @param ... In `btw_app()`, additional arguments are passed to
 #'   [shiny::shinyApp()]. In `btw_client()`, additional arguments are ignored.
 #'
@@ -112,28 +117,34 @@
 #'
 #' @describeIn btw_client Create a btw-enhanced [ellmer::Chat] client
 #' @export
-btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
+btw_client <- function(
+  ...,
+  client = NULL,
+  tools = NULL,
+  path_btw = NULL,
+  path_llms_txt = NULL
+) {
   check_dots_empty()
 
   config <- btw_client_config(client, tools, config = read_btw_file(path_btw))
+  client <- config$client
   skip_tools <- isFALSE(config$tools) || identical(config$tools, "none")
   withr::local_options(config$options)
 
-  client <- config$client
-
   session_info <- btw_tool_session_platform_info()@value
   client_system_prompt <- client$get_system_prompt()
+
+  llms_txt <- read_llms_txt(path_llms_txt)
+  project_context <- c(llms_txt, config$btw_system_prompt)
+  project_context <- paste(project_context, collapse = "\n\n")
 
   sys_prompt <- c(
     btw_prompt("btw-system_session.md"),
     if (!skip_tools) {
       btw_prompt("btw-system_tools.md")
     },
-    if (!is.null(config$btw_system_prompt)) {
-      btw_prompt(
-        "btw-system_project.md",
-        btw_md_system_prompt = config$btw_system_prompt
-      )
+    if (nzchar(project_context)) {
+      btw_prompt("btw-system_project.md")
     },
     if (!is.null(client_system_prompt)) "---",
     paste(client_system_prompt, collapse = "\n")
@@ -299,21 +310,33 @@ flatten_config_options <- function(opts, prefix = "btw", sep = ".") {
   out
 }
 
-read_btw_file <- function(path = NULL) {
+maybe_find_in_project <- function(path, file_name, arg = "path") {
   if (isFALSE(path)) {
-    return(list())
+    return(NULL)
   }
 
   must_find <- !is.null(path)
 
-  path <- path %||% path_find_in_project("btw.md") %||% path_find_user("btw.md")
+  path <- path %||%
+    path_find_in_project(file_name) %||%
+    path_find_user(file_name)
 
   if (!must_find && is.null(path)) {
-    return(list())
+    return(NULL)
   }
 
   if (must_find && (is.null(path) || !fs::file_exists(path))) {
-    cli::cli_abort("Invalid {.arg path}: {.path {path}} does not exist.")
+    cli::cli_abort("Invalid {.arg {arg}}: {.path {path}} does not exist.")
+  }
+
+  path
+}
+
+read_btw_file <- function(path = NULL) {
+  path <- maybe_find_in_project(path, "btw.md", "path_btw")
+
+  if (is.null(path)) {
+    return(list())
   }
 
   config <- rmarkdown::yaml_front_matter(path)
@@ -332,6 +355,20 @@ read_btw_file <- function(path = NULL) {
   }
 
   config
+}
+
+read_llms_txt <- function(path = NULL) {
+  path <- maybe_find_in_project(path, "llms.txt", "path_llms_txt")
+
+  if (is.null(path)) {
+    return(NULL)
+  }
+
+  llms_txt <- readLines(path, warn = FALSE)
+  llms_txt <- paste(llms_txt, collapse = "\n")
+  llms_txt <- trimws(llms_txt)
+
+  if (nzchar(llms_txt)) llms_txt else NULL
 }
 
 remove_hidden_content <- function(lines) {
