@@ -112,12 +112,7 @@
 #'
 #' @describeIn btw_client Create a btw-enhanced [ellmer::Chat] client
 #' @export
-btw_client <- function(
-  ...,
-  client = NULL,
-  tools = NULL,
-  path_btw = NULL
-) {
+btw_client <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
   check_dots_empty()
 
   config <- btw_client_config(client, tools, config = read_btw_file(path_btw))
@@ -126,39 +121,25 @@ btw_client <- function(
 
   client <- config$client
 
-  sys_prompt <- client$get_system_prompt()
+  session_info <- btw_tool_session_platform_info()@value
+  client_system_prompt <- client$get_system_prompt()
+
   sys_prompt <- c(
-    "# System and Session Context",
-    "Please account for the following R session and system settings in all responses.",
-    "",
-    btw_tool_session_platform_info()@value,
-    "",
+    btw_prompt("btw-system_session.md"),
     if (!skip_tools) {
-      c(
-        "# Tools",
-        "",
-        paste(
-          "You have access to tools that help you interact with the user's R session and workspace.",
-          "Use these tools when they are helpful and appropriate to complete the user's request.",
-          "These tools are available to augment your ability to help the user,",
-          "but you are smart and capable and can answer many things on your own.",
-          "It is okay to answer the user without relying on these tools."
-        ),
-        ""
-      )
+      btw_prompt("btw-system_tools.md")
     },
     if (!is.null(config$btw_system_prompt)) {
-      c(
-        "# Project Context",
-        "",
-        trimws(paste(config$btw_system_prompt, collapse = "\n")),
-        ""
+      btw_prompt(
+        "btw-system_project.md",
+        btw_md_system_prompt = config$btw_system_prompt
       )
     },
-    "---\n",
-    sys_prompt
+    if (!is.null(client_system_prompt)) "---",
+    paste(client_system_prompt, collapse = "\n")
   )
-  client$set_system_prompt(paste(sys_prompt, collapse = "\n"))
+
+  client$set_system_prompt(paste(sys_prompt, collapse = "\n\n"))
 
   if (!skip_tools) {
     client$set_tools(tools = c(client$get_tools(), config$tools))
@@ -343,7 +324,13 @@ read_btw_file <- function(path = NULL) {
   }
 
   btw_system_prompt <- read_without_yaml(path)
-  config$btw_system_prompt <- remove_hidden_content(btw_system_prompt)
+  btw_system_prompt <- remove_hidden_content(btw_system_prompt)
+  btw_system_prompt <- paste(btw_system_prompt, collapse = "\n")
+  btw_system_prompt <- trimws(btw_system_prompt)
+  if (nzchar(btw_system_prompt)) {
+    config$btw_system_prompt <- btw_system_prompt
+  }
+
   config
 }
 

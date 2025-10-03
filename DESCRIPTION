@@ -83,6 +83,7 @@ Collate:
     'tool-sessioninfo.R'
     'tool-web.R'
     'tools.R'
+    'utils-ellmer.R'
     'utils-gitignore.R'
     'utils-md.R'
     'utils.R'

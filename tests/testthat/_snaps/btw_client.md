@@ -6,6 +6,7 @@
       <Chat Anthropic/claude-sonnet-4-20250514 turns=1 tokens=0/0 $0.00>
       -- system [0] ------------------------------------------------------------------
       # System and Session Context
+      
       Please account for the following R session and system settings in all responses.
       
       <system_info>
@@ -19,6 +20,7 @@
       TIMEZONE: Europe/Madrid
       DATE: DAY OF WEEK, MONTH DAY, YEAR (YYYY-MM-DD)
       </system_info>
+      
       
       # Tools
       
@@ -36,6 +38,7 @@
       <Chat Anthropic/claude-sonnet-4-20250514 turns=1 tokens=0/0 $0.00>
       -- system [0] ------------------------------------------------------------------
       # System and Session Context
+      
       Please account for the following R session and system settings in all responses.
       
       <system_info>
@@ -49,6 +52,7 @@
       TIMEZONE: Europe/Madrid
       DATE: DAY OF WEEK, MONTH DAY, YEAR (YYYY-MM-DD)
       </system_info>
+      
       
       # Tools
       
@@ -72,6 +76,7 @@
       <Chat OpenAI/gpt-4o turns=1 tokens=0/0 $0.00>
       -- system [0] ------------------------------------------------------------------
       # System and Session Context
+      
       Please account for the following R session and system settings in all responses.
       
       <system_info>
@@ -85,6 +90,7 @@
       TIMEZONE: Europe/Madrid
       DATE: DAY OF WEEK, MONTH DAY, YEAR (YYYY-MM-DD)
       </system_info>
+      
       
       # Tools
       
