@@ -10,10 +10,14 @@
 #' ## Project Context
 #'
 #' You can keep track of project-specific rules, guidance and context by adding
-#' a `btw.md` file in your project directory. Any time you start a chat client
-#' with `btw_client()` or launch a chat session with `btw_app()`, btw will
-#' automatically find and include the contents of the `btw.md` file in your
-#' chat.
+#' a `btw.md` file or [`AGENTS.md`](https://agents.md/) in your project
+#' directory. Either file name will work, so we'll refer primarily to `btw.md`.
+#' \pkg{btw} will look first for `btw.md` and then for `AGENTS.md`. If both
+#' files are present, only the `btw.md` file will be used.
+#'
+#' Any time you start a chat client with `btw_client()` or launch a chat session
+#' with `btw_app()`, btw will automatically find and include the contents of the
+#' `btw.md` or `AGENTS.md` file in your chat.
 #'
 #' Use `btw.md` to inform the LLM of your preferred code style, to provide
 #' domain-specific terminology or definitions, to establish project
@@ -60,10 +64,17 @@
 #' do not want to be included in the system prompt.
 #'
 #' For project-specific configuration, store your `btw.md` file in the root of
-#' your project directory. For global configuration, you can maintain a `btw.md`
-#' file in your home directory (at `btw.md` or `.config/btw/btw.md` in your home
-#' directory, using `fs::path_home()`). This file will be used by default when a
-#' project-specific `btw.md` file is not found.
+#' your project directory. You can even have multiple `btw.md` files in your
+#' project, in which case the one closest to your current working directory
+#' will be used. This makes it easy to have different `btw.md` files for
+#' different sub-projects or sub-directories within a larger project.
+#'
+#' For global configuration, you can maintain a `btw.md` file in your home
+#' directory (at `btw.md` or `.config/btw/btw.md` in your home directory, using
+#' `fs::path_home()`). This file will be used by default when a project-specific
+#' `btw.md` file is not found. Note that \pkg{btw} only looks for `btw.md` in
+#' your home directory if no project-specific `btw.md` or `AGENTS.md` file is
+#' present. It also does not look for `AGENTS.md` in your home directory.
 #'
 #' ## Client Options
 #'
@@ -100,10 +111,10 @@
 #'   alternatively in the shorter form `tools = "docs_help_page"`. Finally,
 #'   set `tools = FALSE` to skip registering \pkg{btw} tools with the chat
 #'   client.
-#' @param path_btw A path to a `btw.md` project context file. If `NULL`, btw
-#'   will find a project-specific `btw.md` file in the parents of the current
-#'   working directory. Set `path_btw = FALSE` to create a chat client without
-#'   using a `btw.md` file.
+#' @param path_btw A path to a `btw.md` or `AGENTS.md` project context file. If
+#'   `NULL`, btw will find a project-specific `btw.md` or `AGENTS.md` file in
+#'   the parents of the current working directory. Set `path_btw = FALSE` to
+#'   create a chat client without using a `btw.md` file.
 #' @param path_llms_txt A path to an `llms.txt` file containing context about
 #'   the current project. By default, btw will look for an `llms.txt` file in
 #'   the your current working directory or its parents. Set `path_llms_txt =
@@ -310,16 +321,27 @@ flatten_config_options <- function(opts, prefix = "btw", sep = ".") {
   out
 }
 
-maybe_find_in_project <- function(path, file_name, arg = "path") {
+maybe_find_in_project <- function(
+  path,
+  file_name,
+  arg = "path",
+  search_user_home = FALSE
+) {
   if (isFALSE(path)) {
     return(NULL)
   }
 
   must_find <- !is.null(path)
 
-  path <- path %||%
-    path_find_in_project(file_name) %||%
-    path_find_user(file_name)
+  if (isTRUE(path)) {
+    path <- NULL
+  }
+
+  path <- path %||% path_find_in_project(file_name)
+
+  if (search_user_home) {
+    path <- path %||% path_find_in_home(file_name)
+  }
 
   if (!must_find && is.null(path)) {
     return(NULL)
@@ -333,7 +355,20 @@ maybe_find_in_project <- function(path, file_name, arg = "path") {
 }
 
 read_btw_file <- function(path = NULL) {
-  path <- maybe_find_in_project(path, "btw.md", "path_btw")
+  if (isFALSE(path)) {
+    return(list())
+  }
+
+  path <- maybe_find_in_project(
+    path,
+    "btw.md",
+    "path_btw",
+    search_user_home = TRUE
+  )
+
+  if (is.null(path)) {
+    path <- maybe_find_in_project(NULL, "AGENTS.md", "path_btw")
+  }
 
   if (is.null(path)) {
     return(list())
