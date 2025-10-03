@@ -8,10 +8,13 @@ Project Context
 
 
 You can keep track of project-specific rules, guidance and context by adding
-a btw.md file in your project directory. Any time you start a chat client
-with btw_client() or launch a chat session with btw_app(), btw will
-automatically find and include the contents of the btw.md file in your
-chat.
+a btw.md file or AGENTS.md in your project
+directory. Either file name will work, so we'll refer primarily to btw.md.
+btw will look first for btw.md and then for AGENTS.md. If both
+files are present, only the btw.md file will be used.
+Any time you start a chat client with btw_client() or launch a chat session
+with btw_app(), btw will automatically find and include the contents of the
+btw.md or AGENTS.md file in your chat.
 Use btw.md to inform the LLM of your preferred code style, to provide
 domain-specific terminology or definitions, to establish project
 documentation, goals and constraints, to include reference materials such or
@@ -49,10 +52,16 @@ them in HTML &amp;lt;!-- HIDE --&amp;gt; and &amp;lt;!-- /HIDE --&amp;gt; commen
 when your system prompt contains notes to yourself or future tasks that you
 do not want to be included in the system prompt.
 For project-specific configuration, store your btw.md file in the root of
-your project directory. For global configuration, you can maintain a btw.md
-file in your home directory (at btw.md or .config/btw/btw.md in your home
-directory, using fs::path_home()). This file will be used by default when a
-project-specific btw.md file is not found.
+your project directory. You can even have multiple btw.md files in your
+project, in which case the one closest to your current working directory
+will be used. This makes it easy to have different btw.md files for
+different sub-projects or sub-directories within a larger project.
+For global configuration, you can maintain a btw.md file in your home
+directory (at btw.md or .config/btw/btw.md in your home directory, using
+fs::path_home()). This file will be used by default when a project-specific
+btw.md file is not found. Note that btw only looks for btw.md in
+your home directory if no project-specific btw.md or AGENTS.md file is
+present. It also does not look for AGENTS.md in your home directory.
 
 
 
@@ -76,10 +85,13 @@ Project Context
 
 
 You can keep track of project-specific rules, guidance and context by adding
-a btw.md file in your project directory. Any time you start a chat client
-with btw_client() or launch a chat session with btw_app(), btw will
-automatically find and include the contents of the btw.md file in your
-chat.
+a btw.md file or AGENTS.md in your project
+directory. Either file name will work, so we'll refer primarily to btw.md.
+btw will look first for btw.md and then for AGENTS.md. If both
+files are present, only the btw.md file will be used.
+Any time you start a chat client with btw_client() or launch a chat session
+with btw_app(), btw will automatically find and include the contents of the
+btw.md or AGENTS.md file in your chat.
 Use btw.md to inform the LLM of your preferred code style, to provide
 domain-specific terminology or definitions, to establish project
 documentation, goals and constraints, to include reference materials such or
@@ -117,10 +129,16 @@ them in HTML &amp;lt;!-- HIDE --&amp;gt; and &amp;lt;!-- /HIDE --&amp;gt; commen
 when your system prompt contains notes to yourself or future tasks that you
 do not want to be included in the system prompt.
 For project-specific configuration, store your btw.md file in the root of
-your project directory. For global configuration, you can maintain a btw.md
-file in your home directory (at btw.md or .config/btw/btw.md in your home
-directory, using fs::path_home()). This file will be used by default when a
-project-specific btw.md file is not found.
+your project directory. You can even have multiple btw.md files in your
+project, in which case the one closest to your current working directory
+will be used. This makes it easy to have different btw.md files for
+different sub-projects or sub-directories within a larger project.
+For global configuration, you can maintain a btw.md file in your home
+directory (at btw.md or .config/btw/btw.md in your home directory, using
+fs::path_home()). This file will be used by default when a project-specific
+btw.md file is not found. Note that btw only looks for btw.md in
+your home directory if no project-specific btw.md or AGENTS.md file is
+present. It also does not look for AGENTS.md in your home directory.
 
 
 
@@ -184,10 +202,13 @@ local workspace.</p><div class="section">
 
 
 <p>You can keep track of project-specific rules, guidance and context by adding
-a <code>btw.md</code> file in your project directory. Any time you start a chat client
-with <code>btw_client()</code> or launch a chat session with <code>btw_app()</code>, btw will
-automatically find and include the contents of the <code>btw.md</code> file in your
-chat.</p>
+a <code>btw.md</code> file or <a href="https://agents.md/" class="external-link"><code>AGENTS.md</code></a> in your project
+directory. Either file name will work, so we'll refer primarily to <code>btw.md</code>.
+<span class="pkg">btw</span> will look first for <code>btw.md</code> and then for <code>AGENTS.md</code>. If both
+files are present, only the <code>btw.md</code> file will be used.</p>
+<p>Any time you start a chat client with <code>btw_client()</code> or launch a chat session
+with <code>btw_app()</code>, btw will automatically find and include the contents of the
+<code>btw.md</code> or <code>AGENTS.md</code> file in your chat.</p>
 <p>Use <code>btw.md</code> to inform the LLM of your preferred code style, to provide
 domain-specific terminology or definitions, to establish project
 documentation, goals and constraints, to include reference materials such or
@@ -224,10 +245,16 @@ them in HTML <code>&lt;!-- HIDE --&gt;</code> and <code>&lt;!-- /HIDE --&gt;</co
 when your system prompt contains notes to yourself or future tasks that you
 do not want to be included in the system prompt.</p>
 <p>For project-specific configuration, store your <code>btw.md</code> file in the root of
-your project directory. For global configuration, you can maintain a <code>btw.md</code>
-file in your home directory (at <code>btw.md</code> or <code>.config/btw/btw.md</code> in your home
-directory, using <code><a href="https://fs.r-lib.org/reference/path_expand.html" class="external-link">fs::path_home()</a></code>). This file will be used by default when a
-project-specific <code>btw.md</code> file is not found.</p>
+your project directory. You can even have multiple <code>btw.md</code> files in your
+project, in which case the one closest to your current working directory
+will be used. This makes it easy to have different <code>btw.md</code> files for
+different sub-projects or sub-directories within a larger project.</p>
+<p>For global configuration, you can maintain a <code>btw.md</code> file in your home
+directory (at <code>btw.md</code> or <code>.config/btw/btw.md</code> in your home directory, using
+<code><a href="https://fs.r-lib.org/reference/path_expand.html" class="external-link">fs::path_home()</a></code>). This file will be used by default when a project-specific
+<code>btw.md</code> file is not found. Note that <span class="pkg">btw</span> only looks for <code>btw.md</code> in
+your home directory if no project-specific <code>btw.md</code> or <code>AGENTS.md</code> file is
+present. It also does not look for <code>AGENTS.md</code> in your home directory.</p>
 </div>
 
 <div class="section">
@@ -290,10 +317,10 @@ client.</p></dd>
 
 
 <dt id="arg-path-btw">path_btw<a class="anchor" aria-label="anchor" href="#arg-path-btw"></a></dt>
-<dd><p>A path to a <code>btw.md</code> project context file. If <code>NULL</code>, btw
-will find a project-specific <code>btw.md</code> file in the parents of the current
-working directory. Set <code>path_btw = FALSE</code> to create a chat client without
-using a <code>btw.md</code> file.</p></dd>
+<dd><p>A path to a <code>btw.md</code> or <code>AGENTS.md</code> project context file. If
+<code>NULL</code>, btw will find a project-specific <code>btw.md</code> or <code>AGENTS.md</code> file in
+the parents of the current working directory. Set <code>path_btw = FALSE</code> to
+create a chat client without using a <code>btw.md</code> file.</p></dd>
 
 
 <dt id="arg-path-llms-txt">path_llms_txt<a class="anchor" aria-label="anchor" href="#arg-path-llms-txt"></a></dt>
