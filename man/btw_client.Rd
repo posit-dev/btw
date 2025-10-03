@@ -40,10 +40,10 @@ alternatively in the shorter form \code{tools = "docs_help_page"}. Finally,
 set \code{tools = FALSE} to skip registering \pkg{btw} tools with the chat
 client.}
 
-\item{path_btw}{A path to a \code{btw.md} project context file. If \code{NULL}, btw
-will find a project-specific \code{btw.md} file in the parents of the current
-working directory. Set \code{path_btw = FALSE} to create a chat client without
-using a \code{btw.md} file.}
+\item{path_btw}{A path to a \code{btw.md} or \code{AGENTS.md} project context file. If
+\code{NULL}, btw will find a project-specific \code{btw.md} or \code{AGENTS.md} file in
+the parents of the current working directory. Set \code{path_btw = FALSE} to
+create a chat client without using a \code{btw.md} file.}
 
 \item{path_llms_txt}{A path to an \code{llms.txt} file containing context about
 the current project. By default, btw will look for an \code{llms.txt} file in
@@ -63,10 +63,14 @@ local workspace.
 \subsection{Project Context}{
 
 You can keep track of project-specific rules, guidance and context by adding
-a \code{btw.md} file in your project directory. Any time you start a chat client
-with \code{btw_client()} or launch a chat session with \code{btw_app()}, btw will
-automatically find and include the contents of the \code{btw.md} file in your
-chat.
+a \code{btw.md} file or \href{https://agents.md/}{\code{AGENTS.md}} in your project
+directory. Either file name will work, so we'll refer primarily to \code{btw.md}.
+\pkg{btw} will look first for \code{btw.md} and then for \code{AGENTS.md}. If both
+files are present, only the \code{btw.md} file will be used.
+
+Any time you start a chat client with \code{btw_client()} or launch a chat session
+with \code{btw_app()}, btw will automatically find and include the contents of the
+\code{btw.md} or \code{AGENTS.md} file in your chat.
 
 Use \code{btw.md} to inform the LLM of your preferred code style, to provide
 domain-specific terminology or definitions, to establish project
@@ -111,10 +115,17 @@ when your system prompt contains notes to yourself or future tasks that you
 do not want to be included in the system prompt.
 
 For project-specific configuration, store your \code{btw.md} file in the root of
-your project directory. For global configuration, you can maintain a \code{btw.md}
-file in your home directory (at \code{btw.md} or \code{.config/btw/btw.md} in your home
-directory, using \code{fs::path_home()}). This file will be used by default when a
-project-specific \code{btw.md} file is not found.
+your project directory. You can even have multiple \code{btw.md} files in your
+project, in which case the one closest to your current working directory
+will be used. This makes it easy to have different \code{btw.md} files for
+different sub-projects or sub-directories within a larger project.
+
+For global configuration, you can maintain a \code{btw.md} file in your home
+directory (at \code{btw.md} or \code{.config/btw/btw.md} in your home directory, using
+\code{fs::path_home()}). This file will be used by default when a project-specific
+\code{btw.md} file is not found. Note that \pkg{btw} only looks for \code{btw.md} in
+your home directory if no project-specific \code{btw.md} or \code{AGENTS.md} file is
+present. It also does not look for \code{AGENTS.md} in your home directory.
 }
 
 \subsection{Client Options}{

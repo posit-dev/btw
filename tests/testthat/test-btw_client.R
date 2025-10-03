@@ -143,6 +143,23 @@ describe("btw_client() with context files", {
     )
   })
 
+  it("uses AGENTS.md as an alias of btw.md", {
+    with_mocked_platform(ide = "rstudio", {
+      chat_btw <- btw_client()
+    })
+
+    fs::file_move(fs::path(wd, "../btw.md"), fs::path(wd, "../AGENTS.md"))
+    withr::defer(
+      fs::file_move(fs::path(wd, "../AGENTS.md"), fs::path(wd, "../btw.md"))
+    )
+
+    with_mocked_platform(ide = "rstudio", {
+      chat_agents <- btw_client()
+    })
+
+    expect_equal(chat_agents, chat_btw)
+  })
+
   it("includes llms.txt content in system prompt", {
     writeLines(
       con = file.path(wd, "llms.txt"),
