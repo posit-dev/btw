@@ -5,7 +5,13 @@
 \alias{btw_app}
 \title{Create a btw-enhanced ellmer chat client}
 \usage{
-btw_client(..., client = NULL, tools = NULL, path_btw = NULL)
+btw_client(
+  ...,
+  client = NULL,
+  tools = NULL,
+  path_btw = NULL,
+  path_llms_txt = NULL
+)
 
 btw_app(..., client = NULL, tools = NULL, path_btw = NULL)
 }
@@ -36,7 +42,12 @@ client.}
 
 \item{path_btw}{A path to a \code{btw.md} project context file. If \code{NULL}, btw
 will find a project-specific \code{btw.md} file in the parents of the current
-working directory.}
+working directory. Set \code{path_btw = FALSE} to create a chat client without
+using a \code{btw.md} file.}
+
+\item{path_llms_txt}{A path to an \code{llms.txt} file containing context about
+the current project. By default, btw will look for an \code{llms.txt} file in
+the your current working directory or its parents. Set \code{path_llms_txt = FALSE} to skip looking for an \code{llms.txt} file.}
 }
 \value{
 Returns an \link[ellmer:Chat]{ellmer::Chat} object with additional tools registered

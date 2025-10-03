@@ -99,7 +99,7 @@ test_that("btw_client() adds `btw.md` context file to system prompt", {
   expect_snapshot(print(chat), transform = scrub_system_info)
 })
 
-test_that("btw_client() uses `btw.md` context file for client settings", {
+describe("btw_client() with context files", {
   withr::local_envvar(list(OPENAI_API_KEY = "beep"))
 
   wd <- withr::local_tempdir(
@@ -124,36 +124,80 @@ test_that("btw_client() uses `btw.md` context file for client settings", {
     )
   )
 
-  with_mocked_platform(ide = "rstudio", {
-    chat <- btw_client()
+  it("uses `btw.md` for client settings and system prompt", {
+    with_mocked_platform(ide = "rstudio", {
+      chat <- btw_client()
+    })
+
+    expect_equal(chat$get_model(), "gpt-4o")
+    expect_true(inherits(
+      chat$.__enclos_env__$private$provider,
+      "ellmer::ProviderOpenAI"
+    ))
+
+    expect_match(chat$get_system_prompt(), "# Project Context", fixed = TRUE)
+    expect_match(
+      chat$get_system_prompt(),
+      "Always use `=` for assignment",
+      fixed = TRUE
+    )
   })
 
-  expect_equal(chat$get_model(), "gpt-4o")
-  expect_true(inherits(
-    chat$.__enclos_env__$private$provider,
-    "ellmer::ProviderOpenAI"
-  ))
+  it("includes llms.txt content in system prompt", {
+    writeLines(
+      con = file.path(wd, "llms.txt"),
+      "EXTRA CONTEXT FROM llms.txt"
+    )
 
-  expect_match(chat$get_system_prompt(), "# Project Context", fixed = TRUE)
-  expect_match(
-    chat$get_system_prompt(),
-    "Always use `=` for assignment",
-    fixed = TRUE
-  )
+    with_mocked_platform(ide = "rstudio", {
+      chat <- btw_client()
+    })
 
-  fs::file_move("../btw.md", "../btw-context.md")
-  with_mocked_platform(ide = "rstudio", {
-    chat_parent <-
-      btw_client(path_btw = "../btw-context.md")
+    expect_match(chat$get_system_prompt(), "# Project Context", fixed = TRUE)
+    expect_match(
+      chat$get_system_prompt(),
+      "Always use `=` for assignment",
+      fixed = TRUE
+    )
+    expect_match(
+      chat$get_system_prompt(),
+      "EXTRA CONTEXT FROM llms.txt",
+      fixed = TRUE
+    )
   })
-  expect_equal(
-    chat_parent$get_system_prompt(),
-    chat$get_system_prompt()
-  )
 
-  skip_if_not_macos()
-  expect_snapshot(print(chat), transform = scrub_system_info)
+  it("finds `btw.md` in parent directories", {
+    with_mocked_platform(ide = "rstudio", {
+      chat <- btw_client(path_llms_txt = FALSE)
+    })
+
+    fs::file_move("../btw.md", "../btw-context.md")
+    with_mocked_platform(ide = "rstudio", {
+      chat_parent <-
+        btw_client(path_btw = "../btw-context.md", path_llms_txt = FALSE)
+    })
+
+    expect_equal(
+      chat_parent$get_system_prompt(),
+      chat$get_system_prompt()
+    )
+
+    skip_if_not_macos()
+    expect_snapshot(print(chat), transform = scrub_system_info)
+  })
+
+  it("uses `llms.txt` in wd and `btw.md` from parent", {
+    fs::file_move("../btw-context.md", "../btw.md")
+
+    with_mocked_platform(ide = "rstudio", {
+      chat_parent_llms <- btw_client()
+    })
+
+    skip_if_not_macos()
+    expect_snapshot(print(chat_parent_llms), transform = scrub_system_info)
+  })
 })
+
 
 test_that("btw_client() uses `btw.md` with client string", {
   withr::local_envvar(list(OPENAI_API_KEY = "beep"))
