@@ -325,7 +325,7 @@ maybe_find_in_project <- function(
   path,
   file_name,
   arg = "path",
-  search_user_home = FALSE
+  search_user = FALSE
 ) {
   if (isFALSE(path)) {
     return(NULL)
@@ -339,8 +339,8 @@ maybe_find_in_project <- function(
 
   path <- path %||% path_find_in_project(file_name)
 
-  if (search_user_home) {
-    path <- path %||% path_find_in_home(file_name)
+  if (search_user) {
+    path <- path %||% path_find_user(file_name)
   }
 
   if (!must_find && is.null(path)) {
@@ -359,12 +359,7 @@ read_btw_file <- function(path = NULL) {
     return(list())
   }
 
-  path <- maybe_find_in_project(
-    path,
-    "btw.md",
-    "path_btw",
-    search_user_home = TRUE
-  )
+  path <- maybe_find_in_project(path, "btw.md", "path_btw", search_user = TRUE)
 
   if (is.null(path)) {
     path <- maybe_find_in_project(NULL, "AGENTS.md", "path_btw")
