@@ -244,7 +244,13 @@ btw chat, see <code><a href="btw_tools.html">btw_tools()</a></code> for details.
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">btw_client</span><span class="op">(</span><span class="va">...</span>, client <span class="op">=</span> <span class="cn">NULL</span>, tools <span class="op">=</span> <span class="cn">NULL</span>, path_btw <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">btw_client</span><span class="op">(</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  client <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tools <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  path_btw <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  path_llms_txt <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">btw_app</span><span class="op">(</span><span class="va">...</span>, client <span class="op">=</span> <span class="cn">NULL</span>, tools <span class="op">=</span> <span class="cn">NULL</span>, path_btw <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -286,7 +292,14 @@ client.</p></dd>
 <dt id="arg-path-btw">path_btw<a class="anchor" aria-label="anchor" href="#arg-path-btw"></a></dt>
 <dd><p>A path to a <code>btw.md</code> project context file. If <code>NULL</code>, btw
 will find a project-specific <code>btw.md</code> file in the parents of the current
-working directory.</p></dd>
+working directory. Set <code>path_btw = FALSE</code> to create a chat client without
+using a <code>btw.md</code> file.</p></dd>
+
+
+<dt id="arg-path-llms-txt">path_llms_txt<a class="anchor" aria-label="anchor" href="#arg-path-llms-txt"></a></dt>
+<dd><p>A path to an <code>llms.txt</code> file containing context about
+the current project. By default, btw will look for an <code>llms.txt</code> file in
+the your current working directory or its parents. Set <code>path_llms_txt = FALSE</code> to skip looking for an <code>llms.txt</code> file.</p></dd>
 
 </dl></div>
     <div class="section level2">
