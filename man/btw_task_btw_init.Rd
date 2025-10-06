@@ -51,7 +51,7 @@ See \code{\link[=btw_client]{btw_client()}} for additional details about the for
 or the default set of tools to use with \code{\link[=btw_client]{btw_client()}}.
 }
 \examples{
-withr::with_envvar(ANTHROPIC_API_KEY = "example", {
+withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
   btw_task_btw_init(mode = "tool", client = "anthropic")
 })
 
