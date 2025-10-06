@@ -321,12 +321,7 @@ flatten_config_options <- function(opts, prefix = "btw", sep = ".") {
   out
 }
 
-maybe_find_in_project <- function(
-  path,
-  file_name,
-  arg = "path",
-  search_user = FALSE
-) {
+maybe_find_in_project <- function(path, file_name, arg = "path") {
   if (isFALSE(path)) {
     return(NULL)
   }
@@ -339,10 +334,6 @@ maybe_find_in_project <- function(
 
   path <- path %||% path_find_in_project(file_name)
 
-  if (search_user) {
-    path <- path %||% path_find_user(file_name)
-  }
-
   if (!must_find && is.null(path)) {
     return(NULL)
   }
@@ -354,16 +345,29 @@ maybe_find_in_project <- function(
   path
 }
 
+find_btw_context_file <- function(path = NULL, search_user = TRUE) {
+  # 1. Local closest btw.md file
+  path <- maybe_find_in_project(path, "btw.md", "path_btw")
+
+  # 2. Local closest AGENTS.md file
+  if (is.null(path)) {
+    path <- maybe_find_in_project(NULL, "AGENTS.md", "path_btw")
+  }
+
+  # 3. User btw.md file
+  if (search_user && is.null(path)) {
+    path <- path_find_user("btw.md")
+  }
+
+  path
+}
+
 read_btw_file <- function(path = NULL) {
   if (isFALSE(path)) {
     return(list())
   }
 
-  path <- maybe_find_in_project(path, "btw.md", "path_btw", search_user = TRUE)
-
-  if (is.null(path)) {
-    path <- maybe_find_in_project(NULL, "AGENTS.md", "path_btw")
-  }
+  path <- find_btw_context_file(path)
 
   if (is.null(path)) {
     return(list())

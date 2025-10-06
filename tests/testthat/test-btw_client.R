@@ -8,7 +8,7 @@ test_that("btw_client() works with `btw.client` option", {
   )
 
   with_mocked_platform(ide = "rstudio", {
-    chat <- btw_client()
+    chat <- btw_client(path_btw = FALSE)
   })
 
   expect_match(chat$get_system_prompt(), "I like to have my own system prompt")

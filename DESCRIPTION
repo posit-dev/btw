@@ -51,7 +51,8 @@ Suggests:
     pandoc,
     shiny,
     shinychat (>= 0.2.0),
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    usethis
 Config/Needs/website: tidyverse/tidytemplate
 Config/testthat/edition: 3
 Config/testthat/parallel: true
@@ -66,6 +67,7 @@ Collate:
     'btw_client_app.R'
     'btw_this.R'
     'clipboard.R'
+    'edit_btw_md.R'
     'import-standalone-obj-type.R'
     'import-standalone-purrr.R'
     'import-standalone-types-check.R'
