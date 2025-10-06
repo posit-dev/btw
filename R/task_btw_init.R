@@ -11,7 +11,9 @@
 #' or the default set of tools to use with [btw_client()].
 #'
 #' @examples
-#' btw_task_btw_init(mode = "tool")
+#' withr::with_envvar(ANTHROPIC_API_KEY = "example", {
+#'   btw_task_btw_init(mode = "tool", client = "anthropic")
+#' })
 #'
 #' @param ... Additional context to provide to the AI. This can be any text or
 #'   R objects that can be converted to text using [btw()].

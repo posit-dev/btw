@@ -51,7 +51,9 @@ See \code{\link[=btw_client]{btw_client()}} for additional details about the for
 or the default set of tools to use with \code{\link[=btw_client]{btw_client()}}.
 }
 \examples{
-btw_task_btw_init(mode = "tool")
+withr::with_envvar(ANTHROPIC_API_KEY = "example", {
+  btw_task_btw_init(mode = "tool", client = "anthropic")
+})
 
 }
 \concept{task and agent functions}
