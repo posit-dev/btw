@@ -2,8 +2,16 @@
 
 #' @describeIn btw_client Create a btw-enhanced client and launch a Shiny app to
 #'   chat
+#' @param messages A list of initial messages to show in the chat, passed to
+#'   [shinychat::chat_mod_ui()].
 #' @export
-btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
+btw_app <- function(
+  ...,
+  client = NULL,
+  tools = NULL,
+  path_btw = NULL,
+  messages = list()
+) {
   rlang::check_installed("shiny")
   rlang::check_installed("bslib")
   rlang::check_installed("shinychat", version = "0.2.0")
@@ -90,7 +98,7 @@ btw_app <- function(..., client = NULL, tools = NULL, path_btw = NULL) {
         style = "position: fixed; top: 6px; right: 6px;"
       ),
       btw_title(FALSE),
-      shinychat::chat_mod_ui("chat"),
+      shinychat::chat_mod_ui("chat", messages = messages),
       shiny::tags$head(
         shiny::tags$style(shiny::HTML(
           "
