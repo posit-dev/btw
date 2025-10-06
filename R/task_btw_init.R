@@ -11,7 +11,7 @@
 #' or the default set of tools to use with [btw_client()].
 #'
 #' @examples
-#' withr::with_envvar(ANTHROPIC_API_KEY = "example", {
+#' withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
 #'   btw_task_btw_init(mode = "tool", client = "anthropic")
 #' })
 #'
