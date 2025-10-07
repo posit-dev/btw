@@ -49,22 +49,154 @@ the current directory, the project directory or your home directory.
 for editing.
 
 }}
-\section{Context File Format}{
+\section{Project Context}{
 
 
-Files named \code{btw.md} include YAML front matter for configuring the default
-chat client and tools. Files named \code{AGENTS.md} follow the
-\href{https://agents.md/}{AGENTS.md} convention and do not include YAML
-front matter by default (although you are welcome to add it if you want to).
+You can use a \code{btw.md} or \href{https://agents.md}{\code{AGENTS.md}} file to keep track
+of project-specific rules, guidance and context in your project. Either file
+name will work, so we'll refer primarily to \code{btw.md}. These files are used
+automatically by \code{\link[=btw_client]{btw_client()}} and \code{\link[=btw_app]{btw_app()}}: they look first for \code{btw.md}
+and then for \code{AGENTS.md}. If both files are present, only the \code{btw.md} file
+will be used.
 
-See \code{\link[=btw_client]{btw_client()}} for more information about the format and available
-options. See \code{\link[=btw_tools]{btw_tools()}} for a list of available tools.
+Any time you start a chat client with \code{btw_client()} or launch a chat session
+with \code{btw_app()}, btw will automatically find and include the contents of the
+\code{btw.md} or \code{AGENTS.md} file in the system prompt of your chat. This helps
+maintain context and consistency across chat sessions.
+
+Use \code{btw.md} to inform the LLM of your preferred code style, to provide
+domain-specific terminology or definitions, to establish project
+documentation, goals and constraints, to include reference materials such or
+technical specifications, or more. Storing this kind of information in
+\code{btw.md} may help you avoid repeating yourself and can be used to maintain
+coherence across many chat sessions.
+
+Write in markdown and structure the file in any way you wish, or use
+\code{\link[=btw_task_btw_init]{btw_task_btw_init()}} to help you create a project context file for an
+existing project with the help of an AI agent.
+}
+
+\section{Chat Settings}{
+
+
+You can also use the \code{btw.md} file to choose default chat settings for your
+project in a YAML front matter block at the top of the file. In this YAML
+block you can choose settings for the default ellmer chat \code{client}, e.g.
+\code{provider}, \code{model}, as well as choose which \code{\link[=btw_tools]{btw_tools()}} to use in
+\code{btw_client()} or \code{btw_app()}.
+
+\strong{Chat client settings}
+
+Use the \code{client} field to set options for the chat client. This can be a
+single string in \code{provider} or \code{provider/model} format -- as used by
+\code{\link[ellmer:chat-any]{ellmer::chat()}} -- or a list of client options with \code{provider} and
+\code{model} fields, as well as any other options supported by the underlying
+\verb{ellmer::chat_*()} function you choose. Note that \code{provider} maps to the
+\verb{ellmer::chat_*()} function, while \code{model} maps to the \code{model} argument of
+that function.
+\itemize{
+\item Using ellmer's default model for a provider:
+
+\if{html}{\out{<div class="sourceCode md">}}\preformatted{---
+client: openai
+---
+}\if{html}{\out{</div>}}
+
+\if{html}{\out{<div class="sourceCode md">}}\preformatted{---
+client:
+  provider: openai
+---
+}\if{html}{\out{</div>}}
+\item Using a specific model:
+
+\if{html}{\out{<div class="sourceCode md">}}\preformatted{---
+client: anthropic/claude-4-5-sonnet-latest
+---
+}\if{html}{\out{</div>}}
+
+\if{html}{\out{<div class="sourceCode md">}}\preformatted{---
+client:
+  provider: anthropic
+  model: claude-4-5-sonnet-latest
+---
+}\if{html}{\out{</div>}}
+\item Using additional client options:
+
+\if{html}{\out{<div class="sourceCode md">}}\preformatted{---
+client:
+  provider: ollama
+  model: "gpt-oss:20b"
+  echo: output
+  base_url: "http://my-company.example.com:11434"
+---
+}\if{html}{\out{</div>}}
+}
+
+\strong{Tool Settings}
+
+The top-level \code{tools} field is used to specify which btw tools
+are included in the chat. This should be a list of tool groups or tool names
+(with or without the \code{btw_tool_} prefix). See \code{\link[=btw_tools]{btw_tools()}} for a list of
+available tools and tool groups.
+
+Here's an example \code{btw.md} file:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{---
+client: claude/claude-4-5-sonnet-latest
+tools: [docs, env, files, ide, search, session, web]
+---
+
+Follow these important style rules when writing R code:
+
+* Prefer solutions that use \{tidyverse\}
+* Always use `<-` for assignment
+* Always use the native base-R pipe `|>` for piped expressions
+}\if{html}{\out{</div>}}
+}
+
+\section{Selective Context}{
+
+
+One use-case for \code{btw.md} is to provide stable context for an on-going task
+that might span multiple chat sessions. In this case, you can use \code{btw.md} to
+hold the complete project plan, with background information, requirements,
+and specific tasks to be completed. This can help maintain continuity across
+chat sessions, especially if you update the \code{btw.md} file as the project
+progresses.
+
+In this use case, however, you might want to hide parts of the project plan
+from the system prompt, for example to hide completed or future tasks when
+their description would distract the LLM from the current task.
+
+You can hide parts of the \code{btw.md} file from the system prompt by wrapping
+them in HTML \verb{<!-- HIDE -->} and \verb{<!-- /HIDE -->} comment tags. A single
+\verb{<!-- HIDE -->} comment tag will hide all content after it until the next
+\verb{<!-- /HIDE -->} tag, or the end of the file. This is particularly useful
+when your system prompt contains notes to yourself or future tasks that you
+do not want to be included in the system prompt.
+}
+
+\section{Project or User Scope}{
+
+
+For project-specific configuration, store your \code{btw.md} file in the root of
+your project directory. You can even have multiple \code{btw.md} files in your
+project, in which case the one closest to your current working directory
+will be used. This makes it easy to have different \code{btw.md} files for
+different sub-projects or sub-directories within a larger project.
+
+For global configuration, you can maintain a \code{btw.md} file in your home
+directory (at \code{btw.md} or \code{.config/btw/btw.md} in your home directory, using
+\code{fs::path_home()}). This file will be used by default when a project-specific
+\code{btw.md} file is not found. Note that \pkg{btw} only looks for \code{btw.md} in
+your home directory if no project-specific \code{btw.md} or \code{AGENTS.md} file is
+present. It also does not look for \code{AGENTS.md} in your home directory.
 }
 
 \section{Interactive Setup}{
 
 
-For an interactive guided setup, consider using \code{btw_task_btw_init()} to use
+For an interactive guided setup, consider using \code{\link[=btw_task_btw_init]{btw_task_btw_init()}} to use
 an LLM to help you create a \code{btw.md} file for your project.
 }
 
@@ -86,4 +218,9 @@ edit_btw_md()
 edit_btw_md("user")
 }
 
+}
+\seealso{
+Project context files are discovered automatically and included in
+the system prompt by \code{\link[=btw_client]{btw_client()}}. See \code{\link[=btw_tools]{btw_tools()}} for a list of
+available tools.
 }
