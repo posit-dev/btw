@@ -11,3 +11,5 @@
 ^\.covrignore$
 ^_assets$
 ^_dev$
+^AGENTS\.md$
+^btw\.md$
