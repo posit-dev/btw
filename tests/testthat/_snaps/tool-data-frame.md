@@ -152,3 +152,106 @@
       ! Package skibidi is not installed.
       i Did you mean "Kifidi", "simIDM", "bib2df", "BiBitR", or "Bioi"?
 
+# btw_this.tbl() works
+
+    Code
+      cli::cat_line(btw_this(tbl_data))
+    Output
+      | x | y |
+      |---|---|
+      | 1 | a |
+      | 2 | b |
+      | 3 | c |
+      | 4 | d |
+      | 5 | e |
+
+---
+
+    Code
+      cli::cat_line(btw_this(tbl_data, format = "glimpse"))
+    Output
+      | x | y |
+      |---|---|
+      | 1 | a |
+      | 2 | b |
+      | 3 | c |
+      | 4 | d |
+      | 5 | e |
+
+---
+
+    Code
+      cli::cat_line(btw_this(tbl_data, format = "print"))
+    Output
+      | x | y |
+      |---|---|
+      | 1 | a |
+      | 2 | b |
+      | 3 | c |
+      | 4 | d |
+      | 5 | e |
+
+---
+
+    Code
+      cli::cat_line(btw_this(tbl_data, format = "json"))
+    Output
+      ```json
+      [
+        {"x":1,"y":"a"},
+        {"x":2,"y":"b"},
+        {"x":3,"y":"c"},
+        {"x":4,"y":"d"},
+        {"x":5,"y":"e"}
+      ]
+      ```
+
+# btw_tool_env_describe_data_frame() errors when data frame not found
+
+    Code
+      btw_tool_env_describe_data_frame("nonexistent_dataframe")
+    Condition
+      Error in `btw_tool_env_describe_data_frame()`:
+      ! The data frame "nonexistent_dataframe" was not found in the environment.
+      i If the data is from a package, use `package` to specify the package name.
+
+# describe_data_frame_skim handles character columns with few unique values
+
+    Code
+      cli::cat_line(result)
+    Output
+      | x | category |
+      |---|----------|
+      |  1 | A |
+      |  2 | B |
+      |  3 | C |
+      |  4 | A |
+      |  5 | B |
+      |  6 | C |
+      |  7 | A |
+      |  8 | B |
+      |  9 | C |
+      | 10 | A |
+
+# describe_data_frame_skim truncates long character values
+
+    Code
+      cli::cat_line(result)
+    Output
+      ```json
+      {"n_cols":2,"n_rows":34,"groups":[],"class":"data.frame","columns":{"text":{"variable":"text","type":"character","min":1,"max":200,"empty":0,"n_unique":10,"values":["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ...","bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb ...","a","b","c","d","e","f","g","h"]},"id":{"variable":"id","type":"numeric","mean":34,"sd":0,"p0":34,"p25":34,"p50":34,"p75":34,"p100":34}}}
+      ```
+
+# btw_this() handles factor columns
+
+    Code
+      cli::cat_line(result)
+    Output
+      | x | category |
+      |---|----------|
+      | 1 | low |
+      | 2 | medium |
+      | 3 | high |
+      | 4 | medium |
+      | 5 | low |
+
