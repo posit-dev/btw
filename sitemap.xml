@@ -1,5 +1,6 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://posit-dev.github.io/btw/404.html</loc></url>
+<url><loc>https://posit-dev.github.io/btw/AGENTS.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/CODE_OF_CONDUCT.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/CONTRIBUTING.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/LICENSE-text.html</loc></url>
@@ -11,6 +12,7 @@
 <url><loc>https://posit-dev.github.io/btw/reference/btw-package.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_client.html</loc></url>
+<url><loc>https://posit-dev.github.io/btw/reference/btw_task_btw_init.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_this.character.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_this.data.frame.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_this.environment.html</loc></url>

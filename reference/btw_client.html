@@ -279,7 +279,7 @@ btw chat, see <code><a href="btw_tools.html">btw_tools()</a></code> for details.
 <span>  path_llms_txt <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">btw_app</span><span class="op">(</span><span class="va">...</span>, client <span class="op">=</span> <span class="cn">NULL</span>, tools <span class="op">=</span> <span class="cn">NULL</span>, path_btw <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">btw_app</span><span class="op">(</span><span class="va">...</span>, client <span class="op">=</span> <span class="cn">NULL</span>, tools <span class="op">=</span> <span class="cn">NULL</span>, path_btw <span class="op">=</span> <span class="cn">NULL</span>, messages <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -327,6 +327,11 @@ create a chat client without using a <code>btw.md</code> file.</p></dd>
 <dd><p>A path to an <code>llms.txt</code> file containing context about
 the current project. By default, btw will look for an <code>llms.txt</code> file in
 the your current working directory or its parents. Set <code>path_llms_txt = FALSE</code> to skip looking for an <code>llms.txt</code> file.</p></dd>
+
+
+<dt id="arg-messages">messages<a class="anchor" aria-label="anchor" href="#arg-messages"></a></dt>
+<dd><p>A list of initial messages to show in the chat, passed to
+<code><a href="https://rdrr.io/pkg/shinychat/man/chat_app.html" class="external-link">shinychat::chat_mod_ui()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
