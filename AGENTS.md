@@ -135,7 +135,8 @@ Content becomes part of the system prompt. Use `<!-- HIDE -->` / `<!-- /HIDE -->
 
 The `btw_task_*()` pattern provides guided workflows:
 
-- **`btw_task_btw_init()`** - Interactive assistant for creating a `btw.md` file in a new project
+- `btw_task_create_btw_md()` - Interactive assistant for creating a `btw.md` file in a new project
+- `btw_task_create_readme()` - Interactive assistant to help create a README for end users
 - Future tasks will follow similar patterns for common workflows
 
 ## Technical Details
