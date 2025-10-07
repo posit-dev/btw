@@ -68,6 +68,7 @@ reference:
   - btw_client
   - btw_tools
   - mcp
+  - use_btw_md
 
 - title: Describe R stuff
   contents:
