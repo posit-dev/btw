@@ -40,7 +40,7 @@ btw_task_create_btw_md <- function(
   client = NULL,
   mode = c("app", "console", "client", "tool")
 ) {
-  arg_match(mode)
+  mode <- arg_match(mode)
   check_path_within_current_wd(path)
   path <- fs::path_rel(path)
 

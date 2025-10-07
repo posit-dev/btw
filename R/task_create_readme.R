@@ -40,9 +40,7 @@ btw_task_create_readme <- function(
   client = NULL,
   mode = c("app", "console", "client", "tool")
 ) {
-  arg_match(mode)
-  check_path_within_current_wd(path)
-  path <- fs::path_rel(path)
+  mode <- arg_match(mode)
 
   client <- btw_client(
     client = client,
