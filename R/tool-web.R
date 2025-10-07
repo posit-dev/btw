@@ -62,7 +62,7 @@ has_chromote <- function() {
   tool = function() {
     ellmer::tool(
       function(url) {
-        btw_tool_web_read_url_impl(url = url)
+        btw_tool_web_read_url_impl(url = url) # nocov
       },
       name = "btw_tool_web_read_url",
       description = r'---(Read a web page and convert it to Markdown format.
@@ -182,10 +182,12 @@ wait_for_network_idle <- function(
   })
 
   session$Network$loadingFailed(function(params) {
+    # nocov start
     if (exists(params$requestId, envir = active_requests)) {
       rm(list = params$requestId, envir = active_requests)
     }
     last_activity_time <<- Sys.time()
+    # nocov end
   })
 
   session$Network$responseReceived(function(params) {
