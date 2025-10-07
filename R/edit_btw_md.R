@@ -258,7 +258,7 @@ edit_btw_md <- function(scope = NULL) {
   if (rlang::is_installed("rstudioapi") && rstudioapi::isAvailable()) {
     rstudioapi::navigateToFile(path)
   } else {
-    file.edit(path)
+    utils::file.edit(path)
   }
 
   cli::cli_inform(c("v" = "Opening {.file {path_display(path)}}"))
