@@ -129,10 +129,15 @@ btw_tool_env_describe_data_frame_impl <- function(
 
   if (format != "json" && ncol(data_frame) <= 10 && nrow(data_frame) <= 30) {
     # Small data frames can just be in-lined directly as a markdown tables
+    data_frame_md <- md_table(data_frame)
     return(
       btw_tool_result(
-        value = md_table(data_frame),
-        data = data_frame
+        value = data_frame_md,
+        data = data_frame,
+        display = list(
+          title = "View Data Frame",
+          markdown = data_frame_md
+        )
       )
     )
   }
@@ -153,7 +158,10 @@ btw_tool_env_describe_data_frame_impl <- function(
 
   btw_tool_result(
     value = res,
-    data = data_frame
+    data = data_frame,
+    display = list(
+      title = "View Data Frame"
+    )
   )
 }
 
