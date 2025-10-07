@@ -87,3 +87,14 @@ reference:
     clashes with other tools.
   contents:
   - starts_with("btw_tool_")
+
+- title: Tasks and Agents
+  desc: |
+    Tasks, or agents, are higher-level functions that combine system prompts and
+    tools to perform more complex operations. In general, tasks are typically
+    designed for interactive use (e.g. to collaboratively create a project
+    context file), but they can also be used programmatically. Agents are
+    similar, but are designed to be used primarily as tools by other LLMs.
+  contents:
+  - starts_with("btw_task_")
+  - starts_with("btw_agent_")

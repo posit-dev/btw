@@ -29,7 +29,7 @@ test_that("btw_client() works basic case", {
 
   expect_error(btw_client(data_foo), class = "rlib_error_dots_nonempty")
 
-  chat <- btw_client()
+  chat <- btw_client(path_btw = FALSE)
   expect_s3_class(chat, "Chat")
 })
 
@@ -40,7 +40,7 @@ test_that("btw_client() modifies `client` argument in place", {
     system_prompt = "I like to make my own chat client.",
   )
 
-  chat <- btw_client(client = client)
+  chat <- btw_client(client = client, path_btw = FALSE)
   # Modifies in place
   expect_identical(chat, client)
 })
@@ -49,7 +49,7 @@ test_that("btw_client() accepts a provider string", {
   withr::local_envvar(ANTHROPIC_API_KEY = "beep")
 
   expected_client <- ellmer::chat_anthropic()
-  chat <- btw_client(client = "anthropic")
+  chat <- btw_client(client = "anthropic", path_btw = FALSE)
   expect_equal(chat$get_provider(), expected_client$get_provider())
 })
 

@@ -13,7 +13,7 @@ btw_client(
   path_llms_txt = NULL
 )
 
-btw_app(..., client = NULL, tools = NULL, path_btw = NULL)
+btw_app(..., client = NULL, tools = NULL, path_btw = NULL, messages = list())
 }
 \arguments{
 \item{...}{In \code{btw_app()}, additional arguments are passed to
@@ -48,6 +48,9 @@ create a chat client without using a \code{btw.md} file.}
 \item{path_llms_txt}{A path to an \code{llms.txt} file containing context about
 the current project. By default, btw will look for an \code{llms.txt} file in
 the your current working directory or its parents. Set \code{path_llms_txt = FALSE} to skip looking for an \code{llms.txt} file.}
+
+\item{messages}{A list of initial messages to show in the chat, passed to
+\code{\link[shinychat:chat_app]{shinychat::chat_mod_ui()}}.}
 }
 \value{
 Returns an \link[ellmer:Chat]{ellmer::Chat} object with additional tools registered
