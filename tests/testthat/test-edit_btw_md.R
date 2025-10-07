@@ -27,14 +27,17 @@ test_that("use_btw_md() creates btw.md in project scope", {
 test_that("use_btw_md() creates btw.md in user scope", {
   wd <- withr::local_tempdir()
 
-  withr::with_envvar(c(HOME = wd), {
-    expect_snapshot(
-      path <- use_btw_md("user")
-    )
+  local_mocked_bindings(
+    path_home = function(...) fs::path(wd, ...),
+    .package = "fs"
+  )
 
-    expect_true(fs::file_exists(fs::path(wd, "btw.md")))
-    expect_equal(basename(path), "btw.md")
-  })
+  expect_snapshot(
+    path <- use_btw_md("user")
+  )
+
+  expect_true(fs::file_exists(fs::path(wd, "btw.md")))
+  expect_equal(basename(path), "btw.md")
 })
 
 test_that("use_btw_md() creates btw.md in sub-directory path", {
