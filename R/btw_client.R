@@ -11,70 +11,13 @@
 #'
 #' You can keep track of project-specific rules, guidance and context by adding
 #' a `btw.md` file or [`AGENTS.md`](https://agents.md/) in your project
-#' directory. Either file name will work, so we'll refer primarily to `btw.md`.
-#' \pkg{btw} will look first for `btw.md` and then for `AGENTS.md`. If both
-#' files are present, only the `btw.md` file will be used.
+#' directory. See [use_btw_md()] for help creating a `btw.md` file in your
+#' project, or use `path_btw` to tell `btw_client()` to use a specific context
+#' file.
 #'
-#' Any time you start a chat client with `btw_client()` or launch a chat session
-#' with `btw_app()`, btw will automatically find and include the contents of the
-#' `btw.md` or `AGENTS.md` file in your chat.
-#'
-#' Use `btw.md` to inform the LLM of your preferred code style, to provide
-#' domain-specific terminology or definitions, to establish project
-#' documentation, goals and constraints, to include reference materials such or
-#' technical specifications, or more. Storing this kind of information in
-#' `btw.md` may help you avoid repeating yourself and can be used to maintain
-#' coherence across many chat sessions.
-#'
-#' The `btw.md` file, when present, is included as part of the system prompt for
-#' your chat conversation. You can structure the file in any way you wish.
-#'
-#' You can also use the `btw.md` file to choose default chat settings for your
-#' project in a YAML block at the top of the file. In this YAML block you can
-#' choose settings for the default ellmer chat `client`, e.g. `provider`,
-#' `model`, as well as choose with \pkg{btw} `tools` to use in `btw_client()` or
-#' `btw_app()`. `provider` chooses the `ellmer::chat_*()` function, e.g.
-#' `provider: openai` or `provider: chat_openai` to use [ellmer::chat_openai()].
-#' `tools` chooses which btw tools are included in the chat, and all other
-#' values are passed to the `ellmer::chat_*()` constructor, e.g. `model:
-#' gpt-4o`, `seed: 42`, or `echo: all``.
-#'
-#' Here's an example `btw.md` file:
-#'
-#' ````
-#' ---
-#' client:
-#'   provider: claude
-#'   model: claude-3-7-sonnet-20250219
-#' tools: [data, docs, environment]
-#' ---
-#'
-#' Follow these important style rules for any R code in this project:
-#'
-#' * Prefer solutions that use {tidyverse}
-#' * Always use `<-` for assignment
-#' * Always use the native base-R pipe `|>` for piped expressions
-#' ````
-#'
-#' You can hide parts of the `btw.md` file from the system prompt by wrapping
-#' them in HTML `<!-- HIDE -->` and `<!-- /HIDE -->` comment tags. A single
-#' `<!-- HIDE -->` comment tag will hide all content after it until the next
-#' `<!-- /HIDE -->` tag, or the end of the file. This is particularly useful
-#' when your system prompt contains notes to yourself or future tasks that you
-#' do not want to be included in the system prompt.
-#'
-#' For project-specific configuration, store your `btw.md` file in the root of
-#' your project directory. You can even have multiple `btw.md` files in your
-#' project, in which case the one closest to your current working directory
-#' will be used. This makes it easy to have different `btw.md` files for
-#' different sub-projects or sub-directories within a larger project.
-#'
-#' For global configuration, you can maintain a `btw.md` file in your home
-#' directory (at `btw.md` or `.config/btw/btw.md` in your home directory, using
-#' `fs::path_home()`). This file will be used by default when a project-specific
-#' `btw.md` file is not found. Note that \pkg{btw} only looks for `btw.md` in
-#' your home directory if no project-specific `btw.md` or `AGENTS.md` file is
-#' present. It also does not look for `AGENTS.md` in your home directory.
+#' `btw_client()` will also include context from an `llms.txt` file in the
+#' system prompt, if one is found in your project directory or as specified by
+#' the `path_llms_txt` argument.
 #'
 #' ## Client Options
 #'
@@ -321,12 +264,7 @@ flatten_config_options <- function(opts, prefix = "btw", sep = ".") {
   out
 }
 
-maybe_find_in_project <- function(
-  path,
-  file_name,
-  arg = "path",
-  search_user = FALSE
-) {
+maybe_find_in_project <- function(path, file_name, arg = "path") {
   if (isFALSE(path)) {
     return(NULL)
   }
@@ -339,10 +277,6 @@ maybe_find_in_project <- function(
 
   path <- path %||% path_find_in_project(file_name)
 
-  if (search_user) {
-    path <- path %||% path_find_user(file_name)
-  }
-
   if (!must_find && is.null(path)) {
     return(NULL)
   }
@@ -354,16 +288,29 @@ maybe_find_in_project <- function(
   path
 }
 
+find_btw_context_file <- function(path = NULL, search_user = TRUE) {
+  # 1. Local closest btw.md file
+  path <- maybe_find_in_project(path, "btw.md", "path_btw")
+
+  # 2. Local closest AGENTS.md file
+  if (is.null(path)) {
+    path <- maybe_find_in_project(NULL, "AGENTS.md", "path_btw")
+  }
+
+  # 3. User btw.md file
+  if (search_user && is.null(path)) {
+    path <- path_find_user("btw.md")
+  }
+
+  path
+}
+
 read_btw_file <- function(path = NULL) {
   if (isFALSE(path)) {
     return(list())
   }
 
-  path <- maybe_find_in_project(path, "btw.md", "path_btw", search_user = TRUE)
-
-  if (is.null(path)) {
-    path <- maybe_find_in_project(NULL, "AGENTS.md", "path_btw")
-  }
+  path <- find_btw_context_file(path)
 
   if (is.null(path)) {
     return(list())

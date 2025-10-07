@@ -67,68 +67,13 @@ local workspace.
 
 You can keep track of project-specific rules, guidance and context by adding
 a \code{btw.md} file or \href{https://agents.md/}{\code{AGENTS.md}} in your project
-directory. Either file name will work, so we'll refer primarily to \code{btw.md}.
-\pkg{btw} will look first for \code{btw.md} and then for \code{AGENTS.md}. If both
-files are present, only the \code{btw.md} file will be used.
+directory. See \code{\link[=use_btw_md]{use_btw_md()}} for help creating a \code{btw.md} file in your
+project, or use \code{path_btw} to tell \code{btw_client()} to use a specific context
+file.
 
-Any time you start a chat client with \code{btw_client()} or launch a chat session
-with \code{btw_app()}, btw will automatically find and include the contents of the
-\code{btw.md} or \code{AGENTS.md} file in your chat.
-
-Use \code{btw.md} to inform the LLM of your preferred code style, to provide
-domain-specific terminology or definitions, to establish project
-documentation, goals and constraints, to include reference materials such or
-technical specifications, or more. Storing this kind of information in
-\code{btw.md} may help you avoid repeating yourself and can be used to maintain
-coherence across many chat sessions.
-
-The \code{btw.md} file, when present, is included as part of the system prompt for
-your chat conversation. You can structure the file in any way you wish.
-
-You can also use the \code{btw.md} file to choose default chat settings for your
-project in a YAML block at the top of the file. In this YAML block you can
-choose settings for the default ellmer chat \code{client}, e.g. \code{provider},
-\code{model}, as well as choose with \pkg{btw} \code{tools} to use in \code{btw_client()} or
-\code{btw_app()}. \code{provider} chooses the \verb{ellmer::chat_*()} function, e.g.
-\code{provider: openai} or \code{provider: chat_openai} to use \code{\link[ellmer:chat_openai]{ellmer::chat_openai()}}.
-\code{tools} chooses which btw tools are included in the chat, and all other
-values are passed to the \verb{ellmer::chat_*()} constructor, e.g. \verb{model: gpt-4o}, \code{seed: 42}, or `echo: all``.
-
-Here's an example \code{btw.md} file:
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{---
-client:
-  provider: claude
-  model: claude-3-7-sonnet-20250219
-tools: [data, docs, environment]
----
-
-Follow these important style rules for any R code in this project:
-
-* Prefer solutions that use \{tidyverse\}
-* Always use `<-` for assignment
-* Always use the native base-R pipe `|>` for piped expressions
-}\if{html}{\out{</div>}}
-
-You can hide parts of the \code{btw.md} file from the system prompt by wrapping
-them in HTML \verb{<!-- HIDE -->} and \verb{<!-- /HIDE -->} comment tags. A single
-\verb{<!-- HIDE -->} comment tag will hide all content after it until the next
-\verb{<!-- /HIDE -->} tag, or the end of the file. This is particularly useful
-when your system prompt contains notes to yourself or future tasks that you
-do not want to be included in the system prompt.
-
-For project-specific configuration, store your \code{btw.md} file in the root of
-your project directory. You can even have multiple \code{btw.md} files in your
-project, in which case the one closest to your current working directory
-will be used. This makes it easy to have different \code{btw.md} files for
-different sub-projects or sub-directories within a larger project.
-
-For global configuration, you can maintain a \code{btw.md} file in your home
-directory (at \code{btw.md} or \code{.config/btw/btw.md} in your home directory, using
-\code{fs::path_home()}). This file will be used by default when a project-specific
-\code{btw.md} file is not found. Note that \pkg{btw} only looks for \code{btw.md} in
-your home directory if no project-specific \code{btw.md} or \code{AGENTS.md} file is
-present. It also does not look for \code{AGENTS.md} in your home directory.
+\code{btw_client()} will also include context from an \code{llms.txt} file in the
+system prompt, if one is found in your project directory or as specified by
+the \code{path_llms_txt} argument.
 }
 
 \subsection{Client Options}{
