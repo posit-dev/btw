@@ -100,16 +100,16 @@ chat$register_tools(btw_tools())
 chat$chat("What data frames are in my environment?")
 ```
 
-Pick and choose which tools you use with friendly group names::
+Pick and choose which tools you use with friendly group names
 
 ``` r
 # Only provide documentation and file tools
 chat$register_tools(btw_tools(c("docs", "files")))
 ```
 
-Or expose btw tools to external coding agents via the [Model Context
+or expose btw tools to external coding agents via the [Model Context
 Protocol](https://modelcontextprotocol.org/) using
-[mcptools](https://posit-dev.github.io/mcptools/):
+[mcptools](https://posit-dev.github.io/mcptools/).
 
 ``` r
 # Run as a background process or in a separate R session
@@ -123,13 +123,25 @@ your R environment.
 
 ## Installation
 
-Install btw from CRAN:
-
-``` r
+<!--
+You can install btw from CRAN:
+&#10;```r
 install.packages("btw")
 ```
+-->
 
-Or install the development version:
+To install the latest development version, you can install from
+[posit-dev.r-universe.dev](https://posit-dev.r-universe.dev/):
+
+``` r
+# install.packages("pak")
+
+pak::repo_add("https://posit-dev.r-universe.dev")
+pak::pak("btw")
+```
+
+Or you can install the development version from
+[GitHub](https://github.com/posit-dev/btw):
 
 ``` r
 # install.packages("pak")
