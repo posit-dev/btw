@@ -15,6 +15,8 @@ knitr::opts_chunk$set(
 
 # btw <a href="https://posit-dev.github.io/btw/"><img src="man/figures/logo.png" align="right" height="138" alt="btw website" /></a>
 
+> A complete toolkit for connecting R and LLMs
+
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/btw)](https://CRAN.R-project.org/package=btw)
@@ -22,134 +24,110 @@ knitr::opts_chunk$set(
 [![Codecov test coverage](https://codecov.io/gh/posit-dev/btw/graph/badge.svg)](https://app.codecov.io/gh/posit-dev/btw)
 <!-- badges: end -->
 
-btw helps you describe your computational environment to LLMs.
+## Overview
 
-* When used **interactively**, `btw()` assembles context on your R environment, package documentation, and working directory, copying the results to your clipboard for easy pasting into chat interfaces.
-* The `btw()` function wraps methods that can be easily incorporated into **ellmer tool calls** for describing various kinds of objects in R. To equip your ellmer chat with the ability to peruse documentation, check out the objects in your R environment, and explore your working directory, call `chat$set_tools(btw_tools())` (or `chat$set_tools(c(chat$get_tools(), btw_tools()))` to retain any tools you've already registered).
+btw helps R users work with Large Language Models, whether you're pasting context into ChatGPT, chatting with an AI assistant in your IDE, or building LLM-powered applications.
+
+The challenge: LLMs need context about your R environment to be helpful—your data structures, the packages you're using, relevant documentation.
+
+btw provides a flexible toolkit that works across different workflows:
+
+- **Copy-paste to external LLMs:** Quickly gather context from your R session and copy it to your clipboard for pasting into ChatGPT, Claude, or any other chat interface.
+- **Interactive chat in R:** Launch a full-featured AI assistant directly in your IDE that can explore your environment, read documentation, and help you write code.
+- **Build LLM-powered tools:** Integrate btw's capabilities into your own applications, whether you're creating custom chat interfaces or connecting R to coding agents.
+
+## Quick Start
+
+### Copy-paste workflow
+
+Use `btw()` to gather context from your R session and copy it to your clipboard:
+
+```{r eval = FALSE}
+library(btw)
+
+# Describe a data frame
+btw(mtcars)
+
+# Include package or function documentation
+btw("{dplyr}", ?dplyr::across)
+
+# Combine multiple pieces of context
+btw(mtcars, "{dplyr}", "How do I calculate the mean mpg by cylinder?")
+```
+
+The context is copied to your clipboard, ready to paste into ChatGPT, Claude, or any LLM chat interface.
+
+### Interactive chat in your IDE
+
+Launch a chat interface with `btw_app()`:
+
+```{r eval = FALSE}
+btw_app()
+```
+
+<img src="man/figures/btw-app.png" alt="Screenshot of btw_app() in action. In the sidebar, there is a list of tools that can be toggled on and off, and in the main panel a chat interface. In the chat we can see several tool calls have been made to read files in the current project.">
+
+For persistent project context, create a `btw.md` file with `use_btw_md()`.
+This creates a project-specific configuration file where you can define your preferred LLM provider, model, and custom instructions that apply to all conversations in your project.
+
+### Building with btw
+
+btw supercharges [ellmer](https://ellmer.tidyverse.org/)!
+Use `btw_client()` for a pre-configured chat client, the same client used by `btw_app()`.
+
+```{r eval = FALSE}
+# Uses provider, model, tools and instructions from btw.md
+chat <- btw_client()
+chat$chat("Help me write documentation for...")
+```
+
+Or use `btw_tools()` to get a list of tools you can register with any ellmer chat client.
+
+```{r eval = FALSE}
+library(ellmer)
+
+chat <- chat_anthropic()  # or chat_openai(), chat_ollama(), etc.
+chat$register_tools(btw_tools())
+
+chat$chat("What data frames are in my environment?")
+```
+
+Pick and choose which tools you use with friendly group names::
+
+```{r eval = FALSE}
+# Only provide documentation and file tools
+chat$register_tools(btw_tools(c("docs", "files")))
+```
+
+Or expose btw tools to external coding agents via the [Model Context Protocol](https://modelcontextprotocol.org/) using [mcptools](https://posit-dev.github.io/mcptools/):
+
+```{r eval = FALSE}
+# Run as a background process or in a separate R session
+btw_mcp_server()
+```
+
+You can [configure the MCP server](https://posit-dev.github.io/btw/reference/mcp.html) in Claude Desktop, Continue, or other MCP-compatible tools to give them access to your R environment.
 
 ## Installation
 
-You can install the development version of btw like so:
+Install btw from CRAN:
 
-``` r
+```{r eval = FALSE}
+install.packages("btw")
+```
+
+Or install the development version:
+
+```{r eval = FALSE}
+# install.packages("pak")
 pak::pak("posit-dev/btw")
 ```
 
-## Example
+## Learn More
 
-```{r}
-library(btw)
-```
+- 🌐 [Package website](https://posit-dev.github.io/btw/)
+- 📚 [Function reference](https://posit-dev.github.io/btw/reference/)
+- 💻 [GitHub repository](https://github.com/posit-dev/btw)
 
-### Interactive use
+For questions or issues, please [open an issue on GitHub](https://github.com/posit-dev/btw/issues).
 
-The `btw()` function allows you to compile information about all sorts of R stuff and copy it to your clipboard.
-
-* Pass any R object to `btw()`, like `btw(mtcars)`, `btw(dplyr::across)` or `btw(globalenv())`.
-* `btw("{dplyr}")` will describe the dplyr package via the function reference and (if available) introductory vignette.
-* `btw("?dplyr::across")` or `btw(?dplyr::across)` includes the help pages for `dplyr::across()`.
-* `btw("./path")` will read the lines of the file at that path (or list the files at that path if it's a directory).
-* `btw("@current_file")` and `btw("@current_selection")` reads the contents of the current editor or selection in RStudio, Positron, or anywhere the [rstudioapi](https://rstudio.github.io/rstudioapi) is supported.
-* `btw("@platform_info")` describes your R version, operating system, and locale information.
-* `btw()` with `"@attached_packages"`, `"@loaded_packages"`, or `"@installed_packages"` includes a listing of attached (i.e. with `library()`), loaded (in use in the session, often indirectly), or installed packages.
-* And more! See `?btw_this.character` for the full list of additional context strings.
-
-When passed multiple arguments, `btw()` will concatenate each description. For example, you could run:
-
-```{r}
-#| eval: false
-btw(mtcars, "{btw}", ?btw::btw)
-```
-
-```
-✔ btw copied to the clipboard!
-```
-
-The following would be attached to your clipboard:
-
-```{r}
-#| comment: ""
-#| echo: false
-cli::cat_line(btw(mtcars, "{btw}", ?btw::btw))
-```
-
-You can also just call `btw()` with no inputs, which will describe the objects in your global environment.
-
-### Supercharging assistants
-
-`btw_client()` equips LLM chats with all of the same capabilities: peruse
-documentation, check out objects in your R environment, and explore your
-working directory.
-
-```{r}
-#| eval: false
-ch <- btw_client()
-
-ch$chat("Hey!")
-```
-
-```
-Hello! I'm here to help you work with R-related information and data. I can help
-you:
-
-1. Look up information about installed R packages
-2. Get help documentation for specific R packages and functions
-3. Examine and manipulate data frames
-4. Check what's available in the current environment
-
-What would you like to know about? Feel free to ask a specific question, and I'll
-use the available tools to help you find the information you need.
-```
-
-You can also provide `btw_client()` with objects and documentation to include as context in the chat:
-
-```{r}
-#| eval: false
-
-ch <- btw_client(mtcars)
-ch$chat("Write base R code to summarize average mpg of cars with 4-6 cylinders.")
-```
-````
-I'll help you write base R code to calculate the average MPG for cars with 4-6
-cylinders using the mtcars dataset.
-
-Here's the code:
-
-```R
-mean(mtcars$mpg[mtcars$cyl >= 4 & mtcars$cyl <= 6])
-```
-
-Alternatively, you could also write it with `subset()` from base R:
-
-```R
-mean(subset(mtcars, cyl >= 4 & cyl <= 6)$mpg)
-```
-
-Both approaches will give you the average MPG for cars with 4-6 cylinders.
-Given the data shown in the context, this will include cars with 4 and 6
-cylinders (as the `cyl` column only contains values 4, 6, and 8).
-````
-
-`btw_client()` uses `ellmer::chat_anthropic()` by default, or you can customize the chat client used in one of two ways:
-
-* Set the `btw.chat_client` option (possibly in your `.Rprofile` with `usethis::edit_r_profile()`), or
-* Provide your own chat object via the `client` argument.
-
-```{r}
-#| eval: false
-
-options(btw.chat_client = ellmer::chat_ollama(model = "llama3.1:8b"))
-ch <- btw_client()
-
-# same as above
-ch <- btw_client(client = ellmer::chat_ollama(model = "llama3.1:8b"))
-```
-
-Alternatively, you can call `btw_app()` to jump straight into a Shiny chat app.
-
-For fully customized chat clients, you can use
-`chat$set_tools(c(chat$get_tools(), btw_tools())) ` to add btw tools to an
-existing chat interface. Each of the individual tools
-registered with this code can be retrieved with `btw_tools()` and filtered
-via the function's `tools` argument (also available in `btw_client()` or
-`btw_app()`).
