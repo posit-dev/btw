@@ -6,7 +6,7 @@
       v Created 'btw.md'
       i See `?btw::btw_client()` for format details
       i See `?btw::btw_tools()` for available tools
-      i Call `btw::btw_task_btw_init()` to use an LLM to help you initialize the project context.
+      i Call `btw::btw_task_create_btw_md()` to use an LLM to help you initialize the project context.
 
 # use_btw_md() creates btw.md in user scope
 
@@ -16,7 +16,7 @@
       v Created '~/btw.md'
       i See `?btw::btw_client()` for format details
       i See `?btw::btw_tools()` for available tools
-      i Call `btw::btw_task_btw_init()` to use an LLM to help you initialize the project context.
+      i Call `btw::btw_task_create_btw_md()` to use an LLM to help you initialize the project context.
 
 # use_btw_md() creates btw.md in sub-directory path
 
@@ -26,7 +26,7 @@
       v Created 'subdir/btw.md'
       i See `?btw::btw_client()` for format details
       i See `?btw::btw_tools()` for available tools
-      i Call `btw::btw_task_btw_init()` to use an LLM to help you initialize the project context.
+      i Call `btw::btw_task_create_btw_md()` to use an LLM to help you initialize the project context.
 
 # use_btw_md() creates AGENTS.md with correct template
 
@@ -36,7 +36,7 @@
       v Created 'AGENTS.md'
       i See `?btw::btw_client()` for format details
       i See `?btw::btw_tools()` for available tools
-      i Call `btw::btw_task_btw_init()` to use an LLM to help you initialize the project context.
+      i Call `btw::btw_task_create_btw_md()` to use an LLM to help you initialize the project context.
 
 # use_btw_md() does not overwrite existing file
 

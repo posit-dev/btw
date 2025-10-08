@@ -72,7 +72,7 @@ technical specifications, or more. Storing this kind of information in
 coherence across many chat sessions.
 
 Write in markdown and structure the file in any way you wish, or use
-\code{\link[=btw_task_btw_init]{btw_task_btw_init()}} to help you create a project context file for an
+\code{\link[=btw_task_create_btw_md]{btw_task_create_btw_md()}} to help you create a project context file for an
 existing project with the help of an AI agent.
 }
 
@@ -196,7 +196,7 @@ present. It also does not look for \code{AGENTS.md} in your home directory.
 \section{Interactive Setup}{
 
 
-For an interactive guided setup, consider using \code{\link[=btw_task_btw_init]{btw_task_btw_init()}} to use
+For an interactive guided setup, consider using \code{\link[=btw_task_create_btw_md]{btw_task_create_btw_md()}} to use
 an LLM to help you create a \code{btw.md} file for your project.
 }
 

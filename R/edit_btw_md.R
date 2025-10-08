@@ -34,7 +34,7 @@
 #' coherence across many chat sessions.
 #'
 #' Write in markdown and structure the file in any way you wish, or use
-#' [btw_task_btw_init()] to help you create a project context file for an
+#' [btw_task_create_btw_md()] to help you create a project context file for an
 #' existing project with the help of an AI agent.
 #'
 #' @section Chat Settings:
@@ -157,7 +157,7 @@
 #'
 #' @section Interactive Setup:
 #'
-#' For an interactive guided setup, consider using [btw_task_btw_init()] to use
+#' For an interactive guided setup, consider using [btw_task_create_btw_md()] to use
 #' an LLM to help you create a `btw.md` file for your project.
 #'
 #' @examples
@@ -228,7 +228,7 @@ use_btw_md <- function(scope = "project") {
     cli::cli_inform(c(
       "i" = "See {.help btw::btw_client} for format details",
       "i" = "See {.help btw::btw_tools} for available tools",
-      "i" = "Call {.fn btw::btw_task_btw_init} to use an LLM to help you initialize the project context."
+      "i" = "Call {.fn btw::btw_task_create_btw_md} to use an LLM to help you initialize the project context."
     ))
   } else {
     cmd <- sprintf('btw::edit_btw_md("%s")', path_display(path))
@@ -341,10 +341,8 @@ btw_md_template <- function(path) {
 }
 
 use_build_ignore_btw_md <- function(path) {
-  # Check if we're in an R package
-  project_root <- path_find_in_project("DESCRIPTION")
-
-  if (is.null(project_root)) {
+  if (!detect_project_is_r_package()) {
+    # Only if we're in an R package
     return(invisible())
   }
 
@@ -356,6 +354,7 @@ use_build_ignore_btw_md <- function(path) {
   }
 
   # Get the relative path from project root
+  project_root <- path_find_in_project("DESCRIPTION")
   project_dir <- fs::path_dir(project_root)
   rel_path <- fs::path_rel(path, start = project_dir)
 

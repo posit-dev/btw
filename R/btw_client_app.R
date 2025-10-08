@@ -16,12 +16,18 @@ btw_app <- function(
   rlang::check_installed("bslib")
   rlang::check_installed("shinychat", version = "0.2.0")
 
-  client <- btw_client(
-    client = client,
-    tools = tools,
-    path_btw = path_btw
-  )
+  if (!inherits(client, "AsIs")) {
+    client <- btw_client(
+      client = client,
+      tools = tools,
+      path_btw = path_btw
+    )
+  }
 
+  btw_app_from_client(client, messages = messages, ...)
+}
+
+btw_app_from_client <- function(client, messages = list(), ...) {
   path_figures_installed <- system.file("help", "figures", package = "btw")
   path_figures_dev <- system.file("man", "figures", package = "btw")
   path_logo <- "btw_figures/logo.png"

@@ -12,7 +12,7 @@
 #'
 #' @examples
 #' withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
-#'   btw_task_btw_init(mode = "tool", client = "anthropic")
+#'   btw_task_create_btw_md(mode = "tool", client = "anthropic")
 #' })
 #'
 #' @param ... Additional context to provide to the AI. This can be any text or
@@ -34,13 +34,13 @@
 #'
 #' @family task and agent functions
 #' @export
-btw_task_btw_init <- function(
+btw_task_create_btw_md <- function(
   ...,
   path = "btw.md",
   client = NULL,
   mode = c("app", "console", "client", "tool")
 ) {
-  arg_match(mode)
+  mode <- arg_match(mode)
   check_path_within_current_wd(path)
   path <- fs::path_rel(path)
 
@@ -112,7 +112,7 @@ btw_task_btw_init <- function(
         this_client$set_system_prompt(sys_prompt)
         this_client$chat(prompt)
       },
-      name = "btw_task_btw_init",
+      name = "btw_task_create_btw_md",
       description = "Create a comprehensive context file for your project.",
       arguments = list(
         prompt = ellmer::type_string(
@@ -133,7 +133,7 @@ btw_task_btw_init <- function(
 
   if (mode == "console") {
     cli::cli_text(
-      "Starting {.strong btw_task_btw_init()} in live console mode."
+      "Starting {.strong btw_task_create_btw_md()} in live console mode."
     )
     cli::cli_text(
       "{cli::col_yellow(cli::symbol$play)} ",
@@ -141,9 +141,8 @@ btw_task_btw_init <- function(
     )
     ellmer::live_console(client)
   } else {
-    btw_app(
+    btw_app_from_client(
       client = client,
-      tools = FALSE,
       messages = list(list(
         role = "assistant",
         content = paste(

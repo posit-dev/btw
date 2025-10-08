@@ -7,7 +7,8 @@ Authors@R: c(
     person("Simon", "Couch", , "simon.couch@posit.co", role = "aut",
            comment = c(ORCID = "0000-0001-5676-5107")),
     person("Joe", "Cheng", , "joe@posit.co", role = "aut"),
-    person("Posit Software, PBC", role = c("cph", "fnd"))
+    person("Posit Software, PBC", role = c("cph", "fnd")),
+    person("Google", role = "cph", comment = "Material Design Icons")
   )
 Description: Provides a number of utilities for describing R objects and
     package documentation in plain text. For interactive use, this is
@@ -72,7 +73,8 @@ Collate:
     'import-standalone-purrr.R'
     'import-standalone-types-check.R'
     'mcp.R'
-    'task_btw_init.R'
+    'task_create_btw_md.R'
+    'task_create_readme.R'
     'tool-data-frame.R'
     'tool-result.R'
     'tool-docs-news.R'

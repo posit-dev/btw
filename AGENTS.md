@@ -135,7 +135,8 @@ Content becomes part of the system prompt. Use `<!-- HIDE -->` / `<!-- /HIDE -->
 
 The `btw_task_*()` pattern provides guided workflows:
 
-- **`btw_task_btw_init()`** - Interactive assistant for creating a `btw.md` file in a new project
+- `btw_task_create_btw_md()` - Interactive assistant for creating a `btw.md` file in a new project
+- `btw_task_create_readme()` - Interactive assistant to help create a README for end users
 - Future tasks will follow similar patterns for common workflows
 
 ## Technical Details
@@ -309,6 +310,6 @@ Edit files in `inst/prompts/`. These are assembled in `btw_client()` based on co
 - **GitHub:** https://github.com/posit-dev/btw
 - **Website:** https://posit-dev.github.io/btw/
 - **ellmer package:** https://github.com/tidyverse/ellmer
-- **mcptools package:** https://github.com/simonpcouch/mcptools
+- **mcptools package:** https://github.com/posit-dev/mcptools/
 - **AGENTS.md spec:** https://agents.md/
 

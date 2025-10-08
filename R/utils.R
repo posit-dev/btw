@@ -122,6 +122,10 @@ path_find_user <- function(filename) {
   NULL
 }
 
+detect_project_is_r_package <- function(dir = getwd()) {
+  !is.null(path_find_in_project("DESCRIPTION", dir))
+}
+
 path_btw_cache <- function(...) {
   cache_base <- normalizePath(
     tools::R_user_dir("btw", which = "cache"),
