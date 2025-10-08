@@ -131,11 +131,11 @@
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">register_tools</span><span class="op">(</span><span class="fu"><a href="reference/btw_tools.html">btw_tools</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">chat</span><span class="op">(</span><span class="st">"What data frames are in my environment?"</span><span class="op">)</span></span></code></pre></div>
-<p>Pick and choose which tools you use with friendly group names::</p>
+<p>Pick and choose which tools you use with friendly group names</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Only provide documentation and file tools</span></span>
 <span><span class="va">chat</span><span class="op">$</span><span class="fu">register_tools</span><span class="op">(</span><span class="fu"><a href="reference/btw_tools.html">btw_tools</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"docs"</span>, <span class="st">"files"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>Or expose btw tools to external coding agents via the <a href="https://modelcontextprotocol.org/" class="external-link">Model Context Protocol</a> using <a href="https://posit-dev.github.io/mcptools/" class="external-link">mcptools</a>:</p>
+<p>or expose btw tools to external coding agents via the <a href="https://modelcontextprotocol.org/" class="external-link">Model Context Protocol</a> using <a href="https://posit-dev.github.io/mcptools/" class="external-link">mcptools</a>.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run as a background process or in a separate R session</span></span>
 <span><span class="fu"><a href="reference/mcp.html">btw_mcp_server</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -145,10 +145,19 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>Install btw from CRAN:</p>
+<!--
+You can install btw from CRAN:
+&#10;```r
+install.packages("btw")
+```
+-->
+<p>To install the latest development version, you can install from <a href="https://posit-dev.r-universe.dev/" class="external-link">posit-dev.r-universe.dev</a>:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"btw"</span><span class="op">)</span></span></code></pre></div>
-<p>Or install the development version:</p>
+<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
+<span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/repo_add.html" class="external-link">repo_add</a></span><span class="op">(</span><span class="st">"https://posit-dev.r-universe.dev"</span><span class="op">)</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"btw"</span><span class="op">)</span></span></code></pre></div>
+<p>Or you can install the development version from <a href="https://github.com/posit-dev/btw" class="external-link">GitHub</a>:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"posit-dev/btw"</span><span class="op">)</span></span></code></pre></div>
