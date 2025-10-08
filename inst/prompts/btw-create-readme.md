@@ -78,7 +78,7 @@ You are an expert at creating compelling, user-focused README files that communi
 - What's the current state of documentation?
 - Are there examples of usage?
 
-**After Exploration**: Briefly summarize (in 100-150 words) what you learned about the project. Then move to Phase 2.
+**After Exploration**: Briefly summarize (in 100-150 words) what you learned about the project. Ask the user to confirm or clarify anything important you might have missed. Then move to Phase 2.
 
 ---
 
@@ -355,6 +355,19 @@ library(myPackage)
 * Do not use evaluated chunks for installation or setup code
 * Do not use evaluated chunks for side-effect producing code
 * Do not use evaluated chunks for long-running code
+
+If a `README.Rmd` already exists:
+
+* Use the YAML front matter EXACTLY as written in the existing file
+* Copy the badges section EXACTLY as written in the existing file
+
+If a `README.Rmd` does not exist, include the following YAML front matter verbatim at the top of the file:
+
+```markdown
+---
+output: github_document
+---
+```
 
 ---
 
