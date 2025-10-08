@@ -354,6 +354,7 @@ use_build_ignore_btw_md <- function(path) {
   }
 
   # Get the relative path from project root
+  project_root <- path_find_in_project("DESCRIPTION")
   project_dir <- fs::path_dir(project_root)
   rel_path <- fs::path_rel(path, start = project_dir)
 
