@@ -18,8 +18,8 @@ knitr::opts_chunk$set(
 > A complete toolkit for connecting R and LLMs
 
 <!-- badges: start -->
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/btw)](https://CRAN.R-project.org/package=btw)
+[![R-universe version](https://posit-dev.r-universe.dev/btw/badges/version)](https://posit-dev.r-universe.dev/btw)
 [![R-CMD-check](https://github.com/posit-dev/btw/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/posit-dev/btw/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/posit-dev/btw/graph/badge.svg)](https://app.codecov.io/gh/posit-dev/btw)
 <!-- badges: end -->
