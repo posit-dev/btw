@@ -141,9 +141,8 @@ btw_task_create_btw_md <- function(
     )
     ellmer::live_console(client)
   } else {
-    btw_app(
+    btw_app_from_client(
       client = client,
-      tools = FALSE,
       messages = list(list(
         role = "assistant",
         content = paste(

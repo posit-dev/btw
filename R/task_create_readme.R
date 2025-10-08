@@ -65,14 +65,17 @@ btw_task_create_readme <- function(
         "# Additional context provided by the user\n\n",
         user_context
       )
-      sys_prompt <- sub(
-        "<!-- ADDITIONAL_USER_CONTEXT -->",
-        user_context,
-        sys_prompt,
-        fixed = TRUE
-      )
     }
+  } else {
+    user_context <- ""
   }
+
+  sys_prompt <- sub(
+    "<!-- ADDITIONAL_USER_CONTEXT -->",
+    user_context,
+    sys_prompt,
+    fixed = TRUE
+  )
 
   client$set_system_prompt(sys_prompt)
 
@@ -123,9 +126,8 @@ btw_task_create_readme <- function(
     )
     ellmer::live_console(client)
   } else {
-    btw_app(
+    btw_app_from_client(
       client = client,
-      tools = FALSE,
       messages = list(list(
         role = "assistant",
         content = paste(
