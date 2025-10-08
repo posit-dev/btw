@@ -42,15 +42,21 @@ btw_task_create_readme <- function(
 ) {
   mode <- arg_match(mode)
 
+  readme_badge_tool <- NULL
+  if (detect_project_is_r_package()) {
+    readme_badge_tool <- tool_readme_add_badge()
+  }
+
   client <- btw_client(
     client = client,
-    tools = c(
+    tools = list(
       "btw_tool_files_list_files",
       "btw_tool_files_read_text_file",
       "btw_tool_files_code_search",
       "btw_tool_files_write_text_file",
       "docs",
-      "btw_tool_env_describe_data_frame"
+      "btw_tool_env_describe_data_frame",
+      readme_badge_tool
     )
   )
 
@@ -138,4 +144,97 @@ btw_task_create_readme <- function(
       ))
     )
   }
+}
+
+#' Generate README Badge Markup
+#'
+#' A tool that wraps usethis badge functions to generate markdown badge markup
+#' for README files. The LLM calls the appropriate usethis function by
+#' specifying the function name and its arguments as JSON.
+#'
+#' @examples
+#' chat <- ellmer::chat_openai()
+#' chat$register_tool(tool_readme_add_badge())
+#' chat$chat("Generate a CRAN badge")
+#' chat$chat("Generate a lifecycle badge for a stable package")
+#' chat$chat("Generate a GitHub Actions badge for R-CMD-check.yaml")
+#'
+#' @return An `ellmer::tool()` object if the `usethis` package is installed.
+#' @noRd
+tool_readme_add_badge <- function() {
+  if (!is_installed("usethis")) {
+    cli::cli_inform(
+      "Install the {.pkg usethis} package to use the readme badge tool."
+    )
+    return(invisible())
+  }
+
+  ellmer::tool(
+    function(usethis_function, args = "{}") {
+      valid_functions <- c(
+        "use_cran_badge",
+        "use_bioc_badge",
+        "use_lifecycle_badge",
+        "use_binder_badge",
+        "use_r_universe_badge",
+        "use_posit_cloud_badge",
+        "use_github_actions_badge",
+        "use_badge"
+      )
+
+      usethis_function <- arg_match(usethis_function, valid_functions)
+
+      # Parse the JSON arguments
+      args_list <- jsonlite::fromJSON(
+        args,
+        simplifyVector = TRUE,
+        simplifyDataFrame = FALSE,
+        simplifyMatrix = FALSE
+      )
+
+      # Suppress usethis clipboard operations
+      withr::local_options(usethis.clipboard = FALSE)
+
+      # Get the function from usethis namespace
+      fn <- asNamespace("usethis")[[usethis_function]]
+
+      # Call the function with the provided arguments
+      result <- capture.output(do.call(fn, args_list), type = "message")
+      result <- paste(result, collapse = "\n")
+      cli::ansi_strip(result)
+    },
+    name = "readme_add_badge",
+    description = "Generate markdown badge markup by calling usethis badge functions.
+
+Use this tool after you have created a README.md or README.Rmd file, which should already contain `<!-- badges: start -->` and `<!-- badges: end -->` markers where you want the badges to appear.
+If the README file does not contain these markers, the output from this tool will show you the badge markdown, but you will need to manually add it to the README file.
+
+Available functions:
+- use_cran_badge(): CRAN version badge (no args)
+- use_bioc_badge(): Bioconductor build status (no args)
+- use_lifecycle_badge(stage): Package lifecycle. stage = 'experimental'|'stable'|'superseded'|'deprecated'
+- use_binder_badge(ref, urlpath): Binder environment. ref = git ref, urlpath = optional UI path
+- use_r_universe_badge(repo_spec): R-universe version. repo_spec = 'owner/repo' (optional)
+- use_posit_cloud_badge(url): Posit Cloud project. url = project link (required)
+- use_github_actions_badge(name, repo_spec): GitHub Actions workflow. name = workflow file, repo_spec = 'owner/repo' (optional)
+- use_badge(badge_name, href, src): Custom badge. All args required
+
+This tool returns the output from the usethis function.
+The output will indicate whether or not usethis was able to automatically update the README file.",
+    arguments = list(
+      usethis_function = ellmer::type_string(
+        "The usethis badge function name (e.g., 'use_cran_badge')"
+      ),
+      args = ellmer::type_string(
+        "JSON string of function arguments as key-value pairs. Use {} for functions with no arguments. Example: {\"stage\": \"stable\"} or {\"url\": \"https://posit.cloud/project/123456\"}"
+      )
+    ),
+    annotations = ellmer::tool_annotations(
+      title = "Add README Badge",
+      icon = tool_icon("new-label"),
+      read_only_hint = FALSE,
+      idempotent_hint = TRUE,
+      destructive_hint = FALSE
+    )
+  )
 }

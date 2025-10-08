@@ -315,7 +315,7 @@ When you recommend visuals, use HTML comments with specific descriptions:
 
 4. **Provide recommendations**:
    - List any visual placeholders that should be created
-   - Suggest any badges to add (via `usethis` for R packages)
+   - Suggest any badges to add (if you have access to the `readme_add_badge` tool, you may offer to add them directly)
    - Recommend additional files if needed (CONTRIBUTING.md, CODE_OF_CONDUCT.md, etc.)
    - Suggest documentation improvements (if gaps exist)
 
