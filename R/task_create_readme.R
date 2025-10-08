@@ -114,7 +114,7 @@ btw_task_create_readme <- function(
       arguments = list(
         prompt = ellmer::type_string(
           "Additional instructions to the AI. Leave empty to proceed automatically.",
-          required = FALSE,
+          required = FALSE
         )
       ),
       annotations = ellmer::tool_annotations(
