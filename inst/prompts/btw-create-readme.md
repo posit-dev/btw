@@ -303,6 +303,8 @@ When you recommend visuals, use HTML comments with specific descriptions:
 
 **Your Task**: Apply final touches and provide recommendations. Ask if the user would like you to write the README to `README.md` (or `README.Rmd` if they prefer, or if `README.Rmd` already exists.) Then work through the checklist below.
 
+If you have access to the `use_readme` tool (and this is an R project), use the `use_readme` tool to create a template README and/or to set up the R project to use the README.
+
 **Activities**:
 1. **Review completeness**: Ensure all approved sections are included
 2. **Check formatting**: Verify Markdown renders correctly

@@ -42,9 +42,11 @@ btw_task_create_readme <- function(
 ) {
   mode <- arg_match(mode)
 
+  use_readme_tool <- NULL
   readme_badge_tool <- NULL
   if (detect_project_is_r_package()) {
     readme_badge_tool <- tool_readme_add_badge()
+    use_readme_tool <- tool_use_readme()
   }
 
   client <- btw_client(
@@ -56,7 +58,8 @@ btw_task_create_readme <- function(
       "btw_tool_files_write_text_file",
       "docs",
       "btw_tool_env_describe_data_frame",
-      readme_badge_tool
+      readme_badge_tool,
+      use_readme_tool
     )
   )
 
@@ -144,6 +147,161 @@ btw_task_create_readme <- function(
       ))
     )
   }
+}
+
+#' Re-initialize README File
+#'
+#' A tool that wraps usethis README functions to re-create README.md or
+#' README.Rmd files with fresh templates. The existing file is backed up
+#' and restored if an error occurs.
+#'
+#' @examples
+#' chat <- ellmer::chat_openai()
+#' chat$register_tool(tool_use_readme())
+#' chat$chat("Create a new README.Rmd file")
+#' chat$chat("Make sure my project is configured to use a README.Rmd file")
+#'
+#' @return An `ellmer::tool()` object if the `usethis` package is installed.
+#' @noRd
+tool_use_readme <- function() {
+  if (!is_installed("usethis")) {
+    cli::cli_inform(
+      "Install the {.pkg usethis} package to use the use_readme tool."
+    )
+    return(invisible())
+  }
+
+  ellmer::tool(
+    function(type) {
+      type <- arg_match(type, c("md", "rmd"))
+
+      # Determine which file to look for
+      readme_path <- if (type == "md") "README.md" else "README.Rmd"
+
+      # Backup existing file if it exists
+      old_content <- NULL
+      has_backup <- FALSE
+      temp_path <- NULL
+      success <- FALSE
+
+      if (fs::file_exists(readme_path)) {
+        old_content <- paste(
+          readLines(readme_path, warn = FALSE),
+          collapse = "\n"
+        )
+        temp_path <- basename(tempfile(
+          pattern = "README-",
+          fileext = switch(type, md = ".md", rmd = ".Rmd")
+        ))
+        fs::file_move(readme_path, temp_path)
+        withr::defer({
+          if (!is.null(temp_path)) {
+            # Always restore the original file if it existed
+            fs::file_move(temp_path, readme_path)
+          }
+        })
+      }
+
+      # Suppress usethis clipboard operations and force overwrite
+      withr::local_options(usethis.clipboard = FALSE)
+
+      use_readme <- switch(
+        type,
+        md = usethis::use_readme_md,
+        rmd = usethis::use_readme_rmd
+      )
+
+      use_readme_result <- c()
+
+      # Try to run the usethis function
+      tryCatch(
+        {
+          use_readme_result <<- capture.output(use_readme(), type = "message")
+        },
+        error = function(e) {
+          if (grepl(".git", conditionMessage(e), fixed = TRUE)) {
+            if (fs::file_exists(".git")) {
+              # Inside a worktree, .git is a file, not a directory, so usethis
+              # fails because it expects a directory. Okay to ignore this error.
+              return()
+            }
+          }
+          rlang::abort(
+            sprintf("usethis::use_readme_%s() failed", type),
+            parent = e
+          )
+        }
+      )
+
+      use_readme_result <- paste(use_readme_result, collapse = "\n")
+      use_readme_result <- cli::ansi_strip(use_readme_result)
+
+      # Read the template
+      template_content <- paste(
+        readLines(readme_path, warn = FALSE),
+        collapse = "\n"
+      )
+
+      # Build the result message
+      result_parts <- c(
+        if (nzchar(use_readme_result)) {
+          c("## usethis output", "", "```", use_readme_result, "```", "")
+        },
+        "## Template",
+        "",
+        "`````markdown",
+        template_content,
+        "`````",
+        if (!is.null(old_content)) {
+          c(
+            "",
+            sprintf("## Current %s contents", readme_path),
+            "",
+            "`````markdown",
+            old_content,
+            "`````"
+          )
+        }
+      )
+
+      res <- paste(result_parts, collapse = "\n")
+
+      ellmer::ContentToolResult(
+        res,
+        extra = list(
+          display = list(
+            title = sprintf("Use README.%s", readme_path),
+            markdown = res
+          )
+        )
+      )
+    },
+    name = "use_readme",
+    description = "Use a README.md or README.Rmd in your project.
+
+This tool creates a new README file using usethis and ensures that the project is appropriately configured to use the README file. If the README.md or README.Rmd file already exists, it is not overwritten.
+
+When successful, this tool returns:
+1. The template contents
+2. The README contents (if a file already existed)
+
+This allows you to compare the changes and selectively incorporate content from the template. You should incorporate its conventions, but use the README format and style you've worked out with the user to write the final version.
+
+Call this tool ONLY ONCE to set up the README file. Use `btw_tool_write_text_file` to edit the file with appropriate content.",
+    arguments = list(
+      type = ellmer::type_enum(
+        values = c("md", "rmd"),
+        "Type of README to create: 'md' for README.md or 'rmd' for R Markdown with README.Rmd"
+      )
+    ),
+    annotations = ellmer::tool_annotations(
+      title = "Use README",
+      icon = tool_icon("post-add"),
+      read_only_hint = FALSE,
+      idempotent_hint = TRUE,
+      destructive_hint = TRUE
+    )
+  )
 }
 
 #' Generate README Badge Markup
