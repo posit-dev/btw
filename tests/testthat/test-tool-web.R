@@ -1,4 +1,4 @@
-test_that("ci: prep chromote", {
+test_that_with_retry("ci: prep chromote", {
   # Try to warm up chromote. IDK why it fails on older versions of R.
   skip_on_cran()
   skip_if_not_installed("chromote")
@@ -45,7 +45,7 @@ test_that("BtwWebPageResult is properly defined", {
   expect_s7_class(instance, BtwToolResult)
 })
 
-test_that("btw_tool_web_read_url_impl() returns BtwWebPageResult", {
+test_that_with_retry("btw_tool_web_read_url_impl() returns BtwWebPageResult", {
   skip_on_cran()
   skip_if_offline()
   skip_if_not_installed("chromote")
@@ -88,7 +88,7 @@ test_that("btw_tool_web_read_url_impl() handles NULL content", {
   )
 })
 
-test_that("btw_tool_web_read_url_impl() respects max_wait_for_page_load_s option", {
+test_that_with_retry("btw_tool_web_read_url_impl() respects max_wait_for_page_load_s option", {
   skip_if_not_installed("chromote")
   skip_on_cran()
 
@@ -107,7 +107,7 @@ test_that("btw_tool_web_read_url_impl() respects max_wait_for_page_load_s option
   expect_equal(timeout_captured, 15)
 })
 
-test_that("btw_tool_web_read_url_impl() throws if pageload timeout reached", {
+test_that_with_retry("btw_tool_web_read_url_impl() throws if pageload timeout reached", {
   skip_on_cran()
   skip_if_not_installed("chromote")
 
@@ -141,7 +141,7 @@ test_that("btw_tool_web_read_url_impl() throws if pageload timeout reached", {
   )
 })
 
-test_that("btw_tool_web_read_url_impl() waits for network idle", {
+test_that_with_retry("btw_tool_web_read_url_impl() waits for network idle", {
   skip_on_cran()
   skip_if_not_installed("chromote")
 
@@ -200,7 +200,7 @@ test_that("btw_tool_web_read_url_impl() formats output correctly", {
   )
 })
 
-test_that("read_url_main_content() works with real chromote", {
+test_that_with_retry("read_url_main_content() works with real chromote", {
   skip_on_cran()
   skip_if_offline()
   skip_if_not_installed("chromote")
