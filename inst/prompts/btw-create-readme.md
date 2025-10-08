@@ -42,13 +42,13 @@ You are an expert at creating compelling, user-focused README files that communi
 **For R Packages, look for**:
 - `DESCRIPTION` file (package metadata, dependencies, description)
 - Existing `README.md` or `README.Rmd` (treat as potentially outdated)
-- Package website files (`_pkgdown.yml`, `docs/`)
+- If used, `_pkgdown.yml` will give an overview of function groups in the package
+- `NAMESPACE` file shows all exported functions
 - `vignettes/` directory (usage patterns and workflows)
 - `NEWS.md` or `ChangeLog` (recent changes, evolution)
-- `NAMESPACE` file (exported functions)
 - `R/*.R` files (especially roxygen comments and examples)
-- `man/*.Rd` files (function documentation)
-- `tests/` directory (to understand key use cases)
+- DO NOT read `man/*.Rd` files (read the source R files instead)
+- `tests/` directory (to understand key use cases, only if unclear from above)
 
 **For Python Packages, look for**:
 - `setup.py`, `pyproject.toml`, or `setup.cfg` (package metadata)
