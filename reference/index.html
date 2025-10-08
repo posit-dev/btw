@@ -136,6 +136,29 @@
         </dt>
         <dd>Describe a data frame in plain text</dd>
       </dl></div><div class="section level2">
+      <h2 id="tasks-and-agents">Tasks and Agents<a class="anchor" aria-label="anchor" href="#tasks-and-agents"></a></h2>
+
+      <div class="section-desc"><p>Tasks, or agents, are higher-level functions that combine system prompts and tools to perform more complex operations.</p><p>Tasks are typically designed for interactive use (e.g. to collaboratively create a project context file), but they can also be used programmatically.</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="btw_task_create_btw_md.html">btw_task_create_btw_md()</a></code>
+
+        </dt>
+        <dd>Task: Initialize Project Context File</dd>
+      </dl><dl><dt>
+
+          <code><a href="btw_task_create_readme.html">btw_task_create_readme()</a></code>
+
+        </dt>
+        <dd>Task: Create a Polished README</dd>
+      </dl></div><div class="section level2">
       <h2 id="tools">Tools<a class="anchor" aria-label="anchor" href="#tools"></a></h2>
 
       <div class="section-desc"><p>Register all of these tools with an <a href="https://ellmer.tidyverse.org" class="external-link">ellmer</a> chat using <code>chat$set_tools(btw_tools())</code>. These tools generally all have counterparts available via <code><a href="../reference/btw.html">btw()</a></code> and <code><a href="../reference/btw_this.html">btw_this()</a></code> for interactive use. The long and awkward function names are for LLMs and to avoid name clashes with other tools.</p></div>
@@ -236,29 +259,6 @@
 
         </dt>
         <dd>Tool: Read a Web Page as Markdown</dd>
-      </dl></div><div class="section level2">
-      <h2 id="tasks-and-agents">Tasks and Agents<a class="anchor" aria-label="anchor" href="#tasks-and-agents"></a></h2>
-
-      <div class="section-desc"><p>Tasks, or agents, are higher-level functions that combine system prompts and tools to perform more complex operations. In general, tasks are typically designed for interactive use (e.g. to collaboratively create a project context file), but they can also be used programmatically. Agents are similar, but are designed to be used primarily as tools by other LLMs.</p></div>
-
-
-    </div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="btw_task_create_btw_md.html">btw_task_create_btw_md()</a></code>
-
-        </dt>
-        <dd>Task: Initialize Project Context File</dd>
-      </dl><dl><dt>
-
-          <code><a href="btw_task_create_readme.html">btw_task_create_readme()</a></code>
-
-        </dt>
-        <dd>Task: Create a Polished README</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
