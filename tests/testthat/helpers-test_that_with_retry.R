@@ -17,7 +17,7 @@ test_that_with_retry <- function(desc, code, times = 3, verbose = TRUE) {
       attempt <<- attempt + 1
 
       if (verbose && attempt > 1) {
-        cli::cli_inform("\u00a0\u00a0[Retry {attempt - 1}/{times - 1}] {desc}")
+        cli::cli_warn("\u00a0\u00a0[Retry {attempt - 1}/{times - 1}] {desc}")
       }
 
       # Try to evaluate the code, catching both errors and expectation failures
@@ -41,7 +41,7 @@ test_that_with_retry <- function(desc, code, times = 3, verbose = TRUE) {
       # If successful, we're done
       if (result$success) {
         if (verbose && attempt > 1) {
-          cli::cli_inform(
+          cli::cli_warn(
             "\u00a0\u00a0[{cli::col_green('Success')}] {desc} (passed on attempt {attempt})"
           )
         }
@@ -54,7 +54,7 @@ test_that_with_retry <- function(desc, code, times = 3, verbose = TRUE) {
       # If this is the last attempt, re-throw the error
       if (i == times) {
         if (verbose) {
-          cli::cli_inform(
+          cli::cli_warn(
             "\u00a0\u00a0[{cli::col_red('Failed')}] {desc} (failed after {attempt} attempt{?s})"
           )
         }
