@@ -341,10 +341,8 @@ btw_md_template <- function(path) {
 }
 
 use_build_ignore_btw_md <- function(path) {
-  # Check if we're in an R package
-  project_root <- path_find_in_project("DESCRIPTION")
-
-  if (is.null(project_root)) {
+  if (!detect_project_is_r_package()) {
+    # Only if we're in an R package
     return(invisible())
   }
 
