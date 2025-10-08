@@ -225,6 +225,11 @@ flatten_and_check_tools <- function(tools) {
   flat_tools <- list()
   for (i in seq_along(tools)) {
     tool <- tools[[i]]
+
+    if (is.null(tool)) {
+      next
+    }
+
     if (inherits(tool, "ellmer::ToolDef")) {
       flat_tools <- c(flat_tools, list(tool))
     } else if (is.character(tool)) {
