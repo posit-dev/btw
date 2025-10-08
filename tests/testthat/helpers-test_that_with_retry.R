@@ -10,6 +10,7 @@ test_that_with_retry <- function(desc, code, times = 3, verbose = TRUE) {
   code <- substitute(code)
   attempt <- 0
   last_error <- NULL
+  caller_env <- parent.frame()
 
   testthat::test_that(desc, {
     for (i in 1:times) {
@@ -22,7 +23,7 @@ test_that_with_retry <- function(desc, code, times = 3, verbose = TRUE) {
       # Try to evaluate the code, catching both errors and expectation failures
       result <- tryCatch(
         {
-          eval(code, envir = parent.frame(2))
+          eval(code, envir = caller_env)
           list(success = TRUE, error = NULL)
         },
         skip = function(e) {
