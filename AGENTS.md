@@ -310,6 +310,6 @@ Edit files in `inst/prompts/`. These are assembled in `btw_client()` based on co
 - **GitHub:** https://github.com/posit-dev/btw
 - **Website:** https://posit-dev.github.io/btw/
 - **ellmer package:** https://github.com/tidyverse/ellmer
-- **mcptools package:** https://github.com/simonpcouch/mcptools
+- **mcptools package:** https://github.com/posit-dev/mcptools/
 - **AGENTS.md spec:** https://agents.md/
 
