@@ -1,5 +1,4 @@
-test_that(
-  "ci: prep chromote",
+test_that("ci: prep chromote", {
   with_retry({
     # Try to warm up chromote. IDK why it fails on older versions of R.
     skip_on_cran()
@@ -20,7 +19,7 @@ test_that(
 
     expect_true(TRUE)
   })
-)
+})
 
 test_that("has_chromote() detects chromote availability", {
   # When chromote is installed
@@ -110,8 +109,7 @@ test_that("btw_tool_web_read_url_impl() handles NULL content", {
   )
 })
 
-test_that(
-  "btw_tool_web_read_url_impl() respects max_wait_for_page_load_s option",
+test_that("btw_tool_web_read_url_impl() respects max_wait_for_page_load_s option", {
   with_retry({
     skip_if_not_installed("chromote")
     skip_on_cran()
@@ -130,10 +128,9 @@ test_that(
     btw_tool_web_read_url_impl("https://example.com")
     expect_equal(timeout_captured, 15)
   })
-)
+})
 
-test_that(
-  "btw_tool_web_read_url_impl() throws if pageload timeout reached",
+test_that("btw_tool_web_read_url_impl() throws if pageload timeout reached", {
   with_retry({
     skip_on_cran()
     skip_if_not_installed("chromote")
@@ -167,10 +164,9 @@ test_that(
       fixed = TRUE
     )
   })
-)
+})
 
-test_that(
-  "btw_tool_web_read_url_impl() waits for network idle",
+test_that("btw_tool_web_read_url_impl() waits for network idle", {
   with_retry({
     skip_on_cran()
     skip_if_not_installed("chromote")
@@ -211,7 +207,7 @@ test_that(
       fixed = TRUE
     )
   })
-)
+})
 
 test_that("btw_tool_web_read_url_impl() formats output correctly", {
   # Mock read_url_main_content and pandoc_html_simplify
@@ -231,8 +227,7 @@ test_that("btw_tool_web_read_url_impl() formats output correctly", {
   )
 })
 
-test_that(
-  "read_url_main_content() works with real chromote",
+test_that("read_url_main_content() works with real chromote", {
   with_retry({
     skip_on_cran()
     skip_if_offline()
@@ -247,7 +242,7 @@ test_that(
     # Should contain some HTML-related content
     expect_true(grepl("<(div|span|a|p)", html))
   })
-)
+})
 
 test_that("btw_tool_web_read_url() wrapper exists", {
   # Test that the exported wrapper function exists
