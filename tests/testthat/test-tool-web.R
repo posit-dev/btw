@@ -1,22 +1,41 @@
-test_that_with_retry("ci: prep chromote", {
-  # Try to warm up chromote. IDK why it fails on older versions of R.
-  skip_on_cran()
-  skip_if_not_installed("chromote")
-
-  on_ci <- isTRUE(as.logical(Sys.getenv("CI")))
-  skip_if(!on_ci, "Not on CI")
-
-  # Wrap in a `try()` as the test doesn't matter
-  # Only the action of trying to open chromote matters
-  try({
-    chromote <- utils::getFromNamespace(
-      "default_chromote_object",
-      "chromote"
-    )()
-    chromote$new_session()
+test_that("with_retry() works", {
+  third_try <- local({
+    i <- 3
+    function() {
+      i <<- i - 1
+      if (i > 0) {
+        expect_true(FALSE)
+      }
+      expect_true(TRUE)
+    }
   })
 
-  expect_true(TRUE)
+  with_retry(times = 5, {
+    third_try()
+  })
+})
+
+test_that("ci: prep chromote", {
+  with_retry({
+    # Try to warm up chromote. IDK why it fails on older versions of R.
+    skip_on_cran()
+    skip_if_not_installed("chromote")
+
+    on_ci <- isTRUE(as.logical(Sys.getenv("CI")))
+    skip_if(!on_ci, "Not on CI")
+
+    # Wrap in a `try()` as the test doesn't matter
+    # Only the action of trying to open chromote matters
+    try({
+      chromote <- utils::getFromNamespace(
+        "default_chromote_object",
+        "chromote"
+      )()
+      chromote$new_session()
+    })
+
+    expect_true(TRUE)
+  })
 })
 
 test_that("has_chromote() detects chromote availability", {
@@ -45,23 +64,25 @@ test_that("BtwWebPageResult is properly defined", {
   expect_s7_class(instance, BtwToolResult)
 })
 
-test_that_with_retry("btw_tool_web_read_url_impl() returns BtwWebPageResult", {
-  skip_on_cran()
-  skip_if_offline()
-  skip_if_not_installed("chromote")
+test_that("btw_tool_web_read_url_impl() returns BtwWebPageResult", {
+  with_retry({
+    skip_on_cran()
+    skip_if_offline()
+    skip_if_not_installed("chromote")
 
-  result <- btw_tool_web_read_url_impl("https://www.r-project.org/")
+    result <- btw_tool_web_read_url_impl("https://www.r-project.org/")
 
-  expect_s7_class(result, BtwWebPageResult)
-  expect_s7_class(result, BtwToolResult)
-  expect_s7_class(result, ellmer::ContentToolResult)
-  expect_type(result@value, "character")
-  expect_match(
-    result@value,
-    '<web_page_content url="https://www.r-project.org/',
-    fixed = TRUE
-  )
-  expect_match(result@value, "www.r-project.org")
+    expect_s7_class(result, BtwWebPageResult)
+    expect_s7_class(result, BtwToolResult)
+    expect_s7_class(result, ellmer::ContentToolResult)
+    expect_type(result@value, "character")
+    expect_match(
+      result@value,
+      '<web_page_content url="https://www.r-project.org/',
+      fixed = TRUE
+    )
+    expect_match(result@value, "www.r-project.org")
+  })
 })
 
 test_that("btw_tool_web_read_url_impl() handles empty content", {
@@ -88,32 +109,35 @@ test_that("btw_tool_web_read_url_impl() handles NULL content", {
   )
 })
 
-test_that_with_retry("btw_tool_web_read_url_impl() respects max_wait_for_page_load_s option", {
-  skip_if_not_installed("chromote")
-  skip_on_cran()
+test_that("btw_tool_web_read_url_impl() respects max_wait_for_page_load_s option", {
+  with_retry({
+    skip_if_not_installed("chromote")
+    skip_on_cran()
 
-  # Mock to capture the timeout parameter
-  timeout_captured <- NULL
-  local_mocked_bindings(
-    read_url_main_content = function(url, timeout = 10) {
-      timeout_captured <<- timeout
-      "<html><body>Test content</body></html>"
-    }
-  )
+    # Mock to capture the timeout parameter
+    timeout_captured <- NULL
+    local_mocked_bindings(
+      read_url_main_content = function(url, timeout = 10) {
+        timeout_captured <<- timeout
+        "<html><body>Test content</body></html>"
+      }
+    )
 
-  # Test with option set
-  withr::local_options(btw.max_wait_for_page_load_s = 15)
-  btw_tool_web_read_url_impl("https://example.com")
-  expect_equal(timeout_captured, 15)
+    # Test with option set
+    withr::local_options(btw.max_wait_for_page_load_s = 15)
+    btw_tool_web_read_url_impl("https://example.com")
+    expect_equal(timeout_captured, 15)
+  })
 })
 
-test_that_with_retry("btw_tool_web_read_url_impl() throws if pageload timeout reached", {
-  skip_on_cran()
-  skip_if_not_installed("chromote")
+test_that("btw_tool_web_read_url_impl() throws if pageload timeout reached", {
+  with_retry({
+    skip_on_cran()
+    skip_if_not_installed("chromote")
 
-  tmp_html <- withr::local_tempfile(
-    fileext = ".html",
-    lines = '<!DOCTYPE html>
+    tmp_html <- withr::local_tempfile(
+      fileext = ".html",
+      lines = '<!DOCTYPE html>
 <html>
 <head>
     <title>Test Page</title>
@@ -129,25 +153,27 @@ test_that_with_retry("btw_tool_web_read_url_impl() throws if pageload timeout re
 </body>
 </html>
 '
-  )
+    )
 
-  expect_error(
-    btw_tool_web_read_url_impl(
-      paste0("file:///", tmp_html),
-      max_wait_for_page_load_s = 1
-    ),
-    "Page.loadEventFired",
-    fixed = TRUE
-  )
+    expect_error(
+      btw_tool_web_read_url_impl(
+        paste0("file:///", tmp_html),
+        max_wait_for_page_load_s = 1
+      ),
+      "Page.loadEventFired",
+      fixed = TRUE
+    )
+  })
 })
 
-test_that_with_retry("btw_tool_web_read_url_impl() waits for network idle", {
-  skip_on_cran()
-  skip_if_not_installed("chromote")
+test_that("btw_tool_web_read_url_impl() waits for network idle", {
+  with_retry({
+    skip_on_cran()
+    skip_if_not_installed("chromote")
 
-  tmp_html <- withr::local_tempfile(
-    fileext = ".html",
-    lines = "<!DOCTYPE html>
+    tmp_html <- withr::local_tempfile(
+      fileext = ".html",
+      lines = "<!DOCTYPE html>
 <html>
 <head>
     <title>Test Page</title>
@@ -170,16 +196,17 @@ test_that_with_retry("btw_tool_web_read_url_impl() waits for network idle", {
 </body>
 </html>
 "
-  )
+    )
 
-  expect_warning(
-    btw_tool_web_read_url_impl(
-      paste0("file:///", tmp_html),
-      max_wait_for_page_load_s = 1,
-    ),
-    "network idle",
-    fixed = TRUE
-  )
+    expect_warning(
+      btw_tool_web_read_url_impl(
+        paste0("file:///", tmp_html),
+        max_wait_for_page_load_s = 1,
+      ),
+      "network idle",
+      fixed = TRUE
+    )
+  })
 })
 
 test_that("btw_tool_web_read_url_impl() formats output correctly", {
@@ -200,19 +227,21 @@ test_that("btw_tool_web_read_url_impl() formats output correctly", {
   )
 })
 
-test_that_with_retry("read_url_main_content() works with real chromote", {
-  skip_on_cran()
-  skip_if_offline()
-  skip_if_not_installed("chromote")
+test_that("read_url_main_content() works with real chromote", {
+  with_retry({
+    skip_on_cran()
+    skip_if_offline()
+    skip_if_not_installed("chromote")
 
-  # Test with a simple, stable URL
-  html <- read_url_main_content("https://www.r-project.org/", timeout = 10)
+    # Test with a simple, stable URL
+    html <- read_url_main_content("https://www.r-project.org/", timeout = 10)
 
-  # TODO: Update read_url_main_content() to better capture r-project.org
-  expect_type(html, "character")
-  expect_true(nzchar(html))
-  # Should contain some HTML-related content
-  expect_true(grepl("<(div|span|a|p)", html))
+    # TODO: Update read_url_main_content() to better capture r-project.org
+    expect_type(html, "character")
+    expect_true(nzchar(html))
+    # Should contain some HTML-related content
+    expect_true(grepl("<(div|span|a|p)", html))
+  })
 })
 
 test_that("btw_tool_web_read_url() wrapper exists", {

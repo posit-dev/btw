@@ -1,65 +1,106 @@
-#' Run a testthat test with automatic retry on failure
+#' Execute code with automatic retry on failure
 #'
-#' @param desc Test description (same as test_that)
-#' @param code Test code to execute
+#' @param code Code to execute
 #' @param times Number of times to retry (default: 3)
 #' @param verbose Whether to print retry messages (default: TRUE)
 #'
 #' @noRd
-test_that_with_retry <- function(desc, code, times = 3, verbose = TRUE) {
+with_retry <- function(
+  code,
+  times = 3,
+  verbose = TRUE,
+  .envir = parent.frame(),
+  .desc = NULL
+) {
   code <- substitute(code)
   attempt <- 0
   last_error <- NULL
-  caller_env <- parent.frame()
+  times <- max(1, times)
 
-  testthat::test_that(desc, {
-    for (i in 1:times) {
-      attempt <<- attempt + 1
+  test_that_env <- get_test_that_env()
+  if (!is.null(test_that_env)) {
+    .desc <- get0("frame", test_that_env)$desc
+  } else if (is.null(.envir)) {
+    .envir <- parent.frame()
+  }
 
-      if (verbose && attempt > 1) {
-        cli::cli_warn("\u00a0\u00a0[Retry {attempt - 1}/{times - 1}] {desc}")
-      }
+  .desc <- .desc %||% "code with retry"
 
-      # Try to evaluate the code, catching both errors and expectation failures
-      result <- tryCatch(
-        {
-          eval(code, envir = caller_env)
-          list(success = TRUE, error = NULL)
-        },
-        skip = function(e) {
-          # Skips are successes
-          list(success = TRUE, error = NULL)
-        },
-        expectation_failure = function(e) {
-          list(success = FALSE, error = e)
-        },
-        error = function(e) {
-          list(success = FALSE, error = e)
-        }
-      )
+  for (i in seq_len(times)) {
+    attempt <- i
 
-      # If successful, we're done
-      if (result$success) {
-        if (verbose && attempt > 1) {
-          cli::cli_warn(
-            "\u00a0\u00a0[{cli::col_green('Success')}] {desc} (passed on attempt {attempt})"
-          )
-        }
-        return(invisible(NULL))
-      }
-
-      # Store the error for potential re-throw
-      last_error <<- result$error
-
-      # If this is the last attempt, re-throw the error
-      if (i == times) {
-        if (verbose) {
-          cli::cli_warn(
-            "\u00a0\u00a0[{cli::col_red('Failed')}] {desc} (failed after {attempt} attempt{?s})"
-          )
-        }
-        rlang::cnd_signal(last_error)
-      }
+    if (verbose && attempt > 1) {
+      cli::cli_inform("\u00a0\u00a0[Retry {attempt}/{times}] { .desc}")
     }
-  })
+
+    if (attempt == times) {
+      # Last attempt, run without catching errors
+      return(eval(code, envir = .envir))
+    }
+
+    # Try to evaluate the code, catching both errors and expectation failures
+    res <- tryCatch(
+      {
+        eval(code, envir = .envir)
+        list(success = TRUE, error = NULL)
+      },
+      skip = function(e) {
+        # Skips should propagate immediately
+        rlang::cnd_signal(e)
+      },
+      expectation_failure = function(e) {
+        list(success = FALSE, error = e)
+      },
+      error = function(e) {
+        list(success = FALSE, error = e)
+      }
+    )
+
+    if (res$success) {
+      return(invisible())
+    }
+  }
+}
+
+get_test_that_env <- function() {
+  frames <- sys.frames()
+  calls <- sys.calls()
+  n <- length(calls)
+
+  for (i in rev(seq_len(n))) {
+    call <- calls[[i]]
+    if (!is.call(call)) {
+      next
+    }
+
+    fn <- call[[1L]]
+    if (!is_test_that_call(fn)) {
+      next
+    }
+
+    # Return the frame “inside” test_that() where its arguments are bound
+    inner_idx <- if (i < n) i + 1L else i
+    return(frames[[inner_idx]])
+  }
+
+  NULL
+}
+
+is_test_that_call <- function(fn) {
+  # Direct call: test_that(...)
+  if (is.name(fn) && identical(as.character(fn), "test_that")) {
+    return(TRUE)
+  }
+
+  # Namespaced call: testthat::test_that(...) or testthat:::test_that(...)
+  if (
+    is.call(fn) &&
+      length(fn) == 3L &&
+      as.character(fn[[1L]]) %in% c("::", ":::") &&
+      identical(as.character(fn[[3L]]), "test_that")
+  ) {
+    return(TRUE)
+  }
+
+  FALSE
 }
