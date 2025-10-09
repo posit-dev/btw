@@ -17,6 +17,10 @@ specific list of \pkg{btw} tools that can be augmented with additional
 tools. Alternatively, you can pass a path to an R script that returns a
 list of tools as supported by \code{\link[mcptools:server]{mcptools::mcp_server()}}.}
 }
+\value{
+Returns the result of \code{\link[mcptools:server]{mcptools::mcp_server()}} or
+\code{\link[mcptools:server]{mcptools::mcp_session()}}.
+}
 \description{
 \code{btw_mcp_server()} starts an MCP server with tools from \code{\link[=btw_tools]{btw_tools()}}, which
 can provide MCP clients like Claude Desktop or Claude Code with additional

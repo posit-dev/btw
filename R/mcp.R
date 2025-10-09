@@ -61,12 +61,6 @@
 #' }
 #' ```
 #'
-#' @param tools A list of [ellmer::tool()]s to use in the MCP server, defaults
-#'   to the tools provided by [btw_tools()]. Use [btw_tools()] to subset to
-#'   specific list of \pkg{btw} tools that can be augmented with additional
-#'   tools. Alternatively, you can pass a path to an R script that returns a
-#'   list of tools as supported by [mcptools::mcp_server()].
-#'
 #' @examples
 #' # Should only be run non-interactively, and
 #' # will block the current R process once called.
@@ -82,6 +76,15 @@
 #' # To allow the server to access variables in specific
 #' # sessions, call `btw_mcp_session()` in that session:
 #' btw_mcp_session()
+#'
+#' @param tools A list of [ellmer::tool()]s to use in the MCP server, defaults
+#'   to the tools provided by [btw_tools()]. Use [btw_tools()] to subset to
+#'   specific list of \pkg{btw} tools that can be augmented with additional
+#'   tools. Alternatively, you can pass a path to an R script that returns a
+#'   list of tools as supported by [mcptools::mcp_server()].
+#'
+#' @return Returns the result of [mcptools::mcp_server()] or
+#'   [mcptools::mcp_session()].
 #'
 #' @name mcp
 #' @export

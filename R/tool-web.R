@@ -3,6 +3,10 @@ NULL
 
 #' Tool: Read a Web Page as Markdown
 #'
+#' @details
+#' You can control the maximum time to wait for the page to load by setting
+#' the `btw.max_wait_for_page_load_s` option globally in your R session.
+#'
 #' @examplesIf rlang::is_installed("chromote") && rlang::is_interactive()
 #' btw_tool_web_read_url("https://www.r-project.org/")
 #' btw_tool_web_read_url(
@@ -12,9 +16,9 @@ NULL
 #' @param url The URL of the web page to read.
 #' @inheritParams btw_tool_docs_package_news
 #'
-#' @details
-#' You can control the maximum time to wait for the page to load by setting
-#' the `btw.max_wait_for_page_load_s` option globally in your R session.
+#' @return Returns a `BtwWebPageResult` object that inherits from
+#'   [ellmer::ContentToolResult] containing the markdown content of the web
+#'   page.
 #'
 #' @family Tools
 #' @export

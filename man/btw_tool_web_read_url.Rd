@@ -13,6 +13,11 @@ btw_tool_web_read_url(url, `_intent` = "")
 When the tool is used by an LLM, the model will use this argument to
 explain why it called the tool.}
 }
+\value{
+Returns a \code{BtwWebPageResult} object that inherits from
+\link[ellmer:Content]{ellmer::ContentToolResult} containing the markdown content of the web
+page.
+}
 \description{
 Tool: Read a Web Page as Markdown
 }
