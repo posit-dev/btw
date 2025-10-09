@@ -1,3 +1,20 @@
+test_that("with_retry() works", {
+  third_try <- local({
+    i <- 3
+    function() {
+      i <<- i - 1
+      if (i > 0) {
+        expect_true(FALSE)
+      }
+      expect_true(TRUE)
+    }
+  })
+
+  with_retry(times = 5, {
+    third_try()
+  })
+})
+
 test_that("ci: prep chromote", {
   with_retry({
     # Try to warm up chromote. IDK why it fails on older versions of R.
@@ -65,23 +82,6 @@ test_that("btw_tool_web_read_url_impl() returns BtwWebPageResult", {
       fixed = TRUE
     )
     expect_match(result@value, "www.r-project.org")
-  })
-})
-
-test_that("with_retry() works", {
-  third_try <- local({
-    i <- 3
-    function() {
-      i <<- i - 1
-      if (i > 0) {
-        expect_true(FALSE)
-      }
-      expect_true(TRUE)
-    }
-  })
-
-  with_retry(times = 5, {
-    third_try()
   })
 })
 
