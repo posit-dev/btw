@@ -1,4 +1,4 @@
-test_that("btw_tool_git_status() works", {
+test_that("btw_tool_git_status()", {
   skip_if_not_installed("gert")
 
   local_temp_git_repo()
@@ -28,7 +28,7 @@ test_that("btw_tool_git_status() works", {
   expect_match(result_unstaged@value, "No changes")
 })
 
-test_that("btw_tool_git_diff() works", {
+test_that("btw_tool_git_diff()", {
   skip_if_not_installed("gert")
 
   local_temp_git_repo()
@@ -67,7 +67,7 @@ test_that("btw_tool_git_diff() works", {
   expect_match(result_no_changes@value, "No.*changes")
 })
 
-test_that("btw_tool_git_log() works", {
+test_that("btw_tool_git_log()", {
   skip_if_not_installed("gert")
 
   local_temp_git_repo()
@@ -91,7 +91,7 @@ test_that("btw_tool_git_log() works", {
   expect_match(result_limited@value, "Second commit")
 })
 
-test_that("btw_tool_git_commit() works", {
+test_that("btw_tool_git_commit()", {
   skip_if_not_installed("gert")
 
   local_temp_git_repo()
@@ -124,7 +124,7 @@ test_that("btw_tool_git_commit() works", {
   expect_match(result2@value, "Add second file")
 })
 
-test_that("btw_tool_git_branch_list() works", {
+test_that("btw_tool_git_branch_list()", {
   skip_if_not_installed("gert")
 
   local_temp_git_repo()
@@ -148,7 +148,7 @@ test_that("btw_tool_git_branch_list() works", {
   expect_match(result2@value, "feature")
 })
 
-test_that("btw_tool_git_branch_create() works", {
+test_that("btw_tool_git_branch_create()", {
   skip_if_not_installed("gert")
 
   local_temp_git_repo()
@@ -170,7 +170,7 @@ test_that("btw_tool_git_branch_create() works", {
   expect_true("feature-branch" %in% branches$name)
 })
 
-test_that("btw_tool_git_branch_checkout() works", {
+test_that("btw_tool_git_branch_checkout()", {
   skip_if_not_installed("gert")
 
   local_temp_git_repo()
