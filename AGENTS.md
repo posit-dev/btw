@@ -294,7 +294,34 @@ Edit files in `inst/prompts/`. These are assembled in `btw_client()` based on co
 - **Tool functions return `tool_result()` objects** with value and optional display metadata
 - **All tool wrappers accept `_intent` parameter** (added automatically by `wrap_with_intent()`)
 - **Snapshot tests for tool outputs** to catch formatting changes
-- **Use `check_*()` functions** from rlang for argument validation
+- **Use `check_*()` functions** argument validation, described below
+
+### Type Check Functions
+
+#### Scalars
+- `check_bool()` - Validates single TRUE/FALSE value
+- `check_string()` - Validates single string (allows empty by default)
+- `check_name()` - Validates non-empty string for use as name
+- `check_number_decimal()` - Validates single numeric value (allows decimals)
+- `check_number_whole()` - Validates single integer value
+- `check_symbol()` - Validates R symbol/name object
+- `check_arg()` - Validates argument name (symbol)
+- `check_call()` - Validates defused call object
+- `check_environment()` - Validates environment object
+- `check_function()` - Validates function (any type)
+- `check_closure()` - Validates R function (not primitive/builtin)
+- `check_formula()` - Validates formula object
+
+#### Vectors
+- `check_character()` - Validates character vector
+- `check_logical()` - Validates logical vector
+- `check_data_frame()` - Validates data frame
+
+#### Common Parameters
+- All functions support `allow_null` parameter
+- Most scalars support `allow_na`
+- Number checkers support `min`/`max` bounds and `allow_infinite`
+- All use `arg`/`call` for error context
 
 ## Important Notes
 
