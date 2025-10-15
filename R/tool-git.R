@@ -128,7 +128,7 @@ btw_tool_git_diff_impl <- function(ref = NULL) {
     value,
     display = list(
       markdown = value,
-      title = shiny::HTML(sprintf(
+      title = HTML(sprintf(
         "Git Diff%s",
         if (!is.null(ref)) sprintf(" (%s)", ref) else ""
       ))
@@ -502,7 +502,7 @@ btw_tool_git_branch_create_impl <- function(
     result,
     display = list(
       markdown = result,
-      title = shiny::HTML(sprintf(
+      title = htmltools::HTML(sprintf(
         "Git Create Branch <code>%s</code>",
         branch
       ))
@@ -590,7 +590,7 @@ btw_tool_git_branch_checkout_impl <- function(
     result,
     display = list(
       markdown = md_code_block("", result),
-      title = shiny::HTML("Git Checkout")
+      title = HTML("Git Checkout")
     )
   )
 }
