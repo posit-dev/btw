@@ -189,6 +189,7 @@ tool_icon <- local({
   })
   x <- do.call(rbind, x)
   x <- x[order(x$Group, x$Name), ]
+  x$Name <- sprintf("[%s()]", x$Name)
   md_table(x)
 }
 # nocov end
