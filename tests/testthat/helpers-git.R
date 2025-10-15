@@ -7,7 +7,10 @@ local_temp_git_repo <- function(
   withr::local_dir(repo, .local_envir = .local_envir)
   gert::git_init(".")
 
+  # Set default branch to 'main' instead of 'master'
   gert::git_config_set("init.defaultBranch", "main")
+  . <- system("git symbolic-ref HEAD refs/heads/main", intern = TRUE)
+
   gert::git_config_set("user.name", user_name)
   gert::git_config_set("user.email", user_email)
 
