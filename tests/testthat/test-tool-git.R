@@ -20,7 +20,10 @@ test_that("btw_tool_git_status()", {
   result_staged_empty <- btw_tool_git_status(staged = TRUE)
   expect_btw_tool_result(result_staged_empty, has_data = FALSE)
   expect_match(result_staged_empty@value, "No changes")
-  expect_snapshot(cli::cat_line(result_staged_empty@value), transform = scrub_git_details)
+  expect_snapshot(
+    cli::cat_line(result_staged_empty@value),
+    transform = scrub_git_details
+  )
 
   # Stage the file
   gert::git_add("test.txt")
@@ -28,7 +31,10 @@ test_that("btw_tool_git_status()", {
   # Check staged only
   result_staged <- btw_tool_git_status(staged = TRUE)
   expect_match(result_staged@value, "test\\.txt")
-  expect_snapshot(cli::cat_line(result_staged@value), transform = scrub_git_details)
+  expect_snapshot(
+    cli::cat_line(result_staged@value),
+    transform = scrub_git_details
+  )
 
   # Check unstaged only (should be empty)
   result_unstaged <- btw_tool_git_status(staged = FALSE)
@@ -291,4 +297,112 @@ test_that("git tools validate arguments", {
   # btw_tool_git_branch_checkout
   expect_error(btw_tool_git_branch_checkout(branch = 123))
   expect_error(btw_tool_git_branch_checkout(branch = "test", force = "invalid"))
+})
+
+test_that("git tools work together", {
+  skip_if_not_installed("gert")
+  local_temp_git_repo()
+
+  # Workflow 1: Check status, stage, commit, verify log
+  # Create some files
+  writeLines("Initial content", "file1.txt")
+  writeLines("More content", "file2.txt")
+
+  # Check status to see untracked files
+  status1 <- btw_tool_git_status()
+  expect_match(status1@value, "file1\\.txt")
+  expect_match(status1@value, "file2\\.txt")
+
+  # Stage and commit first file
+  commit1 <- btw_tool_git_commit(
+    message = "Add file1",
+    files = "file1.txt"
+  )
+  expect_btw_tool_result(commit1, has_data = FALSE)
+
+  # Verify log shows the commit
+  log1 <- btw_tool_git_log(max = 1)
+  expect_match(log1@value, "Add file1")
+
+  # Extract commit SHA from log data to use in diff
+  commit_sha <- log1@extra$data$commit[1]
+  expect_true(nchar(commit_sha) == 7)
+
+  # Workflow 2: Make changes, check diff, stage, commit
+  # Modify file1
+  writeLines(c("Initial content", "Added line"), "file1.txt")
+
+  # Check diff shows unstaged changes
+  diff_unstaged <- btw_tool_git_diff()
+  expect_btw_tool_result(diff_unstaged, has_data = FALSE)
+  # Should show a diff with changes
+  expect_true(any(grepl("@@", diff_unstaged@value, fixed = TRUE)))
+  expect_snapshot(
+    cli::cat_line(diff_unstaged@value),
+    transform = scrub_git_details
+  )
+
+  # Stage the changes
+  gert::git_add("file1.txt")
+
+  # Check diff shows staged changes
+  diff_staged <- btw_tool_git_diff(ref = "HEAD")
+  expect_btw_tool_result(diff_staged, has_data = FALSE)
+  # Should show a diff with changes
+  expect_true(any(grepl("@@", diff_staged@value, fixed = TRUE)))
+  expect_snapshot(
+    cli::cat_line(diff_staged@value),
+    transform = scrub_git_details
+  )
+
+  # Commit the changes
+  commit2 <- btw_tool_git_commit(
+    message = "Update file1",
+    files = NULL # Already staged
+  )
+  expect_btw_tool_result(commit2, has_data = FALSE)
+
+  # Workflow 3: Use log to find commits
+  # Get log of both commits
+  log_all <- btw_tool_git_log(max = 10)
+  expect_btw_tool_result(log_all)
+  expect_equal(nrow(log_all@extra$data), 2)
+  expect_match(log_all@value, "Add file1")
+  expect_match(log_all@value, "Update file1")
+  expect_snapshot(cli::cat_line(log_all@value), transform = scrub_git_details)
+
+  # Get commits SHAs from log - verifies we can use log data
+  commit_shas <- log_all@extra$data$commit
+  expect_equal(length(commit_shas), 2)
+  # Both should be 7-character SHAs
+  expect_true(all(nchar(commit_shas) == 7))
+
+  # Workflow 4: Multiple file workflow with status tracking
+  # Add second file
+  commit3 <- btw_tool_git_commit(
+    message = "Add file2",
+    files = "file2.txt"
+  )
+  expect_btw_tool_result(commit3, has_data = FALSE)
+
+  # Create third file but don't commit
+  writeLines("Third file", "file3.txt")
+
+  # Status should show file3 as untracked, others committed
+  status_final <- btw_tool_git_status()
+  expect_match(status_final@value, "file3\\.txt")
+  expect_no_match(status_final@value, "file1\\.txt")
+  expect_no_match(status_final@value, "file2\\.txt")
+  expect_snapshot(
+    cli::cat_line(status_final@value),
+    transform = scrub_git_details
+  )
+
+  # Verify log shows all three commits
+  log_final <- btw_tool_git_log(max = 10)
+  expect_equal(nrow(log_final@extra$data), 3)
+  expect_match(log_final@value, "Add file1")
+  expect_match(log_final@value, "Update file1")
+  expect_match(log_final@value, "Add file2")
+  expect_snapshot(cli::cat_line(log_final@value), transform = scrub_git_details)
 })

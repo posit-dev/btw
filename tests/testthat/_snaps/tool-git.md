@@ -79,3 +79,65 @@
     Output
       Checked out branch 'feature'
 
+# git tools work together
+
+    Code
+      cli::cat_line(diff_unstaged@value)
+    Output
+      ```diff
+      diff --git a/file1.txt b/file1.txt
+      index abcd123..abcd123 100644
+      --- a/file1.txt
+      +++ b/file1.txt
+      @@ -1 +1,2 @@
+       Initial content
+      +Added line
+      
+      ```
+
+---
+
+    Code
+      cli::cat_line(diff_staged@value)
+    Output
+      ```diff
+      diff --git a/file1.txt b/file1.txt
+      new file mode 100644
+      index abcd123..abcd123
+      --- /dev/null
+      +++ b/file1.txt
+      @@ -0,0 +1 @@
+      +Initial content
+      
+      ```
+
+---
+
+    Code
+      cli::cat_line(log_all@value)
+    Output
+      | commit | author | time | message |
+      |--------|--------|------|---------|
+      | abcd123 | Test User <test@example.com> | 2025-10-11 12:13:14 | Update file1 |
+      | abcd123 | Test User <test@example.com> | 2025-10-11 12:13:14 | Add file1 |
+
+---
+
+    Code
+      cli::cat_line(status_final@value)
+    Output
+      | file | status | staged |
+      |------|--------|--------|
+      | file3.txt | new | FALSE |
+
+---
+
+    Code
+      cli::cat_line(log_final@value)
+    Output
+      | commit | author | time | message |
+      |--------|--------|------|---------|
+      | abcd123 | Test User <test@example.com> | 2025-10-11 12:13:14 | Add file2 |
+      | abcd123 | Test User <test@example.com> | 2025-10-11 12:13:14 | Update file1 |
+      | abcd123 | Test User <test@example.com> | 2025-10-11 12:13:14 | Add file1 |
+
