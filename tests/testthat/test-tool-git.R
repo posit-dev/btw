@@ -1,15 +1,7 @@
 test_that("btw_tool_git_status() works", {
   skip_if_not_installed("gert")
 
-  repo <- withr::local_tempdir()
-  gert::git_init(repo)
-  withr::local_dir(repo)
-
-  # Configure user if not set
-  if (!gert::user_is_configured()) {
-    gert::git_config_set("user.name", "Test User")
-    gert::git_config_set("user.email", "test@example.com")
-  }
+  local_temp_git_repo()
 
   # Empty repo - no changes
   result <- btw_tool_git_status()
@@ -39,14 +31,7 @@ test_that("btw_tool_git_status() works", {
 test_that("btw_tool_git_diff() works", {
   skip_if_not_installed("gert")
 
-  repo <- withr::local_tempdir()
-  gert::git_init(repo)
-  withr::local_dir(repo)
-
-  if (!gert::user_is_configured()) {
-    gert::git_config_set("user.name", "Test User")
-    gert::git_config_set("user.email", "test@example.com")
-  }
+  local_temp_git_repo()
 
   # No changes initially
   result <- btw_tool_git_diff()
@@ -85,14 +70,7 @@ test_that("btw_tool_git_diff() works", {
 test_that("btw_tool_git_log() works", {
   skip_if_not_installed("gert")
 
-  repo <- withr::local_tempdir()
-  gert::git_init(repo)
-  withr::local_dir(repo)
-
-  if (!gert::user_is_configured()) {
-    gert::git_config_set("user.name", "Test User")
-    gert::git_config_set("user.email", "test@example.com")
-  }
+  local_temp_git_repo()
 
   # Create initial commit
   writeLines("test", "test.txt")
@@ -116,14 +94,7 @@ test_that("btw_tool_git_log() works", {
 test_that("btw_tool_git_commit() works", {
   skip_if_not_installed("gert")
 
-  repo <- withr::local_tempdir()
-  gert::git_init(repo)
-  withr::local_dir(repo)
-
-  if (!gert::user_is_configured()) {
-    gert::git_config_set("user.name", "Test User")
-    gert::git_config_set("user.email", "test@example.com")
-  }
+  local_temp_git_repo()
 
   # Create a file
   writeLines("test content", "test.txt")
@@ -156,14 +127,7 @@ test_that("btw_tool_git_commit() works", {
 test_that("btw_tool_git_branch_list() works", {
   skip_if_not_installed("gert")
 
-  repo <- withr::local_tempdir()
-  gert::git_init(repo)
-  withr::local_dir(repo)
-
-  if (!gert::user_is_configured()) {
-    gert::git_config_set("user.name", "Test User")
-    gert::git_config_set("user.email", "test@example.com")
-  }
+  local_temp_git_repo()
 
   # Create initial commit (needed for branches to show up)
   writeLines("test", "test.txt")
@@ -187,14 +151,7 @@ test_that("btw_tool_git_branch_list() works", {
 test_that("btw_tool_git_branch_create() works", {
   skip_if_not_installed("gert")
 
-  repo <- withr::local_tempdir()
-  gert::git_init(repo)
-  withr::local_dir(repo)
-
-  if (!gert::user_is_configured()) {
-    gert::git_config_set("user.name", "Test User")
-    gert::git_config_set("user.email", "test@example.com")
-  }
+  local_temp_git_repo()
 
   # Create initial commit
   writeLines("test", "test.txt")
@@ -216,14 +173,7 @@ test_that("btw_tool_git_branch_create() works", {
 test_that("btw_tool_git_branch_checkout() works", {
   skip_if_not_installed("gert")
 
-  repo <- withr::local_tempdir()
-  gert::git_init(repo)
-  withr::local_dir(repo)
-
-  if (!gert::user_is_configured()) {
-    gert::git_config_set("user.name", "Test User")
-    gert::git_config_set("user.email", "test@example.com")
-  }
+  local_temp_git_repo()
 
   # Create initial commit
   writeLines("test", "test.txt")
