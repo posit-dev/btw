@@ -17,7 +17,7 @@ NULL
 #'
 #' @return Returns a character table of file statuses.
 #'
-#' @family Tools
+#' @family git tools
 #' @export
 btw_tool_git_status <- function(staged, pathspec, `_intent`) {}
 
@@ -35,16 +35,14 @@ btw_tool_git_status_impl <- function(
     return(btw_tool_result("No changes to report"))
   }
 
-  # Select relevant columns
-  fields <- c("file", "status", "staged")
-  status_display <- status[fields]
-
-  md_res <- md_table(status_display)
+  md_res <- glue_(
+    "{{ status$file }} [{{ status$status }}]{{ ifelse(status$staged, ' +staged', ' -unstaged') }}"
+  )
 
   btw_tool_result(
-    md_res,
-    data = status_display,
-    display = list(markdown = md_res)
+    paste(md_res, collapse = "\n"),
+    data = status,
+    display = list(markdown = paste("*", md_res, collapse = "\n"))
   )
 }
 
@@ -60,19 +58,20 @@ btw_tool_git_status_impl <- function(
 WHEN TO USE:
 * Use this tool to see which files have been modified, staged, or are untracked.
 * This is typically the first tool to call when working with git operations.
+* If a staged file also has unstaged modifications, only the staged file and status are listed.
 
-RETURNS: A table showing file paths, their status (new, modified, deleted, etc.), and whether they are staged.
+RETURNS: A list of file paths, their status (new, modified, deleted, etc.), and whether they are staged or unstaged.
       )---",
       annotations = ellmer::tool_annotations(
         title = "Git Status",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
-        idempotent_hint = TRUE,
+        idempotent_hint = FALSE,
         btw_can_register = function() rlang::is_installed("gert")
       ),
       arguments = list(
         staged = ellmer::type_boolean(
-          "Optional. Return only staged (TRUE) or unstaged files (FALSE). Use NULL to show both (default).",
+          "Optional. Return only staged (true) or unstaged files (false). Use null to show both (default).",
           required = FALSE
         ),
         pathspec = ellmer::type_array(
@@ -103,7 +102,7 @@ RETURNS: A table showing file paths, their status (new, modified, deleted, etc.)
 #'
 #' @return Returns a diff patch as a formatted string.
 #'
-#' @family Tools
+#' @family git tools
 #' @export
 btw_tool_git_diff <- function(ref, `_intent`) {}
 
@@ -130,7 +129,7 @@ btw_tool_git_diff_impl <- function(ref = NULL) {
     display = list(
       markdown = value,
       title = HTML(sprintf(
-        "Diff%s",
+        "Git Diff%s",
         if (!is.null(ref)) sprintf(" (%s)", ref) else ""
       ))
     )
@@ -183,20 +182,20 @@ RETURNS: A unified diff patch showing the changes.
 #'
 #' @param ref Revision string with a branch/tag/commit value. Defaults to
 #'   `"HEAD"`.
-#' @param max Maximum number of commits to retrieve. Defaults to 100.
+#' @param max Maximum number of commits to retrieve. Defaults to 10.
 #' @param after Optional date or timestamp: only include commits after this
 #'   date.
 #' @inheritParams btw_tool_docs_package_news
 #'
 #' @return Returns a character table of commit history.
 #'
-#' @family Tools
+#' @family git tools
 #' @export
 btw_tool_git_log <- function(ref, max, after, `_intent`) {}
 
 btw_tool_git_log_impl <- function(
   ref = "HEAD",
-  max = 100,
+  max = 10,
   after = NULL
 ) {
   check_installed("gert")
@@ -211,10 +210,11 @@ btw_tool_git_log_impl <- function(
   }
 
   # Select and format relevant columns
-  fields <- c("commit", "author", "time", "message")
-  log_display <- log[fields]
+  names(log)[names(log) == "files"] <- "n_files"
+  fields <- c("message", "author", "time", "n_files", "commit")
 
   # Truncate commit SHA to 7 characters for display
+  log_display <- log
   log_display$commit <- substr(log_display$commit, 1, 7)
 
   # Truncate long messages
@@ -231,12 +231,12 @@ btw_tool_git_log_impl <- function(
     character(1)
   )
 
-  md_res <- md_table(log_display)
-
   btw_tool_result(
-    md_res,
-    data = log_display,
-    display = list(markdown = md_res)
+    md_kv_table(log_display[fields]),
+    data = log,
+    display = list(
+      markdown = md_table(log_display[rev(fields)])
+    )
   )
 }
 
@@ -254,13 +254,13 @@ WHEN TO USE:
 * Useful for understanding the history of changes before making new commits.
 * Can filter by branch, number of commits, or date range.
 
-RETURNS: A table with commit SHA (short), author, timestamp, and message.
+RETURNS: A list of commits with SHA (short), author, timestamp, number of files, and message.
       )---",
       annotations = ellmer::tool_annotations(
         title = "Git Log",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
-        idempotent_hint = TRUE,
+        idempotent_hint = FALSE,
         btw_can_register = function() rlang::is_installed("gert")
       ),
       arguments = list(
@@ -269,7 +269,7 @@ RETURNS: A table with commit SHA (short), author, timestamp, and message.
           required = FALSE
         ),
         max = ellmer::type_number(
-          "Maximum number of commits to retrieve. Defaults to 100.",
+          "Maximum number of commits to retrieve. Defaults to 10.",
           required = FALSE
         ),
         after = ellmer::type_string(
@@ -297,7 +297,7 @@ RETURNS: A table with commit SHA (short), author, timestamp, and message.
 #'
 #' @return Returns the commit SHA.
 #'
-#' @family Tools
+#' @family git tools
 #' @export
 btw_tool_git_commit <- function(message, files, `_intent`) {}
 
@@ -328,7 +328,7 @@ btw_tool_git_commit_impl <- function(
     data = list(sha = commit_sha, message = message),
     display = list(
       markdown = md_code_block("", result),
-      title = HTML("Git Commit")
+      title = "Git Commit"
     )
   )
 }
@@ -343,13 +343,13 @@ btw_tool_git_commit_impl <- function(
       description = r"---(Stage files and create a git commit.
 
 WHEN TO USE:
-* Use this tool to commit changes after reviewing them with git_status and git_diff.
+* Use this tool to commit changes.
 * If `files` is provided, those files will be staged before committing.
 * If `files` is NULL, only currently staged files will be committed.
 
 IMPORTANT:
 * Always provide a clear, descriptive commit message.
-* Review changes with git_status and git_diff before committing.
+* You can review changes with btw_tool_git_status and btw_tool_git_diff before committing.
 * This modifies the repository state.
 
 RETURNS: The commit SHA and confirmation message.
@@ -385,19 +385,23 @@ RETURNS: The commit SHA and confirmation message.
 #' btw_tool_git_branch_list(local = FALSE)  # remote branches
 #' }
 #'
-#' @param local Optional. Set `TRUE` to show only local branches, `FALSE` for
-#'   remote branches, or `NULL` for both. Defaults to `NULL`.
+#' @param include Once of `"local"` (default), `"remote"`, or `"all"` to filter
+#'   branches to local branches only, remote branches only, or all branches.
 #' @inheritParams btw_tool_docs_package_news
 #'
 #' @return Returns a character table of branches.
 #'
-#' @family Tools
+#' @family git tools
 #' @export
-btw_tool_git_branch_list <- function(local, `_intent`) {}
+btw_tool_git_branch_list <- function(include, `_intent`) {}
 
-btw_tool_git_branch_list_impl <- function(local = NULL) {
+btw_tool_git_branch_list_impl <- function(
+  include = c("local", "remote", "all")
+) {
   check_installed("gert")
-  check_bool(local, allow_null = TRUE)
+  include <- arg_match(include)
+
+  local <- switch(include, local = TRUE, remote = FALSE, all = NULL)
 
   branches <- gert::git_branch_list(local = local)
 
@@ -406,17 +410,18 @@ btw_tool_git_branch_list_impl <- function(local = NULL) {
   }
 
   # Select relevant columns
-  fields <- c("name", "ref", "upstream", "updated")
-  # Only include columns that exist
-  fields <- intersect(fields, names(branches))
-  branches_display <- branches[fields]
+  fields <- c("name", "upstream", "updated")
 
-  md_res <- md_table(branches_display)
+  branches <- branches[order(branches$updated, decreasing = TRUE), ]
+
+  branches_llm <- glue_(
+    "{{ branches$name }} [{{ branches$updated }}]{{ ifelse(!is.na(branches$upstream), paste(' ->', branches$upstream), '') }} "
+  )
 
   btw_tool_result(
-    md_res,
-    data = branches_display,
-    display = list(markdown = md_res)
+    paste(branches_llm, collapse = "\n"),
+    data = branches,
+    display = list(markdown = md_table(branches[fields]))
   )
 }
 
@@ -433,7 +438,7 @@ WHEN TO USE:
 * Use this tool to see available branches before checking out or creating a new branch.
 * Shows local branches by default, but can also show remote branches.
 
-RETURNS: A table of branch names, refs, upstream tracking, and last update time.
+RETURNS: A table of branch names, upstream tracking, and last update time.
       )---",
       annotations = ellmer::tool_annotations(
         title = "Git Branches",
@@ -443,8 +448,9 @@ RETURNS: A table of branch names, refs, upstream tracking, and last update time.
         btw_can_register = function() rlang::is_installed("gert")
       ),
       arguments = list(
-        local = ellmer::type_boolean(
-          "Optional. TRUE for local branches only, FALSE for remote branches only, NULL for both (default).",
+        include = ellmer::type_enum(
+          c("local", "remote", "all"),
+          'Optional. Filter branches to "local" (default), "remote", or "all".',
           required = FALSE
         )
       )
@@ -463,12 +469,13 @@ RETURNS: A table of branch names, refs, upstream tracking, and last update time.
 #'
 #' @param branch Name of the new branch to create.
 #' @param ref Optional reference point for the new branch. Defaults to `"HEAD"`.
-#' @param checkout Whether to check out the new branch after creation. Defaults to `TRUE`.
+#' @param checkout Whether to check out the new branch after creation. Defaults
+#'   to `TRUE`.
 #' @inheritParams btw_tool_docs_package_news
 #'
 #' @return Returns a confirmation message.
 #'
-#' @family Tools
+#' @family git tools
 #' @export
 btw_tool_git_branch_create <- function(branch, ref, checkout, `_intent`) {}
 
@@ -485,7 +492,7 @@ btw_tool_git_branch_create_impl <- function(
   gert::git_branch_create(branch = branch, ref = ref, checkout = checkout)
 
   result <- sprintf(
-    "Created branch '%s' from '%s'%s",
+    "Created branch `%s` from `%s`%s.",
     branch,
     ref,
     if (checkout) " and checked it out" else ""
@@ -494,8 +501,11 @@ btw_tool_git_branch_create_impl <- function(
   btw_tool_result(
     result,
     display = list(
-      markdown = md_code_block("", result),
-      title = HTML("Git Branch Create")
+      markdown = result,
+      title = htmltools::HTML(sprintf(
+        "Git Create Branch <code>%s</code>",
+        branch
+      ))
     )
   )
 }
@@ -554,12 +564,13 @@ RETURNS: Confirmation message with branch name and ref.
 #' }
 #'
 #' @param branch Name of branch to check out.
-#' @param force Whether to force checkout even with uncommitted changes. Defaults to `FALSE`.
+#' @param force Whether to force checkout even with uncommitted changes.
+#'   Defaults to `FALSE`.
 #' @inheritParams btw_tool_docs_package_news
 #'
 #' @return Returns a confirmation message.
 #'
-#' @family Tools
+#' @family git tools
 #' @export
 btw_tool_git_branch_checkout <- function(branch, force, `_intent`) {}
 
@@ -595,13 +606,13 @@ btw_tool_git_branch_checkout_impl <- function(
 
 WHEN TO USE:
 * Use this tool to switch between existing branches.
-* Check git_status first to ensure no uncommitted changes will be lost.
-* Use git_branch_list to see available branches.
+* Check btw_tool_git_status first to ensure no uncommitted changes will be lost.
+* Use btw_tool_git_branch_list to see available branches.
 
 IMPORTANT:
 * This modifies the repository state and working directory.
-* Will fail if there are uncommitted changes unless force = TRUE.
-* Using force = TRUE can lose uncommitted changes.
+* Will fail if there are uncommitted changes unless force is true.
+* Using `force: true` can lose uncommitted changes.
 
 RETURNS: Confirmation message with branch name.
       )---",
@@ -617,7 +628,7 @@ RETURNS: Confirmation message with branch name.
           "Name of the branch to check out."
         ),
         force = ellmer::type_boolean(
-          "Whether to force checkout even with uncommitted changes. Defaults to FALSE. Use with caution.",
+          "Whether to force checkout even with uncommitted changes. Defaults to false. Use with caution.",
           required = FALSE
         )
       )

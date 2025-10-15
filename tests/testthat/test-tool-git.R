@@ -40,6 +40,28 @@ test_that("btw_tool_git_status()", {
   result_unstaged <- btw_tool_git_status(staged = FALSE)
   expect_btw_tool_result(result_unstaged, has_data = FALSE)
   expect_match(result_unstaged@value, "No changes")
+
+  cat("\nmore content", file = "test.txt", append = TRUE)
+  expect_snapshot(
+    cli::cat_line(btw_tool_git_status()@value),
+    transform = scrub_git_details
+  )
+  expect_snapshot(
+    cli::cat_line(btw_tool_git_status(staged = FALSE)@value),
+    transform = scrub_git_details
+  )
+
+  gert::git_commit("Add test.txt")
+  expect_snapshot(
+    cli::cat_line(btw_tool_git_status()@value),
+    transform = scrub_git_details
+  )
+
+  gert::git_add("test.txt")
+  expect_snapshot(
+    cli::cat_line(btw_tool_git_status()@value),
+    transform = scrub_git_details
+  )
 })
 
 test_that("btw_tool_git_diff()", {
@@ -326,7 +348,7 @@ test_that("git tools work together", {
 
   # Extract commit SHA from log data to use in diff
   commit_sha <- log1@extra$data$commit[1]
-  expect_true(nchar(commit_sha) == 7)
+  expect_false(grepl("[^a-f0-9]", commit_sha)) # Should be hex SHA
 
   # Workflow 2: Make changes, check diff, stage, commit
   # Modify file1
@@ -374,8 +396,8 @@ test_that("git tools work together", {
   # Get commits SHAs from log - verifies we can use log data
   commit_shas <- log_all@extra$data$commit
   expect_equal(length(commit_shas), 2)
-  # Both should be 7-character SHAs
-  expect_true(all(nchar(commit_shas) == 7))
+  # All should be hex SHAs
+  expect_true(!any(grepl("[^a-f0-9]", commit_shas)))
 
   # Workflow 4: Multiple file workflow with status tracking
   # Add second file

@@ -42,6 +42,13 @@ this function have access to the tools:\tabular{lll}{
    btw_tool_files_list_files \tab files \tab List files or directories in the project. \cr
    btw_tool_files_read_text_file \tab files \tab Read an entire text file. \cr
    btw_tool_files_write_text_file \tab files \tab Write content to a text file. \cr
+   btw_tool_git_branch_checkout \tab git \tab Switch to a different git branch. \cr
+   btw_tool_git_branch_create \tab git \tab Create a new git branch. \cr
+   btw_tool_git_branch_list \tab git \tab List git branches in the repository. \cr
+   btw_tool_git_commit \tab git \tab Stage files and create a git commit. \cr
+   btw_tool_git_diff \tab git \tab View changes in the working directory or between commits. \cr
+   btw_tool_git_log \tab git \tab Show the commit history for a repository. \cr
+   btw_tool_git_status \tab git \tab Show the status of the git working directory. \cr
    btw_tool_ide_read_current_editor \tab ide \tab Read the contents of the editor that is currently open in the user's IDE. \cr
    btw_tool_search_package_info \tab search \tab Describe a CRAN package. \cr
    btw_tool_search_packages \tab search \tab Search for an R package on CRAN. \cr

@@ -3,9 +3,7 @@
     Code
       cli::cat_line(result@value)
     Output
-      | file | status | staged |
-      |------|--------|--------|
-      | test.txt | new | FALSE |
+      test.txt [new] -unstaged
 
 ---
 
@@ -19,9 +17,35 @@
     Code
       cli::cat_line(result_staged@value)
     Output
-      | file | status | staged |
-      |------|--------|--------|
-      | test.txt | new | TRUE |
+      test.txt [new] +staged
+
+---
+
+    Code
+      cli::cat_line(btw_tool_git_status()@value)
+    Output
+      test.txt [new] +staged
+
+---
+
+    Code
+      cli::cat_line(btw_tool_git_status(staged = FALSE)@value)
+    Output
+      test.txt [modified] -unstaged
+
+---
+
+    Code
+      cli::cat_line(btw_tool_git_status()@value)
+    Output
+      test.txt [modified] -unstaged
+
+---
+
+    Code
+      cli::cat_line(btw_tool_git_status()@value)
+    Output
+      test.txt [modified] +staged
 
 # btw_tool_git_diff()
 
@@ -44,9 +68,11 @@
     Code
       cli::cat_line(result@value)
     Output
-      | commit | author | time | message |
-      |--------|--------|------|---------|
-      | abcd123 | Test User <test@example.com> | 2025-10-11 12:13:14 | Initial commit |
+      message: Initial commit
+      author: Test User <test@example.com>
+      time: 2025-10-11 12:13:14
+      n_files: 1
+      commit: abcd123
 
 # btw_tool_git_commit()
 
@@ -61,16 +87,14 @@
     Code
       cli::cat_line(result@value)
     Output
-      | name | ref | upstream | updated |
-      |------|-----|----------|---------|
-      | main | refs/heads/main | NA | 2025-10-11 12:13:14 |
+      main [2025-10-11 12:13:14] 
 
 # btw_tool_git_branch_create()
 
     Code
       cli::cat_line(result@value)
     Output
-      Created branch 'feature-branch' from 'HEAD'
+      Created branch `feature-branch` from `HEAD`.
 
 # btw_tool_git_branch_checkout()
 
@@ -116,28 +140,45 @@
     Code
       cli::cat_line(log_all@value)
     Output
-      | commit | author | time | message |
-      |--------|--------|------|---------|
-      | abcd123 | Test User <test@example.com> | 2025-10-11 12:13:14 | Update file1 |
-      | abcd123 | Test User <test@example.com> | 2025-10-11 12:13:14 | Add file1 |
+      message: Update file1
+      author: Test User <test@example.com>
+      time: 2025-10-11 12:13:14
+      n_files: 1
+      commit: abcd123
+      
+      message: Add file1
+      author: Test User <test@example.com>
+      time: 2025-10-11 12:13:14
+      n_files: 1
+      commit: abcd123
 
 ---
 
     Code
       cli::cat_line(status_final@value)
     Output
-      | file | status | staged |
-      |------|--------|--------|
-      | file3.txt | new | FALSE |
+      file3.txt [new] -unstaged
 
 ---
 
     Code
       cli::cat_line(log_final@value)
     Output
-      | commit | author | time | message |
-      |--------|--------|------|---------|
-      | abcd123 | Test User <test@example.com> | 2025-10-11 12:13:14 | Add file2 |
-      | abcd123 | Test User <test@example.com> | 2025-10-11 12:13:14 | Update file1 |
-      | abcd123 | Test User <test@example.com> | 2025-10-11 12:13:14 | Add file1 |
+      message: Add file2
+      author: Test User <test@example.com>
+      time: 2025-10-11 12:13:14
+      n_files: 1
+      commit: abcd123
+      
+      message: Update file1
+      author: Test User <test@example.com>
+      time: 2025-10-11 12:13:14
+      n_files: 1
+      commit: abcd123
+      
+      message: Add file1
+      author: Test User <test@example.com>
+      time: 2025-10-11 12:13:14
+      n_files: 1
+      commit: abcd123
 
