@@ -1,10 +1,10 @@
 local_temp_git_repo <- function(
   user_name = "Test User",
   user_email = "test@example.com",
-  env = parent.frame()
+  .local_envir = parent.frame()
 ) {
-  repo <- withr::local_tempdir(.local_envir = env)
-  withr::local_dir(repo, .local_envir = env)
+  repo <- withr::local_tempdir(.local_envir = .local_envir)
+  withr::local_dir(repo, .local_envir = .local_envir)
   gert::git_init(".")
 
   # Configure user if not set
