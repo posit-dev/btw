@@ -58,7 +58,7 @@ test_that("btw_tool_git_diff() works", {
   result_staged <- btw_tool_git_diff(ref = "HEAD")
   expect_btw_tool_result(result_staged, has_data = FALSE)
   # The staged diff shows the change from HEAD, which includes adding line 2
-  expect_true(any(grepl("@@", result_staged@value, fixed = TRUE)))  # Has diff hunks
+  expect_true(any(grepl("@@", result_staged@value, fixed = TRUE))) # Has diff hunks
 
   # Commit and verify no more unstaged changes
   gert::git_commit("Add line 2")
@@ -201,7 +201,12 @@ test_that("btw_tool_git_branch_checkout() works", {
 
 test_that("git tools require gert to be installed", {
   skip_if_not_installed("gert")
-  skip("Manual test only - requires gert to be uninstalled")
+
+  local_temp_git_repo()
+
+  local_mocked_bindings(
+    is_installed = function(pkg) pkg != "gert"
+  )
 
   expect_error(
     btw_tool_git_status(),
@@ -241,6 +246,7 @@ test_that("git tools require gert to be installed", {
 
 test_that("git tools validate arguments", {
   skip_if_not_installed("gert")
+  local_temp_git_repo()
 
   # btw_tool_git_status
   expect_error(btw_tool_git_status(staged = "invalid"))
@@ -264,7 +270,9 @@ test_that("git tools validate arguments", {
   # btw_tool_git_branch_create
   expect_error(btw_tool_git_branch_create(branch = 123))
   expect_error(btw_tool_git_branch_create(branch = "test", ref = 123))
-  expect_error(btw_tool_git_branch_create(branch = "test", checkout = "invalid"))
+  expect_error(
+    btw_tool_git_branch_create(branch = "test", checkout = "invalid")
+  )
 
   # btw_tool_git_branch_checkout
   expect_error(btw_tool_git_branch_checkout(branch = 123))
