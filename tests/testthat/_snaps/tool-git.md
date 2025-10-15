@@ -28,16 +28,9 @@
     Code
       cli::cat_line(result@value)
     Output
-      No unstaged changes to show
-
----
-
-    Code
-      cli::cat_line(result@value)
-    Output
       ```diff
       diff --git a/test.txt b/test.txt
-      index 89b24ec..7bba8c8 100644
+      index abcd123..abcd123 100644
       --- a/test.txt
       +++ b/test.txt
       @@ -1 +1,2 @@
@@ -53,14 +46,14 @@
     Output
       | commit | author | time | message |
       |--------|--------|------|---------|
-      | 5da1156 | Garrick Aden-Buie <garrick@adenbuie.com> | 2025-10-15 10:41:23 | Initial commit |
+      | abcd123 | Test User <test@example.com> | 2025-10-11 12:13:14 | Initial commit |
 
 # btw_tool_git_commit()
 
     Code
       cli::cat_line(result@value)
     Output
-      Created commit: 56fa58a
+      Created commit: abcd123
       Message: Add test file
 
 # btw_tool_git_branch_list()
@@ -70,7 +63,7 @@
     Output
       | name | ref | upstream | updated |
       |------|-----|----------|---------|
-      | main | refs/heads/main | NA | 2025-10-15 10:41:23 |
+      | main | refs/heads/main | NA | 2025-10-11 12:13:14 |
 
 # btw_tool_git_branch_create()
 

@@ -14,13 +14,13 @@ test_that("btw_tool_git_status()", {
   result <- btw_tool_git_status()
   expect_btw_tool_result(result)
   expect_match(result@value, "test\\.txt")
-  expect_snapshot(cli::cat_line(result@value))
+  expect_snapshot(cli::cat_line(result@value), transform = scrub_git_details)
 
   # Check staged only (should be empty)
   result_staged_empty <- btw_tool_git_status(staged = TRUE)
   expect_btw_tool_result(result_staged_empty, has_data = FALSE)
   expect_match(result_staged_empty@value, "No changes")
-  expect_snapshot(cli::cat_line(result_staged_empty@value))
+  expect_snapshot(cli::cat_line(result_staged_empty@value), transform = scrub_git_details)
 
   # Stage the file
   gert::git_add("test.txt")
@@ -28,7 +28,7 @@ test_that("btw_tool_git_status()", {
   # Check staged only
   result_staged <- btw_tool_git_status(staged = TRUE)
   expect_match(result_staged@value, "test\\.txt")
-  expect_snapshot(cli::cat_line(result_staged@value))
+  expect_snapshot(cli::cat_line(result_staged@value), transform = scrub_git_details)
 
   # Check unstaged only (should be empty)
   result_unstaged <- btw_tool_git_status(staged = FALSE)
@@ -45,7 +45,6 @@ test_that("btw_tool_git_diff()", {
   result <- btw_tool_git_diff()
   expect_btw_tool_result(result, has_data = FALSE)
   expect_match(result@value, "No.*changes")
-  expect_snapshot(cli::cat_line(result@value))
 
   # Create and stage a file
   writeLines("line 1", "test.txt")
@@ -59,7 +58,7 @@ test_that("btw_tool_git_diff()", {
   result <- btw_tool_git_diff()
   expect_btw_tool_result(result, has_data = FALSE)
   expect_true(any(grepl("line 2", result@value, fixed = TRUE)))
-  expect_snapshot(cli::cat_line(result@value))
+  expect_snapshot(cli::cat_line(result@value), transform = scrub_git_details)
 
   # Stage the changes
   gert::git_add("test.txt")
@@ -90,7 +89,7 @@ test_that("btw_tool_git_log()", {
   result <- btw_tool_git_log()
   expect_btw_tool_result(result)
   expect_match(result@value, "Initial commit")
-  expect_snapshot(cli::cat_line(result@value))
+  expect_snapshot(cli::cat_line(result@value), transform = scrub_git_details)
 
   # Test max parameter
   writeLines("test2", "test2.txt")
@@ -117,7 +116,7 @@ test_that("btw_tool_git_commit()", {
   )
   expect_btw_tool_result(result, has_data = FALSE)
   expect_match(result@value, "Add test file")
-  expect_snapshot(cli::cat_line(result@value))
+  expect_snapshot(cli::cat_line(result@value), transform = scrub_git_details)
 
   # Verify commit was created
   log <- gert::git_log(max = 1)
@@ -150,7 +149,7 @@ test_that("btw_tool_git_branch_list()", {
   expect_btw_tool_result(result)
   # Should show at least the default branch (main or master)
   expect_true(nrow(result@extra$data) >= 1)
-  expect_snapshot(cli::cat_line(result@value))
+  expect_snapshot(cli::cat_line(result@value), transform = scrub_git_details)
 
   # Create a new branch
   gert::git_branch_create("feature", checkout = FALSE)
@@ -177,7 +176,7 @@ test_that("btw_tool_git_branch_create()", {
   )
   expect_btw_tool_result(result, has_data = FALSE)
   expect_match(result@value, "feature-branch")
-  expect_snapshot(cli::cat_line(result@value))
+  expect_snapshot(cli::cat_line(result@value), transform = scrub_git_details)
 
   # Verify branch exists
   branches <- gert::git_branch_list()
@@ -203,7 +202,7 @@ test_that("btw_tool_git_branch_checkout()", {
   result <- btw_tool_git_branch_checkout(branch = "feature")
   expect_btw_tool_result(result, has_data = FALSE)
   expect_match(result@value, "feature")
-  expect_snapshot(cli::cat_line(result@value))
+  expect_snapshot(cli::cat_line(result@value), transform = scrub_git_details)
 
   # Verify we're on the new branch
   expect_equal(gert::git_branch(), "feature")
