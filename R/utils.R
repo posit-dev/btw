@@ -43,14 +43,6 @@ glue_ <- function(x, ..., .envir = parent.frame()) {
   as.character(ellmer::interpolate(x, ..., .envir = .envir))
 }
 
-HTML <- function(text, ...) {
-  # In-lined htmltools::HTML() to avoid dependency
-  x <- paste(c(text, ...), collapse = " ")
-  attr(x, "html") <- TRUE
-  class(x) <- c("html", "character")
-  x
-}
-
 # ad-hoc check functions ------------------------------------------------------
 check_inherits <- function(
   x,

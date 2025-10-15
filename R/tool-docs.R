@@ -188,7 +188,7 @@ btw_tool_docs_help_page_impl <- function(topic, package_name = "") {
       topic = basename(resolved$topic),
       package = resolved$package,
       display = list(
-        title = HTML(sprintf('<code>?%s</code>', help_call)),
+        title = shiny::HTML(sprintf('<code>?%s</code>', help_call)),
         show_request = FALSE,
         markdown = paste(md, collapse = "\n")
       )
