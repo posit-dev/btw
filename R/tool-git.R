@@ -502,7 +502,7 @@ btw_tool_git_branch_create_impl <- function(
     result,
     display = list(
       markdown = result,
-      title = htmltools::HTML(sprintf(
+      title = HTML(sprintf(
         "Git Create Branch <code>%s</code>",
         branch
       ))
