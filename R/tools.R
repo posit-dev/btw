@@ -138,6 +138,7 @@ set_tool_icon <- function(tool, group) {
     "docs" = tool_icon("dictionary"),
     "env" = tool_icon("source-environment"),
     "files" = tool_icon("folder-open"),
+    "git" = tool_icon("source-environment"),
     "ide" = tool_icon("code-blocks"),
     "search" = tool_icon("search"),
     "session" = tool_icon("screen-search-desktop"),
