@@ -164,6 +164,29 @@ btw_app_from_client <- function(client, messages = list(), ...) {
       }
     })
 
+    lapply(tool_groups, function(group) {
+      shiny::observeEvent(input[[paste0("tools_toggle_", group)]], {
+        current <- input[[paste0("tools_", group)]]
+        all_tools <- btw_tools_df()
+        group_tools <- all_tools[all_tools$group == group, ][["name"]]
+        if (length(current) == length(group_tools)) {
+          # All selected, so deselect all
+          shiny::updateCheckboxGroupInput(
+            session = session,
+            inputId = paste0("tools_", group),
+            selected = ""
+          )
+        } else {
+          # Not all selected, so select all
+          shiny::updateCheckboxGroupInput(
+            session = session,
+            inputId = paste0("tools_", group),
+            selected = group_tools
+          )
+        }
+      })
+    })
+
     shiny::observe({
       if (!length(selected_tools())) {
         client$set_tools(list())
@@ -256,23 +279,14 @@ app_tool_group_choice_input <- function(
     initial_tool_names <- group_tools_df$name
   }
 
-  label_icon <- switch(
-    group,
-    "docs" = tool_icon("dictionary"),
-    "env" = tool_icon("source-environment"),
-    "files" = tool_icon("folder-open"),
-    "ide" = tool_icon("code-blocks"),
-    "search" = tool_icon("search"),
-    "session" = tool_icon("screen-search-desktop"),
-    "web" = tool_icon("globe-book"),
-    tool_icon("construction")
-  )
+  label_icon <- tool_group_icon(group, "construction")
 
   label_text <- switch(
     group,
     "docs" = shiny::span(label_icon, "Documentation"),
     "env" = shiny::span(label_icon, "Environment"),
     "files" = shiny::span(label_icon, "Files"),
+    "git" = shiny::span(label_icon, "Git"),
     "ide" = shiny::span(label_icon, "IDE"),
     "search" = shiny::span(label_icon, "Search"),
     "session" = shiny::span(label_icon, "Session Info"),
@@ -283,7 +297,15 @@ app_tool_group_choice_input <- function(
 
   shiny::checkboxGroupInput(
     inputId = paste0("tools_", group),
-    label = shiny::h3(label_text, class = "h6 mb-0"),
+    label = shiny::h3(
+      class = "h6 mb-0",
+      shiny::actionLink(
+        paste0("tools_toggle_", group),
+        label_text,
+        class = "link-body-emphasis",
+        style = "text-decoration: none;"
+      )
+    ),
     choiceNames = choice_names,
     choiceValues = group_tools_df$name,
     selected = intersect(group_tools_df$name, initial_tool_names),

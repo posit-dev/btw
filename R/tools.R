@@ -132,25 +132,27 @@ wrap_with_intent <- function(tool) {
   tool
 }
 
-set_tool_icon <- function(tool, group) {
-  icon <- switch(
+tool_group_icon <- function(group, default = NULL) {
+  switch(
     group,
     "docs" = tool_icon("dictionary"),
     "env" = tool_icon("source-environment"),
     "files" = tool_icon("folder-open"),
-    "git" = tool_icon("source-environment"),
+    "git" = tool_icon("difference"),
     "ide" = tool_icon("code-blocks"),
     "search" = tool_icon("search"),
     "session" = tool_icon("screen-search-desktop"),
     "web" = tool_icon("globe-book"),
-    NULL
+    if (!is.null(default)) tool_icon(default)
   )
+}
 
+set_tool_icon <- function(tool, group) {
   if (!is.list(tool@annotations)) {
     tool@annotations <- list()
   }
 
-  tool@annotations$icon <- icon
+  tool@annotations$icon <- tool_group_icon(group)
   tool
 }
 
