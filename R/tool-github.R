@@ -933,6 +933,11 @@ btw_tool_github_issues_list_impl <- function(
       ""
     }
 
+    issue_body_preview <- substr(issue$body %||% "(no description)", 1, 200)
+    if (nchar(issue$body %||% "") > 200) {
+      issue_body_preview <- paste0(issue_body_preview, "...")
+    }
+
     issue_text <- sprintf(
       "## #%d: %s\n\n**State:** %s | **Author:** %s%s\n\n%s\n\n",
       issue$number,
@@ -940,7 +945,7 @@ btw_tool_github_issues_list_impl <- function(
       issue$state,
       issue$user$login,
       labels_text,
-      substr(issue$body %||% "(no description)", 1, 200)
+      issue_body_preview
     )
     result <- paste0(result, issue_text)
   }
