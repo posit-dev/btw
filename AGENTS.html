@@ -348,8 +348,56 @@
 <li>
 <strong>Snapshot tests for tool outputs</strong> to catch formatting changes</li>
 <li>
-<strong>Use <code>check_*()</code> functions</strong> from rlang for argument validation</li>
+<strong>Use <code>check_*()</code> functions</strong> argument validation, described below</li>
+</ul><div class="section level3">
+<h3 id="type-check-functions">Type Check Functions<a class="anchor" aria-label="anchor" href="#type-check-functions"></a></h3>
+<div class="section level4">
+<h4 id="scalars">Scalars<a class="anchor" aria-label="anchor" href="#scalars"></a></h4>
+<ul><li>
+<code>check_bool()</code> - Validates single TRUE/FALSE value</li>
+<li>
+<code>check_string()</code> - Validates single string (allows empty by default)</li>
+<li>
+<code>check_name()</code> - Validates non-empty string for use as name</li>
+<li>
+<code>check_number_decimal()</code> - Validates single numeric value (allows decimals)</li>
+<li>
+<code>check_number_whole()</code> - Validates single integer value</li>
+<li>
+<code>check_symbol()</code> - Validates R symbol/name object</li>
+<li>
+<code>check_arg()</code> - Validates argument name (symbol)</li>
+<li>
+<code>check_call()</code> - Validates defused call object</li>
+<li>
+<code>check_environment()</code> - Validates environment object</li>
+<li>
+<code>check_function()</code> - Validates function (any type)</li>
+<li>
+<code>check_closure()</code> - Validates R function (not primitive/builtin)</li>
+<li>
+<code>check_formula()</code> - Validates formula object</li>
 </ul></div>
+<div class="section level4">
+<h4 id="vectors">Vectors<a class="anchor" aria-label="anchor" href="#vectors"></a></h4>
+<ul><li>
+<code>check_character()</code> - Validates character vector</li>
+<li>
+<code>check_logical()</code> - Validates logical vector</li>
+<li>
+<code>check_data_frame()</code> - Validates data frame</li>
+</ul></div>
+<div class="section level4">
+<h4 id="common-parameters">Common Parameters<a class="anchor" aria-label="anchor" href="#common-parameters"></a></h4>
+<ul><li>All functions support <code>allow_null</code> parameter</li>
+<li>Most scalars support <code>allow_na</code>
+</li>
+<li>Number checkers support <code>min</code>/<code>max</code> bounds and <code>allow_infinite</code>
+</li>
+<li>All use <code>arg</code>/<code>call</code> for error context</li>
+</ul></div>
+</div>
+</div>
 <div class="section level2">
 <h2 id="important-notes">Important Notes<a class="anchor" aria-label="anchor" href="#important-notes"></a></h2>
 <ul><li>

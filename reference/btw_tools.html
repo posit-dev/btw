@@ -3,50 +3,214 @@
 with an ellmer chat via chat$set_tools() that allow the chat to
 interface with your computational environment. Chats returned by
 this function have access to the tools:
-NameGroupDescription
-btw_tool_docs_available_vignettesdocsList available vignettes for an R package.
-btw_tool_docs_help_pagedocsGet help page from package.
-btw_tool_docs_package_help_topicsdocsGet available help topics for an R package.
-btw_tool_docs_package_newsdocsRead the release notes (NEWS) for a package.
-btw_tool_docs_vignettedocsGet a package vignette in plain text.
-btw_tool_env_describe_data_frameenvShow the data frame or table or get information about the structure of a data frame or table.
-btw_tool_env_describe_environmentenvList and describe items in an environment.
-btw_tool_files_code_searchfilesSearch code files in the project.
-btw_tool_files_list_filesfilesList files or directories in the project.
-btw_tool_files_read_text_filefilesRead an entire text file.
-btw_tool_files_write_text_filefilesWrite content to a text file.
-btw_tool_ide_read_current_editorideRead the contents of the editor that is currently open in the user's IDE.
-btw_tool_search_package_infosearchDescribe a CRAN package.
-btw_tool_search_packagessearchSearch for an R package on CRAN.
-btw_tool_session_check_package_installedsessionCheck if a package is installed in the current session.
-btw_tool_session_package_infosessionVerify that a specific package is installed, or find out which packages are in use in the current session.
-btw_tool_session_platform_infosessionDescribes the R version, operating system, language and locale settings for the user's system.
-btw_tool_web_read_urlwebRead a web page and convert it to Markdown format.
+Group: docs
+
+NameDescription
+btw_tool_docs_available_vignettes()List available vignettes for an R package.
+btw_tool_docs_help_page()Get help page from package.
+btw_tool_docs_package_help_topics()Get available help topics for an R package.
+btw_tool_docs_package_news()Read the release notes (NEWS) for a package.
+btw_tool_docs_vignette()Get a package vignette in plain text.
+
+
+
+
+
+
+
+Group: env
+
+NameDescription
+btw_tool_env_describe_data_frame()Show the data frame or table or get information about the structure of a data frame or table.
+btw_tool_env_describe_environment()List and describe items in an environment.
+
+
+
+
+
+
+
+Group: files
+
+NameDescription
+btw_tool_files_code_search()Search code files in the project.
+btw_tool_files_list_files()List files or directories in the project.
+btw_tool_files_read_text_file()Read an entire text file.
+btw_tool_files_write_text_file()Write content to a text file.
+
+
+
+
+
+
+
+Group: git
+
+NameDescription
+btw_tool_git_branch_checkout()Switch to a different git branch.
+btw_tool_git_branch_create()Create a new git branch.
+btw_tool_git_branch_list()List git branches in the repository.
+btw_tool_git_commit()Stage files and create a git commit.
+btw_tool_git_diff()View changes in the working directory or a commit.
+btw_tool_git_log()Show the commit history for a repository.
+btw_tool_git_status()Show the status of the git working directory.
+
+
+
+
+
+
+
+Group: ide
+
+NameDescription
+btw_tool_ide_read_current_editor()Read the contents of the editor that is currently open in the user's IDE.
+
+
+
+
+
+
+
+Group: search
+
+NameDescription
+btw_tool_search_package_info()Describe a CRAN package.
+btw_tool_search_packages()Search for an R package on CRAN.
+
+
+
+
+
+
+
+Group: session
+
+NameDescription
+btw_tool_session_check_package_installed()Check if a package is installed in the current session.
+btw_tool_session_package_info()Verify that a specific package is installed, or find out which packages are in use in the current session.
+btw_tool_session_platform_info()Describes the R version, operating system, language and locale settings for the user's system.
+
+
+
+
+
+
+
+Group: web
+
+NameDescription
+btw_tool_web_read_url()Read a web page and convert it to Markdown format.
+
+
+
 
 
 "><meta property="og:description" content="The btw_tools() function provides a list of tools that can be registered
 with an ellmer chat via chat$set_tools() that allow the chat to
 interface with your computational environment. Chats returned by
 this function have access to the tools:
-NameGroupDescription
-btw_tool_docs_available_vignettesdocsList available vignettes for an R package.
-btw_tool_docs_help_pagedocsGet help page from package.
-btw_tool_docs_package_help_topicsdocsGet available help topics for an R package.
-btw_tool_docs_package_newsdocsRead the release notes (NEWS) for a package.
-btw_tool_docs_vignettedocsGet a package vignette in plain text.
-btw_tool_env_describe_data_frameenvShow the data frame or table or get information about the structure of a data frame or table.
-btw_tool_env_describe_environmentenvList and describe items in an environment.
-btw_tool_files_code_searchfilesSearch code files in the project.
-btw_tool_files_list_filesfilesList files or directories in the project.
-btw_tool_files_read_text_filefilesRead an entire text file.
-btw_tool_files_write_text_filefilesWrite content to a text file.
-btw_tool_ide_read_current_editorideRead the contents of the editor that is currently open in the user's IDE.
-btw_tool_search_package_infosearchDescribe a CRAN package.
-btw_tool_search_packagessearchSearch for an R package on CRAN.
-btw_tool_session_check_package_installedsessionCheck if a package is installed in the current session.
-btw_tool_session_package_infosessionVerify that a specific package is installed, or find out which packages are in use in the current session.
-btw_tool_session_platform_infosessionDescribes the R version, operating system, language and locale settings for the user's system.
-btw_tool_web_read_urlwebRead a web page and convert it to Markdown format.
+Group: docs
+
+NameDescription
+btw_tool_docs_available_vignettes()List available vignettes for an R package.
+btw_tool_docs_help_page()Get help page from package.
+btw_tool_docs_package_help_topics()Get available help topics for an R package.
+btw_tool_docs_package_news()Read the release notes (NEWS) for a package.
+btw_tool_docs_vignette()Get a package vignette in plain text.
+
+
+
+
+
+
+
+Group: env
+
+NameDescription
+btw_tool_env_describe_data_frame()Show the data frame or table or get information about the structure of a data frame or table.
+btw_tool_env_describe_environment()List and describe items in an environment.
+
+
+
+
+
+
+
+Group: files
+
+NameDescription
+btw_tool_files_code_search()Search code files in the project.
+btw_tool_files_list_files()List files or directories in the project.
+btw_tool_files_read_text_file()Read an entire text file.
+btw_tool_files_write_text_file()Write content to a text file.
+
+
+
+
+
+
+
+Group: git
+
+NameDescription
+btw_tool_git_branch_checkout()Switch to a different git branch.
+btw_tool_git_branch_create()Create a new git branch.
+btw_tool_git_branch_list()List git branches in the repository.
+btw_tool_git_commit()Stage files and create a git commit.
+btw_tool_git_diff()View changes in the working directory or a commit.
+btw_tool_git_log()Show the commit history for a repository.
+btw_tool_git_status()Show the status of the git working directory.
+
+
+
+
+
+
+
+Group: ide
+
+NameDescription
+btw_tool_ide_read_current_editor()Read the contents of the editor that is currently open in the user's IDE.
+
+
+
+
+
+
+
+Group: search
+
+NameDescription
+btw_tool_search_package_info()Describe a CRAN package.
+btw_tool_search_packages()Search for an R package on CRAN.
+
+
+
+
+
+
+
+Group: session
+
+NameDescription
+btw_tool_session_check_package_installed()Check if a package is installed in the current session.
+btw_tool_session_package_info()Verify that a specific package is installed, or find out which packages are in use in the current session.
+btw_tool_session_platform_info()Describes the R version, operating system, language and locale settings for the user's system.
+
+
+
+
+
+
+
+Group: web
+
+NameDescription
+btw_tool_web_read_url()Read a web page and convert it to Markdown format.
+
+
+
 
 
 "><meta property="og:image" content="https://posit-dev.github.io/btw/logo.png"></head><body>
@@ -92,7 +256,39 @@ btw_tool_web_read_urlwebRead a web page and convert it to Markdown format.
     <p>The <code>btw_tools()</code> function provides a list of tools that can be registered
 with an ellmer chat via <code>chat$set_tools()</code> that allow the chat to
 interface with your computational environment. Chats returned by
-this function have access to the tools:</p><table class="table table"><tr><td>Name</td><td>Group</td><td>Description</td></tr><tr><td>btw_tool_docs_available_vignettes</td><td>docs</td><td>List available vignettes for an R package.</td></tr><tr><td>btw_tool_docs_help_page</td><td>docs</td><td>Get help page from package.</td></tr><tr><td>btw_tool_docs_package_help_topics</td><td>docs</td><td>Get available help topics for an R package.</td></tr><tr><td>btw_tool_docs_package_news</td><td>docs</td><td>Read the release notes (NEWS) for a package.</td></tr><tr><td>btw_tool_docs_vignette</td><td>docs</td><td>Get a package vignette in plain text.</td></tr><tr><td>btw_tool_env_describe_data_frame</td><td>env</td><td>Show the data frame or table or get information about the structure of a data frame or table.</td></tr><tr><td>btw_tool_env_describe_environment</td><td>env</td><td>List and describe items in an environment.</td></tr><tr><td>btw_tool_files_code_search</td><td>files</td><td>Search code files in the project.</td></tr><tr><td>btw_tool_files_list_files</td><td>files</td><td>List files or directories in the project.</td></tr><tr><td>btw_tool_files_read_text_file</td><td>files</td><td>Read an entire text file.</td></tr><tr><td>btw_tool_files_write_text_file</td><td>files</td><td>Write content to a text file.</td></tr><tr><td>btw_tool_ide_read_current_editor</td><td>ide</td><td>Read the contents of the editor that is currently open in the user's IDE.</td></tr><tr><td>btw_tool_search_package_info</td><td>search</td><td>Describe a CRAN package.</td></tr><tr><td>btw_tool_search_packages</td><td>search</td><td>Search for an R package on CRAN.</td></tr><tr><td>btw_tool_session_check_package_installed</td><td>session</td><td>Check if a package is installed in the current session.</td></tr><tr><td>btw_tool_session_package_info</td><td>session</td><td>Verify that a specific package is installed, or find out which packages are in use in the current session.</td></tr><tr><td>btw_tool_session_platform_info</td><td>session</td><td>Describes the R version, operating system, language and locale settings for the user's system.</td></tr><tr><td>btw_tool_web_read_url</td><td>web</td><td>Read a web page and convert it to Markdown format.</td></tr></table></div>
+this function have access to the tools:</p><div class="section">
+<h3 id="group-docs">Group: docs<a class="anchor" aria-label="anchor" href="#group-docs"></a></h3>
+<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_package_docs.html">btw_tool_docs_available_vignettes()</a></code></td><td>List available vignettes for an R package.</td></tr><tr><td><code><a href="btw_tool_package_docs.html">btw_tool_docs_help_page()</a></code></td><td>Get help page from package.</td></tr><tr><td><code><a href="btw_tool_package_docs.html">btw_tool_docs_package_help_topics()</a></code></td><td>Get available help topics for an R package.</td></tr><tr><td><code><a href="btw_tool_docs_package_news.html">btw_tool_docs_package_news()</a></code></td><td>Read the release notes (NEWS) for a package.</td></tr><tr><td><code><a href="btw_tool_package_docs.html">btw_tool_docs_vignette()</a></code></td><td>Get a package vignette in plain text.</td></tr></table></div>
+
+<div class="section">
+<h3 id="group-env">Group: env<a class="anchor" aria-label="anchor" href="#group-env"></a></h3>
+<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_env_describe_data_frame.html">btw_tool_env_describe_data_frame()</a></code></td><td>Show the data frame or table or get information about the structure of a data frame or table.</td></tr><tr><td><code><a href="btw_tool_env_describe_environment.html">btw_tool_env_describe_environment()</a></code></td><td>List and describe items in an environment.</td></tr></table></div>
+
+<div class="section">
+<h3 id="group-files">Group: files<a class="anchor" aria-label="anchor" href="#group-files"></a></h3>
+<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_files_code_search.html">btw_tool_files_code_search()</a></code></td><td>Search code files in the project.</td></tr><tr><td><code><a href="btw_tool_files_list_files.html">btw_tool_files_list_files()</a></code></td><td>List files or directories in the project.</td></tr><tr><td><code><a href="btw_tool_files_read_text_file.html">btw_tool_files_read_text_file()</a></code></td><td>Read an entire text file.</td></tr><tr><td><code><a href="btw_tool_files_write_text_file.html">btw_tool_files_write_text_file()</a></code></td><td>Write content to a text file.</td></tr></table></div>
+
+<div class="section">
+<h3 id="group-git">Group: git<a class="anchor" aria-label="anchor" href="#group-git"></a></h3>
+<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_git_branch_checkout.html">btw_tool_git_branch_checkout()</a></code></td><td>Switch to a different git branch.</td></tr><tr><td><code><a href="btw_tool_git_branch_create.html">btw_tool_git_branch_create()</a></code></td><td>Create a new git branch.</td></tr><tr><td><code><a href="btw_tool_git_branch_list.html">btw_tool_git_branch_list()</a></code></td><td>List git branches in the repository.</td></tr><tr><td><code><a href="btw_tool_git_commit.html">btw_tool_git_commit()</a></code></td><td>Stage files and create a git commit.</td></tr><tr><td><code><a href="btw_tool_git_diff.html">btw_tool_git_diff()</a></code></td><td>View changes in the working directory or a commit.</td></tr><tr><td><code><a href="btw_tool_git_log.html">btw_tool_git_log()</a></code></td><td>Show the commit history for a repository.</td></tr><tr><td><code><a href="btw_tool_git_status.html">btw_tool_git_status()</a></code></td><td>Show the status of the git working directory.</td></tr></table></div>
+
+<div class="section">
+<h3 id="group-ide">Group: ide<a class="anchor" aria-label="anchor" href="#group-ide"></a></h3>
+<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_ide_read_current_editor.html">btw_tool_ide_read_current_editor()</a></code></td><td>Read the contents of the editor that is currently open in the user's IDE.</td></tr></table></div>
+
+<div class="section">
+<h3 id="group-search">Group: search<a class="anchor" aria-label="anchor" href="#group-search"></a></h3>
+<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_search_package_info.html">btw_tool_search_package_info()</a></code></td><td>Describe a CRAN package.</td></tr><tr><td><code><a href="btw_tool_search_packages.html">btw_tool_search_packages()</a></code></td><td>Search for an R package on CRAN.</td></tr></table></div>
+
+<div class="section">
+<h3 id="group-session">Group: session<a class="anchor" aria-label="anchor" href="#group-session"></a></h3>
+<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_session_check_package_installed.html">btw_tool_session_check_package_installed()</a></code></td><td>Check if a package is installed in the current session.</td></tr><tr><td><code><a href="btw_tool_session_package_info.html">btw_tool_session_package_info()</a></code></td><td>Verify that a specific package is installed, or find out which packages are in use in the current session.</td></tr><tr><td><code><a href="btw_tool_session_platform_info.html">btw_tool_session_platform_info()</a></code></td><td>Describes the R version, operating system, language and locale settings for the user's system.</td></tr></table></div>
+
+<div class="section">
+<h3 id="group-web">Group: web<a class="anchor" aria-label="anchor" href="#group-web"></a></h3>
+<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_web_read_url.html">btw_tool_web_read_url()</a></code></td><td>Read a web page and convert it to Markdown format.</td></tr></table></div>
+
+    </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
