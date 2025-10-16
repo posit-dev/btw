@@ -292,7 +292,7 @@ app_tool_group_choice_input <- function(
     "session" = shiny::span(label_icon, "Session Info"),
     "web" = shiny::span(label_icon, "Web Tools"),
     "other" = shiny::span(label_icon, "Other Tools"),
-    paste0(toupper(substring(group, 1, 1)), substring(group, 2))
+    to_title_case(group)
   )
 
   shiny::checkboxGroupInput(
