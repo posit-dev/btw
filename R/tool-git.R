@@ -94,10 +94,7 @@ RETURNS: A list of file paths, their status (new, modified, deleted, etc.), and 
 #' btw_tool_git_diff(ref = "HEAD")
 #' }
 #'
-#' @param ref Optional reference such as `"HEAD"`, a commit SHA, or two refs
-#'   separated by `..` (e.g., `"main..feature"`). Use `NULL` (default) to diff
-#'   the working directory against the repository index (unstaged changes).
-#'   Use `"HEAD"` to see staged changes.
+#' @inheritParams gert::git_diff_patch
 #' @inheritParams btw_tool_docs_package_news
 #'
 #' @return Returns a diff patch as a formatted string.
@@ -112,7 +109,7 @@ btw_tool_git_diff_impl <- function(ref = NULL) {
 
   diff_patch <- gert::git_diff_patch(ref = ref)
 
-  if (length(diff_patch) == 0 || nzchar(diff_patch) == FALSE) {
+  if (length(diff_patch) == 0 || all(!nzchar(diff_patch))) {
     msg <- if (is.null(ref)) {
       "No unstaged changes to show"
     } else {
@@ -143,15 +140,16 @@ btw_tool_git_diff_impl <- function(ref = NULL) {
     ellmer::tool(
       btw_tool_git_diff_impl,
       name = "btw_tool_git_diff",
-      description = r"---(View changes in the working directory or between commits.
+      description = r"---(View changes in the working directory or a commit.
 
 WHEN TO USE:
 * Use with no arguments to see unstaged changes (working directory vs. index).
 * Use with `ref = "HEAD"` to see staged changes (index vs. HEAD).
-* Use with `ref = "commit1..commit2"` to compare two commits.
-* Use with a branch name to compare current HEAD with that branch.
+* Use with `ref = "commit_sha"` to see the diff of that commit.
 
-RETURNS: A unified diff patch showing the changes.
+RETURNS: A unified diff patch showing the changes for a single commit.
+
+LIMITATION: This tool does not support diffing between two arbitrary commits.
       )---",
       annotations = ellmer::tool_annotations(
         title = "Git Diff",
@@ -162,7 +160,7 @@ RETURNS: A unified diff patch showing the changes.
       ),
       arguments = list(
         ref = ellmer::type_string(
-          'Optional reference like "HEAD", a commit SHA, or "ref1..ref2". NULL (default) shows unstaged changes.',
+          'Optional reference like "HEAD" or a commit id. `null` (default) shows unstaged changes.',
           required = FALSE
         )
       )

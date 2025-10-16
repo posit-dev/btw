@@ -7,10 +7,8 @@
 btw_tool_git_diff(ref = NULL, `_intent` = "")
 }
 \arguments{
-\item{ref}{Optional reference such as \code{"HEAD"}, a commit SHA, or two refs
-separated by \code{..} (e.g., \code{"main..feature"}). Use \code{NULL} (default) to diff
-the working directory against the repository index (unstaged changes).
-Use \code{"HEAD"} to see staged changes.}
+\item{ref}{a reference such as \code{"HEAD"}, or a commit id, or \code{NULL}
+to the diff the working directory against the repository index.}
 
 \item{_intent}{An optional string describing the intent of the tool use.
 When the tool is used by an LLM, the model will use this argument to

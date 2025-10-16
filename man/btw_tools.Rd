@@ -46,7 +46,7 @@ this function have access to the tools:\tabular{lll}{
    \code{\link[=btw_tool_git_branch_create]{btw_tool_git_branch_create()}} \tab git \tab Create a new git branch. \cr
    \code{\link[=btw_tool_git_branch_list]{btw_tool_git_branch_list()}} \tab git \tab List git branches in the repository. \cr
    \code{\link[=btw_tool_git_commit]{btw_tool_git_commit()}} \tab git \tab Stage files and create a git commit. \cr
-   \code{\link[=btw_tool_git_diff]{btw_tool_git_diff()}} \tab git \tab View changes in the working directory or between commits. \cr
+   \code{\link[=btw_tool_git_diff]{btw_tool_git_diff()}} \tab git \tab View changes in the working directory or a commit. \cr
    \code{\link[=btw_tool_git_log]{btw_tool_git_log()}} \tab git \tab Show the commit history for a repository. \cr
    \code{\link[=btw_tool_git_status]{btw_tool_git_status()}} \tab git \tab Show the status of the git working directory. \cr
    \code{\link[=btw_tool_ide_read_current_editor]{btw_tool_ide_read_current_editor()}} \tab ide \tab Read the contents of the editor that is currently open in the user's IDE. \cr
