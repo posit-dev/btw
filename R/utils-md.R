@@ -25,3 +25,24 @@ md_code_block <- function(type = "", ...) {
   }
   c(paste0(ticks, type), ..., ticks)
 }
+
+md_kv_table <- function(df, drop_na = FALSE) {
+  check_data_frame(df)
+
+  res <- vector("character", nrow(df))
+
+  for (i in seq_len(nrow(df))) {
+    item <- vector("character", ncol(df))
+    for (j in seq_len(ncol(df))) {
+      value <- df[[j]][[i]]
+      if (drop_na && is.na(value)) {
+        next
+      }
+      item[j] <- paste0(colnames(df)[j], ": ", format(value))
+    }
+    item <- item[nzchar(item)]
+    res[i] <- paste(item, collapse = "\n")
+  }
+
+  paste(res, collapse = "\n\n")
+}

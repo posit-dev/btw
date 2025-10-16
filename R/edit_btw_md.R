@@ -110,7 +110,7 @@
 #' ````
 #' ---
 #' client: claude/claude-4-5-sonnet-latest
-#' tools: [docs, env, files, ide, search, session, web]
+#' tools: [docs, env, files, git, ide, search, session, web]
 #' ---
 #'
 #' Follow these important style rules when writing R code:
