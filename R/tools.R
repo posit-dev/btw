@@ -192,6 +192,13 @@ tool_icon <- local({
   x <- do.call(rbind, x)
   x <- x[order(x$Group, x$Name), ]
   x$Name <- sprintf("[%s()]", x$Name)
-  md_table(x)
+
+  res <- c()
+  for (group in unique(x$Group)) {
+    res <- c(res, paste0("### Group: ", group, "\n\n"))
+    res <- c(res, md_table(x[x$Group == group, c("Name", "Description")]))
+    res <- c(res, "\n\n")
+  }
+  paste(res, collapse = "\n")
 }
 # nocov end
