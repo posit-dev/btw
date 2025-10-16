@@ -143,7 +143,7 @@ Here's an example \code{btw.md} file:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{---
 client: claude/claude-4-5-sonnet-latest
-tools: [docs, env, files, ide, search, session, web]
+tools: [docs, env, files, git, ide, search, session, web]
 ---
 
 Follow these important style rules when writing R code:
