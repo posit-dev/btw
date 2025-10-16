@@ -32,6 +32,12 @@ btw_app_from_client <- function(client, messages = list(), ...) {
   path_figures_dev <- system.file("man", "figures", package = "btw")
   path_logo <- "btw_figures/logo.png"
 
+  provider_model <- sprintf(
+    "%s: <span class=\"font-monospace\">%s</span>",
+    client$get_provider()@name,
+    client$get_model()
+  )
+
   if (nzchar(path_figures_installed)) {
     shiny::addResourcePath("btw_figures", path_figures_installed)
   } else if (nzchar(path_figures_dev)) {
@@ -104,7 +110,41 @@ btw_app_from_client <- function(client, messages = list(), ...) {
         style = "position: fixed; top: 6px; right: 6px;"
       ),
       btw_title(FALSE),
-      shinychat::chat_mod_ui("chat", messages = messages),
+      shinychat::chat_mod_ui(
+        "chat",
+        messages = messages,
+        width = "min(750px, 100%)"
+      ),
+      shiny::tags$footer(
+        class = "status-footer d-flex align-items-center gap-3 small text-muted",
+        style = "width: min(725px, 100%); margin-inline: auto;",
+        shiny::div(
+          HTML(provider_model),
+          bslib::tooltip(
+            shiny::actionLink(
+              "show_sys_prompt",
+              tool_icon("quick-reference")
+            ),
+            "Show system prompt"
+          ),
+          class = "status-provider-model"
+        ),
+        shiny::div(
+          HTML(
+            '&uparrow;<span id="tokens_input" class="shiny-text-output"></span>'
+          ),
+          # shiny::textOutput("tokens_input", inline = TRUE),
+          HTML(
+            '&downarrow;<span id="tokens_output" class="shiny-text-output"></span>'
+          ),
+          # shiny::textOutput("tokens_output", inline = TRUE),
+          class = "ms-auto status-tokens"
+        ),
+        shiny::div(
+          shiny::textOutput("cost", inline = TRUE),
+          class = "status-cost"
+        )
+      ),
       shiny::tags$head(
         shiny::tags$style(shiny::HTML(
           "
@@ -114,6 +154,9 @@ btw_app_from_client <- function(client, messages = list(), ...) {
         .bslib-sidebar-layout > .main > main .sidebar-title { display: none; }
         .sidebar-collapsed > .main > main .sidebar-title { display: block; }
         .bslib-sidebar-layout.sidebar-collapsed>.collapse-toggle { top: 1.8rem; }
+        .bslib-page-main { gap: 0.5rem; }
+        .status-provider-model a { color: inherit; }
+        .status-provider-model svg { height: 1em; width: 1em; }
       "
         )),
       )
@@ -121,7 +164,66 @@ btw_app_from_client <- function(client, messages = list(), ...) {
   }
 
   server <- function(input, output, session) {
-    shinychat::chat_mod_server("chat", client = client)
+    chat <- shinychat::chat_mod_server("chat", client = client)
+
+    chat_tokens <- shiny::reactiveVal(label = "btw_app_tokens")
+    chat_cost <- shiny::reactiveVal(label = "btw_app_cost")
+
+    shiny::observeEvent(chat$last_turn(), {
+      chat_tokens(chat$client$get_tokens())
+      chat_cost(chat$client$get_cost())
+    })
+
+    output$tokens_input <- shiny::renderText({
+      if (is.null(chat_tokens()) || nrow(chat_tokens()) < 1) {
+        return("0")
+      }
+      last_user <- dplyr::filter(chat_tokens(), role == "user")
+      if (nrow(last_user) == 0) {
+        return("0")
+      }
+      format(tail(last_user$tokens_total, 1), big.mark = ",")
+    })
+
+    output$tokens_output <- shiny::renderText({
+      if (is.null(chat_tokens()) || nrow(chat_tokens()) < 1) {
+        return("0")
+      }
+      tokens_assistant <- dplyr::filter(chat_tokens(), role == "assistant")
+      if (nrow(tokens_assistant) == 0) {
+        return("0")
+      }
+      format(sum(tokens_assistant$tokens), big.mark = ",")
+    })
+
+    output$cost <- shiny::renderText({
+      x <- chat_cost()
+      if (is.null(x)) {
+        return("$0.00")
+      }
+      paste0(
+        ifelse(is.na(x), "", "$"),
+        format(unclass(round(x, 2)), nsmall = 2)
+      )
+    })
+
+    shiny::observeEvent(input$show_sys_prompt, {
+      shiny::showModal(
+        shiny::modalDialog(
+          title = "System Prompt",
+          size = "xl",
+          easyClose = TRUE,
+          footer = shiny::modalButton("Close"),
+          HTML(
+            sprintf(
+              "<pre><code>%s</code></pre>",
+              chat$client$get_system_prompt()
+            )
+          )
+        )
+      )
+    })
+
     shiny::observeEvent(input$close_btn, {
       shiny::stopApp()
     })
