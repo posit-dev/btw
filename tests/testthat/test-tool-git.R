@@ -17,7 +17,7 @@ test_that("btw_tool_git_status()", {
   expect_snapshot(cli::cat_line(result@value), transform = scrub_git_details)
 
   # Check staged only (should be empty)
-  result_staged_empty <- btw_tool_git_status(staged = TRUE)
+  result_staged_empty <- btw_tool_git_status(include = "staged")
   expect_btw_tool_result(result_staged_empty, has_data = FALSE)
   expect_match(result_staged_empty@value, "No changes")
   expect_snapshot(
@@ -29,7 +29,7 @@ test_that("btw_tool_git_status()", {
   gert::git_add("test.txt")
 
   # Check staged only
-  result_staged <- btw_tool_git_status(staged = TRUE)
+  result_staged <- btw_tool_git_status(include = "staged")
   expect_match(result_staged@value, "test\\.txt")
   expect_snapshot(
     cli::cat_line(result_staged@value),
@@ -37,7 +37,7 @@ test_that("btw_tool_git_status()", {
   )
 
   # Check unstaged only (should be empty)
-  result_unstaged <- btw_tool_git_status(staged = FALSE)
+  result_unstaged <- btw_tool_git_status(include = "unstaged")
   expect_btw_tool_result(result_unstaged, has_data = FALSE)
   expect_match(result_unstaged@value, "No changes")
 
@@ -47,7 +47,7 @@ test_that("btw_tool_git_status()", {
     transform = scrub_git_details
   )
   expect_snapshot(
-    cli::cat_line(btw_tool_git_status(staged = FALSE)@value),
+    cli::cat_line(btw_tool_git_status(include = "unstaged")@value),
     transform = scrub_git_details
   )
 
@@ -291,7 +291,7 @@ test_that("git tools validate arguments", {
   local_temp_git_repo()
 
   # btw_tool_git_status
-  expect_error(btw_tool_git_status(staged = "invalid"))
+  expect_error(btw_tool_git_status(include = "invalid"))
   expect_error(btw_tool_git_status(pathspec = 123))
 
   # btw_tool_git_diff

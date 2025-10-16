@@ -10,8 +10,8 @@ NULL
 #' btw_tool_git_status()
 #' }
 #'
-#' @param staged Optional. Return only staged (`TRUE`) or unstaged files
-#'   (`FALSE`). Use `NULL` to show both (default).
+#' @param include One of `"both"`, `"staged"`, or `"unstaged"`. Use `"both"` to
+#'   show both staged and unstaged files (default).
 #' @param pathspec Optional character vector with paths to match.
 #' @inheritParams btw_tool_docs_package_news
 #'
@@ -19,15 +19,22 @@ NULL
 #'
 #' @family git tools
 #' @export
-btw_tool_git_status <- function(staged, pathspec, `_intent`) {}
+btw_tool_git_status <- function(include, pathspec, `_intent`) {}
 
 btw_tool_git_status_impl <- function(
-  staged = NULL,
+  include = c("both", "staged", "unstaged"),
   pathspec = NULL
 ) {
   check_installed("gert")
-  check_bool(staged, allow_null = TRUE)
+  include <- arg_match(include)
   check_character(pathspec, allow_null = TRUE)
+
+  staged <- switch(
+    include,
+    both = NULL,
+    staged = TRUE,
+    unstaged = FALSE
+  )
 
   status <- gert::git_status(staged = staged, pathspec = pathspec)
 
@@ -70,8 +77,9 @@ RETURNS: A list of file paths, their status (new, modified, deleted, etc.), and 
         btw_can_register = function() rlang::is_installed("gert")
       ),
       arguments = list(
-        staged = ellmer::type_boolean(
-          "Optional. Return only staged (true) or unstaged files (false). Use null to show both (default).",
+        include = ellmer::type_enum(
+          c("both", "staged", "unstaged"),
+          'Optional. One of "both" (default), "staged", or "unstaged" to filter status output.',
           required = FALSE
         ),
         pathspec = ellmer::type_array(

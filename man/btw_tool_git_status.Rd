@@ -4,11 +4,15 @@
 \alias{btw_tool_git_status}
 \title{Tool: Git Status}
 \usage{
-btw_tool_git_status(staged = NULL, pathspec = NULL, `_intent` = "")
+btw_tool_git_status(
+  include = c("both", "staged", "unstaged"),
+  pathspec = NULL,
+  `_intent` = ""
+)
 }
 \arguments{
-\item{staged}{Optional. Return only staged (\code{TRUE}) or unstaged files
-(\code{FALSE}). Use \code{NULL} to show both (default).}
+\item{include}{One of \code{"both"}, \code{"staged"}, or \code{"unstaged"}. Use \code{"both"} to
+show both staged and unstaged files (default).}
 
 \item{pathspec}{Optional character vector with paths to match.}
 

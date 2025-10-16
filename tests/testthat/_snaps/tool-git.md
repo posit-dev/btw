@@ -29,7 +29,7 @@
 ---
 
     Code
-      cli::cat_line(btw_tool_git_status(staged = FALSE)@value)
+      cli::cat_line(btw_tool_git_status(include = "unstaged")@value)
     Output
       test.txt [modified] -unstaged
 
