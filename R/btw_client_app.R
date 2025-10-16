@@ -201,6 +201,9 @@ btw_app_from_client <- function(client, messages = list(), ...) {
       if (is.null(x)) {
         return("$0.00")
       }
+      if (is.na(x)) {
+        return("$??")
+      }
       paste0(
         ifelse(is.na(x), "", "$"),
         format(unclass(round(x, 2)), nsmall = 2)
