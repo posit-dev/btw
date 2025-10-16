@@ -47,31 +47,31 @@ btw_tools <- function(...) {
   check_character(tools, allow_null = TRUE)
 
   if (length(tools) == 0) {
-    return(as_ellmer_tools(.btw_tools))
+    tools <- names(.btw_tools)
+  } else {
+    tool_names <- map_chr(.btw_tools, function(x) x$name)
+    tool_groups <- map_chr(.btw_tools, function(x) x$group)
+
+    allowed <- c(
+      tool_groups,
+      tool_names,
+      sub("btw_tool_", "", tool_names, fixed = TRUE)
+    )
+    allowed <- unique(allowed)
+
+    tools <- tryCatch(
+      arg_match(tools, allowed[!grepl("^btw_", allowed)], multiple = TRUE),
+      error = function(err_short) {
+        tryCatch(
+          arg_match(tools, allowed, multiple = TRUE),
+          error = function(err_long) {
+            class(err_short) <- c("btw_unmatched_tool_error", class(err_short))
+            cnd_signal(err_short)
+          }
+        )
+      }
+    )
   }
-
-  tool_names <- map_chr(.btw_tools, function(x) x$name)
-  tool_groups <- map_chr(.btw_tools, function(x) x$group)
-
-  allowed <- c(
-    tool_groups,
-    tool_names,
-    sub("btw_tool_", "", tool_names, fixed = TRUE)
-  )
-  allowed <- unique(allowed)
-
-  tools <- tryCatch(
-    arg_match(tools, allowed[!grepl("^btw_", allowed)], multiple = TRUE),
-    error = function(err_short) {
-      tryCatch(
-        arg_match(tools, allowed, multiple = TRUE),
-        error = function(err_long) {
-          class(err_short) <- c("btw_unmatched_tool_error", class(err_short))
-          cnd_signal(err_short)
-        }
-      )
-    }
-  )
 
   tools_to_keep <- map_lgl(.btw_tools, is_tool_match, tools)
   res <- .btw_tools[tools_to_keep]
