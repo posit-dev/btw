@@ -139,6 +139,7 @@ tool_group_icon <- function(group, default = NULL) {
     "env" = tool_icon("source-environment"),
     "files" = tool_icon("folder-open"),
     "git" = tool_icon("difference"),
+    "github" = tool_icon("globe-book"),
     "ide" = tool_icon("code-blocks"),
     "search" = tool_icon("search"),
     "session" = tool_icon("screen-search-desktop"),

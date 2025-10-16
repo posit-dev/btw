@@ -72,6 +72,20 @@ this function have access to the tools:
 
 }
 
+\subsection{Group: github}{\tabular{ll}{
+   Name \tab Description \cr
+   \code{\link[=btw_tool_github_issue_create]{btw_tool_github_issue_create()}} \tab Create a new GitHub issue. \cr
+   \code{\link[=btw_tool_github_issue_get]{btw_tool_github_issue_get()}} \tab Get details of a GitHub issue. \cr
+   \code{\link[=btw_tool_github_issue_thread]{btw_tool_github_issue_thread()}} \tab Get a GitHub issue with all comments. \cr
+   \code{\link[=btw_tool_github_issues_list]{btw_tool_github_issues_list()}} \tab List issues in a GitHub repository with optional filtering. \cr
+   \code{\link[=btw_tool_github_pull_request_create]{btw_tool_github_pull_request_create()}} \tab Create a new GitHub pull request. \cr
+   \code{\link[=btw_tool_github_pull_request_diff]{btw_tool_github_pull_request_diff()}} \tab Get the code changes (diff) for a GitHub pull request. \cr
+   \code{\link[=btw_tool_github_pull_request_get]{btw_tool_github_pull_request_get()}} \tab Get details of a GitHub pull request. \cr
+   \code{\link[=btw_tool_github_pull_requests_list]{btw_tool_github_pull_requests_list()}} \tab List pull requests in a GitHub repository with optional filtering. \cr
+}
+
+}
+
 \subsection{Group: ide}{\tabular{ll}{
    Name \tab Description \cr
    \code{\link[=btw_tool_ide_read_current_editor]{btw_tool_ide_read_current_editor()}} \tab Read the contents of the editor that is currently open in the user's IDE. \cr
