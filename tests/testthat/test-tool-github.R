@@ -330,400 +330,132 @@ test_that("btw_gh() passes arguments through to gh::gh()", {
   expect_equal(result$dots$state, "open")
 })
 
-# Tests for posit-dev/btw repository -------------------------------------------
-# Using issue #1 and PR #1 as stable test cases
+# Tests for btw_tool_github() --------------------------------------------------
 
-test_that("btw_tool_github_issue_get() works", {
-  skip_if_offline()
+test_that("btw_tool_github() can get an issue", {
   skip_if_not_installed("gh")
 
-  result <- btw_tool_github_issue_get(
-    issue_number = 1,
-    owner = "posit-dev",
-    repo = "btw"
+  local_posit_dev_btw_repo()
+  local_mocked_gh(mock_btw_issue_37)
+
+  result <- btw_tool_github_impl(
+    'gh("/repos/{owner}/{repo}/issues/37", owner = owner, repo = repo)'
   )
 
-  expect_btw_tool_result(result, has_data = FALSE)
-  expect_match(result@value, "Issue #1")
-  expect_snapshot(
-    cli::cat_line(result@value),
-    transform = scrub_github_content
+  expect_s7_class(result, BtwToolResult)
+  expect_type(result@value, "list")
+
+  expect_equal(result@value$number, 37)
+  expect_equal(
+    result@value$html_url,
+    "https://github.com/posit-dev/btw/issues/37"
   )
 })
 
-test_that("btw_tool_github_issue_thread() works", {
-  skip_if_offline()
+test_that("btw_tool_github() can list issues", {
   skip_if_not_installed("gh")
 
-  result <- btw_tool_github_issue_thread(
-    issue_number = 1,
-    owner = "posit-dev",
-    repo = "btw"
+  local_posit_dev_btw_repo()
+  local_mocked_gh(mock_btw_issues_open)
+
+  result <- btw_tool_github_impl(
+    'gh("/repos/{owner}/{repo}/issues", state = "open", owner = owner, repo = repo)'
   )
 
-  expect_btw_tool_result(result, has_data = FALSE)
-  expect_match(result@value, "Issue #1")
-  # Issue #1 should have comments
-  expect_match(result@value, "Comments:")
-  expect_snapshot(
-    cli::cat_line(result@value),
-    transform = scrub_github_content
-  )
+  expect_s7_class(result, BtwToolResult)
+  expect_type(result@value, "list")
 })
 
-test_that("btw_tool_github_pull_request_get() works", {
-  skip_if_offline()
+test_that("btw_tool_github() can create an issue", {
   skip_if_not_installed("gh")
 
-  result <- btw_tool_github_pull_request_get(
-    pull_number = 1,
-    owner = "posit-dev",
-    repo = "btw"
+  local_posit_dev_btw_repo()
+  local_mocked_gh()
+
+  result <- btw_tool_github_impl(
+    '
+gh("POST /repos/{owner}/{repo}/issues",
+  title = "Test issue",
+  body = "Test body",
+  owner = owner,
+  repo = repo
+)
+  '
   )
 
-  expect_btw_tool_result(result, has_data = FALSE)
-  expect_match(result@value, "Pull Request #1")
-  expect_match(result@value, "Base:")
-  expect_match(result@value, "Head:")
-  expect_snapshot(
-    cli::cat_line(result@value),
-    transform = scrub_github_content
-  )
+  expect_s7_class(result, BtwToolResult)
+  expect_type(result@value, "list")
+  expect_equal(result@value$endpoint, "POST /repos/{owner}/{repo}/issues")
+  expect_equal(result@value$payload$title, "Test issue")
+  expect_equal(result@value$payload$body, "Test body")
+  expect_equal(result@value$payload$owner, "posit-dev")
+  expect_equal(result@value$payload$repo, "btw")
 })
 
-test_that("btw_tool_github_pull_request_diff() works", {
-  skip_if_offline()
+test_that("btw_tool_github() can get a pull request", {
   skip_if_not_installed("gh")
 
-  result <- btw_tool_github_pull_request_diff(
-    pull_number = 1,
-    owner = "posit-dev",
-    repo = "btw"
+  local_posit_dev_btw_repo()
+  local_mocked_gh()
+
+  result <- btw_tool_github_impl(
+    'gh("/repos/{owner}/{repo}/pulls/456", owner = owner, repo = repo)'
   )
 
-  expect_btw_tool_result(result, has_data = FALSE)
-  expect_match(result@value, "Pull Request #1 File Changes")
-  expect_match(result@value, "Total Files Changed:")
-  # Should contain diff markers
-  expect_true(grepl("```diff", result@value, fixed = TRUE))
-  expect_snapshot(
-    cli::cat_line(result@value),
-    transform = scrub_github_content
-  )
+  expect_s7_class(result, BtwToolResult)
+  expect_type(result@value, "list")
+  expect_equal(result@value$endpoint, "/repos/{owner}/{repo}/pulls/456")
+  expect_equal(result@value$payload$owner, "posit-dev")
+  expect_equal(result@value$payload$repo, "btw")
 })
 
-test_that("btw_tool_github_issues_list() works", {
-  skip_if_offline()
+test_that("btw_tool_github() can get pull request files", {
   skip_if_not_installed("gh")
 
-  result <- btw_tool_github_issues_list(
-    owner = "posit-dev",
-    repo = "btw",
-    state = "closed",
-    max = 5
+  local_posit_dev_btw_repo()
+  local_mocked_gh()
+
+  result <- btw_tool_github_impl(
+    'gh("/repos/{owner}/{repo}/pulls/456/files", owner = owner, repo = repo)'
   )
 
-  expect_btw_tool_result(result, has_data = FALSE)
-  expect_match(result@value, "Issues in posit-dev/btw")
-  expect_match(result@value, "Total:")
-  expect_snapshot(
-    cli::cat_line(result@value),
-    transform = scrub_github_content
-  )
+  expect_s7_class(result, BtwToolResult)
+  expect_type(result@value, "list")
+  expect_equal(result@value$endpoint, "/repos/{owner}/{repo}/pulls/456/files")
+  expect_equal(result@value$payload$owner, "posit-dev")
+  expect_equal(result@value$payload$repo, "btw")
 })
 
-test_that("btw_tool_github_issues_list() handles no results", {
-  skip_if_offline()
+test_that("btw_tool_github() can call gh_whoami", {
   skip_if_not_installed("gh")
 
-  result <- btw_tool_github_issues_list(
-    owner = "posit-dev",
-    repo = "btw",
-    state = "open",
-    labels = c("nonexistent-label-xyz123")
-  )
-
-  expect_btw_tool_result(result, has_data = FALSE)
-  expect_match(result@value, "No issues found")
-  expect_snapshot(
-    cli::cat_line(result@value),
-    transform = scrub_github_content
-  )
-})
-
-test_that("btw_tool_github_pull_requests_list() works", {
-  skip_if_offline()
-  skip_if_not_installed("gh")
-
-  result <- btw_tool_github_pull_requests_list(
-    owner = "posit-dev",
-    repo = "btw",
-    state = "closed",
-    max = 5
-  )
-
-  expect_btw_tool_result(result, has_data = FALSE)
-  expect_match(result@value, "Pull Requests in posit-dev/btw")
-  expect_match(result@value, "Total:")
-  expect_snapshot(
-    cli::cat_line(result@value),
-    transform = scrub_github_content
-  )
-})
-
-test_that("btw_tool_github_pull_requests_list() handles no results", {
-  skip_if_offline()
-  skip_if_not_installed("gh")
-
-  result <- btw_tool_github_pull_requests_list(
-    owner = "posit-dev",
-    repo = "btw",
-    state = "open",
-    author = "nonexistent-user-xyz123"
-  )
-
-  expect_btw_tool_result(result, has_data = FALSE)
-  expect_match(result@value, "No pull requests found")
-  expect_snapshot(
-    cli::cat_line(result@value),
-    transform = scrub_github_content
-  )
-})
-
-# Error handling tests ---------------------------------------------------------
-
-test_that("get_github_repo() errors when no repo detected", {
-  skip_if_not_installed("gh")
-
-  # Mock gh_tree_remote to return NULL
+  local_posit_dev_btw_repo()
   local_mocked_bindings(
-    gh_tree_remote = function() stop("Not a git repo"),
+    gh_whoami = function() {
+      structure(
+        list(
+          name = "Garrick Aden-Buie",
+          login = "gadenbuie",
+          html_url = "https://github.com/gadenbuie",
+          scopes = "admin:org, gist, notifications, project, read:discussion, repo, user, workflow",
+          token = "ghp_TOKEN_VALUE"
+        ),
+        class = c("gh_response", "list")
+      )
+    },
     .package = "gh"
   )
 
-  expect_snapshot(error = TRUE, {
-    get_github_repo()
-  })
-})
+  result <- btw_tool_github_impl('gh_whoami()')
 
-test_that("btw_tool_github_issue_get() errors with invalid issue number", {
-  skip_if_not_installed("gh")
-
-  expect_error(
-    btw_tool_github_issue_get(
-      issue_number = -1,
-      owner = "posit-dev",
-      repo = "btw"
-    ),
-    "min"
-  )
-
-  expect_error(
-    btw_tool_github_issue_get(
-      issue_number = 1.5,
-      owner = "posit-dev",
-      repo = "btw"
-    ),
-    "whole"
-  )
-})
-
-test_that("btw_tool_github_issue_get() requires gh package", {
-  skip_if_not_installed("gh")
-
-  local_mocked_bindings(
-    is_installed = function(pkg) pkg != "gh"
-  )
-
-  expect_error(
-    btw_tool_github_issue_get(
-      issue_number = 1,
-      owner = "posit-dev",
-      repo = "btw"
-    ),
-    "gh"
-  )
-})
-
-test_that("btw_tool_github_pull_request_get() requires gh package", {
-  skip_if_not_installed("gh")
-
-  local_mocked_bindings(
-    is_installed = function(pkg) pkg != "gh"
-  )
-
-  expect_error(
-    btw_tool_github_pull_request_get(
-      pull_number = 1,
-      owner = "posit-dev",
-      repo = "btw"
-    ),
-    "gh"
-  )
-})
-
-test_that("github list tools validate arguments", {
-  skip_if_not_installed("gh")
-
-  # Invalid state
-  expect_error(
-    btw_tool_github_issues_list(
-      owner = "posit-dev",
-      repo = "btw",
-      state = "invalid"
-    )
-  )
-
-  expect_error(
-    btw_tool_github_pull_requests_list(
-      owner = "posit-dev",
-      repo = "btw",
-      state = "invalid"
-    )
-  )
-
-  # Invalid max
-  expect_error(
-    btw_tool_github_issues_list(
-      owner = "posit-dev",
-      repo = "btw",
-      max = 0
-    ),
-    "min"
-  )
-
-  expect_error(
-    btw_tool_github_issues_list(
-      owner = "posit-dev",
-      repo = "btw",
-      max = 1.5
-    ),
-    "whole"
-  )
-})
-
-test_that("btw_tool_github_issue_create() validates arguments", {
-  skip_if_not_installed("gh")
-
-  expect_error(
-    btw_tool_github_issue_create(
-      title = 123,
-      body = "test",
-      owner = "posit-dev",
-      repo = "btw"
-    ),
-    "string"
-  )
-
-  expect_error(
-    btw_tool_github_issue_create(
-      title = "test",
-      body = 123,
-      owner = "posit-dev",
-      repo = "btw"
-    ),
-    "string"
-  )
-
-  expect_error(
-    btw_tool_github_issue_create(
-      title = "test",
-      body = "test",
-      owner = "posit-dev",
-      repo = "btw",
-      labels = 123
-    ),
-    "character"
-  )
-})
-
-test_that("btw_tool_github_pull_request_create() validates arguments", {
-  skip_if_not_installed("gh")
-
-  local_mocked_bindings(
-    gh = function(...) stop("Should not reach API"),
-    .package = "gh"
-  )
-
-  expect_error(
-    btw_tool_github_pull_request_create(
-      title = 123,
-      body = "test",
-      head = "feat",
-      base = "main",
-      owner = "posit-dev",
-      repo = "btw"
-    ),
-    "string"
-  )
-
-  expect_error(
-    btw_tool_github_pull_request_create(
-      title = "test",
-      body = "test",
-      head = 123,
-      base = "main",
-      owner = "posit-dev",
-      repo = "btw"
-    ),
-    "string"
-  )
-
-  expect_error(
-    btw_tool_github_pull_request_create(
-      title = "test",
-      body = "test",
-      head = "feat",
-      base = 123,
-      owner = "posit-dev",
-      repo = "btw"
-    ),
-    "string"
-  )
-})
-
-test_that("btw_tool_github_comment_add() validates arguments", {
-  skip_if_not_installed("gh")
-
-  local_mocked_bindings(
-    gh = function(...) stop("Should not reach API"),
-    .package = "gh"
-  )
-
-  expect_error(
-    btw_tool_github_comment_add(
-      number = -1,
-      body = "test",
-      owner = "posit-dev",
-      repo = "btw"
-    ),
-    "min"
-  )
-
-  expect_error(
-    btw_tool_github_comment_add(
-      number = 1.5,
-      body = "test",
-      owner = "posit-dev",
-      repo = "btw"
-    ),
-    "whole"
-  )
-
-  expect_error(
-    btw_tool_github_comment_add(
-      number = 1,
-      body = 123,
-      owner = "posit-dev",
-      repo = "btw"
-    ),
-    "string"
-  )
+  expect_s7_class(result, BtwToolResult)
+  expect_type(result@value, "list")
+  expect_equal(result@value$login, "gadenbuie")
 })
 
 # Tool registration tests ------------------------------------------------------
 
-test_that("github tools register correctly", {
+test_that("github tool registers correctly", {
   skip_if_not_installed("gh")
 
   local_mocked_bindings(
@@ -736,18 +468,10 @@ test_that("github tools register correctly", {
 
   tool_names <- vapply(tools, function(t) t@name, character(1))
 
-  expect_in("btw_tool_github_issue_get", tool_names)
-  expect_in("btw_tool_github_issue_thread", tool_names)
-  expect_in("btw_tool_github_pull_request_get", tool_names)
-  expect_in("btw_tool_github_pull_request_diff", tool_names)
-  expect_in("btw_tool_github_issue_create", tool_names)
-  expect_in("btw_tool_github_pull_request_create", tool_names)
-  expect_in("btw_tool_github_issues_list", tool_names)
-  expect_in("btw_tool_github_pull_requests_list", tool_names)
-  expect_in("btw_tool_github_comment_add", tool_names)
+  expect_in("btw_tool_github", tool_names)
 })
 
-test_that("github tools require gh package for registration", {
+test_that("github tool requires gh package for registration", {
   local_mocked_bindings(
     btw_can_register_gh_tool = function() FALSE
   )
@@ -758,7 +482,7 @@ test_that("github tools require gh package for registration", {
   expect_equal(length(tools), 0)
 })
 
-test_that("github tools have correct annotations", {
+test_that("github tool has correct annotations", {
   skip_if_not_installed("gh")
 
   local_mocked_bindings(
@@ -767,52 +491,12 @@ test_that("github tools have correct annotations", {
 
   tools <- btw_tools("github")
 
-  # Check read-only tools
-  read_only_tools <- c(
-    "btw_tool_github_issue_get",
-    "btw_tool_github_issue_thread",
-    "btw_tool_github_pull_request_get",
-    "btw_tool_github_pull_request_diff",
-    "btw_tool_github_issues_list",
-    "btw_tool_github_pull_requests_list"
-  )
+  tool <- tools[[which(vapply(
+    tools,
+    function(t) t@name == "btw_tool_github",
+    logical(1)
+  ))]]
 
-  for (tool_name in read_only_tools) {
-    tool <- tools[[which(vapply(
-      tools,
-      function(t) t@name == tool_name,
-      logical(1)
-    ))]]
-    expect_true(
-      tool@annotations$read_only_hint,
-      info = sprintf("%s should be read-only", tool_name)
-    )
-    expect_true(
-      tool@annotations$open_world_hint,
-      info = sprintf("%s should be open-world", tool_name)
-    )
-  }
-
-  # Check write tools
-  write_tools <- c(
-    "btw_tool_github_issue_create",
-    "btw_tool_github_pull_request_create",
-    "btw_tool_github_comment_add"
-  )
-
-  for (tool_name in write_tools) {
-    tool <- tools[[which(vapply(
-      tools,
-      function(t) t@name == tool_name,
-      logical(1)
-    ))]]
-    expect_false(
-      tool@annotations$read_only_hint,
-      info = sprintf("%s should not be read-only", tool_name)
-    )
-    expect_true(
-      tool@annotations$open_world_hint,
-      info = sprintf("%s should be open-world", tool_name)
-    )
-  }
+  expect_false(tool@annotations$read_only_hint)
+  expect_true(tool@annotations$open_world_hint)
 })
