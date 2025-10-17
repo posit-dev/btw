@@ -430,6 +430,7 @@ test_that("btw_tool_github() can call gh_whoami", {
   skip_if_not_installed("gh")
 
   local_posit_dev_btw_repo()
+  local_mocked_bindings(btw_gh_fields = function() NULL)
   local_mocked_bindings(
     gh_whoami = function() {
       structure(

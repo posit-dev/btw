@@ -19,6 +19,10 @@ local_mocked_gh <- function(mock_value, env = parent.frame()) {
     mock_fn <- function(...) mock_value
   }
   local_mocked_bindings(
+    btw_gh_fields = function() NULL,
+    .env = env
+  )
+  local_mocked_bindings(
     gh = mock_fn,
     .package = "gh",
     .env = env
