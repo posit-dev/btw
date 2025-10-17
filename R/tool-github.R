@@ -1,6 +1,252 @@
 #' @include tool-result.R
 NULL
 
+# GitHub API Wrapper with Endpoint Validation ---------------------------------
+
+btw_github_default_allow_rules <- function() {
+  c(
+    # Basic Information Gathering Endpoints
+    "GET /repos/*/*/issues/*",
+    "GET /repos/*/*/issues/*/comments",
+    "GET /repos/*/*/pulls/*",
+    "GET /repos/*/*/pulls/*/files",
+    "GET /repos/*/*/issues",
+    "GET /repos/*/*/pulls",
+    "POST /repos/*/*/issues",
+    "POST /repos/*/*/pulls",
+    "POST /repos/*/*/issues/*/comments",
+
+    # Read-only Repository Information
+    "GET /repos/*/*",
+    "GET /repos/*/*/branches",
+    "GET /repos/*/*/branches/*",
+    "GET /repos/*/*/contents/**",
+    "GET /repos/*/*/commits",
+    "GET /repos/*/*/commits/*",
+    "GET /repos/*/*/compare/*",
+
+    # Read-only PR/Issue Information
+    "GET /repos/*/*/pulls/*/reviews",
+    "GET /repos/*/*/pulls/*/commits",
+    "GET /repos/*/*/issues/*/events",
+    "GET /repos/*/*/issues/events",
+
+    # Read-only Labels and Milestones
+    "GET /repos/*/*/labels",
+    "GET /repos/*/*/milestones",
+    "GET /repos/*/*/milestones/*",
+
+    # Read-only Checks and Status
+    "GET /repos/*/*/commits/*/status",
+    "GET /repos/*/*/commits/*/check-runs",
+
+    # Read-only Release Information
+    "GET /repos/*/*/releases",
+    "GET /repos/*/*/releases/*",
+
+    # Read-only Workflow Information
+    "GET /repos/*/*/actions/workflows",
+    "GET /repos/*/*/actions/workflows/*",
+    "GET /repos/*/*/actions/runs",
+    "GET /repos/*/*/actions/runs/*",
+    "GET /repos/*/*/actions/runs/*/jobs",
+    "GET /repos/*/*/actions/runs/*/jobs/*/logs",
+
+    # Search GitHub
+    "GET /search/*",
+
+    # Low-risk Write Operations
+    "POST /repos/*/*/issues/*/labels",
+    "DELETE /repos/*/*/issues/*/labels/*",
+    "PATCH /repos/*/*/issues/*",
+    "PATCH /repos/*/*/pulls/*"
+  )
+}
+
+btw_github_default_block_rules <- function() {
+  c(
+    # Merge operations
+    "PUT /repos/*/*/pulls/*/merge",
+    "POST /repos/*/*/merges",
+
+    # Repository deletion and dangerous operations
+    "DELETE /repos/*/*",
+
+    # Webhooks
+    "GET /repos/*/*/hooks",
+    "GET /repos/*/*/hooks/*",
+    "POST /repos/*/*/hooks",
+    "PATCH /repos/*/*/hooks/*",
+    "DELETE /repos/*/*/hooks/*",
+
+    # Secrets and keys
+    "GET /repos/*/*/actions/secrets",
+    "GET /repos/*/*/actions/secrets/*",
+    "PUT /repos/*/*/actions/secrets/*",
+    "DELETE /repos/*/*/actions/secrets/*",
+    "GET /repos/*/*/keys",
+    "GET /repos/*/*/keys/*",
+    "POST /repos/*/*/keys",
+    "DELETE /repos/*/*/keys/*",
+
+    # Collaborators
+    "GET /repos/*/*/collaborators",
+    "GET /repos/*/*/collaborators/*",
+    "PUT /repos/*/*/collaborators/*",
+    "DELETE /repos/*/*/collaborators/*",
+
+    # Repository settings
+    "PATCH /repos/*/*",
+
+    # Force operations
+    "POST /repos/*/*/git/refs/*/force"
+  )
+}
+
+btw_github_parse_endpoint <- function(endpoint) {
+  check_string(endpoint)
+  endpoint <- trimws(endpoint)
+
+  # Check if endpoint starts with a verb
+  verb_path <- strsplit(endpoint, "\\s+")[[1]]
+
+  if (!length(verb_path) %in% 1:2) {
+    cli::cli_abort(c(
+      "Invalid GitHub endpoint format: {.val {endpoint}}",
+      i = "Must be in the format {.code VERB /path/to/endpoint} or {.code /path/to/endpoint}"
+    ))
+  }
+
+  if (length(verb_path) == 2) {
+    verb <- toupper(verb_path[1])
+    path <- verb_path[2]
+  } else {
+    verb <- "GET"
+    path <- verb_path[1]
+  }
+
+  # Ensure path starts with /
+  if (!grepl("^/", path)) {
+    path <- paste0("/", path)
+  }
+
+  # Remove trailing /
+  path <- gsub("/+", "/", path)
+
+  list(verb = verb, path = path)
+}
+
+btw_github_match_pattern <- function(endpoint, pattern) {
+  check_string(endpoint)
+  check_string(pattern)
+
+  endpoint_parsed <- btw_github_parse_endpoint(endpoint)
+  pattern_parsed <- btw_github_parse_endpoint(pattern)
+
+  # Verb must match exactly
+  if (endpoint_parsed$verb != pattern_parsed$verb) {
+    return(FALSE)
+  }
+
+  # Split paths into segments
+  endpoint_segments <- strsplit(endpoint_parsed$path, "/")[[1]]
+  pattern_segments <- strsplit(pattern_parsed$path, "/")[[1]]
+
+  # Remove empty segments (from leading /)
+  endpoint_segments <- endpoint_segments[endpoint_segments != ""]
+  pattern_segments <- pattern_segments[pattern_segments != ""]
+
+  # Check if pattern ends with **
+  has_double_star <- length(pattern_segments) > 0 &&
+    pattern_segments[length(pattern_segments)] == "**"
+
+  if (has_double_star) {
+    # Remove ** from pattern segments
+    pattern_segments <- pattern_segments[-length(pattern_segments)]
+
+    # Endpoint must have at least as many segments as pattern (minus **)
+    if (length(endpoint_segments) < length(pattern_segments)) {
+      return(FALSE)
+    }
+
+    # Match only the segments before **
+    for (i in seq_along(pattern_segments)) {
+      if (
+        pattern_segments[i] != "*" &&
+          pattern_segments[i] != endpoint_segments[i]
+      ) {
+        return(FALSE)
+      }
+    }
+
+    return(TRUE)
+  } else {
+    # Without **, must have exact same number of segments
+    if (length(endpoint_segments) != length(pattern_segments)) {
+      return(FALSE)
+    }
+
+    # Match each segment
+    for (i in seq_along(pattern_segments)) {
+      if (
+        pattern_segments[i] != "*" &&
+          pattern_segments[i] != endpoint_segments[i]
+      ) {
+        return(FALSE)
+      }
+    }
+
+    return(TRUE)
+  }
+}
+
+btw_github_check_endpoint <- function(endpoint) {
+  check_string(endpoint)
+
+  # Get user-defined rules
+  user_block <- getOption("btw.github_endpoint.block", character())
+  user_allow <- getOption("btw.github_endpoint.allow", character())
+
+  # Combine with default rules
+  block_rules <- c(btw_github_default_block_rules(), user_block)
+  allow_rules <- c(btw_github_default_allow_rules(), user_allow)
+
+  # Check block rules first
+  for (rule in block_rules) {
+    if (btw_github_match_pattern(endpoint, rule)) {
+      cli::cli_abort(c(
+        "GitHub API endpoint is blocked: {.val {endpoint}}",
+        x = "Matched block rule: {.val {rule}}"
+      ))
+    }
+  }
+
+  # Check allow rules
+  for (rule in allow_rules) {
+    if (btw_github_match_pattern(endpoint, rule)) {
+      return(invisible(endpoint))
+    }
+  }
+
+  # No matching allow rule found
+  cmd_allow <- sprintf(
+    "btw.github_endpoint.allow = c(getOption('btw.github_endpoint.allow'), '%s')",
+    endpoint
+  )
+
+  cli::cli_abort(c(
+    "GitHub API endpoint not allowed: {.val {endpoint}}",
+    x = "This endpoint has not been approved for use.",
+    i = "To allow this endpoint, add it to the {.code btw.github_endpoint.allow} option.",
+    i = "Example: {.run {cmd_allow}}"
+  ))
+}
+
+btw_gh <- function(endpoint, ...) {
+  endpoint <- btw_github_check_endpoint(endpoint)
+  gh::gh(endpoint, ...)
+}
+
 # Helper: Check if GitHub tools can register ----------------------------------
 
 btw_can_register_gh_tool <- local({
