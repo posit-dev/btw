@@ -224,7 +224,7 @@ test_that("btw_gh() respects user block rules", {
   withr::local_options(btw.github_endpoint.allow = fictional_endpoint)
   expect_no_error(btw_gh(fictional_endpoint))
 
-  # Now block it - should override the allow
+  # Now block it - user block should take precedence over user allow
   withr::local_options(
     btw.github_endpoint.allow = fictional_endpoint,
     btw.github_endpoint.block = fictional_endpoint
@@ -235,7 +235,7 @@ test_that("btw_gh() respects user block rules", {
   )
 })
 
-test_that("btw_gh() block rules take precedence over allow rules", {
+test_that("btw_gh() user block rules take precedence over user allow rules", {
   local_mocked_bindings(
     gh = function(...) stop("Should not reach API"),
     .package = "gh"
@@ -249,9 +249,57 @@ test_that("btw_gh() block rules take precedence over allow rules", {
     btw.github_endpoint.block = fictional_endpoint
   )
 
-  # Block should take precedence
+  # User block should take precedence over user allow
   expect_error(
     btw_gh(fictional_endpoint),
+    "blocked"
+  )
+})
+
+test_that("btw_gh() user allow rules can override built-in block rules", {
+  local_mocked_bindings(
+    gh = function(...) list(status = "ok"),
+    .package = "gh"
+  )
+
+  # Merge is blocked by default
+  merge_endpoint <- "PUT /repos/owner/repo/pulls/123/merge"
+
+  # Should be blocked by default
+  expect_error(
+    btw_gh(merge_endpoint),
+    "blocked"
+  )
+
+  # User allow should override built-in block
+  withr::local_options(btw.github_endpoint.allow = merge_endpoint)
+  expect_no_error(btw_gh(merge_endpoint))
+})
+
+test_that("btw_gh() user block rules can override built-in allow rules", {
+  local_mocked_bindings(
+    gh = function(...) stop("Should not reach API"),
+    .package = "gh"
+  )
+
+  # Reading issues is allowed by default
+  issue_endpoint <- "GET /repos/owner/repo/issues/123"
+
+  # Should be allowed by default
+  local_mocked_bindings(
+    gh = function(...) list(status = "ok"),
+    .package = "gh"
+  )
+  expect_no_error(btw_gh(issue_endpoint))
+
+  # User block should override built-in allow
+  local_mocked_bindings(
+    gh = function(...) stop("Should not reach API"),
+    .package = "gh"
+  )
+  withr::local_options(btw.github_endpoint.block = issue_endpoint)
+  expect_error(
+    btw_gh(issue_endpoint),
     "blocked"
   )
 })

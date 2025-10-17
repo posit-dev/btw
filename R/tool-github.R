@@ -207,33 +207,48 @@ btw_github_check_endpoint <- function(endpoint) {
   user_block <- getOption("btw.github_endpoint.block", character())
   user_allow <- getOption("btw.github_endpoint.allow", character())
 
-  # Combine with default rules
-  block_rules <- c(btw_github_default_block_rules(), user_block)
-  allow_rules <- c(btw_github_default_allow_rules(), user_allow)
-
-  # Check block rules first
-  for (rule in block_rules) {
+  # 1. Check user block rules first
+  for (rule in user_block) {
     if (btw_github_match_pattern(endpoint, rule)) {
       cli::cli_abort(c(
         "GitHub API endpoint is blocked: {.val {endpoint}}",
-        x = "Matched block rule: {.val {rule}}"
+        x = "Matched user block rule: {.val {rule}}"
       ))
     }
   }
 
-  # Check allow rules
-  for (rule in allow_rules) {
+  # 2. Check user allow rules second
+  for (rule in user_allow) {
     if (btw_github_match_pattern(endpoint, rule)) {
       return(invisible(endpoint))
     }
   }
 
-  # No matching allow rule found
   cmd_allow <- sprintf(
     "btw.github_endpoint.allow = c(getOption('btw.github_endpoint.allow'), '%s')",
     endpoint
   )
 
+  # 3. Check built-in block rules third
+  for (rule in btw_github_default_block_rules()) {
+    if (btw_github_match_pattern(endpoint, rule)) {
+      cli::cli_abort(c(
+        "GitHub API endpoint is blocked: {.val {endpoint}}",
+        x = "Matched btw block rule: {.val {rule}}",
+        i = "To allow this endpoint anyway, add it to the {.code btw.github_endpoint.allow} option.",
+        i = "Ex: {.run {cmd_allow}}"
+      ))
+    }
+  }
+
+  # 4. Check built-in allow rules fourth
+  for (rule in btw_github_default_allow_rules()) {
+    if (btw_github_match_pattern(endpoint, rule)) {
+      return(invisible(endpoint))
+    }
+  }
+
+  # 5. No matching allow rule found - reject
   cli::cli_abort(c(
     "GitHub API endpoint not allowed: {.val {endpoint}}",
     x = "This endpoint has not been approved for use.",
