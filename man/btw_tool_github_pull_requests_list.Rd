@@ -15,28 +15,31 @@ btw_tool_github_pull_requests_list(
 )
 }
 \arguments{
-\item{owner}{Optional GitHub repository owner.}
+\item{owner}{Optional. GitHub repository owner (username or organization).
+If not provided, will attempt to detect from the current git repository.}
 
-\item{repo}{Optional GitHub repository name.}
+\item{repo}{Optional. GitHub repository name. If not provided, will attempt
+to detect from the current git repository.}
 
-\item{state}{Optional pull request state filter: \code{"open"}, \code{"closed"}, or
-\code{"all"}. Defaults to \code{"open"}.}
+\item{state}{Optional. Pull request state filter: \code{"open"} (default),
+\code{"closed"}, or \code{"all"}.}
 
-\item{author}{Optional GitHub username to filter PRs by author.}
+\item{author}{Optional. GitHub username to filter PRs by author.}
 
-\item{assignee}{Optional GitHub username to filter PRs by assignee.}
+\item{assignee}{Optional. GitHub username to filter PRs by assignee.}
 
-\item{max}{Maximum number of PRs to retrieve. Defaults to 30.}
+\item{max}{Optional. Maximum number of PRs to retrieve. Defaults to 30.}
 
 \item{_intent}{An optional string describing the intent of the tool use.
 When the tool is used by an LLM, the model will use this argument to
 explain why it called the tool.}
 }
 \value{
-Returns a list of pull requests matching the filters.
+A \code{btw_tool_result} containing a list of pull requests matching the
+filters.
 }
 \description{
-Tool: GitHub Pull Requests List
+List pull requests in a GitHub repository with optional filtering.
 }
 \examples{
 \dontrun{
@@ -48,6 +51,7 @@ btw_tool_github_pull_requests_list(author = "hadley")
 }
 \seealso{
 Other github tools: 
+\code{\link{btw_tool_github_comment_add}()},
 \code{\link{btw_tool_github_issue_create}()},
 \code{\link{btw_tool_github_issue_get}()},
 \code{\link{btw_tool_github_issue_thread}()},

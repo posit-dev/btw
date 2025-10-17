@@ -78,6 +78,9 @@ get_github_repo <- function(owner = NULL, repo = NULL) {
 
 #' Tool: GitHub Issue Get
 #'
+#' Read details of a GitHub issue, including its title, description, state, and
+#' metadata.
+#'
 #' @examples
 #' \dontrun{
 #' btw_tool_github_issue_get(issue_number = 123)
@@ -85,13 +88,12 @@ get_github_repo <- function(owner = NULL, repo = NULL) {
 #' }
 #'
 #' @param issue_number The issue number to retrieve.
-#' @param owner Optional GitHub repository owner. If not provided, will attempt
-#'   to detect from the current git repository.
-#' @param repo Optional GitHub repository name. If not provided, will attempt
+#' @param owner Optional. GitHub repository owner (username or organization).
+#'   If not provided, will attempt to detect from the current git repository.
+#' @param repo Optional. GitHub repository name. If not provided, will attempt
 #'   to detect from the current git repository.
 #' @inheritParams btw_tool_docs_package_news
-#'
-#' @return Returns the issue details.
+#' @return A `btw_tool_result` containing the issue details.
 #'
 #' @family github tools
 #' @export
@@ -195,17 +197,17 @@ RETURNS: Issue number, title, body, state, author, labels, and creation date.
 
 #' Tool: GitHub Issue Thread
 #'
+#' Read a GitHub issue with all comments in the discussion thread.
+#'
 #' @examples
 #' \dontrun{
 #' btw_tool_github_issue_thread(issue_number = 123)
 #' }
 #'
 #' @param issue_number The issue number to retrieve.
-#' @param owner Optional GitHub repository owner.
-#' @param repo Optional GitHub repository name.
+#' @inheritParams btw_tool_github_issue_get
 #' @inheritParams btw_tool_docs_package_news
-#'
-#' @return Returns the issue with all comments.
+#' @return A `btw_tool_result` containing the issue with all comments.
 #'
 #' @family github tools
 #' @export
@@ -339,17 +341,18 @@ RETURNS: Complete issue thread with description and all comments, including auth
 
 #' Tool: GitHub Pull Request Get
 #'
+#' Read details of a GitHub pull request, including its title, description,
+#' state, and metadata.
+#'
 #' @examples
 #' \dontrun{
 #' btw_tool_github_pull_request_get(pull_number = 456)
 #' }
 #'
 #' @param pull_number The pull request number to retrieve.
-#' @param owner Optional GitHub repository owner.
-#' @param repo Optional GitHub repository name.
+#' @inheritParams btw_tool_github_issue_get
 #' @inheritParams btw_tool_docs_package_news
-#'
-#' @return Returns the pull request details.
+#' @return A `btw_tool_result` containing the pull request details.
 #'
 #' @family github tools
 #' @export
@@ -456,17 +459,18 @@ RETURNS: PR number, title, body, state, author, base/head branches, and change s
 
 #' Tool: GitHub Pull Request Diff
 #'
+#' Read the code changes (diff) for a GitHub pull request, showing file-by-file
+#' modifications.
+#'
 #' @examples
 #' \dontrun{
 #' btw_tool_github_pull_request_diff(pull_number = 456)
 #' }
 #'
 #' @param pull_number The pull request number to retrieve.
-#' @param owner Optional GitHub repository owner.
-#' @param repo Optional GitHub repository name.
+#' @inheritParams btw_tool_github_issue_get
 #' @inheritParams btw_tool_docs_package_news
-#'
-#' @return Returns the pull request file changes.
+#' @return A `btw_tool_result` containing the pull request file changes.
 #'
 #' @family github tools
 #' @export
@@ -585,6 +589,8 @@ RETURNS: List of changed files with their diffs, showing additions, deletions, a
 
 #' Tool: GitHub Issue Create
 #'
+#' Create a new GitHub issue in a repository.
+#'
 #' @examples
 #' \dontrun{
 #' btw_tool_github_issue_create(
@@ -595,12 +601,10 @@ RETURNS: List of changed files with their diffs, showing additions, deletions, a
 #'
 #' @param title The issue title.
 #' @param body The issue body/description.
-#' @param owner Optional GitHub repository owner.
-#' @param repo Optional GitHub repository name.
-#' @param labels Optional character vector of label names to apply.
+#' @param labels Optional. Character vector of label names to apply to the issue.
+#' @inheritParams btw_tool_github_issue_get
 #' @inheritParams btw_tool_docs_package_news
-#'
-#' @return Returns the created issue details.
+#' @return A `btw_tool_result` containing the created issue details.
 #'
 #' @family github tools
 #' @export
@@ -724,6 +728,8 @@ RETURNS: Created issue number and URL.
 
 #' Tool: GitHub Pull Request Create
 #'
+#' Create a new GitHub pull request to merge changes from one branch into another.
+#'
 #' @examples
 #' \dontrun{
 #' btw_tool_github_pull_request_create(
@@ -736,13 +742,12 @@ RETURNS: Created issue number and URL.
 #'
 #' @param title The pull request title.
 #' @param body The pull request body/description.
-#' @param head The name of the branch containing changes.
-#' @param base The name of the branch to merge into.
-#' @param owner Optional GitHub repository owner.
-#' @param repo Optional GitHub repository name.
+#' @param head The name of the branch containing your changes.
+#' @param base The name of the branch you want to merge into (e.g., 'main' or
+#'   'master').
+#' @inheritParams btw_tool_github_issue_get
 #' @inheritParams btw_tool_docs_package_news
-#'
-#' @return Returns the created pull request details.
+#' @return A `btw_tool_result` containing the created pull request details.
 #'
 #' @family github tools
 #' @export
@@ -867,6 +872,8 @@ RETURNS: Created pull request number and URL.
 
 #' Tool: GitHub Issues List
 #'
+#' List issues in a GitHub repository with optional filtering.
+#'
 #' @examples
 #' \dontrun{
 #' btw_tool_github_issues_list()
@@ -874,17 +881,16 @@ RETURNS: Created pull request number and URL.
 #' btw_tool_github_issues_list(author = "hadley", assignee = "jennybc")
 #' }
 #'
-#' @param owner Optional GitHub repository owner.
-#' @param repo Optional GitHub repository name.
-#' @param state Optional issue state filter: `"open"`, `"closed"`, or `"all"`.
-#'   Defaults to `"open"`.
-#' @param labels Optional character vector of label names to filter by.
-#' @param author Optional GitHub username to filter issues by author.
-#' @param assignee Optional GitHub username to filter issues by assignee.
-#' @param max Maximum number of issues to retrieve. Defaults to 30.
+#' @param state Optional. Issue state filter: `"open"` (default), `"closed"`,
+#'   or `"all"`.
+#' @param labels Optional. Character vector of label names to filter by. Issues
+#'   must have all specified labels.
+#' @param author Optional. GitHub username to filter issues by author.
+#' @param assignee Optional. GitHub username to filter issues by assignee.
+#' @param max Optional. Maximum number of issues to retrieve. Defaults to 30.
+#' @inheritParams btw_tool_github_issue_get
 #' @inheritParams btw_tool_docs_package_news
-#'
-#' @return Returns a list of issues matching the filters.
+#' @return A `btw_tool_result` containing a list of issues matching the filters.
 #'
 #' @family github tools
 #' @export
@@ -1076,6 +1082,8 @@ RETURNS: List of issues with number, title, state, author, labels, and descripti
 
 #' Tool: GitHub Pull Requests List
 #'
+#' List pull requests in a GitHub repository with optional filtering.
+#'
 #' @examples
 #' \dontrun{
 #' btw_tool_github_pull_requests_list()
@@ -1083,16 +1091,15 @@ RETURNS: List of issues with number, title, state, author, labels, and descripti
 #' btw_tool_github_pull_requests_list(author = "hadley")
 #' }
 #'
-#' @param owner Optional GitHub repository owner.
-#' @param repo Optional GitHub repository name.
-#' @param state Optional pull request state filter: `"open"`, `"closed"`, or
-#'   `"all"`. Defaults to `"open"`.
-#' @param author Optional GitHub username to filter PRs by author.
-#' @param assignee Optional GitHub username to filter PRs by assignee.
-#' @param max Maximum number of PRs to retrieve. Defaults to 30.
+#' @param state Optional. Pull request state filter: `"open"` (default),
+#'   `"closed"`, or `"all"`.
+#' @param author Optional. GitHub username to filter PRs by author.
+#' @param assignee Optional. GitHub username to filter PRs by assignee.
+#' @param max Optional. Maximum number of PRs to retrieve. Defaults to 30.
+#' @inheritParams btw_tool_github_issue_get
 #' @inheritParams btw_tool_docs_package_news
-#'
-#' @return Returns a list of pull requests matching the filters.
+#' @return A `btw_tool_result` containing a list of pull requests matching the
+#'   filters.
 #'
 #' @family github tools
 #' @export
@@ -1284,6 +1291,8 @@ RETURNS: List of PRs with number, title, state, author, and description preview.
 
 #' Tool: GitHub Comment Add
 #'
+#' Add a comment to a GitHub issue or pull request.
+#'
 #' @examples
 #' \dontrun{
 #' btw_tool_github_comment_add(number = 123, body = "Thanks for reporting this!")
@@ -1291,12 +1300,10 @@ RETURNS: List of PRs with number, title, state, author, and description preview.
 #' }
 #'
 #' @param number The issue or pull request number to comment on.
-#' @param body The comment text.
-#' @param owner Optional GitHub repository owner.
-#' @param repo Optional GitHub repository name.
+#' @param body The comment text (as markdown).
+#' @inheritParams btw_tool_github_issue_get
 #' @inheritParams btw_tool_docs_package_news
-#'
-#' @return Returns the created comment details.
+#' @return A `btw_tool_result` containing the created comment details.
 #'
 #' @family github tools
 #' @export

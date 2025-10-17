@@ -14,19 +14,22 @@ btw_tool_github_pull_request_get(
 \arguments{
 \item{pull_number}{The pull request number to retrieve.}
 
-\item{owner}{Optional GitHub repository owner.}
+\item{owner}{Optional. GitHub repository owner (username or organization).
+If not provided, will attempt to detect from the current git repository.}
 
-\item{repo}{Optional GitHub repository name.}
+\item{repo}{Optional. GitHub repository name. If not provided, will attempt
+to detect from the current git repository.}
 
 \item{_intent}{An optional string describing the intent of the tool use.
 When the tool is used by an LLM, the model will use this argument to
 explain why it called the tool.}
 }
 \value{
-Returns the pull request details.
+A \code{btw_tool_result} containing the pull request details.
 }
 \description{
-Tool: GitHub Pull Request Get
+Read details of a GitHub pull request, including its title, description,
+state, and metadata.
 }
 \examples{
 \dontrun{
@@ -36,6 +39,7 @@ btw_tool_github_pull_request_get(pull_number = 456)
 }
 \seealso{
 Other github tools: 
+\code{\link{btw_tool_github_comment_add}()},
 \code{\link{btw_tool_github_issue_create}()},
 \code{\link{btw_tool_github_issue_get}()},
 \code{\link{btw_tool_github_issue_thread}()},

@@ -74,6 +74,7 @@ this function have access to the tools:
 
 \subsection{Group: github}{\tabular{ll}{
    Name \tab Description \cr
+   \code{\link[=btw_tool_github_comment_add]{btw_tool_github_comment_add()}} \tab Add a comment to a GitHub issue or pull request. \cr
    \code{\link[=btw_tool_github_issue_create]{btw_tool_github_issue_create()}} \tab Create a new GitHub issue. \cr
    \code{\link[=btw_tool_github_issue_get]{btw_tool_github_issue_get()}} \tab Get details of a GitHub issue. \cr
    \code{\link[=btw_tool_github_issue_thread]{btw_tool_github_issue_thread()}} \tab Get a GitHub issue with all comments. \cr

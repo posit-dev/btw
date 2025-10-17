@@ -19,23 +19,26 @@ btw_tool_github_pull_request_create(
 
 \item{body}{The pull request body/description.}
 
-\item{head}{The name of the branch containing changes.}
+\item{head}{The name of the branch containing your changes.}
 
-\item{base}{The name of the branch to merge into.}
+\item{base}{The name of the branch you want to merge into (e.g., 'main' or
+'master').}
 
-\item{owner}{Optional GitHub repository owner.}
+\item{owner}{Optional. GitHub repository owner (username or organization).
+If not provided, will attempt to detect from the current git repository.}
 
-\item{repo}{Optional GitHub repository name.}
+\item{repo}{Optional. GitHub repository name. If not provided, will attempt
+to detect from the current git repository.}
 
 \item{_intent}{An optional string describing the intent of the tool use.
 When the tool is used by an LLM, the model will use this argument to
 explain why it called the tool.}
 }
 \value{
-Returns the created pull request details.
+A \code{btw_tool_result} containing the created pull request details.
 }
 \description{
-Tool: GitHub Pull Request Create
+Create a new GitHub pull request to merge changes from one branch into another.
 }
 \examples{
 \dontrun{
@@ -50,6 +53,7 @@ btw_tool_github_pull_request_create(
 }
 \seealso{
 Other github tools: 
+\code{\link{btw_tool_github_comment_add}()},
 \code{\link{btw_tool_github_issue_create}()},
 \code{\link{btw_tool_github_issue_get}()},
 \code{\link{btw_tool_github_issue_thread}()},

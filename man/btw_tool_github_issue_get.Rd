@@ -14,10 +14,10 @@ btw_tool_github_issue_get(
 \arguments{
 \item{issue_number}{The issue number to retrieve.}
 
-\item{owner}{Optional GitHub repository owner. If not provided, will attempt
-to detect from the current git repository.}
+\item{owner}{Optional. GitHub repository owner (username or organization).
+If not provided, will attempt to detect from the current git repository.}
 
-\item{repo}{Optional GitHub repository name. If not provided, will attempt
+\item{repo}{Optional. GitHub repository name. If not provided, will attempt
 to detect from the current git repository.}
 
 \item{_intent}{An optional string describing the intent of the tool use.
@@ -25,10 +25,11 @@ When the tool is used by an LLM, the model will use this argument to
 explain why it called the tool.}
 }
 \value{
-Returns the issue details.
+A \code{btw_tool_result} containing the issue details.
 }
 \description{
-Tool: GitHub Issue Get
+Read details of a GitHub issue, including its title, description, state, and
+metadata.
 }
 \examples{
 \dontrun{
@@ -39,6 +40,7 @@ btw_tool_github_issue_get(issue_number = 123, owner = "tidyverse", repo = "dplyr
 }
 \seealso{
 Other github tools: 
+\code{\link{btw_tool_github_comment_add}()},
 \code{\link{btw_tool_github_issue_create}()},
 \code{\link{btw_tool_github_issue_thread}()},
 \code{\link{btw_tool_github_issues_list}()},

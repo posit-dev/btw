@@ -18,21 +18,23 @@ btw_tool_github_issue_create(
 
 \item{body}{The issue body/description.}
 
-\item{owner}{Optional GitHub repository owner.}
+\item{owner}{Optional. GitHub repository owner (username or organization).
+If not provided, will attempt to detect from the current git repository.}
 
-\item{repo}{Optional GitHub repository name.}
+\item{repo}{Optional. GitHub repository name. If not provided, will attempt
+to detect from the current git repository.}
 
-\item{labels}{Optional character vector of label names to apply.}
+\item{labels}{Optional. Character vector of label names to apply to the issue.}
 
 \item{_intent}{An optional string describing the intent of the tool use.
 When the tool is used by an LLM, the model will use this argument to
 explain why it called the tool.}
 }
 \value{
-Returns the created issue details.
+A \code{btw_tool_result} containing the created issue details.
 }
 \description{
-Tool: GitHub Issue Create
+Create a new GitHub issue in a repository.
 }
 \examples{
 \dontrun{
@@ -45,6 +47,7 @@ btw_tool_github_issue_create(
 }
 \seealso{
 Other github tools: 
+\code{\link{btw_tool_github_comment_add}()},
 \code{\link{btw_tool_github_issue_get}()},
 \code{\link{btw_tool_github_issue_thread}()},
 \code{\link{btw_tool_github_issues_list}()},
