@@ -405,6 +405,10 @@ test_that("btw_tool_github_comment_add() validates arguments", {
 test_that("github tools register correctly", {
   skip_if_not_installed("gh")
 
+  local_mocked_bindings(
+    btw_can_register_gh_tool = function() TRUE
+  )
+
   tools <- btw_tools("github")
 
   expect_true(length(tools) > 0)
@@ -424,17 +428,21 @@ test_that("github tools register correctly", {
 
 test_that("github tools require gh package for registration", {
   local_mocked_bindings(
-    is_installed = function(pkg) pkg != "gh"
+    btw_can_register_gh_tool = function() FALSE
   )
 
   tools <- btw_tools("github")
 
-  # Should return empty list when gh is not installed
+  # Should return empty list when gh is not installed or not authenticated
   expect_equal(length(tools), 0)
 })
 
 test_that("github tools have correct annotations", {
   skip_if_not_installed("gh")
+
+  local_mocked_bindings(
+    btw_can_register_gh_tool = function() TRUE
+  )
 
   tools <- btw_tools("github")
 

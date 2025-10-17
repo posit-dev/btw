@@ -1,6 +1,51 @@
 #' @include tool-result.R
 NULL
 
+# Helper: Check if GitHub tools can register ----------------------------------
+
+btw_can_register_gh_tool <- local({
+  gh_auth_result <- NULL
+
+  function() {
+    if (!is_installed("gh")) {
+      warn(
+        "Install the {gh} package to enable GitHub tools.",
+        .frequency = "once",
+        .frequency_id = "btw_github_tools_missing_gh"
+      )
+      return(FALSE)
+    }
+
+    if (!is.null(gh_auth_result)) {
+      return(gh_auth_result)
+    }
+
+    gh_auth_result <<- tryCatch(
+      {
+        whoami <- gh::gh_whoami()
+        !is.null(whoami)
+      },
+      error = function(e) {
+        FALSE
+      }
+    )
+
+    if (!gh_auth_result) {
+      warn(
+        c(
+          "GitHub tools are not available because you are not authenticated with the gh package.",
+          i = "Run `gh::gh_whoami()` to check your authentication status.",
+          i = "Run `gitcreds::gitcreds_set()` or set the GITHUB_PAT environment variable to authenticate."
+        ),
+        .frequency = "once",
+        .frequency_id = "btw_github_tools_not_authenticated"
+      )
+    }
+
+    gh_auth_result
+  }
+})
+
 # Helper: Get GitHub repo info ------------------------------------------------
 
 get_github_repo <- function(owner = NULL, repo = NULL) {
@@ -24,8 +69,8 @@ get_github_repo <- function(owner = NULL, repo = NULL) {
   }
 
   list(
-    owner = remote_info$username,
-    repo = remote_info$repo
+    owner = owner %||% remote_info$username,
+    repo = repo %||% remote_info$repo
   )
 }
 
@@ -127,7 +172,7 @@ RETURNS: Issue number, title, body, state, author, labels, and creation date.
         read_only_hint = TRUE,
         open_world_hint = TRUE,
         idempotent_hint = TRUE,
-        btw_can_register = function() rlang::is_installed("gh")
+        btw_can_register = btw_can_register_gh_tool
       ),
       arguments = list(
         issue_number = ellmer::type_number(
@@ -271,7 +316,7 @@ RETURNS: Complete issue thread with description and all comments, including auth
         read_only_hint = TRUE,
         open_world_hint = TRUE,
         idempotent_hint = TRUE,
-        btw_can_register = function() rlang::is_installed("gh")
+        btw_can_register = btw_can_register_gh_tool
       ),
       arguments = list(
         issue_number = ellmer::type_number(
@@ -388,7 +433,7 @@ RETURNS: PR number, title, body, state, author, base/head branches, and change s
         read_only_hint = TRUE,
         open_world_hint = TRUE,
         idempotent_hint = TRUE,
-        btw_can_register = function() rlang::is_installed("gh")
+        btw_can_register = btw_can_register_gh_tool
       ),
       arguments = list(
         pull_number = ellmer::type_number(
@@ -517,7 +562,7 @@ RETURNS: List of changed files with their diffs, showing additions, deletions, a
         read_only_hint = TRUE,
         open_world_hint = TRUE,
         idempotent_hint = TRUE,
-        btw_can_register = function() rlang::is_installed("gh")
+        btw_can_register = btw_can_register_gh_tool
       ),
       arguments = list(
         pull_number = ellmer::type_number(
@@ -648,7 +693,7 @@ RETURNS: Created issue number and URL.
         read_only_hint = FALSE,
         open_world_hint = TRUE,
         idempotent_hint = FALSE,
-        btw_can_register = function() rlang::is_installed("gh")
+        btw_can_register = btw_can_register_gh_tool
       ),
       arguments = list(
         title = ellmer::type_string(
@@ -790,7 +835,7 @@ RETURNS: Created pull request number and URL.
         read_only_hint = FALSE,
         open_world_hint = TRUE,
         idempotent_hint = FALSE,
-        btw_can_register = function() rlang::is_installed("gh")
+        btw_can_register = btw_can_register_gh_tool
       ),
       arguments = list(
         title = ellmer::type_string(
@@ -989,7 +1034,7 @@ RETURNS: List of issues with number, title, state, author, labels, and descripti
         read_only_hint = TRUE,
         open_world_hint = TRUE,
         idempotent_hint = TRUE,
-        btw_can_register = function() rlang::is_installed("gh")
+        btw_can_register = btw_can_register_gh_tool
       ),
       arguments = list(
         owner = ellmer::type_string(
@@ -1202,7 +1247,7 @@ RETURNS: List of PRs with number, title, state, author, and description preview.
         read_only_hint = TRUE,
         open_world_hint = TRUE,
         idempotent_hint = TRUE,
-        btw_can_register = function() rlang::is_installed("gh")
+        btw_can_register = btw_can_register_gh_tool
       ),
       arguments = list(
         owner = ellmer::type_string(
@@ -1336,7 +1381,7 @@ RETURNS: Comment URL and confirmation.
         read_only_hint = FALSE,
         open_world_hint = TRUE,
         idempotent_hint = FALSE,
-        btw_can_register = function() rlang::is_installed("gh")
+        btw_can_register = btw_can_register_gh_tool
       ),
       arguments = list(
         number = ellmer::type_number(
