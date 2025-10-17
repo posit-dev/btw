@@ -4,13 +4,17 @@
 \alias{btw_tool_github}
 \title{Tool: GitHub}
 \usage{
-btw_tool_github(code, `_intent` = "")
+btw_tool_github(code, fields = "default", `_intent` = "")
 }
 \arguments{
 \item{code}{R code that calls \code{gh()} or \code{gh_whoami()}. The code will be
 evaluated in an environment where \code{owner} and \code{repo} variables are
 predefined (defaulting to the current repository if detected). The \code{gh()}
 function is available without needing to load the gh package.}
+
+\item{fields}{Optional character vector of GitHub API response fields to
+retain. If provided, only these fields will be included in the result.
+Defaults to a curated set of commonly used fields.}
 
 \item{_intent}{An optional string describing the intent of the tool use.
 When the tool is used by an LLM, the model will use this argument to
@@ -20,10 +24,21 @@ explain why it called the tool.}
 A \code{btw_tool_result} containing the result of the GitHub API call.
 }
 \description{
-Execute R code that calls the GitHub API using \code{gh()} function from the gh
-package.
-}
-\details{
+Execute R code that calls the GitHub API using \code{\link[gh:gh]{gh::gh()}}.
+
+This tool is
+designed such that models can write very limited R code to call \code{\link[gh:gh]{gh::gh()}}
+and protections are inserted to prevent the model from calling unsafe or
+destructive actions via the API. The \strong{Endpoint Validation} section below
+describes how API endpoints are validated to ensure safety.
+
+While this tool \emph{can} execute R code, the code is evaluated in an environment
+where only a limited set of functions and variables are available. In
+particular, only the \code{gh()} and \code{gh_whoami()} functions from the \code{gh} package
+are available, along with \code{owner} and \code{repo} variables that are pre-defined
+to point to the current repository (if detected). This allows models to focus
+on writing GitHub API calls without needing to load packages or manage
+authentication.
 \subsection{Endpoint Validation}{
 
 This tool uses endpoint validation to ensure only safe GitHub API operations
@@ -60,24 +75,23 @@ The precedence order for rules is:
 \examples{
 \dontrun{
 # Get an issue
-btw_tool_github(code = 'gh("/repos/{owner}/{repo}/issues/123")')
-
-# List open issues
-btw_tool_github(code = 'gh("/repos/{owner}/{repo}/issues", state = "open")')
+btw_tool_github(
+  code = 'gh("/repos/{owner}/{repo}/issues/123", owner = owner, repo = repo)'
+)
 
 # Create an issue
-btw_tool_github(code = '
-  gh("POST /repos/{owner}/{repo}/issues",
-     title = "Bug report",
-     body = "Description of bug")
-')
+btw_tool_github(code = r"(
+  gh(
+    "POST /repos/{owner}/{repo}/issues",
+    title = \"Bug report\",
+    body = \"Description of bug\",
+    owner = owner,
+    repo = repo
+  )
+)")
 
 # Target a different repository
-btw_tool_github(code = '
-  owner <- "tidyverse"
-  repo <- "dplyr"
-  gh("/repos/{owner}/{repo}/issues/1")
-')
+btw_tool_github(code = 'gh("/repos/tidyverse/dplyr/issues/123")')
 }
 
 }

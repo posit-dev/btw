@@ -3,6 +3,320 @@ NULL
 
 # GitHub API Wrapper with Endpoint Validation ---------------------------------
 
+btw_gh <- function(endpoint, ...) {
+  endpoint <- btw_github_check_endpoint(endpoint)
+  gh::gh(endpoint, ...)
+}
+
+btw_eval_gh_code <- function(code, fields = btw_gh_fields()) {
+  check_installed("gh")
+
+  repo_info <- get_github_repo(NULL, NULL)
+
+  gh_namespace <- asNamespace("gh")
+
+  env <- new_environment(list(
+    owner = repo_info$owner,
+    repo = repo_info$repo,
+    gh = btw_gh,
+    gh_whoami = gh::gh_whoami,
+    `<-` = base::`<-`,
+    `=` = base::`=`,
+    `[` = base::`[`,
+    `[[` = base::`[[`,
+    `$` = base::`$`,
+    c = base::c,
+    list = base::list,
+    lapply = base::lapply,
+    vapply = base::vapply
+  ))
+
+  res <- tryCatch(
+    eval(parse(text = code), envir = env),
+    error = function(e) {
+      cld_not_find <- gettext("could not find function", domain = "R")
+      e_msg <- conditionMessage(e)
+      if (grepl(cld_not_find, e_msg, fixed = TRUE)) {
+        e_msg <- sub(cld_not_find, "", e_msg, fixed = TRUE)
+        e_msg <- trimws(e_msg)
+        cli::cli_abort(c(
+          "Function not allowed or not found: {e_msg}",
+          i = "Only unprefixed `gh()` and `gh_whoami()` from the gh package are allowed."
+        ))
+      } else {
+        cli::cli_abort("Error evaluating GitHub code.", parent = e)
+      }
+    }
+  )
+
+  if (!is.null(fields)) {
+    res <- btw_gh_filter_fields(res, fields = fields)
+  }
+
+  res
+}
+
+# Helper: Check if GitHub tools can register ----------------------------------
+
+btw_can_register_gh_tool <- local({
+  gh_auth_result <- NULL
+
+  function() {
+    if (!is_installed("gh")) {
+      warn(
+        "Install the {gh} package to enable GitHub tools.",
+        .frequency = "once",
+        .frequency_id = "btw_github_tools_missing_gh"
+      )
+      return(FALSE)
+    }
+
+    if (!is.null(gh_auth_result)) {
+      return(gh_auth_result)
+    }
+
+    gh_auth_result <<- tryCatch(
+      {
+        whoami <- gh::gh_whoami()
+        !is.null(whoami)
+      },
+      error = function(e) {
+        FALSE
+      }
+    )
+
+    if (!gh_auth_result) {
+      warn(
+        c(
+          "GitHub tools are not available because you are not authenticated with the gh package.",
+          i = "Run `gh::gh_whoami()` to check your authentication status.",
+          i = "Run `gitcreds::gitcreds_set()` or set the GITHUB_PAT environment variable to authenticate."
+        ),
+        .frequency = "once",
+        .frequency_id = "btw_github_tools_not_authenticated"
+      )
+    }
+
+    gh_auth_result
+  }
+})
+
+# Helper: Get GitHub repo info ------------------------------------------------
+
+get_github_repo <- function(owner = NULL, repo = NULL) {
+  if (!is.null(owner) && !is.null(repo)) {
+    return(list(owner = owner, repo = repo))
+  }
+
+  check_installed("gh")
+
+  # Try to detect from current git repo
+  remote_info <- tryCatch(
+    gh::gh_tree_remote(),
+    error = function(e) NULL
+  )
+
+  if (is.null(remote_info)) {
+    abort(c(
+      "Could not detect GitHub repository.",
+      i = "Provide `owner` and `repo` parameters, or run from within a git repository with a GitHub remote."
+    ))
+  }
+
+  list(
+    owner = owner %||% remote_info$username,
+    repo = repo %||% remote_info$repo
+  )
+}
+
+# GitHub Tool -----------------------------------------------------------------
+
+#' Tool: GitHub
+#'
+#' @description
+#' Execute R code that calls the GitHub API using [gh::gh()].
+#'
+#' This tool is
+#' designed such that models can write very limited R code to call [gh::gh()]
+#' and protections are inserted to prevent the model from calling unsafe or
+#' destructive actions via the API. The **Endpoint Validation** section below
+#' describes how API endpoints are validated to ensure safety.
+#'
+#' While this tool *can* execute R code, the code is evaluated in an environment
+#' where only a limited set of functions and variables are available. In
+#' particular, only the `gh()` and `gh_whoami()` functions from the `gh` package
+#' are available, along with `owner` and `repo` variables that are pre-defined
+#' to point to the current repository (if detected). This allows models to focus
+#' on writing GitHub API calls without needing to load packages or manage
+#' authentication.
+#'
+#' ## Endpoint Validation
+#'
+#' This tool uses endpoint validation to ensure only safe GitHub API operations
+#' are performed. By default, most read operations and low-risk write operations
+#' (like creating issues or PRs) are allowed, while dangerous operations (like
+#' merging PRs or deleting repositories) are blocked.
+#'
+#' To customize which endpoints are allowed or blocked, use the
+#' `btw.github_endpoint.allow` and `btw.github_endpoint.block` options:
+#'
+#' ```r
+#' # Allow a specific endpoint
+#' options(btw.github_endpoint.allow = c(
+#'   getOption("btw.github_endpoint.allow"),
+#'   "GET /repos/*/*/topics"
+#' ))
+#'
+#' # Block a specific endpoint
+#' options(btw.github_endpoint.block = c(
+#'   getOption("btw.github_endpoint.block"),
+#'   "GET /repos/*/*/branches"
+#' ))
+#' ```
+#'
+#' The precedence order for rules is:
+#' 1. User block rules (checked first, highest priority)
+#' 2. User allow rules
+#' 3. Built-in block rules
+#' 4. Built-in allow rules
+#' 5. Default: reject (if no rules match)
+#'
+#' @examples
+#' \dontrun{
+#' # Get an issue
+#' btw_tool_github(
+#'   code = 'gh("/repos/{owner}/{repo}/issues/123", owner = owner, repo = repo)'
+#' )
+#'
+#' # Create an issue
+#' btw_tool_github(code = r"(
+#'   gh(
+#'     "POST /repos/{owner}/{repo}/issues",
+#'     title = \"Bug report\",
+#'     body = \"Description of bug\",
+#'     owner = owner,
+#'     repo = repo
+#'   )
+#' )")
+#'
+#' # Target a different repository
+#' btw_tool_github(code = 'gh("/repos/tidyverse/dplyr/issues/123")')
+#' }
+#'
+#' @param code R code that calls `gh()` or `gh_whoami()`. The code will be
+#'   evaluated in an environment where `owner` and `repo` variables are
+#'   predefined (defaulting to the current repository if detected). The `gh()`
+#'   function is available without needing to load the gh package.
+#' @param fields Optional character vector of GitHub API response fields to
+#'   retain. If provided, only these fields will be included in the result.
+#'   Defaults to a curated set of commonly used fields.
+#' @inheritParams btw_tool_docs_package_news
+#' @return A `btw_tool_result` containing the result of the GitHub API call.
+#'
+#' @family github tools
+#' @export
+btw_tool_github <- function(code, fields, `_intent`) {}
+
+btw_tool_github_impl <- function(code, fields = "default") {
+  check_string(code)
+  check_character(fields, allow_null = TRUE)
+
+  if (identical(fields, "default")) {
+    fields <- btw_gh_fields()
+  } else if (identical(fields, "all")) {
+    fields <- NULL
+  }
+
+  result <- btw_eval_gh_code(code, fields)
+
+  btw_tool_result(result)
+}
+
+.btw_add_to_tools(
+  name = "btw_tool_github",
+  group = "github",
+  tool = function() {
+    ellmer::tool(
+      btw_tool_github_impl,
+      name = "btw_tool_github",
+      description = r"---(Execute R code that calls the GitHub API using gh().
+
+WHEN TO USE:
+* Use this tool to interact with GitHub repositories, issues, pull requests, and more.
+* Write R code that calls gh() - you don't need to load the gh package.
+* The code runs in an environment with `owner` and `repo` variables already defined.
+
+CODE ENVIRONMENT:
+* `owner` and `repo` variables are pre-defined for the current repository
+* `gh()` function is available to call any GitHub API endpoint
+* `gh_whoami()` is available to get current user information
+* You can provide write the endpoint with other `owner` or `repo` values to target another repo
+
+ENDPOINT VALIDATION:
+* Most read operations (GET) are allowed by default
+* Low-risk write operations (creating issues/PRs, adding comments) are allowed
+* Dangerous operations (merging PRs, deleting repos, managing webhooks/secrets) are blocked
+* If an endpoint is blocked, the error message will explain how the user can allow it
+
+EXAMPLES:
+```r
+# Get an issue from current repo
+gh("/repos/{owner}/{repo}/issues/123", owner = owner, repo = repo)
+
+# Get an issue from a fixed repo (tidyverse/dplyr)
+gh("/repos/tidyverse/dplyr/issues/123")
+
+# List open issues in current repository
+gh("/repos/{owner}/{repo}/issues", state = "open", owner = owner, repo = repo, .limit = 10)
+
+# Create an issue in the current repo
+gh(
+  "POST /repos/{owner}/{repo}/issues",
+  title = "Bug report",
+  body = "Description",
+  owner = owner,
+  repo = repo
+)
+
+# Get PR diff files in a specific repo (posit-dev/btw)
+gh("/repos/posit-dev/btw/pulls/6/files")
+
+# Target a different repo (option 1)
+gh("/repos/{owner}/{repo}/issues/123", owner = "tidyverse", repo = "dplyr")
+# Target a different repo (option 2)
+gh("/repos/tidyverse/dplyr/issues/123")
+```
+
+RETURNS: The result from the GitHub API call, formatted as JSON.
+      )---",
+      annotations = ellmer::tool_annotations(
+        title = "GitHub API",
+        read_only_hint = FALSE, # Can perform writes
+        open_world_hint = TRUE,
+        idempotent_hint = FALSE,
+        btw_can_register = btw_can_register_gh_tool
+      ),
+      arguments = list(
+        code = ellmer::type_string(
+          "R code that calls gh() or gh_whoami(). The code will be evaluated in an environment with owner and repo variables predefined."
+        ),
+        fields = ellmer::type_array(
+          ellmer::type_string(),
+          paste(
+            "Optional character vector of GitHub API response fields to retain.",
+            "If provided, only these fields will be included in the result.",
+            "Use `'all'` to retain all fields.",
+            "The field filter only applies to the top-level response object, or the top-level items in the response if an array is returned."
+          ),
+          required = FALSE
+        )
+      )
+    )
+  }
+)
+
+# Helper: GitHub Endpoint Validation ------------------------------------------
+
 btw_github_default_allow_rules <- function() {
   c(
     # Basic Information Gathering Endpoints
@@ -257,272 +571,111 @@ btw_github_check_endpoint <- function(endpoint) {
   ))
 }
 
-btw_gh <- function(endpoint, ...) {
-  endpoint <- btw_github_check_endpoint(endpoint)
-  gh::gh(endpoint, ...)
+# Helper: GitHub Fields -------------------------------------------------------
+btw_gh_filter_fields <- function(x, fields = btw_gh_fields()) {
+  if (!any(nzchar(names2(x)))) {
+    return(lapply(x, btw_gh_filter_fields, fields = fields))
+  } else {
+    x[intersect(fields, names(x))]
+  }
 }
 
-btw_eval_gh_code <- function(code) {
-  check_installed("gh")
+btw_gh_fields <- function() {
+  c(
+    # Core denormalized identifiers
+    "number", # issue/PR/milestone number
+    "name", # generic name (branch/workflow/label)
+    "title", # issue/PR/release title
+    "sha", # commit SHA (commits, statuses)
+    "ref", # branch/tag ref (branches, compare)
+    "path", # contents path (files/dirs)
 
-  repo_info <- get_github_repo(NULL, NULL)
+    # Identity and canonical URLs
+    "id", # numeric/id-like key (where present)
+    "node_id", # global GraphQL node id (often present)
+    "type", # normalize record type if present (issue, pull_request, commit, etc.)
+    "url", # API self URL
+    "html_url", # human-readable page
+    "repository", # prefer "owner/repo" when present
+    "owner", # "owner" or org login if top-level exists
 
-  gh_namespace <- asNamespace("gh")
+    # Authorship and associations
+    "author", # primary author login (when available)
+    "committer", # committer login (commits)
+    "author_association", # OWNER, COLLABORATOR, CONTRIBUTOR, etc.
 
-  env <- new_environment(list(
-    owner = repo_info$owner,
-    repo = repo_info$repo,
-    gh = btw_gh,
-    gh_whoami = gh::gh_whoami,
-    `[` = base::`[`,
-    `[[` = base::`[[`,
-    `$` = base::`$`,
-    c = base::c,
-    list = base::list,
-    lapply = base::lapply,
-    vapply = base::vapply
-  ))
+    # Lifecycle and status flags
+    "state", # open/closed, etc.
+    "status", # queued/in_progress/completed (workflows/jobs)
+    "conclusion", # success/failure/cancelled (CI)
+    "merged", # PR merged flag
+    "draft", # PR draft flag
+    "locked", # issue/PR locked flag
+    "protected", # branch protection (branches)
+    "prerelease", # release prerelease flag
 
-  tryCatch(
-    eval(parse(text = code), envir = env),
-    error = function(e) {
-      cld_not_find <- gettext("could not find function", domain = "R")
-      e_msg <- conditionMessage(e)
-      if (grepl(cld_not_find, e_msg, fixed = TRUE)) {
-        e_msg <- sub(cld_not_find, "", e_msg, fixed = TRUE)
-        e_msg <- trimws(e_msg)
-        cli::cli_abort(c(
-          "Function not allowed or not found: {e_msg}",
-          i = "Only unprefixed `gh()` and `gh_whoami()` from the gh package are allowed."
-        ))
-      } else {
-        cli::cli_abort("Error evaluating GitHub code.", parent = e)
-      }
-    }
+    # Timestamps (ISO 8601)
+    "created_at",
+    "updated_at",
+    "closed_at",
+    "merged_at",
+    "published_at",
+    "started_at",
+    "completed_at",
+
+    # Primary text
+    "body", # main markdown content (issue/PR/review/release)
+    "message", # commit message (commits)
+
+    # Lightweight impact/size signals
+    "comment_count", # issue/PR comment count (or "comments" if that’s the actual field)
+    "review_count", # PR review count
+    "commit_count", # PR commits count
+    "changed_files", # PR changed files
+    "additions", # PR/commit additions
+    "deletions", # PR/commit deletions
+    "size", # repo size / content size (context-dependent)
+
+    # Classification and routing
+    "labels", # array of label objects or names
+    "assignees", # array of user objects or logins
+    "requested_reviewers", # PR reviewers
+    "milestone", # milestone reference/name/number
+
+    # PR/compare core refs
+    "base_ref",
+    "base_sha",
+    "head_ref",
+    "head_sha",
+    "compare_url",
+
+    # CI/workflows essentials
+    "workflow_name", # workflow
+    "run_id", # workflow run id
+    "job_name", # workflow job name
+    "logs_url", # logs link (runs/jobs)
+
+    # Releases
+    "release_tag", # tag_name for releases
+    "release_name", # name/title of release
+    "assets", # array of asset summaries (name/url/size)
+
+    # Repo metadata essentials
+    "default_branch",
+    "license", # license spdx_id/name
+    "language", # primary language
+    "topics", # repo topics
+    "is_private", # repo privacy
+    "is_fork", # repo fork flag
+    "archived", # repo archived flag
+
+    # Social/engagement counters (compact signal)
+    "stargazers_count",
+    "forks_count",
+    "watchers_count",
+    "open_issues_count",
+
+    # Search
+    "search_score" # GitHub search score (when present)
   )
 }
-
-# Helper: Check if GitHub tools can register ----------------------------------
-
-btw_can_register_gh_tool <- local({
-  gh_auth_result <- NULL
-
-  function() {
-    if (!is_installed("gh")) {
-      warn(
-        "Install the {gh} package to enable GitHub tools.",
-        .frequency = "once",
-        .frequency_id = "btw_github_tools_missing_gh"
-      )
-      return(FALSE)
-    }
-
-    if (!is.null(gh_auth_result)) {
-      return(gh_auth_result)
-    }
-
-    gh_auth_result <<- tryCatch(
-      {
-        whoami <- gh::gh_whoami()
-        !is.null(whoami)
-      },
-      error = function(e) {
-        FALSE
-      }
-    )
-
-    if (!gh_auth_result) {
-      warn(
-        c(
-          "GitHub tools are not available because you are not authenticated with the gh package.",
-          i = "Run `gh::gh_whoami()` to check your authentication status.",
-          i = "Run `gitcreds::gitcreds_set()` or set the GITHUB_PAT environment variable to authenticate."
-        ),
-        .frequency = "once",
-        .frequency_id = "btw_github_tools_not_authenticated"
-      )
-    }
-
-    gh_auth_result
-  }
-})
-
-# Helper: Get GitHub repo info ------------------------------------------------
-
-get_github_repo <- function(owner = NULL, repo = NULL) {
-  if (!is.null(owner) && !is.null(repo)) {
-    return(list(owner = owner, repo = repo))
-  }
-
-  check_installed("gh")
-
-  # Try to detect from current git repo
-  remote_info <- tryCatch(
-    gh::gh_tree_remote(),
-    error = function(e) NULL
-  )
-
-  if (is.null(remote_info)) {
-    abort(c(
-      "Could not detect GitHub repository.",
-      i = "Provide `owner` and `repo` parameters, or run from within a git repository with a GitHub remote."
-    ))
-  }
-
-  list(
-    owner = owner %||% remote_info$username,
-    repo = repo %||% remote_info$repo
-  )
-}
-
-# GitHub Tool -----------------------------------------------------------------
-
-#' Tool: GitHub
-#'
-#' Execute R code that calls the GitHub API using `gh()` function from the gh
-#' package.
-#'
-#' @details
-#' ## Endpoint Validation
-#'
-#' This tool uses endpoint validation to ensure only safe GitHub API operations
-#' are performed. By default, most read operations and low-risk write operations
-#' (like creating issues or PRs) are allowed, while dangerous operations (like
-#' merging PRs or deleting repositories) are blocked.
-#'
-#' To customize which endpoints are allowed or blocked, use the
-#' `btw.github_endpoint.allow` and `btw.github_endpoint.block` options:
-#'
-#' ```r
-#' # Allow a specific endpoint
-#' options(btw.github_endpoint.allow = c(
-#'   getOption("btw.github_endpoint.allow"),
-#'   "GET /repos/*/*/topics"
-#' ))
-#'
-#' # Block a specific endpoint
-#' options(btw.github_endpoint.block = c(
-#'   getOption("btw.github_endpoint.block"),
-#'   "GET /repos/*/*/branches"
-#' ))
-#' ```
-#'
-#' The precedence order for rules is:
-#' 1. User block rules (checked first, highest priority)
-#' 2. User allow rules
-#' 3. Built-in block rules
-#' 4. Built-in allow rules
-#' 5. Default: reject (if no rules match)
-#'
-#' @examples
-#' \dontrun{
-#' # Get an issue
-#' btw_tool_github(code = 'gh("/repos/{owner}/{repo}/issues/123")')
-#'
-#' # List open issues
-#' btw_tool_github(code = 'gh("/repos/{owner}/{repo}/issues", state = "open")')
-#'
-#' # Create an issue
-#' btw_tool_github(code = '
-#'   gh("POST /repos/{owner}/{repo}/issues",
-#'      title = "Bug report",
-#'      body = "Description of bug")
-#' ')
-#'
-#' # Target a different repository
-#' btw_tool_github(code = '
-#'   owner <- "tidyverse"
-#'   repo <- "dplyr"
-#'   gh("/repos/{owner}/{repo}/issues/1")
-#' ')
-#' }
-#'
-#' @param code R code that calls `gh()` or `gh_whoami()`. The code will be
-#'   evaluated in an environment where `owner` and `repo` variables are
-#'   predefined (defaulting to the current repository if detected). The `gh()`
-#'   function is available without needing to load the gh package.
-#' @inheritParams btw_tool_docs_package_news
-#' @return A `btw_tool_result` containing the result of the GitHub API call.
-#'
-#' @family github tools
-#' @export
-btw_tool_github <- function(code, `_intent`) {}
-
-btw_tool_github_impl <- function(code) {
-  check_string(code)
-
-  result <- btw_eval_gh_code(code)
-
-  # Convert result to btw_tool_result
-  if (inherits(result, "btw_tool_result")) {
-    return(result)
-  }
-
-  btw_tool_result(result)
-}
-
-.btw_add_to_tools(
-  name = "btw_tool_github",
-  group = "github",
-  tool = function() {
-    ellmer::tool(
-      btw_tool_github_impl,
-      name = "btw_tool_github",
-      description = r"---(Execute R code that calls the GitHub API using gh().
-
-WHEN TO USE:
-* Use this tool to interact with GitHub repositories, issues, pull requests, and more.
-* Write R code that calls gh() - you don't need to load the gh package.
-* The code runs in an environment with `owner` and `repo` variables already defined.
-
-CODE ENVIRONMENT:
-* `owner` and `repo` variables are pre-defined, defaulting to the current repository if detected
-* `gh()` function is available to call any GitHub API endpoint
-* `gh_whoami()` is available to get current user information
-* You can reassign `owner` and `repo` in your code to target different repositories
-
-ENDPOINT VALIDATION:
-* Most read operations (GET) are allowed by default
-* Low-risk write operations (creating issues/PRs, adding comments) are allowed
-* Dangerous operations (merging PRs, deleting repos, managing webhooks/secrets) are blocked
-* If an endpoint is blocked, the error message will explain how to allow it
-
-EXAMPLES:
-```r
-# Get an issue
-gh("/repos/{owner}/{repo}/issues/123")
-
-# List open issues
-gh("/repos/{owner}/{repo}/issues", state = "open", .limit = 10)
-
-# Create an issue
-gh("POST /repos/{owner}/{repo}/issues",
-   title = "Bug report",
-   body = "Description")
-
-# Get PR diff files
-gh("/repos/{owner}/{repo}/pulls/456/files")
-
-# Target a different repo
-owner <- "tidyverse"
-repo <- "dplyr"
-gh("/repos/{owner}/{repo}/issues/1")
-```
-
-RETURNS: The result from the GitHub API call, formatted as JSON.
-      )---",
-      annotations = ellmer::tool_annotations(
-        title = "GitHub API",
-        read_only_hint = FALSE, # Can perform writes
-        open_world_hint = TRUE,
-        idempotent_hint = FALSE,
-        btw_can_register = btw_can_register_gh_tool
-      ),
-      arguments = list(
-        code = ellmer::type_string(
-          "R code that calls gh() or gh_whoami(). The code will be evaluated in an environment with owner and repo variables predefined."
-        )
-      )
-    )
-  }
-)
