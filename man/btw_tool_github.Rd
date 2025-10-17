@@ -47,19 +47,32 @@ are performed. By default, most read operations and low-risk write operations
 merging PRs or deleting repositories) are blocked.
 
 To customize which endpoints are allowed or blocked, use the
-\code{btw.github_endpoint.allow} and \code{btw.github_endpoint.block} options:
+\code{btw.github.allow} and \code{btw.github.block} options:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{# Allow a specific endpoint
-options(btw.github_endpoint.allow = c(
-  getOption("btw.github_endpoint.allow"),
+options(btw.github.allow = c(
+  getOption("btw.github.allow"),
   "GET /repos/*/*/topics"
 ))
 
 # Block a specific endpoint
-options(btw.github_endpoint.block = c(
-  getOption("btw.github_endpoint.block"),
+options(btw.github.block = c(
+  getOption("btw.github.block"),
   "GET /repos/*/*/branches"
 ))
+}\if{html}{\out{</div>}}
+
+You can also set these options in your \link[=use_btw_md]{btw.md} file under the
+\code{options} field:
+
+\if{html}{\out{<div class="sourceCode yaml">}}\preformatted{tools: github
+options:
+  github:
+    allow:
+      - "PATCH /repos/*/*/pulls/*" # Allow converting PRs to/from draft
+      - "POST /repos/*/*/git/refs" # Allow creating branches
+    block:
+      - "DELETE /repos/**" # Block any delete action under /repos
 }\if{html}{\out{</div>}}
 
 The precedence order for rules is:

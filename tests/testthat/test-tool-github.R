@@ -207,7 +207,7 @@ test_that("btw_gh() respects user allow rules", {
   )
 
   # With user allow rule, should pass
-  withr::local_options(btw.github_endpoint.allow = fictional_endpoint)
+  withr::local_options(btw.github.allow = fictional_endpoint)
   expect_no_error(btw_gh(fictional_endpoint))
 })
 
@@ -221,13 +221,13 @@ test_that("btw_gh() respects user block rules", {
   fictional_endpoint <- "GET /repos/owner/repo/xyz-test-endpoint"
 
   # First allow it via user rules
-  withr::local_options(btw.github_endpoint.allow = fictional_endpoint)
+  withr::local_options(btw.github.allow = fictional_endpoint)
   expect_no_error(btw_gh(fictional_endpoint))
 
   # Now block it - user block should take precedence over user allow
   withr::local_options(
-    btw.github_endpoint.allow = fictional_endpoint,
-    btw.github_endpoint.block = fictional_endpoint
+    btw.github.allow = fictional_endpoint,
+    btw.github.block = fictional_endpoint
   )
   expect_error(
     btw_gh(fictional_endpoint),
@@ -245,8 +245,8 @@ test_that("btw_gh() user block rules take precedence over user allow rules", {
 
   # Add both allow and block rules for the same endpoint
   withr::local_options(
-    btw.github_endpoint.allow = fictional_endpoint,
-    btw.github_endpoint.block = fictional_endpoint
+    btw.github.allow = fictional_endpoint,
+    btw.github.block = fictional_endpoint
   )
 
   # User block should take precedence over user allow
@@ -272,7 +272,7 @@ test_that("btw_gh() user allow rules can override built-in block rules", {
   )
 
   # User allow should override built-in block
-  withr::local_options(btw.github_endpoint.allow = merge_endpoint)
+  withr::local_options(btw.github.allow = merge_endpoint)
   expect_no_error(btw_gh(merge_endpoint))
 })
 
@@ -297,7 +297,7 @@ test_that("btw_gh() user block rules can override built-in allow rules", {
     gh = function(...) stop("Should not reach API"),
     .package = "gh"
   )
-  withr::local_options(btw.github_endpoint.block = issue_endpoint)
+  withr::local_options(btw.github.block = issue_endpoint)
   expect_error(
     btw_gh(issue_endpoint),
     "blocked"

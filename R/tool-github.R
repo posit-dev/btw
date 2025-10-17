@@ -158,21 +158,35 @@ get_github_repo <- function(owner = NULL, repo = NULL) {
 #' merging PRs or deleting repositories) are blocked.
 #'
 #' To customize which endpoints are allowed or blocked, use the
-#' `btw.github_endpoint.allow` and `btw.github_endpoint.block` options:
+#' `btw.github.allow` and `btw.github.block` options:
 #'
 #' ```r
 #' # Allow a specific endpoint
-#' options(btw.github_endpoint.allow = c(
-#'   getOption("btw.github_endpoint.allow"),
+#' options(btw.github.allow = c(
+#'   getOption("btw.github.allow"),
 #'   "GET /repos/*/*/topics"
 #' ))
 #'
 #' # Block a specific endpoint
-#' options(btw.github_endpoint.block = c(
-#'   getOption("btw.github_endpoint.block"),
+#' options(btw.github.block = c(
+#'   getOption("btw.github.block"),
 #'   "GET /repos/*/*/branches"
 #' ))
 #' ```
+#'
+#' You can also set these options in your [btw.md][use_btw_md()] file under the
+#' `options` field:
+#'
+#' ```yaml
+#' tools: github
+#' options:
+#'   github:
+#'     allow:
+#'       - "PATCH /repos/*/*/pulls/*" # Allow converting PRs to/from draft
+#'       - "POST /repos/*/*/git/refs" # Allow creating branches
+#'     block:
+#'       - "DELETE /repos/**" # Block any delete action under /repos
+#' ````
 #'
 #' The precedence order for rules is:
 #' 1. User block rules (checked first, highest priority)
@@ -518,8 +532,8 @@ btw_github_check_endpoint <- function(endpoint) {
   check_string(endpoint)
 
   # Get user-defined rules
-  user_block <- getOption("btw.github_endpoint.block", character())
-  user_allow <- getOption("btw.github_endpoint.allow", character())
+  user_block <- getOption("btw.github.block", character())
+  user_allow <- getOption("btw.github.allow", character())
 
   # 1. Check user block rules first
   for (rule in user_block) {
@@ -539,7 +553,7 @@ btw_github_check_endpoint <- function(endpoint) {
   }
 
   cmd_allow <- sprintf(
-    "btw.github_endpoint.allow = c(getOption('btw.github_endpoint.allow'), '%s')",
+    "btw.github.allow = c(getOption('btw.github.allow'), '%s')",
     endpoint
   )
 
@@ -549,7 +563,7 @@ btw_github_check_endpoint <- function(endpoint) {
       cli::cli_abort(c(
         "GitHub API endpoint is blocked: {.val {endpoint}}",
         x = "Matched btw block rule: {.val {rule}}",
-        i = "To allow this endpoint anyway, add it to the {.code btw.github_endpoint.allow} option.",
+        i = "To allow this endpoint anyway, add it to the {.code btw.github.allow} option.",
         i = "Ex: {.run {cmd_allow}}"
       ))
     }
@@ -566,7 +580,7 @@ btw_github_check_endpoint <- function(endpoint) {
   cli::cli_abort(c(
     "GitHub API endpoint not allowed: {.val {endpoint}}",
     x = "This endpoint has not been approved for use.",
-    i = "To allow this endpoint, add it to the {.code btw.github_endpoint.allow} option.",
+    i = "To allow this endpoint, add it to the {.code btw.github.allow} option.",
     i = "Example: {.run {cmd_allow}}"
   ))
 }
