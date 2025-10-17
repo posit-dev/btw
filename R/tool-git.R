@@ -1,6 +1,20 @@
 #' @include tool-result.R
 NULL
 
+btw_can_register_git_tool <- function() {
+  if (!rlang::is_installed("gert")) {
+    return(FALSE)
+  }
+
+  tryCatch(
+    {
+      gert::git_info()
+      TRUE
+    },
+    error = function(e) FALSE
+  )
+}
+
 # Git Status ------------------------------------------------------------------
 
 #' Tool: Git Status
@@ -74,7 +88,7 @@ RETURNS: A list of file paths, their status (new, modified, deleted, etc.), and 
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE,
-        btw_can_register = function() rlang::is_installed("gert")
+        btw_can_register = btw_can_register_git_tool
       ),
       arguments = list(
         include = ellmer::type_enum(
@@ -164,7 +178,7 @@ LIMITATION: This tool does not support diffing between two arbitrary commits.
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         idempotent_hint = TRUE,
-        btw_can_register = function() rlang::is_installed("gert")
+        btw_can_register = btw_can_register_git_tool
       ),
       arguments = list(
         ref = ellmer::type_string(
@@ -267,7 +281,7 @@ RETURNS: A list of commits with SHA (short), author, timestamp, number of files,
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE,
-        btw_can_register = function() rlang::is_installed("gert")
+        btw_can_register = btw_can_register_git_tool
       ),
       arguments = list(
         ref = ellmer::type_string(
@@ -365,7 +379,7 @@ RETURNS: The commit SHA and confirmation message.
         read_only_hint = FALSE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE,
-        btw_can_register = function() rlang::is_installed("gert")
+        btw_can_register = btw_can_register_git_tool
       ),
       arguments = list(
         message = ellmer::type_string(
@@ -451,7 +465,7 @@ RETURNS: A table of branch names, upstream tracking, and last update time.
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         idempotent_hint = TRUE,
-        btw_can_register = function() rlang::is_installed("gert")
+        btw_can_register = btw_can_register_git_tool
       ),
       arguments = list(
         include = ellmer::type_enum(
@@ -541,7 +555,7 @@ RETURNS: Confirmation message with branch name and ref.
         read_only_hint = FALSE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE,
-        btw_can_register = function() rlang::is_installed("gert")
+        btw_can_register = btw_can_register_git_tool
       ),
       arguments = list(
         branch = ellmer::type_string(
@@ -627,7 +641,7 @@ RETURNS: Confirmation message with branch name.
         read_only_hint = FALSE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE,
-        btw_can_register = function() rlang::is_installed("gert")
+        btw_can_register = btw_can_register_git_tool
       ),
       arguments = list(
         branch = ellmer::type_string(
