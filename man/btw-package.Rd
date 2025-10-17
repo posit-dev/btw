@@ -31,6 +31,7 @@ Other contributors:
 \itemize{
   \item Posit Software, PBC [copyright holder, funder]
   \item Google (Material Design Icons) [copyright holder]
+  \item Jamie Perkins (countUp.js author) [copyright holder]
 }
 
 }
