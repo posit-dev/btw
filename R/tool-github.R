@@ -1234,3 +1234,126 @@ RETURNS: List of PRs with number, title, state, author, and description preview.
     )
   }
 )
+
+# GitHub Comment Add ----------------------------------------------------------
+
+#' Tool: GitHub Comment Add
+#'
+#' @examples
+#' \dontrun{
+#' btw_tool_github_comment_add(number = 123, body = "Thanks for reporting this!")
+#' btw_tool_github_comment_add(number = 456, body = "LGTM!")
+#' }
+#'
+#' @param number The issue or pull request number to comment on.
+#' @param body The comment text.
+#' @param owner Optional GitHub repository owner.
+#' @param repo Optional GitHub repository name.
+#' @inheritParams btw_tool_docs_package_news
+#'
+#' @return Returns the created comment details.
+#'
+#' @family github tools
+#' @export
+btw_tool_github_comment_add <- function(
+  number,
+  body,
+  owner,
+  repo,
+  `_intent`
+) {}
+
+btw_tool_github_comment_add_impl <- function(
+  number,
+  body,
+  owner = NULL,
+  repo = NULL
+) {
+  check_installed("gh")
+  check_number_whole(number, min = 1)
+  check_string(body)
+  check_string(owner, allow_null = TRUE)
+  check_string(repo, allow_null = TRUE)
+
+  repo_info <- get_github_repo(owner, repo)
+
+  comment <- gh::gh(
+    "POST /repos/{owner}/{repo}/issues/{issue_number}/comments",
+    owner = repo_info$owner,
+    repo = repo_info$repo,
+    issue_number = number,
+    body = body
+  )
+
+  result <- sprintf(
+    "Added comment to #%d\n\nURL: %s",
+    number,
+    comment$html_url
+  )
+
+  btw_tool_result(
+    result,
+    data = comment,
+    display = list(
+      markdown = body,
+      title = HTML(sprintf(
+        'Add Comment to <a href="%s" target="_blank" rel="noopener noreferrer">%s/%s#%d</a>',
+        comment$html_url,
+        repo_info$owner,
+        repo_info$repo,
+        number
+      ))
+    )
+  )
+}
+
+.btw_add_to_tools(
+  name = "btw_tool_github_comment_add",
+  group = "github",
+  tool = function() {
+    ellmer::tool(
+      btw_tool_github_comment_add_impl,
+      name = "btw_tool_github_comment_add",
+      description = r"---(Add a comment to a GitHub issue or pull request.
+
+WHEN TO USE:
+* Use this tool to add a comment to an existing issue or pull request.
+* Works for both issues and PRs - GitHub treats them the same for comments.
+* Provide the issue/PR number and the comment text.
+
+REPOSITORY DETECTION:
+* If `owner` and `repo` are not provided, will attempt to detect from the current git repository.
+
+IMPORTANT:
+* This modifies the repository by adding a comment.
+* You'll be commenting on behalf of the user, i.e. as the authenticated user.
+* The user must have permission to comment in the repository.
+
+RETURNS: Comment URL and confirmation.
+      )---",
+      annotations = ellmer::tool_annotations(
+        title = "GitHub Add Comment",
+        read_only_hint = FALSE,
+        open_world_hint = TRUE,
+        idempotent_hint = FALSE,
+        btw_can_register = function() rlang::is_installed("gh")
+      ),
+      arguments = list(
+        number = ellmer::type_number(
+          "The issue or pull request number to comment on."
+        ),
+        body = ellmer::type_string(
+          "The comment text as markdown."
+        ),
+        owner = ellmer::type_string(
+          "Optional. GitHub repository owner. Will be detected from git remote if not provided.",
+          required = FALSE
+        ),
+        repo = ellmer::type_string(
+          "Optional. GitHub repository name. Will be detected from git remote if not provided.",
+          required = FALSE
+        )
+      )
+    )
+  }
+)

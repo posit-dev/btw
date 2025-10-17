@@ -319,6 +319,11 @@ test_that("btw_tool_github_issue_create() validates arguments", {
 test_that("btw_tool_github_pull_request_create() validates arguments", {
   skip_if_not_installed("gh")
 
+  local_mocked_bindings(
+    gh = function(...) stop("Should not reach API"),
+    .package = "gh"
+  )
+
   expect_error(
     btw_tool_github_pull_request_create(
       title = 123,
@@ -356,6 +361,45 @@ test_that("btw_tool_github_pull_request_create() validates arguments", {
   )
 })
 
+test_that("btw_tool_github_comment_add() validates arguments", {
+  skip_if_not_installed("gh")
+
+  local_mocked_bindings(
+    gh = function(...) stop("Should not reach API"),
+    .package = "gh"
+  )
+
+  expect_error(
+    btw_tool_github_comment_add(
+      number = -1,
+      body = "test",
+      owner = "posit-dev",
+      repo = "btw"
+    ),
+    "min"
+  )
+
+  expect_error(
+    btw_tool_github_comment_add(
+      number = 1.5,
+      body = "test",
+      owner = "posit-dev",
+      repo = "btw"
+    ),
+    "whole"
+  )
+
+  expect_error(
+    btw_tool_github_comment_add(
+      number = 1,
+      body = 123,
+      owner = "posit-dev",
+      repo = "btw"
+    ),
+    "string"
+  )
+})
+
 # Tool registration tests ------------------------------------------------------
 
 test_that("github tools register correctly", {
@@ -375,6 +419,7 @@ test_that("github tools register correctly", {
   expect_in("btw_tool_github_pull_request_create", tool_names)
   expect_in("btw_tool_github_issues_list", tool_names)
   expect_in("btw_tool_github_pull_requests_list", tool_names)
+  expect_in("btw_tool_github_comment_add", tool_names)
 })
 
 test_that("github tools require gh package for registration", {
@@ -422,7 +467,8 @@ test_that("github tools have correct annotations", {
   # Check write tools
   write_tools <- c(
     "btw_tool_github_issue_create",
-    "btw_tool_github_pull_request_create"
+    "btw_tool_github_pull_request_create",
+    "btw_tool_github_comment_add"
   )
 
   for (tool_name in write_tools) {
