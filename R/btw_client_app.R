@@ -33,7 +33,7 @@ btw_app_from_client <- function(client, messages = list(), ...) {
   path_logo <- "btw_figures/logo.png"
 
   provider_model <- sprintf(
-    "%s: <span class=\"font-monospace\">%s</span>",
+    "%s/%s",
     client$get_provider()@name,
     client$get_model()
   )
@@ -119,30 +119,45 @@ btw_app_from_client <- function(client, messages = list(), ...) {
         class = "status-footer d-flex align-items-center gap-3 small text-muted",
         style = "width: min(725px, 100%); margin-inline: auto;",
         shiny::div(
-          HTML(provider_model),
+          class = "status-provider-model",
+          shiny::span(class = "font-monospace", provider_model),
           bslib::tooltip(
-            shiny::actionLink(
-              "show_sys_prompt",
-              tool_icon("quick-reference")
-            ),
+            shiny::actionLink("show_sys_prompt", tool_icon("quick-reference")),
             "Show system prompt"
-          ),
-          class = "status-provider-model"
+          )
         ),
         shiny::div(
-          HTML(
-            '&uparrow;<span id="tokens_input" class="shiny-text-output"></span>'
+          class = "ms-auto status-tokens font-monospace",
+          bslib::tooltip(
+            shiny::span(id = "status_tokens_input"),
+            "Input tokens"
           ),
-          # shiny::textOutput("tokens_input", inline = TRUE),
-          HTML(
-            '&downarrow;<span id="tokens_output" class="shiny-text-output"></span>'
-          ),
-          # shiny::textOutput("tokens_output", inline = TRUE),
-          class = "ms-auto status-tokens"
+          bslib::tooltip(
+            shiny::span(id = "status_tokens_output"),
+            "Output tokens"
+          )
         ),
         shiny::div(
-          shiny::textOutput("cost", inline = TRUE),
-          class = "status-cost"
+          class = "status-cost font-monospace",
+          bslib::tooltip(
+            id = "status_cost_tooltip",
+            shiny::span(id = "status_cost"),
+            "Estimated cost"
+          )
+        ),
+        htmltools::htmlDependency(
+          name = "countup.js",
+          version = readLines(
+            system.file("js/countupjs/VERSION", package = "btw")
+          ),
+          package = "btw",
+          src = "js/countupjs",
+          script = list(
+            list(src = "countUp.min.js", type = "module"),
+            list(src = "btw_app.js", type = "module")
+          ),
+          stylesheet = "btw_app.css",
+          all_files = FALSE
         )
       ),
       shiny::tags$head(
@@ -166,65 +181,119 @@ btw_app_from_client <- function(client, messages = list(), ...) {
   server <- function(input, output, session) {
     chat <- shinychat::chat_mod_server("chat", client = client)
 
-    chat_tokens <- shiny::reactiveVal(label = "btw_app_tokens")
-    chat_cost <- shiny::reactiveVal(label = "btw_app_cost")
+    chat_tokens <- shiny::reactiveVal(
+      chat$client$get_tokens(),
+      label = "btw_app_tokens"
+    )
+    chat_cost <- shiny::reactiveVal(
+      chat$client$get_cost(),
+      label = "btw_app_cost"
+    )
 
     shiny::observeEvent(chat$last_turn(), {
       chat_tokens(chat$client$get_tokens())
       chat_cost(chat$client$get_cost())
     })
 
-    output$tokens_input <- shiny::renderText({
-      if (is.null(chat_tokens()) || nrow(chat_tokens()) < 1) {
-        return("0")
+    shiny::observeEvent(chat$last_input(), {
+      ids <- paste0("status_", c("tokens_input", "tokens_output", "cost"))
+      for (id in ids) {
+        session$sendCustomMessage(
+          "btw_update_status",
+          list(id = id, status = "recalculating")
+        )
       }
-      last_user <- dplyr::filter(chat_tokens(), role == "user")
-      if (nrow(last_user) == 0) {
-        return("0")
-      }
-      format(tail(last_user$tokens_total, 1), big.mark = ",")
     })
 
-    output$tokens_output <- shiny::renderText({
-      if (is.null(chat_tokens()) || nrow(chat_tokens()) < 1) {
-        return("0")
+    shiny::observeEvent(chat_tokens(), {
+      tokens <- chat_tokens()
+      value <- 0
+
+      if (!is.null(tokens) && nrow(tokens) > 1) {
+        last_user <- tokens[tokens$role == "user", ]
+        if (nrow(last_user) > 0) {
+          value <- as.integer(utils::tail(last_user$tokens_total, 1))
+        }
       }
-      tokens_assistant <- dplyr::filter(chat_tokens(), role == "assistant")
-      if (nrow(tokens_assistant) == 0) {
-        return("0")
-      }
-      format(sum(tokens_assistant$tokens), big.mark = ",")
+
+      session$sendCustomMessage(
+        "btw_update_status",
+        list(
+          id = "status_tokens_input",
+          value = value,
+          status = "ready"
+        )
+      )
     })
 
-    output$cost <- shiny::renderText({
-      x <- chat_cost()
-      if (is.null(x)) {
-        return("$0.00")
+    shiny::observeEvent(chat_tokens(), {
+      tokens <- chat_tokens()
+      value <- 0
+
+      if (!is.null(tokens) && nrow(tokens) > 1) {
+        tokens_assistant <- tokens[tokens$role == "assistant", ]
+        if (nrow(tokens_assistant) > 0) {
+          value <- as.integer(sum(tokens_assistant$tokens))
+        }
       }
-      if (is.na(x)) {
-        return("$??")
+
+      session$sendCustomMessage(
+        "btw_update_status",
+        list(
+          id = "status_tokens_output",
+          value = value,
+          status = "ready"
+        )
+      )
+    })
+
+    shiny::observeEvent(chat_cost(), {
+      cost <- chat_cost()
+      if (is.null(cost)) {
+        return(0)
       }
-      paste0(
-        ifelse(is.na(x), "", "$"),
-        format(unclass(round(x, 2)), nsmall = 2)
+
+      if (is.na(cost)) {
+        session$sendCustomMessage(
+          "btw_update_status",
+          list(
+            id = "status_cost",
+            status = "unknown"
+          )
+        )
+        bslib::update_tooltip("status_cost_tooltip", "Token pricing is unknown")
+        return()
+      }
+
+      session$sendCustomMessage(
+        "btw_update_status",
+        list(
+          id = "status_cost",
+          value = cost
+        )
       )
     })
 
     shiny::observeEvent(input$show_sys_prompt, {
-      shiny::showModal(
-        shiny::modalDialog(
-          title = "System Prompt",
-          size = "xl",
-          easyClose = TRUE,
-          footer = shiny::modalButton("Close"),
-          HTML(
-            sprintf(
-              "<pre><code>%s</code></pre>",
-              chat$client$get_system_prompt()
-            )
+      modal <- shiny::modalDialog(
+        title = "System Prompt",
+        size = "xl",
+        easyClose = TRUE,
+        footer = shiny::modalButton("Close"),
+        HTML(
+          sprintf(
+            "<pre><code>%s</code></pre>",
+            chat$client$get_system_prompt()
           )
         )
       )
+      if (identical(modal$children[[1]]$attribs$class, "modal-dialog")) {
+        modal$children[[1]]$attribs$class <- paste(
+          "modal-dialog modal-fullscreen-lg-down"
+        )
+      }
+
+      shiny::showModal(modal)
     })
 
     shiny::observeEvent(input$close_btn, {

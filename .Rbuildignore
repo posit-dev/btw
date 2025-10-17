@@ -13,3 +13,5 @@
 ^_dev$
 ^AGENTS\.md$
 ^btw\.md$
+^scripts$
+^\.claude$
