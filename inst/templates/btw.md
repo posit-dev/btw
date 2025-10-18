@@ -5,6 +5,7 @@ tools:
   - env
   - files
   - git
+  - github
   - ide
   - search
   - session

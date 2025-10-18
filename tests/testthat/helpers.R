@@ -21,9 +21,13 @@ skip_if_not_macos <- function() {
   skip_on_os("linux")
 }
 
-expect_btw_tool_result <- function(x, has_data = TRUE) {
+expect_btw_tool_result <- function(
+  x,
+  has_data = TRUE,
+  expect_value_type = "character"
+) {
   expect_s3_class(x, "ellmer::ContentToolResult")
-  expect_type(x@value, "character")
+  expect_type(x@value, expect_value_type)
   if (has_data) {
     expect_s3_class(x@extra$data, "data.frame")
   }

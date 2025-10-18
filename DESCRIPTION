@@ -84,6 +84,7 @@ Collate:
     'tool-files-code-search.R'
     'tool-files.R'
     'tool-git.R'
+    'tool-github.R'
     'tool-rstudioapi.R'
     'tool-search-packages.R'
     'tool-session-package-installed.R'
