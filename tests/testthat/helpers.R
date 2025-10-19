@@ -82,3 +82,22 @@ with_mocked_platform <- function(
 
   force(code)
 }
+
+# Helper to enable tools that are conditionally registered
+local_enable_tools <- function(
+  has_chromote = TRUE,
+  rstudioapi_has_source_editor_context = TRUE,
+  btw_can_register_git_tool = TRUE,
+  btw_can_register_gh_tool = TRUE,
+  .env = caller_env()
+) {
+  local_mocked_bindings(
+    has_chromote = function() has_chromote,
+    rstudioapi_has_source_editor_context = function() {
+      rstudioapi_has_source_editor_context
+    },
+    btw_can_register_git_tool = function() btw_can_register_git_tool,
+    btw_can_register_gh_tool = function() btw_can_register_gh_tool,
+    .env = .env
+  )
+}

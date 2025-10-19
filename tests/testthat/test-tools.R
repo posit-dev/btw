@@ -1,10 +1,5 @@
 test_that("btw_tools works", {
-  local_mocked_bindings(
-    has_chromote = function() TRUE,
-    rstudioapi_has_source_editor_context = function() TRUE,
-    btw_can_register_git_tool = function() TRUE,
-    btw_can_register_gh_tool = function() TRUE
-  )
+  local_enable_tools()
 
   # returns .btw_tools as-is with no `tools` argument
   expect_equal(btw_tools(), as_ellmer_tools(.btw_tools))
@@ -58,6 +53,7 @@ test_that("btw_tools() with character vector", {
 
 test_that("btw_tools can be registered with a chat", {
   withr::local_envvar(ANTHROPIC_API_KEY = "boop")
+  local_enable_tools()
 
   # would need to poke inside of the private env to ensure the tools
   # were actually registered, so just check that there are no conditions raised
@@ -66,12 +62,8 @@ test_that("btw_tools can be registered with a chat", {
 })
 
 test_that("All btw tools have annotations", {
-  local_mocked_bindings(
-    # Force conditional tools to always be included in this test
-    rstudioapi_has_source_editor_context = function() TRUE,
-    btw_can_register_git_tool = function() TRUE,
-    btw_can_register_gh_tool = function() TRUE
-  )
+  # Force conditional tools to always be included in this test
+  local_enable_tools()
 
   tools <- btw_tools()
   expect_setequal(names(tools), names(.btw_tools))
@@ -85,12 +77,8 @@ test_that("All btw tools have annotations", {
 })
 
 test_that("All btw tools have a btw_can_register() annotation function", {
-  local_mocked_bindings(
-    # Force conditional tools to always be included in this test
-    rstudioapi_has_source_editor_context = function() TRUE,
-    btw_can_register_git_tool = function() TRUE,
-    btw_can_register_gh_tool = function() TRUE
-  )
+  # Force conditional tools to always be included in this test
+  local_enable_tools()
 
   tools <- btw_tools()
   expect_setequal(names(tools), names(.btw_tools))
@@ -108,11 +96,10 @@ test_that("All btw tools have a btw_can_register() annotation function", {
 })
 
 test_that("$tool() returns a tool definition for all .btw_tools", {
-  local_mocked_bindings(
-    has_chromote = function() FALSE,
-    rstudioapi_has_source_editor_context = function() FALSE,
-    btw_can_register_git_tool = function() FALSE,
-    btw_can_register_gh_tool = function() TRUE
+  local_enable_tools(
+    has_chromote = FALSE,
+    rstudioapi_has_source_editor_context = FALSE,
+    btw_can_register_git_tool = FALSE
   )
 
   for (name in names(.btw_tools)) {
