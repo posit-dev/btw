@@ -14,6 +14,7 @@ btw_app <- function(
 ) {
   rlang::check_installed("shiny")
   rlang::check_installed("bslib")
+  rlang::check_installed("htmltools")
   rlang::check_installed("shinychat", version = "0.2.0")
 
   if (!inherits(client, "AsIs")) {

@@ -50,6 +50,7 @@ Suggests:
     duckdb,
     gert,
     gh,
+    htmltools,
     pandoc,
     shiny,
     shinychat (>= 0.2.0),
