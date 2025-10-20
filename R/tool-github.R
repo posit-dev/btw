@@ -13,40 +13,14 @@ btw_eval_gh_code <- function(code, fields = btw_gh_fields()) {
 
   repo_info <- get_github_repo(NULL, NULL)
 
-  gh_namespace <- asNamespace("gh")
-
-  env <- new_environment(list(
+  res <- eval_limited_r_code(
+    code,
     owner = repo_info$owner,
     repo = repo_info$repo,
     gh = btw_gh,
     gh_whoami = gh::gh_whoami,
-    `<-` = base::`<-`,
-    `=` = base::`=`,
-    `[` = base::`[`,
-    `[[` = base::`[[`,
-    `$` = base::`$`,
-    c = base::c,
-    list = base::list,
-    lapply = base::lapply,
-    vapply = base::vapply
-  ))
-
-  res <- tryCatch(
-    eval(parse(text = code), envir = env),
-    error = function(e) {
-      cld_not_find <- gettext("could not find function", domain = "R")
-      e_msg <- conditionMessage(e)
-      if (grepl(cld_not_find, e_msg, fixed = TRUE)) {
-        e_msg <- sub(cld_not_find, "", e_msg, fixed = TRUE)
-        e_msg <- trimws(e_msg)
-        cli::cli_abort(c(
-          "Function not allowed or not found: {e_msg}",
-          i = "Only unprefixed `gh()` and `gh_whoami()` from the gh package are allowed."
-        ))
-      } else {
-        cli::cli_abort("Error evaluating GitHub code.", parent = e)
-      }
-    }
+    error_extra = "Only unprefixed {.fn gh} and {.fn gh_whoami} from the {.pkg gh} package are allowed.",
+    error_eval = "Error evaluating GitHub code."
   )
 
   if (!is.null(fields)) {
