@@ -454,6 +454,44 @@ test_that("btw_tool_github() can call gh_whoami", {
   expect_equal(result@value$login, "gadenbuie")
 })
 
+test_that("btw_tool_github() throws if using owner or repo that can't be found", {
+  skip_if_not_installed("gh")
+
+  local_mocked_bindings(
+    gh_tree_remote = function() abort("not in a repo"),
+    .package = "gh"
+  )
+  local_mocked_gh()
+
+  expect_error(
+    btw_tool_github_impl(
+      'gh("/repos/{owner}/{repo}/issues/37", owner = owner, repo = repo)'
+    ),
+    "Could not detect GitHub repository"
+  )
+
+  expect_error(
+    btw_tool_github_impl(
+      'gh("/repos/{owner}/btw/issues/37", owner = owner)'
+    ),
+    "Could not detect GitHub repository"
+  )
+
+  expect_error(
+    btw_tool_github_impl(
+      'gh("/repos/posit-dev/{repo}/issues/37", repo = repo)'
+    ),
+    "Could not detect GitHub repository"
+  )
+
+  expect_equal(
+    btw_tool_github_impl(
+      'gh("/repos/posit-dev/btw/issues/37")'
+    )@value$endpoint,
+    "/repos/posit-dev/btw/issues/37"
+  )
+})
+
 # Tool registration tests ------------------------------------------------------
 
 test_that("github tool registers correctly", {

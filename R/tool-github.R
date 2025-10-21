@@ -15,12 +15,11 @@ btw_eval_gh_code <- function(code, fields = btw_gh_fields()) {
 
   res <- eval_limited_r_code(
     code,
-    owner = repo_info$owner,
-    repo = repo_info$repo,
     gh = btw_gh,
     gh_whoami = gh::gh_whoami,
-    error_extra = "Only unprefixed {.fn gh} and {.fn gh_whoami} from the {.pkg gh} package are allowed.",
-    error_eval = "Error evaluating GitHub code."
+    .parent_env = repo_info,
+    .error_extra = "Only unprefixed {.fn gh} and {.fn gh_whoami} from the {.pkg gh} package are allowed.",
+    .error_eval = "Error evaluating GitHub code."
   )
 
   if (!is.null(fields)) {
@@ -84,23 +83,37 @@ get_github_repo <- function(owner = NULL, repo = NULL) {
 
   check_installed("gh")
 
-  # Try to detect from current git repo
-  remote_info <- tryCatch(
+  remote_info <- new_environment()
+  gh_tr <- tryCatch(
     gh::gh_tree_remote(),
     error = function(e) NULL
   )
 
-  if (is.null(remote_info)) {
-    abort(c(
-      "Could not detect GitHub repository.",
-      i = "Provide `owner` and `repo` parameters, or run from within a git repository with a GitHub remote."
-    ))
+  abort_if_missing_gh_tr <- function() {
+    if (is.null(gh_tr)) {
+      abort(
+        c(
+          "Could not detect GitHub repository.",
+          i = "Provide `owner` and `repo` parameters, or run from within a git repository with a GitHub remote."
+        ),
+        .frame = caller_env(3)
+      )
+    }
   }
 
-  list(
-    owner = owner %||% remote_info$username,
-    repo = repo %||% remote_info$repo
-  )
+  delayedAssign("owner", assign.env = remote_info, {
+    abort_if_missing_gh_tr()
+    gh_tr$username
+  })
+
+  delayedAssign("repo", assign.env = remote_info, {
+    abort_if_missing_gh_tr()
+    gh_tr$repo
+  })
+
+  # Returns an environment with `owner` and `repo` bindings that are evaluated
+  # lazily and throw when accessed if owner and repo aren't available.
+  remote_info
 }
 
 # GitHub Tool -----------------------------------------------------------------

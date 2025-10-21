@@ -1,10 +1,10 @@
 local_posit_dev_btw_repo <- function(env = parent.frame()) {
   local_mocked_bindings(
     get_github_repo = function(...) {
-      list(
+      new_environment(list(
         owner = "posit-dev",
         repo = "btw"
-      )
+      ))
     },
     .env = env
   )
