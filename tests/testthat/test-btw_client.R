@@ -1,5 +1,8 @@
 test_that("btw_client() works with `btw.client` option", {
   withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
+  local_mocked_bindings(
+    btw_can_register_gh_tool = function() FALSE
+  )
 
   local_options(
     btw.client = ellmer::chat_anthropic(

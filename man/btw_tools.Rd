@@ -72,6 +72,13 @@ this function have access to the tools:
 
 }
 
+\subsection{Group: github}{\tabular{ll}{
+   Name \tab Description \cr
+   \code{\link[=btw_tool_github]{btw_tool_github()}} \tab Execute R code that calls the GitHub API using gh(). \cr
+}
+
+}
+
 \subsection{Group: ide}{\tabular{ll}{
    Name \tab Description \cr
    \code{\link[=btw_tool_ide_read_current_editor]{btw_tool_ide_read_current_editor()}} \tab Read the contents of the editor that is currently open in the user's IDE. \cr

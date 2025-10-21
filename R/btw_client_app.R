@@ -14,6 +14,7 @@ btw_app <- function(
 ) {
   rlang::check_installed("shiny")
   rlang::check_installed("bslib")
+  rlang::check_installed("htmltools")
   rlang::check_installed("shinychat", version = "0.2.0")
 
   if (!inherits(client, "AsIs")) {
@@ -461,6 +462,7 @@ app_tool_group_choice_input <- function(
     "env" = shiny::span(label_icon, "Environment"),
     "files" = shiny::span(label_icon, "Files"),
     "git" = shiny::span(label_icon, "Git"),
+    "github" = shiny::span(label_icon, "GitHub"),
     "ide" = shiny::span(label_icon, "IDE"),
     "search" = shiny::span(label_icon, "Search"),
     "session" = shiny::span(label_icon, "Session Info"),

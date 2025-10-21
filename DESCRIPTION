@@ -50,6 +50,7 @@ Suggests:
     duckdb,
     gert,
     gh,
+    htmltools,
     pandoc,
     shiny,
     shinychat (>= 0.2.0),
@@ -84,6 +85,7 @@ Collate:
     'tool-files-code-search.R'
     'tool-files.R'
     'tool-git.R'
+    'tool-github.R'
     'tool-rstudioapi.R'
     'tool-search-packages.R'
     'tool-session-package-installed.R'
@@ -93,5 +95,6 @@ Collate:
     'utils-ellmer.R'
     'utils-gitignore.R'
     'utils-md.R'
+    'utils-r.R'
     'utils.R'
     'zzz.R'
