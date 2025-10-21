@@ -248,13 +248,13 @@ test_that("git tools are registered only when in a git repo", {
   withr::with_tempdir({
     expect_false(btw_can_register_git_tool())
     tool_names <- names(btw_tools())
-    expect_no_match(tool_names, "btw_tool_git")
+    expect_no_match(tool_names, "btw_tool_git_")
   })
 
   # In a git repo
   local_temp_git_repo()
   expect_true(btw_can_register_git_tool())
-  expect_true(all(grepl("btw_tool_git", names(btw_tools("git")))))
+  expect_true(all(grepl("btw_tool_git_", names(btw_tools("git")))))
 })
 
 test_that("git tools require gert to be installed", {
