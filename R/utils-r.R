@@ -177,6 +177,26 @@ env_base_r_limited <- function(..., .parent_env = emptyenv()) {
       # Special values and NA handling
       anyNA = base::anyNA,
 
+      # Control structures
+      ifelse = base::ifelse,
+      `if` = base::`if`,
+      `for` = base::`for`,
+      `while` = base::`while`,
+      `break` = base::`break`,
+      `next` = base::`next`,
+      `return` = base::return,
+      `:` = base::`:`,
+      `function` = base::`function`,
+      `{` = base::`{`,
+      `(` = base::`(`,
+
+      # Printing and output
+      # print = base::print, # output isn't captured, so error if used
+      # cat = base::cat, # TODO: use {evaluate} to run/capture output
+      str = utils::str,
+      summary = base::summary,
+      format = base::format,
+
       # Added functions
       ...
     )
