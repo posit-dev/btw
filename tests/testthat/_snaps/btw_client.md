@@ -1,4 +1,4 @@
-# btw_client() works with `btw.client` option
+# btw_client() chat client: works with `btw.client` option
 
     Code
       print(chat)
@@ -146,7 +146,7 @@
       
       I like to have my own system prompt
 
-# btw_client() falls through client settings from user-level btw.md
+# btw_client() project vs user settings: falls through to use client settings from user-level btw.md
 
     Code
       print(chat)
@@ -184,7 +184,7 @@
       
       
 
-# btw_client() falls back to user client settings when project has no client
+# btw_client() project vs user settings: falls back to user client settings when project has no client
 
     Code
       print(chat)
