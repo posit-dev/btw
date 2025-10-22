@@ -18,14 +18,31 @@ the path_llms_txt argument.
 
 
 
+Client Settings with User-Level Fallback
+
+
+Client settings in client and tools from a project-level btw.md or
+AGENTS.md file take precedence. If a project file doesn't specify a
+setting, btw will fall back to settings in a user-level btw.md file
+(typically in ~/btw.md or ~/.config/btw/btw.md). Project-level btw tool
+options under the options key are merged with user-level options, with
+project-level options taking precedence.
+Project-specific instructions from both files are combined with a divider,
+allowing you to maintain global guidelines in your user file and
+project-specific rules in your project file.
+
+
+
 Client Options
 
 
+The following R options are consulted when creating a new btw chat client and
+take precedence over settings in a btw.md file:
 btw.client: The ellmer::Chat client or a provider/model string (see
 ellmer::chat()) to use as the basis for new btw_client() or
 btw_app() chats.
 btw.tools: The btw tools to include by default when starting a new
-btw chat, see btw_tools() for details.
+btw chat, see btw_tools() for details.`
 
 
 
@@ -48,14 +65,31 @@ the path_llms_txt argument.
 
 
 
+Client Settings with User-Level Fallback
+
+
+Client settings in client and tools from a project-level btw.md or
+AGENTS.md file take precedence. If a project file doesn't specify a
+setting, btw will fall back to settings in a user-level btw.md file
+(typically in ~/btw.md or ~/.config/btw/btw.md). Project-level btw tool
+options under the options key are merged with user-level options, with
+project-level options taking precedence.
+Project-specific instructions from both files are combined with a divider,
+allowing you to maintain global guidelines in your user file and
+project-specific rules in your project file.
+
+
+
 Client Options
 
 
+The following R options are consulted when creating a new btw chat client and
+take precedence over settings in a btw.md file:
 btw.client: The ellmer::Chat client or a provider/model string (see
 ellmer::chat()) to use as the basis for new btw_client() or
 btw_app() chats.
 btw.tools: The btw tools to include by default when starting a new
-btw chat, see btw_tools() for details.
+btw chat, see btw_tools() for details.`
 
 
 
@@ -118,13 +152,30 @@ the <code>path_llms_txt</code> argument.</p>
 </div>
 
 <div class="section">
+<h3 id="client-settings-with-user-level-fallback">Client Settings with User-Level Fallback<a class="anchor" aria-label="anchor" href="#client-settings-with-user-level-fallback"></a></h3>
+
+
+<p>Client settings in <code>client</code> and <code>tools</code> from a project-level <code>btw.md</code> or
+<code>AGENTS.md</code> file take precedence. If a project file doesn't specify a
+setting, btw will fall back to settings in a user-level <code>btw.md</code> file
+(typically in <code>~/btw.md</code> or <code>~/.config/btw/btw.md</code>). Project-level btw tool
+options under the <code>options</code> key are merged with user-level options, with
+project-level options taking precedence.</p>
+<p>Project-specific instructions from both files are combined with a divider,
+allowing you to maintain global guidelines in your user file and
+project-specific rules in your project file.</p>
+</div>
+
+<div class="section">
 <h3 id="client-options">Client Options<a class="anchor" aria-label="anchor" href="#client-options"></a></h3>
 
-<ul><li><p><code>btw.client</code>: The <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client or a <code>provider/model</code> string (see
+
+<p>The following R options are consulted when creating a new btw chat client and
+take precedence over settings in a <code>btw.md</code> file:</p><ul><li><p><code>btw.client</code>: The <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client or a <code>provider/model</code> string (see
 <code><a href="https://ellmer.tidyverse.org/reference/chat-any.html" class="external-link">ellmer::chat()</a></code>) to use as the basis for new <code>btw_client()</code> or
 <code>btw_app()</code> chats.</p></li>
 <li><p><code>btw.tools</code>: The btw tools to include by default when starting a new
-btw chat, see <code><a href="btw_tools.html">btw_tools()</a></code> for details.</p></li>
+btw chat, see <code><a href="btw_tools.html">btw_tools()</a></code> for details.`</p></li>
 </ul></div>
 
     </div>
@@ -158,8 +209,8 @@ passed to <code><a href="https://ellmer.tidyverse.org/reference/chat-any.html" c
 default client for new <code>btw_client()</code> calls, or use a <code>btw.md</code> project file
 for default chat client settings, like provider and model. We check the
 <code>client</code> argument, then the <code>btw.client</code> R option, and finally the <code>btw.md</code>
-project file, using only the client definition from the first of these that
-is available.</p></dd>
+project file (falling back to user-level <code>btw.md</code> if needed), using only the
+client definition from the first of these that is available.</p></dd>
 
 
 <dt id="arg-tools">tools<a class="anchor" aria-label="anchor" href="#arg-tools"></a></dt>
@@ -179,7 +230,8 @@ client.</p></dd>
 <dt id="arg-path-btw">path_btw<a class="anchor" aria-label="anchor" href="#arg-path-btw"></a></dt>
 <dd><p>A path to a <code>btw.md</code> or <code>AGENTS.md</code> project context file. If
 <code>NULL</code>, btw will find a project-specific <code>btw.md</code> or <code>AGENTS.md</code> file in
-the parents of the current working directory. Set <code>path_btw = FALSE</code> to
+the parents of the current working directory, with fallback to user-level
+<code>btw.md</code> if no project file is found. Set <code>path_btw = FALSE</code> to
 create a chat client without using a <code>btw.md</code> file.</p></dd>
 
 
@@ -216,7 +268,9 @@ chat</p></li>
 <span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">chat</span> <span class="op">&lt;-</span> <span class="fu">btw_client</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">chat</span><span class="op">$</span><span class="fu">chat</span><span class="op">(</span><span class="st">"How can I replace `stop()` calls with functions from the cli package?"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">chat</span><span class="op">$</span><span class="fu">chat</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="st">"How can I replace `stop()` calls with functions from the cli package?"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
