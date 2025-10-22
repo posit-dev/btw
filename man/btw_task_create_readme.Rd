@@ -20,8 +20,8 @@ passed to \code{\link[ellmer:chat-any]{ellmer::chat()}} to create a chat client.
 default client for new \code{btw_client()} calls, or use a \code{btw.md} project file
 for default chat client settings, like provider and model. We check the
 \code{client} argument, then the \code{btw.client} R option, and finally the \code{btw.md}
-project file, using only the client definition from the first of these that
-is available.}
+project file (falling back to user-level \code{btw.md} if needed), using only the
+client definition from the first of these that is available.}
 
 \item{mode}{The mode to run the task in, which affects what is returned from
 this function. \code{"app"} and \code{"console"} modes launch interactive sessions,

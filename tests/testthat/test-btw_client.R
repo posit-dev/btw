@@ -250,6 +250,300 @@ test_that("btw_client() throws if `path_btw` is provided but doesn't exist", {
   )
 })
 
+test_that("btw_client() falls through client settings from user-level btw.md", {
+  withr::local_envvar(list(OPENAI_API_KEY = "beep", ANTHROPIC_API_KEY = "boop"))
+
+  user_btw_content <- c(
+    "---",
+    "client:",
+    "  provider: openai",
+    "  model: gpt-4o",
+    "---",
+    "User level context"
+  )
+  # Mock path_find_user to return our user btw content
+  fake_user_btw <- withr::local_tempfile(fileext = ".md")
+  writeLines(user_btw_content, fake_user_btw)
+
+  local_mocked_bindings(
+    path_find_user = function(filename) {
+      if (filename == "btw.md") fake_user_btw else NULL
+    }
+  )
+
+  # Create project-level btw.md with different client settings
+  project_dir <- withr::local_tempdir("btw-test-project-")
+  withr::local_dir(project_dir)
+  writeLines(
+    con = "btw.md",
+    c(
+      "---",
+      "client:",
+      "  provider: anthropic",
+      "  model: claude-3-5-sonnet-20241022",
+      "---",
+      "Project level context"
+    )
+  )
+
+  with_mocked_platform(ide = "rstudio", {
+    chat <- btw_client(path_llms_txt = FALSE)
+  })
+
+  # Should use project's client settings
+  expect_equal(chat$get_model(), "claude-3-5-sonnet-20241022")
+  expect_s3_class(chat$get_provider(), "ellmer::ProviderAnthropic")
+  expect_snapshot(print(chat))
+})
+
+test_that("btw_client() falls back to user client settings when project has no client", {
+  withr::local_envvar(list(OPENAI_API_KEY = "beep"))
+
+  # Create fake user btw.md with client settings
+  fake_user_btw <- withr::local_tempfile(fileext = ".md")
+  writeLines(
+    c(
+      "---",
+      "client:",
+      "  provider: openai",
+      "  model: gpt-4o",
+      "---",
+      "User level context"
+    ),
+    fake_user_btw
+  )
+
+  local_mocked_bindings(
+    path_find_user = function(filename) {
+      if (filename == "btw.md") fake_user_btw else NULL
+    }
+  )
+
+  # Create project-level btw.md WITHOUT client field
+  project_dir <- withr::local_tempdir("btw-test-project-")
+  withr::local_dir(project_dir)
+
+  writeLines(
+    con = "btw.md",
+    c(
+      "---",
+      "tools: docs",
+      "---",
+      "Project level context only"
+    )
+  )
+
+  with_mocked_platform(ide = "rstudio", {
+    chat <- btw_client(path_llms_txt = FALSE)
+  })
+
+  # Should fall back to user's client settings
+  expect_equal(chat$get_model(), "gpt-4o")
+  expect_s3_class(chat$get_provider(), "ellmer::ProviderOpenAI")
+  expect_snapshot(print(chat))
+})
+
+test_that("btw_client() concatenates user and project prompts with separator", {
+  withr::local_envvar(list(OPENAI_API_KEY = "beep"))
+
+  # Create fake user btw.md with prompt
+  fake_user_btw <- withr::local_tempfile(fileext = ".md")
+  writeLines(
+    c(
+      "---",
+      "client:",
+      "  provider: openai",
+      "---",
+      "USER_GLOBAL_RULES"
+    ),
+    fake_user_btw
+  )
+
+  local_mocked_bindings(
+    path_find_user = function(filename) {
+      if (filename == "btw.md") fake_user_btw else NULL
+    }
+  )
+
+  project_dir <- withr::local_tempdir("btw-test-project-")
+  withr::local_dir(project_dir)
+
+  # Create project-level AGENTS.md with prompt
+  writeLines(
+    con = "AGENTS.md",
+    c(
+      "PROJECT_SPECIFIC_RULES"
+    )
+  )
+
+  with_mocked_platform(ide = "rstudio", {
+    chat <- btw_client(path_llms_txt = FALSE)
+  })
+
+  system_prompt <- chat$get_system_prompt()
+
+  # Should contain both prompts
+  expect_match(system_prompt, "USER_GLOBAL_RULES", fixed = TRUE)
+  expect_match(system_prompt, "PROJECT_SPECIFIC_RULES", fixed = TRUE)
+
+  # Should have separator between them
+  expect_match(system_prompt, "\n\n---\n\n", fixed = TRUE)
+
+  # User prompt should come first
+  user_pos <- gregexpr("USER_GLOBAL_RULES", system_prompt)[[1]][1]
+  project_pos <- gregexpr("PROJECT_SPECIFIC_RULES", system_prompt)[[1]][1]
+  expect_true(user_pos < project_pos)
+})
+
+test_that("btw_client() deep merges options from user and project", {
+  withr::local_envvar(list(OPENAI_API_KEY = "beep"))
+
+  # Create fake user btw.md with different options
+  fake_user_btw <- withr::local_tempfile(fileext = ".md")
+  writeLines(
+    c(
+      "---",
+      "client:",
+      "  provider: openai",
+      "options:",
+      "  cache_size: 100",
+      "  timeout: 30",
+      "---",
+      "User level"
+    ),
+    fake_user_btw
+  )
+
+  local_mocked_bindings(
+    path_find_user = function(filename) {
+      if (filename == "btw.md") fake_user_btw else NULL
+    }
+  )
+
+  # Create project-level btw.md with options
+  project_dir <- withr::local_tempdir("btw-test-project-")
+  withr::local_dir(project_dir)
+
+  writeLines(
+    con = "btw.md",
+    c(
+      "---",
+      "client:",
+      "  provider: openai",
+      "options:",
+      "  timeout: 60",
+      "  feature_x: true",
+      "---",
+      "Project level"
+    )
+  )
+
+  config <- read_btw_file()
+
+  # Should have all options, with project overriding user
+  expect_equal(config$options$btw.cache_size, 100) # From user
+  expect_equal(config$options$btw.timeout, 60) # From project (overrides user)
+  expect_equal(config$options$btw.feature_x, TRUE) # From project
+})
+
+test_that("btw_client() uses only project tools when defined", {
+  withr::local_envvar(list(OPENAI_API_KEY = "beep"))
+
+  # Create fake user btw.md with different tools
+  fake_user_btw <- withr::local_tempfile(fileext = ".md")
+  writeLines(
+    c(
+      "---",
+      "client:",
+      "  provider: openai",
+      "tools: [env, files]",
+      "---",
+      "User level"
+    ),
+    fake_user_btw
+  )
+
+  local_mocked_bindings(
+    path_find_user = function(filename) {
+      if (filename == "btw.md") fake_user_btw else NULL
+    }
+  )
+
+  # Create project-level btw.md with tools
+  project_dir <- withr::local_tempdir("btw-test-project-")
+  withr::local_dir(project_dir)
+
+  writeLines(
+    con = "btw.md",
+    c(
+      "---",
+      "client:",
+      "  provider: openai",
+      "tools: docs",
+      "---",
+      "Project level"
+    )
+  )
+
+  with_mocked_platform(ide = "rstudio", {
+    chat <- btw_client(path_llms_txt = FALSE)
+  })
+
+  tool_names <- names(chat$get_tools())
+  # Should have docs tools from project
+  expect_true(any(grepl("btw_tool_docs", tool_names)))
+  # Should NOT have env/files tools from user
+  expect_false(any(grepl("btw_tool_env", tool_names)))
+  expect_false(any(grepl("btw_tool_files", tool_names)))
+})
+
+test_that("btw_client() uses user tools when project has no tools", {
+  withr::local_envvar(list(OPENAI_API_KEY = "beep"))
+
+  # Create fake user btw.md with tools
+  fake_user_btw <- withr::local_tempfile(fileext = ".md")
+  writeLines(
+    c(
+      "---",
+      "client:",
+      "  provider: openai",
+      "tools: docs",
+      "---",
+      "User level"
+    ),
+    fake_user_btw
+  )
+
+  local_mocked_bindings(
+    path_find_user = function(filename) {
+      if (filename == "btw.md") fake_user_btw else NULL
+    }
+  )
+
+  # Create project-level btw.md WITHOUT tools field
+  project_dir <- withr::local_tempdir("btw-test-project-")
+  withr::local_dir(project_dir)
+
+  writeLines(
+    con = file.path(project_dir, "..", "btw.md"),
+    c(
+      "---",
+      "client:",
+      "  provider: openai",
+      "---",
+      "Project level"
+    )
+  )
+
+  with_mocked_platform(ide = "rstudio", {
+    chat <- btw_client(path_llms_txt = FALSE)
+  })
+
+  tool_names <- names(chat$get_tools())
+  # Should have docs tools from user
+  expect_true(any(grepl("btw_tool_docs", tool_names)))
+})
+
 test_that("btw_client() throws for deprecated `model` and `provider` fields in btw.md", {
   withr::local_envvar(list(OPENAI_API_KEY = "beep"))
 

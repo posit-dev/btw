@@ -25,8 +25,8 @@ passed to \code{\link[ellmer:chat-any]{ellmer::chat()}} to create a chat client.
 default client for new \code{btw_client()} calls, or use a \code{btw.md} project file
 for default chat client settings, like provider and model. We check the
 \code{client} argument, then the \code{btw.client} R option, and finally the \code{btw.md}
-project file, using only the client definition from the first of these that
-is available.}
+project file (falling back to user-level \code{btw.md} if needed), using only the
+client definition from the first of these that is available.}
 
 \item{tools}{A list of tools to include in the chat, defaults to
 \code{\link[=btw_tools]{btw_tools()}}. Join \code{\link[=btw_tools]{btw_tools()}} with additional tools defined by
@@ -42,7 +42,8 @@ client.}
 
 \item{path_btw}{A path to a \code{btw.md} or \code{AGENTS.md} project context file. If
 \code{NULL}, btw will find a project-specific \code{btw.md} or \code{AGENTS.md} file in
-the parents of the current working directory. Set \code{path_btw = FALSE} to
+the parents of the current working directory, with fallback to user-level
+\code{btw.md} if no project file is found. Set \code{path_btw = FALSE} to
 create a chat client without using a \code{btw.md} file.}
 
 \item{path_llms_txt}{A path to an \code{llms.txt} file containing context about
@@ -76,13 +77,30 @@ system prompt, if one is found in your project directory or as specified by
 the \code{path_llms_txt} argument.
 }
 
+\subsection{Client Settings with User-Level Fallback}{
+
+Client settings in \code{client} and \code{tools} from a project-level \code{btw.md} or
+\code{AGENTS.md} file take precedence. If a project file doesn't specify a
+setting, btw will fall back to settings in a user-level \code{btw.md} file
+(typically in \verb{~/btw.md} or \verb{~/.config/btw/btw.md}). Project-level btw tool
+options under the \code{options} key are merged with user-level options, with
+project-level options taking precedence.
+
+Project-specific instructions from both files are combined with a divider,
+allowing you to maintain global guidelines in your user file and
+project-specific rules in your project file.
+}
+
 \subsection{Client Options}{
+
+The following R options are consulted when creating a new btw chat client and
+take precedence over settings in a \code{btw.md} file:
 \itemize{
 \item \code{btw.client}: The \link[ellmer:Chat]{ellmer::Chat} client or a \code{provider/model} string (see
 \code{\link[ellmer:chat-any]{ellmer::chat()}}) to use as the basis for new \code{btw_client()} or
 \code{btw_app()} chats.
 \item \code{btw.tools}: The btw tools to include by default when starting a new
-btw chat, see \code{\link[=btw_tools]{btw_tools()}} for details.
+btw chat, see \code{\link[=btw_tools]{btw_tools()}} for details.`
 }
 }
 }
@@ -101,6 +119,8 @@ withr::local_options(list(
 ))
 
 chat <- btw_client()
-chat$chat("How can I replace `stop()` calls with functions from the cli package?")
+chat$chat(
+  "How can I replace `stop()` calls with functions from the cli package?"
+)
 \dontshow{\}) # examplesIf}
 }
