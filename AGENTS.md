@@ -104,8 +104,10 @@ Tools are grouped by capability:
 - `btw_this.environment()` - Lists and describes objects
 - `btw_this.character()` - **Command dispatcher** for special strings:
   - `"./path"` → read file or list directory
-  - `"{pkgName}"` → package help topics + intro vignette
-  - `"?help_topic"` → help page lookup
+  - `"{pkgName}"` or `"@pkg pkgName"` → package help topics + intro vignette
+  - `"?help_topic"` or `"@help topic"` → help page lookup (supports `@help pkg::topic` and `@help pkg topic` formats)
+  - `"@git status|diff|log"` → git repository information
+  - `"@issue #number"` or `"@pr #number"` → GitHub issues/PRs with auto-repo detection
   - `"@platform_info"` → session/platform details
   - `"@current_file"` → read active editor
   - And more (see `?btw_this.character`)
@@ -329,6 +331,7 @@ Edit files in `inst/prompts/`. These are assembled in `btw_client()` based on co
 - **Tool output formats are fluid** - btw intentionally experiments with different formats (JSON, markdown, plain text) to discover what works best with different models
 - **clipboard operations may fail** in non-interactive contexts or without clipboard support
 - **IDE tools** (e.g., `@current_file`) require RStudio or Positron with rstudioapi support
+- **Git and GitHub commands** - `@git` and `@issue`/`@pr` commands require gert and gh packages respectively, plus appropriate repository access
 - **MCP server blocks** the R process - run non-interactively
 - **Test snapshots require frequent updates** as output formatting evolves
 
