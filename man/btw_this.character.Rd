@@ -33,21 +33,22 @@ is a directory we call \code{\link[=btw_tool_files_list_files]{btw_tool_files_li
 \item \code{btw_this("./R/load_data.R")} reads the source of the \code{R/load_data.R}
 file.
 }
-\item \code{"{pkgName}"} \cr
-A package name wrapped in braces. Returns the list of help topics
-(\code{\link[=btw_tool_docs_package_help_topics]{btw_tool_docs_package_help_topics()}}) and, if it exists, the
-introductory vignette for the package (\code{\link[=btw_tool_docs_vignette]{btw_tool_docs_vignette()}}).
+\item \code{"{pkgName}"} or \code{"@pkg pkgName"} \cr
+A package name wrapped in braces, or using the \verb{@pkg} command. Returns the
+list of help topics (\code{\link[=btw_tool_docs_package_help_topics]{btw_tool_docs_package_help_topics()}}) and, if it
+exists, the introductory vignette for the package (\code{\link[=btw_tool_docs_vignette]{btw_tool_docs_vignette()}}).
 \itemize{
-\item \code{btw_this("{dplyr}")} includes dplyr's introductory vignette.
+\item \code{btw_this("{dplyr}")} or \code{btw_this("@pkg dplyr")} includes dplyr's introductory vignette.
 \item \code{btw_this("{btw}")} returns only the package help index (because \code{btw}
 doesn't have an intro vignette, yet).
 }
-\item \code{"?help_topic"} \cr
-When the string starts with \verb{?}, btw searches R's help
-topics using \code{\link[=btw_tool_docs_help_page]{btw_tool_docs_help_page()}}.
+\item \code{"?help_topic"} or \code{"@help topic"} \cr
+When the string starts with \verb{?} or \verb{@help}, btw searches R's help
+topics using \code{\link[=btw_tool_docs_help_page]{btw_tool_docs_help_page()}}. Supports multiple formats:
 \itemize{
-\item \code{btw_this("?dplyr::across")} includes the reference page for
-\code{dplyr::across}.
+\item \code{btw_this("?dplyr::across")} or \code{btw_this("@help dplyr::across")}
+\item \code{btw_this("@help dplyr across")} - space-separated format
+\item \code{btw_this("@help across")} - searches all packages
 }
 \item \code{"@news {{package_name}} {{search_term}}"} \cr
 Include the release notes (NEWS) from the latest package release, e.g.
@@ -56,6 +57,26 @@ Include the release notes (NEWS) from the latest package release, e.g.
 Include the contents of a web page at the specified URL as markdown, e.g.
 \code{"@url https://cran.r-project.org/doc/FAQ/R-FAQ.html"}. Requires the
 \pkg{chromote} package to be installed.
+\item \code{"@git status"}, \code{"@git diff"}, \code{"@git log"} \cr
+Git commands for viewing repository status, diffs, and commit history.
+Requires \pkg{gert} package and a git repository.
+\itemize{
+\item \code{btw_this("@git status")} - show working directory status
+\item \code{btw_this("@git status staged")} - show only staged files
+\item \code{btw_this("@git diff")} - show unstaged changes
+\item \code{btw_this("@git diff HEAD")} - show staged changes
+\item \code{btw_this("@git log")} - show recent commits (default 10)
+\item \code{btw_this("@git log main 20")} - show 20 commits from main branch
+}
+\item \code{"@issue #number"} or \code{"@pr #number"} \cr
+Fetch a GitHub issue or pull request. Automatically detects the current
+repository, or you can specify \code{owner/repo#number} or \verb{owner/repo number}.
+Requires \pkg{gh} package and GitHub authentication.
+\itemize{
+\item \code{btw_this("@issue #65")} - issue from current repo
+\item \code{btw_this("@pr posit-dev/btw#64")} - PR from specific repo
+\item \code{btw_this("@issue tidyverse/dplyr 1234")} - space-separated format
+}
 \item \code{"@current_file"} or \code{"@current_selection"} \cr
 When used in RStudio or Positron, or anywhere else that the
 \pkg{rstudioapi} is supported, \code{btw("@current_file")} includes the contents
@@ -81,6 +102,12 @@ evaluated in your R console.
 }
 \examples{
 btw_this("?btw::btw_this")
+\dontrun{
+btw_this("@pkg dplyr")
+btw_this("@help mutate")
+btw_this("@git status")
+btw_this("@issue #65")
+}
 
 }
 \seealso{
