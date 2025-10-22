@@ -12,6 +12,7 @@ permissions: read-all
 jobs:
   test-coverage:
     runs-on: macos-latest
+    timeout-minutes: 20
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 

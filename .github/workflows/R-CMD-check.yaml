@@ -18,6 +18,7 @@ jobs:
     runs-on: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    timeout-minutes: 20
 
     strategy:
       fail-fast: false
