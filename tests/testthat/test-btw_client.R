@@ -293,6 +293,8 @@ test_that("btw_client() falls through client settings from user-level btw.md", {
   # Should use project's client settings
   expect_equal(chat$get_model(), "claude-3-5-sonnet-20241022")
   expect_s3_class(chat$get_provider(), "ellmer::ProviderAnthropic")
+
+  skip_if_not_macos()
   expect_snapshot(print(chat))
 })
 
@@ -340,6 +342,8 @@ test_that("btw_client() falls back to user client settings when project has no c
   # Should fall back to user's client settings
   expect_equal(chat$get_model(), "gpt-4o")
   expect_s3_class(chat$get_provider(), "ellmer::ProviderOpenAI")
+
+  skip_if_not_macos()
   expect_snapshot(print(chat))
 })
 
