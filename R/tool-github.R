@@ -326,14 +326,16 @@ btw_github_default_allow_rules <- function() {
   c(
     # Basic Information Gathering Endpoints
     "GET /repos/*/*/issues/*",
-    "GET /repos/*/*/issues/*/comments",
+    "GET /repos/*/*/issues/*/comments/**",
     "GET /repos/*/*/pulls/*",
-    "GET /repos/*/*/pulls/*/files",
+    "GET /repos/*/*/pulls/*/files/**",
+    "GET /repos/*/*/pulls/*/comments/**",
     "GET /repos/*/*/issues",
     "GET /repos/*/*/pulls",
     "POST /repos/*/*/issues",
     "POST /repos/*/*/pulls",
     "POST /repos/*/*/issues/*/comments",
+    "POST /repos/*/*/pulls/*/comments",
 
     # Read-only Repository Information
     "GET /repos/*/*",
