@@ -12,19 +12,20 @@ btw_this(&quot;./data&quot;) lists the files in data/.
 btw_this(&quot;./R/load_data.R&quot;) reads the source of the R/load_data.R
 file.
 
-&quot;{pkgName}&quot;
-A package name wrapped in braces. Returns the list of help topics
-(btw_tool_docs_package_help_topics()) and, if it exists, the
-introductory vignette for the package (btw_tool_docs_vignette()).
-btw_this(&quot;{dplyr}&quot;) includes dplyr's introductory vignette.
+&quot;{pkgName}&quot; or &quot;@pkg pkgName&quot;
+A package name wrapped in braces, or using the @pkg command. Returns the
+list of help topics (btw_tool_docs_package_help_topics()) and, if it
+exists, the introductory vignette for the package (btw_tool_docs_vignette()).
+btw_this(&quot;{dplyr}&quot;) or btw_this(&quot;@pkg dplyr&quot;) includes dplyr's introductory vignette.
 btw_this(&quot;{btw}&quot;) returns only the package help index (because btw
 doesn't have an intro vignette, yet).
 
-&quot;?help_topic&quot;
-When the string starts with ?, btw searches R's help
-topics using btw_tool_docs_help_page().
-btw_this(&quot;?dplyr::across&quot;) includes the reference page for
-dplyr::across.
+&quot;?help_topic&quot; or &quot;@help topic&quot;
+When the string starts with ? or @help, btw searches R's help
+topics using btw_tool_docs_help_page(). Supports multiple formats:
+btw_this(&quot;?dplyr::across&quot;) or btw_this(&quot;@help dplyr::across&quot;)
+btw_this(&quot;@help dplyr across&quot;) - space-separated format
+btw_this(&quot;@help across&quot;) - searches all packages
 
 &quot;@news {{package_name}} {{search_term}}&quot;
 Include the release notes (NEWS) from the latest package release, e.g.
@@ -33,6 +34,24 @@ Include the release notes (NEWS) from the latest package release, e.g.
 Include the contents of a web page at the specified URL as markdown, e.g.
 &quot;@url https://cran.r-project.org/doc/FAQ/R-FAQ.html&quot;. Requires the
 chromote package to be installed.
+&quot;@git status&quot;, &quot;@git diff&quot;, &quot;@git log&quot;
+Git commands for viewing repository status, diffs, and commit history.
+Requires gert package and a git repository.
+btw_this(&quot;@git status&quot;) - show working directory status
+btw_this(&quot;@git status staged&quot;) - show only staged files
+btw_this(&quot;@git diff&quot;) - show unstaged changes
+btw_this(&quot;@git diff HEAD&quot;) - show staged changes
+btw_this(&quot;@git log&quot;) - show recent commits (default 10)
+btw_this(&quot;@git log main 20&quot;) - show 20 commits from main branch
+
+&quot;@issue #number&quot; or &quot;@pr #number&quot;
+Fetch a GitHub issue or pull request. Automatically detects the current
+repository, or you can specify owner/repo#number or owner/repo number.
+Requires gh package and GitHub authentication.
+btw_this(&quot;@issue #65&quot;) - issue from current repo
+btw_this(&quot;@pr posit-dev/btw#64&quot;) - PR from specific repo
+btw_this(&quot;@issue tidyverse/dplyr 1234&quot;) - space-separated format
+
 &quot;@current_file&quot; or &quot;@current_selection&quot;
 When used in RStudio or Positron, or anywhere else that the
 rstudioapi is supported, btw(&quot;@current_file&quot;) includes the contents
@@ -68,19 +87,20 @@ btw_this(&quot;./data&quot;) lists the files in data/.
 btw_this(&quot;./R/load_data.R&quot;) reads the source of the R/load_data.R
 file.
 
-&quot;{pkgName}&quot;
-A package name wrapped in braces. Returns the list of help topics
-(btw_tool_docs_package_help_topics()) and, if it exists, the
-introductory vignette for the package (btw_tool_docs_vignette()).
-btw_this(&quot;{dplyr}&quot;) includes dplyr's introductory vignette.
+&quot;{pkgName}&quot; or &quot;@pkg pkgName&quot;
+A package name wrapped in braces, or using the @pkg command. Returns the
+list of help topics (btw_tool_docs_package_help_topics()) and, if it
+exists, the introductory vignette for the package (btw_tool_docs_vignette()).
+btw_this(&quot;{dplyr}&quot;) or btw_this(&quot;@pkg dplyr&quot;) includes dplyr's introductory vignette.
 btw_this(&quot;{btw}&quot;) returns only the package help index (because btw
 doesn't have an intro vignette, yet).
 
-&quot;?help_topic&quot;
-When the string starts with ?, btw searches R's help
-topics using btw_tool_docs_help_page().
-btw_this(&quot;?dplyr::across&quot;) includes the reference page for
-dplyr::across.
+&quot;?help_topic&quot; or &quot;@help topic&quot;
+When the string starts with ? or @help, btw searches R's help
+topics using btw_tool_docs_help_page(). Supports multiple formats:
+btw_this(&quot;?dplyr::across&quot;) or btw_this(&quot;@help dplyr::across&quot;)
+btw_this(&quot;@help dplyr across&quot;) - space-separated format
+btw_this(&quot;@help across&quot;) - searches all packages
 
 &quot;@news {{package_name}} {{search_term}}&quot;
 Include the release notes (NEWS) from the latest package release, e.g.
@@ -89,6 +109,24 @@ Include the release notes (NEWS) from the latest package release, e.g.
 Include the contents of a web page at the specified URL as markdown, e.g.
 &quot;@url https://cran.r-project.org/doc/FAQ/R-FAQ.html&quot;. Requires the
 chromote package to be installed.
+&quot;@git status&quot;, &quot;@git diff&quot;, &quot;@git log&quot;
+Git commands for viewing repository status, diffs, and commit history.
+Requires gert package and a git repository.
+btw_this(&quot;@git status&quot;) - show working directory status
+btw_this(&quot;@git status staged&quot;) - show only staged files
+btw_this(&quot;@git diff&quot;) - show unstaged changes
+btw_this(&quot;@git diff HEAD&quot;) - show staged changes
+btw_this(&quot;@git log&quot;) - show recent commits (default 10)
+btw_this(&quot;@git log main 20&quot;) - show 20 commits from main branch
+
+&quot;@issue #number&quot; or &quot;@pr #number&quot;
+Fetch a GitHub issue or pull request. Automatically detects the current
+repository, or you can specify owner/repo#number or owner/repo number.
+Requires gh package and GitHub authentication.
+btw_this(&quot;@issue #65&quot;) - issue from current repo
+btw_this(&quot;@pr posit-dev/btw#64&quot;) - PR from specific repo
+btw_this(&quot;@issue tidyverse/dplyr 1234&quot;) - space-separated format
+
 &quot;@current_file&quot; or &quot;@current_selection&quot;
 When used in RStudio or Positron, or anywhere else that the
 rstudioapi is supported, btw(&quot;@current_file&quot;) includes the contents
@@ -162,17 +200,18 @@ is a directory we call <code><a href="btw_tool_files_list_files.html">btw_tool_f
 <li><p><code>btw_this("./R/load_data.R")</code> reads the source of the <code>R/load_data.R</code>
 file.</p></li>
 </ul></li>
-<li><p><code>"{pkgName}"</code> <br>
-A package name wrapped in braces. Returns the list of help topics
-(<code><a href="btw_tool_package_docs.html">btw_tool_docs_package_help_topics()</a></code>) and, if it exists, the
-introductory vignette for the package (<code><a href="btw_tool_package_docs.html">btw_tool_docs_vignette()</a></code>).</p><ul><li><p><code>btw_this("{dplyr}")</code> includes dplyr's introductory vignette.</p></li>
+<li><p><code>"{pkgName}"</code> or <code>"@pkg pkgName"</code> <br>
+A package name wrapped in braces, or using the <code>@pkg</code> command. Returns the
+list of help topics (<code><a href="btw_tool_package_docs.html">btw_tool_docs_package_help_topics()</a></code>) and, if it
+exists, the introductory vignette for the package (<code><a href="btw_tool_package_docs.html">btw_tool_docs_vignette()</a></code>).</p><ul><li><p><code>btw_this("{dplyr}")</code> or <code>btw_this("@pkg dplyr")</code> includes dplyr's introductory vignette.</p></li>
 <li><p><code>btw_this("{btw}")</code> returns only the package help index (because <code>btw</code>
 doesn't have an intro vignette, yet).</p></li>
 </ul></li>
-<li><p><code>"?help_topic"</code> <br>
-When the string starts with <code>?</code>, btw searches R's help
-topics using <code><a href="btw_tool_package_docs.html">btw_tool_docs_help_page()</a></code>.</p><ul><li><p><code>btw_this("?dplyr::across")</code> includes the reference page for
-<code><a href="https://dplyr.tidyverse.org/reference/across.html" class="external-link">dplyr::across</a></code>.</p></li>
+<li><p><code>"?help_topic"</code> or <code>"@help topic"</code> <br>
+When the string starts with <code>?</code> or <code>@help</code>, btw searches R's help
+topics using <code><a href="btw_tool_package_docs.html">btw_tool_docs_help_page()</a></code>. Supports multiple formats:</p><ul><li><p><code>btw_this("?dplyr::across")</code> or <code>btw_this("@help dplyr::across")</code></p></li>
+<li><p><code>btw_this("@help dplyr across")</code> - space-separated format</p></li>
+<li><p><code>btw_this("@help across")</code> - searches all packages</p></li>
 </ul></li>
 <li><p><code>"@news {{package_name}} {{search_term}}"</code> <br>
 Include the release notes (NEWS) from the latest package release, e.g.
@@ -181,6 +220,22 @@ Include the release notes (NEWS) from the latest package release, e.g.
 Include the contents of a web page at the specified URL as markdown, e.g.
 <code>"@url https://cran.r-project.org/doc/FAQ/R-FAQ.html"</code>. Requires the
 <span class="pkg">chromote</span> package to be installed.</p></li>
+<li><p><code>"@git status"</code>, <code>"@git diff"</code>, <code>"@git log"</code> <br>
+Git commands for viewing repository status, diffs, and commit history.
+Requires <span class="pkg">gert</span> package and a git repository.</p><ul><li><p><code>btw_this("@git status")</code> - show working directory status</p></li>
+<li><p><code>btw_this("@git status staged")</code> - show only staged files</p></li>
+<li><p><code>btw_this("@git diff")</code> - show unstaged changes</p></li>
+<li><p><code>btw_this("@git diff HEAD")</code> - show staged changes</p></li>
+<li><p><code>btw_this("@git log")</code> - show recent commits (default 10)</p></li>
+<li><p><code>btw_this("@git log main 20")</code> - show 20 commits from main branch</p></li>
+</ul></li>
+<li><p><code>"@issue #number"</code> or <code>"@pr #number"</code> <br>
+Fetch a GitHub issue or pull request. Automatically detects the current
+repository, or you can specify <code>owner/repo#number</code> or <code>owner/repo number</code>.
+Requires <span class="pkg">gh</span> package and GitHub authentication.</p><ul><li><p><code>btw_this("@issue #65")</code> - issue from current repo</p></li>
+<li><p><code>btw_this("@pr posit-dev/btw#64")</code> - PR from specific repo</p></li>
+<li><p><code>btw_this("@issue tidyverse/dplyr 1234")</code> - space-separated format</p></li>
+</ul></li>
 <li><p><code>"@current_file"</code> or <code>"@current_selection"</code> <br>
 When used in RStudio or Positron, or anywhere else that the
 <span class="pkg">rstudioapi</span> is supported, <code>btw("@current_file")</code> includes the contents
@@ -282,6 +337,12 @@ evaluated in your R console.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [39] ""                                                                                                          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [40] "## End(Not run)"                                                                                           </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [41] "```"                                                                                                       </span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="btw_this.html">btw_this</a></span><span class="op">(</span><span class="st">"@pkg dplyr"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="btw_this.html">btw_this</a></span><span class="op">(</span><span class="st">"@help mutate"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="btw_this.html">btw_this</a></span><span class="op">(</span><span class="st">"@git status"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="btw_this.html">btw_this</a></span><span class="op">(</span><span class="st">"@issue #65"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

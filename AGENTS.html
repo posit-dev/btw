@@ -149,9 +149,13 @@
 <ul><li>
 <code>"./path"</code> → read file or list directory</li>
 <li>
-<code>"{pkgName}"</code> → package help topics + intro vignette</li>
+<code>"{pkgName}"</code> or <code>"@pkg pkgName"</code> → package help topics + intro vignette</li>
 <li>
-<code>"?help_topic"</code> → help page lookup</li>
+<code>"?help_topic"</code> or <code>"@help topic"</code> → help page lookup (supports <code>@help pkg::topic</code> and <code>@help pkg topic</code> formats)</li>
+<li>
+<code>"@git status|diff|log"</code> → git repository information</li>
+<li>
+<code>"@issue #number"</code> or <code>"@pr #number"</code> → GitHub issues/PRs with auto-repo detection</li>
 <li>
 <code>"@platform_info"</code> → session/platform details</li>
 <li>
@@ -408,6 +412,8 @@
 <strong>clipboard operations may fail</strong> in non-interactive contexts or without clipboard support</li>
 <li>
 <strong>IDE tools</strong> (e.g., <code>@current_file</code>) require RStudio or Positron with rstudioapi support</li>
+<li>
+<strong>Git and GitHub commands</strong> - <code>@git</code> and <code>@issue</code>/<code>@pr</code> commands require gert and gh packages respectively, plus appropriate repository access</li>
 <li>
 <strong>MCP server blocks</strong> the R process - run non-interactively</li>
 <li>
