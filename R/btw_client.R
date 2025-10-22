@@ -19,13 +19,29 @@
 #' system prompt, if one is found in your project directory or as specified by
 #' the `path_llms_txt` argument.
 #'
+#' ## Client Settings with User-Level Fallback
+#'
+#' Client settings in `client` and `tools` from a project-level `btw.md` or
+#' `AGENTS.md` file take precedence. If a project file doesn't specify a
+#' setting, btw will fall back to settings in a user-level `btw.md` file
+#' (typically in `~/btw.md` or `~/.config/btw/btw.md`). Project-level btw tool
+#' options under the `options` key are merged with user-level options, with
+#' project-level options taking precedence.
+#'
+#' Project-specific instructions from both files are combined with a divider,
+#' allowing you to maintain global guidelines in your user file and
+#' project-specific rules in your project file.
+#'
 #' ## Client Options
+#'
+#' The following R options are consulted when creating a new btw chat client and
+#' take precedence over settings in a `btw.md` file:
 #'
 #' * `btw.client`: The [ellmer::Chat] client or a `provider/model` string (see
 #'    [ellmer::chat()]) to use as the basis for new `btw_client()` or
 #'    `btw_app()` chats.
 #' * `btw.tools`: The btw tools to include by default when starting a new
-#'   btw chat, see [btw_tools()] for details.
+#'   btw chat, see [btw_tools()] for details.`
 #'
 #' @examplesIf rlang::is_interactive()
 #' withr::local_options(list(
@@ -33,7 +49,9 @@
 #' ))
 #'
 #' chat <- btw_client()
-#' chat$chat("How can I replace `stop()` calls with functions from the cli package?")
+#' chat$chat(
+#'   "How can I replace `stop()` calls with functions from the cli package?"
+#' )
 #'
 #' @param client An [ellmer::Chat] client or a `provider/model` string to be
 #'   passed to [ellmer::chat()] to create a chat client. Defaults to
@@ -41,8 +59,8 @@
 #'   default client for new `btw_client()` calls, or use a `btw.md` project file
 #'   for default chat client settings, like provider and model. We check the
 #'   `client` argument, then the `btw.client` R option, and finally the `btw.md`
-#'   project file, using only the client definition from the first of these that
-#'   is available.
+#'   project file (falling back to user-level `btw.md` if needed), using only the
+#'   client definition from the first of these that is available.
 #' @param tools A list of tools to include in the chat, defaults to
 #'   [btw_tools()]. Join [btw_tools()] with additional tools defined by
 #'   [ellmer::tool()] to include additional tools in the chat client.
@@ -56,7 +74,8 @@
 #'   client.
 #' @param path_btw A path to a `btw.md` or `AGENTS.md` project context file. If
 #'   `NULL`, btw will find a project-specific `btw.md` or `AGENTS.md` file in
-#'   the parents of the current working directory. Set `path_btw = FALSE` to
+#'   the parents of the current working directory, with fallback to user-level
+#'   `btw.md` if no project file is found. Set `path_btw = FALSE` to
 #'   create a chat client without using a `btw.md` file.
 #' @param path_llms_txt A path to an `llms.txt` file containing context about
 #'   the current project. By default, btw will look for an `llms.txt` file in
@@ -310,14 +329,9 @@ find_btw_context_file <- function(path = NULL, search_user = TRUE) {
   path
 }
 
-read_btw_file <- function(path = NULL) {
-  if (isFALSE(path)) {
-    return(list())
-  }
-
-  path <- find_btw_context_file(path)
-
-  if (is.null(path)) {
+# Read a single btw.md file and extract its YAML front matter and body
+read_single_btw_file <- function(path) {
+  if (is.null(path) || !fs::file_exists(path)) {
     return(list())
   }
 
@@ -334,6 +348,58 @@ read_btw_file <- function(path = NULL) {
   btw_system_prompt <- trimws(btw_system_prompt)
   if (nzchar(btw_system_prompt)) {
     config$btw_system_prompt <- btw_system_prompt
+  }
+
+  config
+}
+
+read_btw_file <- function(path = NULL) {
+  if (isFALSE(path)) {
+    return(list())
+  }
+
+  # Find project-level and user-level files
+  project_path <- maybe_find_in_project(path, "btw.md", "path_btw")
+  if (is.null(project_path)) {
+    project_path <- maybe_find_in_project(NULL, "AGENTS.md", "path_btw")
+  }
+
+  user_path <- path_find_user("btw.md")
+
+  # If no files found, return empty config
+  if (is.null(project_path) && is.null(user_path)) {
+    return(list())
+  }
+
+  project_config <- read_single_btw_file(project_path)
+  user_config <- read_single_btw_file(user_path)
+
+  # Merge configs ----
+  # 1. Shallow merge for 'client' and 'tools': project wins if present
+  config <- list(
+    client = project_config$client %||% user_config$client,
+    tools = project_config$tools %||% user_config$tools
+  )
+
+  # 2. Deep merge for 'options': both are flattened, project overrides
+  user_options <- flatten_config_options(user_config$options)
+  project_options <- flatten_config_options(project_config$options)
+  config$options <- utils::modifyList(user_options, project_options)
+
+  # 3. System prompts are concatenated with a separator
+  prompts <- c(user_config$btw_system_prompt, project_config$btw_system_prompt)
+  prompts <- prompts[nzchar(prompts)]
+  if (length(prompts) > 0) {
+    config$btw_system_prompt <- paste(prompts, collapse = "\n\n---\n\n")
+  }
+
+  # Copy over any other config keys that aren't special-cased above
+  # (project wins, then user)
+  for (key in setdiff(names(project_config), names(config))) {
+    config[[key]] <- project_config[[key]]
+  }
+  for (key in setdiff(names(user_config), names(config))) {
+    config[[key]] <- user_config[[key]]
   }
 
   config
