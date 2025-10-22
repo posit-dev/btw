@@ -139,6 +139,7 @@ test_that("@git status works with mocked implementation", {
       btw_tool_result("Status: OK")
     }
   )
+  local_git_info()
 
   result <- btw_this("@git status")
   expect_match(result, "Status: OK", all = FALSE)
@@ -151,6 +152,7 @@ test_that("@git status accepts include argument", {
       btw_tool_result(paste("Include:", include))
     }
   )
+  local_git_info()
 
   result <- btw_this("@git status staged")
   expect_match(result, "Include: staged", all = FALSE)
@@ -169,6 +171,7 @@ test_that("@git diff works", {
       btw_tool_result(paste("Ref:", ref_str))
     }
   )
+  local_git_info()
 
   result <- btw_this("@git diff")
   expect_match(result, "Ref: NULL", all = FALSE)
@@ -183,6 +186,7 @@ test_that("@git log works with defaults", {
       btw_tool_result(paste("Log:", ref, max))
     }
   )
+  local_git_info()
 
   result <- btw_this("@git log")
   expect_match(result, "Log: HEAD 10", all = FALSE)
@@ -194,6 +198,7 @@ test_that("@git log works with custom ref", {
       btw_tool_result(paste("Log:", ref, max))
     }
   )
+  local_git_info()
 
   result <- btw_this("@git log main")
   expect_match(result, "Log: main 10", all = FALSE)
@@ -205,6 +210,7 @@ test_that("@git log works with custom max", {
       btw_tool_result(paste("Log:", ref, max))
     }
   )
+  local_git_info()
 
   result <- btw_this("@git log main 20")
   expect_match(result, "Log: main 20", all = FALSE)
@@ -214,6 +220,7 @@ test_that("@git requires gert package", {
   local_mocked_bindings(
     is_installed = function(pkg) pkg != "gert"
   )
+  local_git_info()
 
   expect_error(
     btw_this("@git status"),
@@ -222,10 +229,7 @@ test_that("@git requires gert package", {
 })
 
 test_that("@git requires subcommand", {
-  local_mocked_bindings(
-    git_info = function() TRUE,
-    .package = "gert"
-  )
+  local_git_info()
 
   expect_error(
     btw_this("@git"),
@@ -234,10 +238,7 @@ test_that("@git requires subcommand", {
 })
 
 test_that("@git rejects unknown subcommands", {
-  local_mocked_bindings(
-    git_info = function() TRUE,
-    .package = "gert"
-  )
+  local_git_info()
 
   expect_error(
     btw_this("@git unknown"),
@@ -246,10 +247,7 @@ test_that("@git rejects unknown subcommands", {
 })
 
 test_that("@git log validates max argument", {
-  local_mocked_bindings(
-    git_info = function() TRUE,
-    .package = "gert"
-  )
+  local_git_info()
 
   expect_error(
     btw_this("@git log main abc"),

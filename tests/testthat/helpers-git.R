@@ -17,6 +17,31 @@ local_temp_git_repo <- function(
   invisible(repo)
 }
 
+local_git_info <- function(mock_has_git = TRUE, .local_envir = parent.frame()) {
+  mock_git_info <- function() {
+    if (!mock_has_git) {
+      stop("Not in a git repository or gert cannot access git.")
+    }
+
+    list(
+      path = "/path/to/repo",
+      bare = FALSE,
+      head = "refs/heads/main",
+      shorthand = "main",
+      commit = "abcdef01234567890",
+      remote = "origin",
+      upstream = "origin/main",
+      reflist = c("refs/heads/main", "refs/remotes/origin/main")
+    )
+  }
+
+  local_mocked_bindings(
+    git_info = mock_git_info,
+    .package = "gert",
+    .env = .local_envir
+  )
+}
+
 scrub_git_details <- function(x) {
   # Replace timestamps (YYYY-MM-DD HH:MM:SS format)
   x <- gsub(
