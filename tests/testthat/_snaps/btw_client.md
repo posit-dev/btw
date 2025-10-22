@@ -158,13 +158,13 @@
       Please account for the following R session and system settings in all responses.
       
       <system_info>
-      R_VERSION: R version 4.5.1 (2025-06-13)
-      OS: macOS Tahoe 26.0.1
-      SYSTEM: aarch64, darwin20
+      R_VERSION: R VERSION
+      OS: OPERATING SYSTEM
+      SYSTEM: SYSTEM VERSION
       UI: RStudio
       LANGUAGE: es
       LOCALE: C
-      ENCODING: C.UTF-8
+      ENCODING: LC_CTYPE
       TIMEZONE: Europe/Madrid
       DATE: DAY OF WEEK, MONTH DAY, YEAR (YYYY-MM-DD)
       </system_info>
@@ -196,13 +196,13 @@
       Please account for the following R session and system settings in all responses.
       
       <system_info>
-      R_VERSION: R version 4.5.1 (2025-06-13)
-      OS: macOS Tahoe 26.0.1
-      SYSTEM: aarch64, darwin20
+      R_VERSION: R VERSION
+      OS: OPERATING SYSTEM
+      SYSTEM: SYSTEM VERSION
       UI: RStudio
       LANGUAGE: es
       LOCALE: C
-      ENCODING: C.UTF-8
+      ENCODING: LC_CTYPE
       TIMEZONE: Europe/Madrid
       DATE: DAY OF WEEK, MONTH DAY, YEAR (YYYY-MM-DD)
       </system_info>
