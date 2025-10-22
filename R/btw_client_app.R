@@ -182,18 +182,32 @@ btw_app_from_client <- function(client, messages = list(), ...) {
   server <- function(input, output, session) {
     chat <- shinychat::chat_mod_server("chat", client = client)
 
+    chat_get_tokens <- function() {
+      tryCatch(
+        chat$client$get_tokens(),
+        error = function(e) NULL
+      )
+    }
+
+    chat_get_cost <- function() {
+      tryCatch(
+        chat$client$get_cost(),
+        error = function(e) NA
+      )
+    }
+
     chat_tokens <- shiny::reactiveVal(
-      chat$client$get_tokens(),
+      chat_get_tokens(),
       label = "btw_app_tokens"
     )
     chat_cost <- shiny::reactiveVal(
-      chat$client$get_cost(),
+      chat_get_cost(),
       label = "btw_app_cost"
     )
 
     shiny::observeEvent(chat$last_turn(), {
-      chat_tokens(chat$client$get_tokens())
-      chat_cost(chat$client$get_cost())
+      chat_tokens(chat_get_tokens())
+      chat_cost(chat_get_cost())
     })
 
     shiny::observeEvent(chat$last_input(), {
