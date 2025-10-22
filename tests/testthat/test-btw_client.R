@@ -1,8 +1,9 @@
+local_mocked_bindings(
+  btw_can_register_gh_tool = function() FALSE
+)
+
 describe("btw_client() chat client", {
   withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
-  local_mocked_bindings(
-    btw_can_register_gh_tool = function() FALSE
-  )
 
   it("works with `btw.client` option", {
     local_options(
@@ -293,7 +294,7 @@ describe("btw_client() project vs user settings", {
     expect_s3_class(chat$get_provider(), "ellmer::ProviderAnthropic")
 
     skip_if_not_macos()
-    expect_snapshot(print(chat))
+    expect_snapshot(print(chat), transform = scrub_system_info)
   })
 
   it("falls back to user client settings when project has no client", {
@@ -332,7 +333,7 @@ describe("btw_client() project vs user settings", {
     expect_s3_class(chat$get_provider(), "ellmer::ProviderOpenAI")
 
     skip_if_not_macos()
-    expect_snapshot(print(chat))
+    expect_snapshot(print(chat), transform = scrub_system_info)
   })
 
   it("concatenates user and project prompts with separator", {
