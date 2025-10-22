@@ -246,12 +246,16 @@ WHEN TO USE:
 * Use this tool to interact with GitHub repositories, issues, pull requests, and more.
 * Write R code that calls gh() - you don't need to load the gh package.
 * The code runs in an environment with `owner` and `repo` variables already defined.
+* ALWAYS show the user a preview or description before performing write operations and allow the user to provide feedback.
+* ALWAYS ask the user for confirmation before performing write or delete operations.
 
 CODE ENVIRONMENT:
 * `owner` and `repo` variables are pre-defined for the current repository
 * `gh()` function is available to call any GitHub API endpoint
 * `gh_whoami()` is available to get current user information
-* You can provide write the endpoint with other `owner` or `repo` values to target another repo
+* You can provide the endpoint with `owner` or `repo` values filled in to target another repo
+* The last value of the code block is returned as the result
+* You will not see any output from print statements or other side effects
 
 ENDPOINT VALIDATION:
 * Most read operations (GET) are allowed by default
