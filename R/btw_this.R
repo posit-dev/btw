@@ -62,21 +62,22 @@ as_btw_capture <- function(x) {
 #'   * `btw_this("./R/load_data.R")` reads the source of the `R/load_data.R`
 #'     file.
 #'
-#' * `"{pkgName}"` \cr
-#'   A package name wrapped in braces. Returns the list of help topics
-#'   ([btw_tool_docs_package_help_topics()]) and, if it exists, the
-#'   introductory vignette for the package ([btw_tool_docs_vignette()]).
+#' * `"{pkgName}"` or `"@pkg pkgName"` \cr
+#'   A package name wrapped in braces, or using the `@pkg` command. Returns the
+#'   list of help topics ([btw_tool_docs_package_help_topics()]) and, if it
+#'   exists, the introductory vignette for the package ([btw_tool_docs_vignette()]).
 #'
-#'   * `btw_this("{dplyr}")` includes dplyr's introductory vignette.
+#'   * `btw_this("{dplyr}")` or `btw_this("@pkg dplyr")` includes dplyr's introductory vignette.
 #'   * `btw_this("{btw}")` returns only the package help index (because `btw`
 #'     doesn't have an intro vignette, yet).
 #'
-#' * `"?help_topic"` \cr
-#'   When the string starts with `?`, btw searches R's help
-#'   topics using [btw_tool_docs_help_page()].
+#' * `"?help_topic"` or `"@help topic"` \cr
+#'   When the string starts with `?` or `@help`, btw searches R's help
+#'   topics using [btw_tool_docs_help_page()]. Supports multiple formats:
 #'
-#'   * `btw_this("?dplyr::across")` includes the reference page for
-#'     `dplyr::across`.
+#'   * `btw_this("?dplyr::across")` or `btw_this("@help dplyr::across")`
+#'   * `btw_this("@help dplyr across")` - space-separated format
+#'   * `btw_this("@help across")` - searches all packages
 #'
 #' * `"@news {{package_name}} {{search_term}}"` \cr
 #'   Include the release notes (NEWS) from the latest package release, e.g.
@@ -86,6 +87,26 @@ as_btw_capture <- function(x) {
 #'   Include the contents of a web page at the specified URL as markdown, e.g.
 #'   `"@url https://cran.r-project.org/doc/FAQ/R-FAQ.html"`. Requires the
 #'   \pkg{chromote} package to be installed.
+#'
+#' * `"@git status"`, `"@git diff"`, `"@git log"` \cr
+#'   Git commands for viewing repository status, diffs, and commit history.
+#'   Requires \pkg{gert} package and a git repository.
+#'
+#'   * `btw_this("@git status")` - show working directory status
+#'   * `btw_this("@git status staged")` - show only staged files
+#'   * `btw_this("@git diff")` - show unstaged changes
+#'   * `btw_this("@git diff HEAD")` - show staged changes
+#'   * `btw_this("@git log")` - show recent commits (default 10)
+#'   * `btw_this("@git log main 20")` - show 20 commits from main branch
+#'
+#' * `"@issue #number"` or `"@pr #number"` \cr
+#'   Fetch a GitHub issue or pull request. Automatically detects the current
+#'   repository, or you can specify `owner/repo#number` or `owner/repo number`.
+#'   Requires \pkg{gh} package and GitHub authentication.
+#'
+#'   * `btw_this("@issue #65")` - issue from current repo
+#'   * `btw_this("@pr posit-dev/btw#64")` - PR from specific repo
+#'   * `btw_this("@issue tidyverse/dplyr 1234")` - space-separated format
 #'
 #' * `"@current_file"` or `"@current_selection"` \cr
 #'   When used in RStudio or Positron, or anywhere else that the
@@ -116,6 +137,12 @@ as_btw_capture <- function(x) {
 #'
 #' @examples
 #' btw_this("?btw::btw_this")
+#' \dontrun{
+#' btw_this("@pkg dplyr")
+#' btw_this("@help mutate")
+#' btw_this("@git status")
+#' btw_this("@issue #65")
+#' }
 #'
 #' @param x A character string
 #' @param ... Ignored.
@@ -129,7 +156,59 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
   check_string(x)
   x <- trimws(x)
 
-  if (identical(x, "@current_file")) {
+  # Try @ command parsing first
+  if (substring(x, 1, 1) == "@") {
+    cmd <- parse_at_command(x)
+    result <- dispatch_at_command(cmd, caller_env)
+    if (!is.null(result)) {
+      return(result)
+    }
+  }
+
+  # ./path
+  if (grepl("^\\./", x)) {
+    return(btw_this_file_path(x))
+  }
+
+  # {pkgName}
+  if (grepl("^\\{[a-zA-Z][a-zA-Z0-9.]+\\}$", x)) {
+    return(btw_this_package_braces(x))
+  }
+
+  # ?help_topic
+  if (substring(x, 1, 1) == "?") {
+    return(btw_this_help_question(x))
+  }
+
+  # Default: user prompt
+  btw_user_prompt(x)
+}
+
+# @ Command Parsing and Dispatch ----------------------------------------------
+
+parse_at_command <- function(x) {
+  if (substring(x, 1, 1) != "@") {
+    return(NULL)
+  }
+
+  # Find first space to split command from args
+  space_pos <- regexpr(" ", x, fixed = TRUE)
+
+  if (space_pos == -1) {
+    # No arguments, just the command
+    command <- substring(x, 2)
+    args <- ""
+  } else {
+    command <- substring(x, 2, space_pos - 1)
+    args <- trimws(substring(x, space_pos + 1))
+  }
+
+  list(command = command, args = args)
+}
+
+dispatch_at_command <- function(cmd, caller_env) {
+  # Simple commands (no arguments needed)
+  if (cmd$command == "current_file") {
     return(I(
       btw_tool_ide_read_current_editor_impl(
         selection = FALSE,
@@ -137,7 +216,8 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
       )@value
     ))
   }
-  if (identical(x, "@current_selection")) {
+
+  if (cmd$command == "current_selection") {
     return(I(
       btw_tool_ide_read_current_editor_impl(
         selection = TRUE,
@@ -145,109 +225,471 @@ btw_this.character <- function(x, ..., caller_env = parent.frame()) {
       )@value
     ))
   }
-  if (identical(x, "@clipboard")) {
+
+  if (cmd$command == "clipboard") {
     return(I(clipr::read_clip()))
   }
-  if (identical(x, "@platform_info")) {
+
+  if (cmd$command == "platform_info") {
     return(btw_tool_session_platform_info_impl()@value)
   }
-  if (identical(x, "@attached_packages")) {
+
+  if (cmd$command == "attached_packages") {
     return(I(btw_tool_session_package_info_impl("attached")@value))
   }
-  if (identical(x, "@loaded_packages")) {
+
+  if (cmd$command == "loaded_packages") {
     return(I(btw_tool_session_package_info_impl("loaded")@value))
   }
-  if (identical(x, "@installed_packages")) {
+
+  if (cmd$command == "installed_packages") {
     return(I(btw_tool_session_package_info_impl("installed")@value))
   }
-  if (identical(x, "@last_error")) {
+
+  if (cmd$command == "last_error") {
     err <- get_last_error()
-    return(
-      if (is.null(err)) btw_ignore() else capture_print(err)
-    )
+    return(if (is.null(err)) btw_ignore() else capture_print(err))
   }
-  if (identical(x, "@last_value")) {
+
+  if (cmd$command == "last_value") {
     return(btw_this(get_last_value()))
   }
-  if (identical(substring(x, 1, 5), "@news")) {
-    # Special syntax for @news: '@news dplyr' or '@news dplyr join_by'
-    args <- substring(x, 7)
-    if (!nzchar(args)) {
-      cli::cli_abort(c(
+
+  btw_this_cmd <- switch(
+    cmd$command,
+    news = btw_this_news,
+    url = btw_this_url,
+    pkg = btw_this_pkg,
+    help = btw_this_help,
+    git = btw_this_git,
+    issue = btw_this_github_issue,
+    pr = btw_this_github_pr,
+    # Unknown command - return NULL to fall through
+    function(args) NULL
+  )
+
+  btw_this_cmd(cmd$args)
+}
+
+# Command Handlers ------------------------------------------------------------
+
+btw_this_news <- function(args) {
+  if (!nzchar(args)) {
+    cli::cli_abort(
+      c(
         "{.code @news} must be followed by a package name and an optional search term.",
         "i" = 'e.g. {.code "@news dplyr"} or {.code "@news dplyr join_by"}'
-      ))
-    }
-    parts <- strsplit(args, " ", fixed = TRUE)[[1]]
-    package_name <- parts[1]
-    search_term <- if (length(parts) > 1) {
-      paste(parts[-1], collapse = " ")
-    } else {
-      ""
-    }
-    return(I(btw_tool_docs_package_news_impl(package_name, search_term)@value))
+      ),
+      call = caller_env(n = 2)
+    )
   }
-  if (identical(substring(x, 1, 4), "@url")) {
-    if (!has_chromote()) {
-      cli::cli_abort(c(
-        "{.strong @url} requires the {.pkg chromote} package to be installed.",
-        "i" = "Please install it with {.run install.packages('chromote')}."
-      ))
-      return(btw_ignore())
-    }
 
-    # Special syntax for @url: '@url https://example.com'
-    url <- trimws(substring(x, 5))
-    if (!nzchar(url)) {
-      cli::cli_abort(c(
+  parts <- strsplit(args, " ", fixed = TRUE)[[1]]
+  package_name <- parts[1]
+  search_term <- if (length(parts) > 1) {
+    paste(parts[-1], collapse = " ")
+  } else {
+    ""
+  }
+
+  I(btw_tool_docs_package_news_impl(package_name, search_term)@value)
+}
+
+btw_this_url <- function(args) {
+  if (!has_chromote()) {
+    cli::cli_abort(c(
+      "{.strong @url} requires the {.pkg chromote} package to be installed.",
+      "i" = "Please install it with {.run install.packages('chromote')}."
+    ))
+  }
+
+  url <- trimws(args)
+  if (!nzchar(url)) {
+    cli::cli_abort(
+      c(
         "{.strong @url} must be followed by a valid URL.",
         "i" = 'e.g. {.code "@url https://example.com"}'
+      ),
+      call = caller_env(n = 2)
+    )
+  }
+
+  I(btw_tool_web_read_url_impl(url)@value)
+}
+
+btw_this_pkg <- function(args) {
+  pkg <- trimws(args)
+  if (!nzchar(pkg)) {
+    cli::cli_abort(c(
+      "{.code @pkg} must be followed by a package name.",
+      "i" = 'e.g. {.code "@pkg dplyr"}'
+    ))
+  }
+
+  # Reuse the same logic as {pkg} syntax
+  res <- c(
+    btw_tool_docs_package_help_topics_impl(pkg)@value,
+    tryCatch(
+      c("", btw_tool_docs_vignette_impl(pkg)@value),
+      error = function(e) NULL
+    )
+  )
+  res
+}
+
+btw_this_help <- function(args) {
+  args <- trimws(args)
+  if (!nzchar(args)) {
+    cli::cli_abort(
+      c(
+        "{.code @help} must be followed by a help topic.",
+        "i" = 'e.g. {.code "@help mutate"} or {.code "@help dplyr::mutate"} or {.code "@help dplyr mutate"}'
+      ),
+      call = caller_env(n = 2)
+    )
+  }
+
+  # Parse the arguments: can be "pkg::topic", "topic", or "pkg topic"
+  if (grepl("::", args, fixed = TRUE)) {
+    # Format: @help pkg::topic
+    parts <- strsplit(args, "::", fixed = TRUE)[[1]]
+    return(btw_this(as_btw_docs_topic(parts[1], parts[2])))
+  } else if (grepl(" ", args)) {
+    # Format: @help pkg topic
+    parts <- strsplit(args, " ", fixed = TRUE)[[1]]
+    pkg <- parts[1]
+    topic <- paste(parts[-1], collapse = " ")
+    return(btw_this(as_btw_docs_topic(pkg, topic)))
+  } else {
+    # Format: @help topic (search all packages)
+    return(btw_this(as_btw_docs_topic(NULL, args)))
+  }
+}
+
+btw_this_git <- function(args) {
+  check_installed("gert")
+
+  # Try to get git info early to provide better error messages
+  tryCatch(
+    gert::git_info(),
+    error = function(e) {
+      cli::cli_abort(
+        c(
+          "Not in a git repository or {.pkg gert} cannot access git.",
+          "i" = "Run {.code gert::git_info()} to check your git repository status."
+        ),
+        call = caller_env(n = 2)
+      )
+    }
+  )
+
+  args <- trimws(args)
+  if (!nzchar(args)) {
+    cli::cli_abort(
+      c(
+        "{.code @git} must be followed by a subcommand.",
+        "i" = 'Use {.code "@git status"}, {.code "@git diff"}, or {.code "@git log"}'
+      ),
+      call = caller_env(n = 2)
+    )
+  }
+
+  # Parse subcommand and remaining args
+  git_parts <- strsplit(args, " ", fixed = TRUE)[[1]]
+  subcommand <- git_parts[1]
+  remaining_args <- if (length(git_parts) > 1) git_parts[-1] else character()
+
+  switch(
+    subcommand,
+    status = btw_this_git_status(remaining_args),
+    diff = btw_this_git_diff(remaining_args),
+    log = btw_this_git_log(remaining_args),
+    cli::cli_abort(
+      c(
+        "Unknown git subcommand: {.val {subcommand}}",
+        "i" = 'Supported subcommands: {.code status}, {.code diff}, {.code log}'
+      ),
+      call = caller_env(n = 2)
+    )
+  )
+}
+
+btw_this_git_status <- function(args) {
+  # args can be: [] or ["staged"] or ["unstaged"] or ["both"] or [pathspec...]
+  include <- "both"
+  pathspec <- NULL
+
+  if (length(args) > 0) {
+    # Check if first arg is a valid include option
+    if (args[1] %in% c("staged", "unstaged", "both")) {
+      include <- args[1]
+      if (length(args) > 1) {
+        pathspec <- args[-1]
+      }
+    } else {
+      # All args are pathspec
+      pathspec <- args
+    }
+  }
+
+  I(md_code_block(
+    paste("git status", paste(args, collapse = " ")),
+    btw_tool_git_status_impl(include = include, pathspec = pathspec)@value
+  ))
+}
+
+btw_this_git_diff <- function(args) {
+  ref <- if (length(args) > 0) args[1] else NULL
+  I(md_code_block(
+    paste("git diff", paste(args, collapse = " ")),
+    btw_tool_git_diff_impl(ref = ref)@value
+  ))
+}
+
+btw_this_git_log <- function(args) {
+  ref <- "HEAD"
+  max <- 10
+
+  if (length(args) > 0) {
+    ref <- args[1]
+  }
+  if (length(args) > 1) {
+    max <- suppressWarnings(as.integer(args[2]))
+    if (is.na(max) || max < 1) {
+      cli::cli_abort(
+        c(
+          "Invalid max value for {.code @git log}: {.val {args[2]}}",
+          "i" = "Must be a positive integer."
+        ),
+        call = caller_env(n = 3)
+      )
+    }
+  }
+
+  I(md_code_block(
+    paste("git log", paste(args, collapse = " ")),
+    btw_tool_git_log_impl(ref = ref, max = max)@value
+  ))
+}
+
+btw_this_github_issue <- function(args) {
+  btw_this_github_item(args, type = "issue")
+}
+
+btw_this_github_pr <- function(args) {
+  btw_this_github_item(args, type = "pr")
+}
+
+# Handle @issue or @pr command
+# Supports formats:
+#   - "#123" (uses current repo)
+#   - "owner/repo#123"
+#   - "owner/repo 123"
+btw_this_github_item <- function(args, type = c("issue", "pr")) {
+  check_installed("gh")
+  type <- match.arg(type)
+
+  args <- trimws(args)
+  if (!nzchar(args)) {
+    cli::cli_abort(
+      c(
+        "{.code @{type}} must be followed by an issue/PR number.",
+        "i" = 'e.g. {.code "@{type} #65"} or {.code "@{type} owner/repo#123"}'
+      ),
+      call = caller_env(n = 3)
+    )
+  }
+
+  # Parse the arguments to extract owner, repo, and number
+  parsed <- parse_github_reference(args)
+
+  # Get owner and repo (will auto-detect if not provided)
+  if (is.null(parsed$owner) || is.null(parsed$repo)) {
+    repo_info <- get_github_repo(NULL, NULL)
+    owner <- parsed$owner %||% repo_info$owner
+    repo <- parsed$repo %||% repo_info$repo
+  } else {
+    owner <- parsed$owner
+    repo <- parsed$repo
+  }
+
+  number <- parsed$number
+
+  # Fetch from GitHub API
+  tryCatch(
+    {
+      result <- gh::gh(
+        "/repos/{owner}/{repo}/issues/{number}",
+        owner = owner,
+        repo = repo,
+        number = number
+      )
+
+      # Format the output
+      format_github_item(result, owner, repo, type)
+    },
+    error = function(e) {
+      cli::cli_abort(
+        "Failed to fetch {type} from GitHub: {owner}/{repo}#{number}",
+        parent = e,
+        call = caller_env(n = 3)
+      )
+    }
+  )
+}
+
+# Parse GitHub reference string
+# Supports: "#123", "owner/repo#123", "owner/repo 123"
+# @return List with owner, repo, number (owner/repo may be NULL)
+parse_github_reference <- function(ref) {
+  ref <- trimws(ref)
+
+  # Pattern 1: "#123" (just number)
+  if (grepl("^#[0-9]+$", ref)) {
+    return(list(
+      owner = NULL,
+      repo = NULL,
+      number = as.integer(substring(ref, 2))
+    ))
+  }
+
+  # Pattern 2: "owner/repo#123"
+  if (grepl("^[^/]+/[^#]+#[0-9]+$", ref)) {
+    parts <- strsplit(ref, "[/#]")[[1]]
+    return(list(
+      owner = parts[1],
+      repo = parts[2],
+      number = as.integer(parts[3])
+    ))
+  }
+
+  # Pattern 3: "owner/repo 123" (space-separated)
+  if (grepl("^[^/]+/[^ ]+ +[0-9]+$", ref)) {
+    parts <- strsplit(ref, "[ /]")[[1]]
+    parts <- parts[parts != ""] # Remove empty strings from multiple spaces
+    if (length(parts) >= 3) {
+      return(list(
+        owner = parts[1],
+        repo = parts[2],
+        number = as.integer(parts[3])
       ))
     }
-    return(I(btw_tool_web_read_url_impl(url)@value))
   }
 
-  if (grepl("^\\./", x)) {
-    path <- substring(x, 3, nchar(x))
-    if (!nzchar(path)) {
-      path <- "."
-    }
-    if (fs::is_file(path)) {
-      return(btw_tool_files_read_text_file_impl(path)@value)
-    } else {
-      return(btw_tool_files_list_files_impl(path)@value)
-    }
+  # Pattern 4: Just a number "123"
+  if (grepl("^[0-9]+$", ref)) {
+    return(list(
+      owner = NULL,
+      repo = NULL,
+      number = as.integer(ref)
+    ))
   }
 
-  if (grepl("^\\{[a-zA-Z][a-zA-Z0-9.]+\\}$", x)) {
-    # Catch R packages in the form: {dplyr} or {btw}
-    # R packages must:
-    # * start with a letter
-    # * use only letters, numbers or .
-    # * be two or more characters long
-    pkg <- substring(x, 2, nchar(x) - 1)
-    res <- c(
-      btw_tool_docs_package_help_topics_impl(pkg)@value,
-      tryCatch(
-        c("", btw_tool_docs_vignette_impl(pkg)@value),
-        error = function(e) NULL
-      )
-    )
-    return(res)
-  }
-
-  if (substring(x, 1, 1) == "?") {
-    x <- substring(x, 2, nchar(x))
-    x <- strsplit(x, "::", fixed = TRUE)[[1]]
-    if (length(x) == 2) {
-      return(btw_this(as_btw_docs_topic(x[1], x[2])))
-    } else {
-      return(btw_this(as_btw_docs_topic(NULL, x[1])))
-    }
-  }
-
-  btw_user_prompt(x)
+  cli::cli_abort(c(
+    "Invalid GitHub reference format: {.val {ref}}",
+    "i" = 'Expected formats: {.code "#123"}, {.code "owner/repo#123"}, or {.code "owner/repo 123"}'
+  ))
 }
+
+format_github_item <- function(item, owner, repo, type) {
+  outer_tag <- if (type == "issue") "github-issue" else "github-pull-request"
+  lines <- c(
+    sprintf(
+      '<%s owner="%s" repo="%s" number="%d">',
+      outer_tag,
+      owner,
+      repo,
+      item$number
+    ),
+    "<metadata>",
+    sprintf("title: %s", item$title),
+    sprintf("url: %s", item$html_url),
+    sprintf(
+      "type: %s",
+      if (is.null(item$pull_request)) "Issue" else "Pull Request"
+    ),
+    sprintf("state: %s", item$state),
+    sprintf("author: %s", item$user$login),
+    sprintf("created: %s", item$created_at),
+    sprintf("updated: %s", item$updated_at)
+  )
+
+  if (!is.null(item$closed_at)) {
+    lines <- c(lines, sprintf("closed: %s", item$closed_at))
+  }
+
+  if (!is.null(item$merged_at)) {
+    lines <- c(lines, sprintf("merged: %s", item$merged_at))
+  }
+
+  if (length(item$labels) > 0) {
+    label_names <- vapply(item$labels, function(l) l$name, character(1))
+    lines <- c(
+      lines,
+      sprintf("labels: %s", paste(label_names, collapse = ", "))
+    )
+  }
+
+  if (!is.null(item$milestone)) {
+    lines <- c(lines, sprintf("milestone: %s", item$milestone$title))
+  }
+
+  lines <- c(
+    lines,
+    "</metadata>",
+    "<body>",
+    if (is.null(item$body) || !nzchar(item$body)) {
+      "_No description provided._"
+    } else {
+      trimws(item$body)
+    },
+    "</body>",
+    sprintf("</%s>", outer_tag)
+  )
+
+  I(paste(lines, collapse = "\n"))
+}
+
+btw_this_file_path <- function(x) {
+  path <- substring(x, 3, nchar(x))
+  if (!nzchar(path)) {
+    path <- "."
+  }
+  if (fs::is_file(path)) {
+    return(btw_tool_files_read_text_file_impl(path)@value)
+  } else {
+    return(btw_tool_files_list_files_impl(path)@value)
+  }
+}
+
+btw_this_package_braces <- function(x) {
+  # Catch R packages in the form: {dplyr} or {btw}
+  # R packages must:
+  # * start with a letter
+  # * use only letters, numbers or .
+  # * be two or more characters long
+  pkg <- substring(x, 2, nchar(x) - 1)
+  res <- c(
+    btw_tool_docs_package_help_topics_impl(pkg)@value,
+    tryCatch(
+      c("", btw_tool_docs_vignette_impl(pkg)@value),
+      error = function(e) NULL
+    )
+  )
+  res
+}
+
+btw_this_help_question <- function(x) {
+  topic_str <- substring(x, 2, nchar(x))
+  parts <- strsplit(topic_str, "::", fixed = TRUE)[[1]]
+  if (length(parts) == 2) {
+    return(btw_this(as_btw_docs_topic(parts[1], parts[2])))
+  } else {
+    return(btw_this(as_btw_docs_topic(NULL, parts[1])))
+  }
+}
+
+# Other btw_this methods ------------------------------------------------------
 
 #' @export
 btw_this.Chat <- function(x, ...) {
