@@ -299,6 +299,7 @@ btw_app_from_client <- function(client, messages = list(), ...) {
       input_sys_prompt <- shiny::textAreaInput(
         "system_prompt",
         label = NULL,
+        placeholder = "Instructions for the AI assistant...",
         value = chat$client$get_system_prompt(),
         width = "100%",
         autoresize = TRUE,
@@ -331,19 +332,25 @@ btw_app_from_client <- function(client, messages = list(), ...) {
       input$system_prompt,
       ignoreInit = TRUE,
       {
-        if (identical(input$system_prompt, chat$client$get_system_prompt())) {
+        new_system_prompt <- input$system_prompt
+
+        if (identical(new_system_prompt, chat$client$get_system_prompt())) {
           return()
+        }
+
+        if (nzchar(trimws(new_system_prompt))) {
+          action <- "Updated system prompt"
+          icon <- shiny::icon("check")
+        } else {
+          action <- "Cleared system prompt"
+          new_system_prompt <- NULL
+          icon <- shiny::icon("eraser")
         }
 
         tryCatch(
           {
-            chat$client$set_system_prompt(input$system_prompt)
-            shiny::showNotification(
-              shiny::span(
-                shiny::icon("check"),
-                "Updated system prompt"
-              )
-            )
+            chat$client$set_system_prompt(new_system_prompt)
+            shiny::showNotification(shiny::span(icon, action))
           },
           error = function(e) {
             shiny::showNotification(
