@@ -189,8 +189,7 @@ btw_tool_files_read_text_file_impl <- function(
         title = HTML(sprintf(
           "Read <code>%s</code>",
           fs::path_file(path)
-        )),
-        show_request = FALSE
+        ))
       )
     )
   )

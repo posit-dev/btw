@@ -75,7 +75,6 @@ btw_tool_docs_package_help_topics_impl <- function(package_name) {
   )
   ret@extra$display <- list(
     title = sprintf("{%s} Help Topics", package_name),
-    show_request = FALSE,
     markdown = md_table(res)
   )
   ret
@@ -189,7 +188,6 @@ btw_tool_docs_help_page_impl <- function(topic, package_name = "") {
       package = resolved$package,
       display = list(
         title = HTML(sprintf('<code>?%s</code>', help_call)),
-        show_request = FALSE,
         markdown = paste(md, collapse = "\n")
       )
     )
@@ -334,7 +332,6 @@ btw_tool_docs_available_vignettes_impl <- function(package_name) {
     data = df,
     display = list(
       title = sprintf("{%s} Vignettes", package_name),
-      show_request = FALSE,
       markdown = md_table(df)
     )
   )
@@ -402,7 +399,6 @@ btw_tool_docs_vignette_impl <- function(
     data = vignette_info,
     display = list(
       title = sprintf("{%s} Vignette: %s", package_name, vignette_info$Title),
-      show_request = FALSE,
       markdown = paste(md_vignette, collapse = "\n")
     )
   )

@@ -58,9 +58,7 @@ btw_tool_docs_package_news_impl <- function(package_name, search_term = "") {
 
   BtwPackageNewsToolResult(
     result,
-    extra = list(
-      display = list(markdown = result, show_request = FALSE)
-    )
+    extra = list(display = list(markdown = result))
   )
 }
 
