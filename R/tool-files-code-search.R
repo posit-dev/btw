@@ -97,7 +97,7 @@ btw_tool_files_code_search_factory <- function(
 
     withr::local_options(cli.progress_handlers_only = "cli")
     cli::cli_progress_step(
-      "Indexing files in {.path {path}} for code search"
+      "Indexing files in {.path {fs::path_real(path)}} for code search"
     )
     db_create_local_files(path, extensions, exclusions)
   }
