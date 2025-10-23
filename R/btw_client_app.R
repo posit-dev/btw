@@ -296,26 +296,71 @@ btw_app_from_client <- function(client, messages = list(), ...) {
     })
 
     shiny::observeEvent(input$show_sys_prompt, {
+      input_sys_prompt <- shiny::textAreaInput(
+        "system_prompt",
+        label = NULL,
+        value = chat$client$get_system_prompt(),
+        width = "100%",
+        autoresize = TRUE,
+        updateOn = "blur"
+      )
+      input_sys_prompt <- htmltools::tagAppendAttributes(
+        input_sys_prompt,
+        class = "font-monospace",
+        .cssSelector = "textarea"
+      )
+
       modal <- shiny::modalDialog(
         title = "System Prompt",
         size = "xl",
         easyClose = TRUE,
         footer = shiny::modalButton("Close"),
-        HTML(
-          sprintf(
-            "<pre><code>%s</code></pre>",
-            chat$client$get_system_prompt()
-          )
-        )
+        input_sys_prompt
       )
-      if (identical(modal$children[[1]]$attribs$class, "modal-dialog")) {
-        modal$children[[1]]$attribs$class <- paste(
-          "modal-dialog modal-fullscreen-lg-down"
-        )
-      }
+
+      modal <- htmltools::tagAppendAttributes(
+        modal,
+        class = "modal-fullscreen-lg-down",
+        .cssSelector = ".modal-dialog"
+      )
 
       shiny::showModal(modal)
     })
+
+    shiny::observeEvent(
+      input$system_prompt,
+      ignoreInit = TRUE,
+      {
+        if (identical(input$system_prompt, chat$client$get_system_prompt())) {
+          return()
+        }
+
+        tryCatch(
+          {
+            chat$client$set_system_prompt(input$system_prompt)
+            shiny::showNotification(
+              shiny::span(
+                shiny::icon("check"),
+                "Updated system prompt"
+              )
+            )
+          },
+          error = function(e) {
+            shiny::showNotification(
+              shiny::tagList(
+                shiny::p(
+                  shiny::icon("warning"),
+                  "Failed to update system prompt",
+                  class = "fw-bold"
+                ),
+                shiny::p(shiny::HTML(sprintf("<code>%s</code>", e$message)))
+              ),
+              type = "error"
+            )
+          }
+        )
+      },
+    )
 
     shiny::observeEvent(input$close_btn, {
       shiny::stopApp()
