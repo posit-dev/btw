@@ -1,5 +1,5 @@
 Package: btw
-Title: Describe R Stuff to Large Language Models
+Title: A Toolkit for Connecting R and Large Language Models
 Version: 1.0.0
 Authors@R: c(
     person("Garrick", "Aden-Buie", , "garrick@adenbuie.com", role = c("aut", "cre"),
@@ -8,16 +8,21 @@ Authors@R: c(
            comment = c(ORCID = "0000-0001-5676-5107")),
     person("Joe", "Cheng", , "joe@posit.co", role = "aut"),
     person("Posit Software, PBC", role = c("cph", "fnd")),
-    person("Google", role = "cph", comment = "Material Design Icons"),
-    person("Jamie Perkins", role = "cph", comment = "countUp.js author")
+    person("Google", role = "cph",
+           comment = "Material Design Icons"),
+    person("Jamie Perkins", role = "cph",
+           comment = "countUp.js author")
   )
-Description: Provides a number of utilities for describing R objects and
-    package documentation in plain text. For interactive use, this is
-    especially powerful for describing relevant pieces of context to large
-    language models.  When used programmatically, these utilities can be
-    registered with 'ellmer' chats as tool calls, enabling language models
-    to peruse package documentation and explore your computational
-    environment.
+Description: A complete toolkit for connecting 'R' environments with Large
+    Language Models (LLMs). Provides utilities for describing 'R' objects,
+    package documentation, and workspace state in plain text formats
+    optimized for LLM consumption. Supports multiple workflows:
+    interactive copy-paste to external chat interfaces, programmatic tool
+    registration with 'ellmer' chat clients, batteries-included chat
+    applications via 'shinychat', and exposure to external coding agents
+    through the Model Context Protocol. Project configuration files enable
+    stable, repeatable conversations with project-specific context and
+    preferred LLM settings.
 License: MIT + file LICENSE
 URL: https://github.com/posit-dev/btw, https://posit-dev.github.io/btw/
 BugReports: https://github.com/posit-dev/btw/issues
