@@ -123,12 +123,11 @@ your R environment.
 
 ## Installation
 
-<!--
 You can install btw from CRAN:
-&#10;```r
+
+``` r
 install.packages("btw")
 ```
--->
 
 To install the latest development version, you can install from
 [posit-dev.r-universe.dev](https://posit-dev.r-universe.dev/):
