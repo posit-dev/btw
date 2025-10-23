@@ -119,13 +119,13 @@ btw_app_from_client <- function(client, messages = list(), ...) {
       shiny::tags$footer(
         class = "status-footer d-flex align-items-center gap-3 small text-muted",
         style = "width: min(725px, 100%); margin-inline: auto;",
+        bslib::tooltip(
+          shiny::actionLink("show_sys_prompt", tool_icon("quick-reference")),
+          "Show system prompt"
+        ),
         shiny::div(
           class = "status-provider-model",
           shiny::span(class = "font-monospace", provider_model),
-          bslib::tooltip(
-            shiny::actionLink("show_sys_prompt", tool_icon("quick-reference")),
-            "Show system prompt"
-          )
         ),
         shiny::div(
           class = "ms-auto status-tokens font-monospace",
@@ -171,8 +171,14 @@ btw_app_from_client <- function(client, messages = list(), ...) {
         .sidebar-collapsed > .main > main .sidebar-title { display: block; }
         .bslib-sidebar-layout.sidebar-collapsed>.collapse-toggle { top: 1.8rem; }
         .bslib-page-main { gap: 0.5rem; }
-        .status-provider-model a { color: inherit; }
-        .status-provider-model svg { height: 1em; width: 1em; }
+        .status-footer a { color: inherit; }
+        .status-footer svg { height: 1em; width: 1em; }
+        .status-provider-model {
+          text-overflow: ellipsis;
+          text-wrap-mode: nowrap;
+          overflow: hidden;
+        }
+        .modal { --bs-modal-margin: min(2rem, 10%); }
       "
         )),
       )
