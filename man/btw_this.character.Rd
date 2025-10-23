@@ -111,9 +111,9 @@ btw_this("@issue #65")
 
 }
 \seealso{
-Other \code{btw_this()} methods: 
+Other btw formatting methods: 
 \code{\link{btw_this}()},
 \code{\link{btw_this.data.frame}()},
 \code{\link{btw_this.environment}()}
 }
-\concept{\code{btw_this()} methods}
+\concept{btw formatting methods}
