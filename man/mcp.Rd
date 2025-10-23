@@ -36,7 +36,7 @@ environment.
 \section{Configuration}{
 
 To configure this server with MCP clients, use the command \code{Rscript} and the
-args \verb{-e "btw::btw_mcp_server()"}. For example, in \href{https://docs.anthropic.com/en/docs/claude-code/mcp#add-mcp-servers-from-json-configuration}{Claude Desktop's configuration format}:
+args \verb{-e "btw::btw_mcp_server()"}. For example, in \href{https://docs.claude.com/en/docs/claude-code/mcp#add-mcp-servers-from-json-configuration}{Claude Desktop's configuration format}:
 
 \if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
   "mcpServers": \{
@@ -48,12 +48,13 @@ args \verb{-e "btw::btw_mcp_server()"}. For example, in \href{https://docs.anthr
 \}
 }\if{html}{\out{</div>}}
 
-For \href{https://docs.anthropic.com/en/docs/claude-code/overview}{Claude Code}:
+For \href{https://docs.claude.com/en/docs/claude-code/overview}{Claude Code}:
 
 \if{html}{\out{<div class="sourceCode bash">}}\preformatted{claude mcp add -s "user" r-btw -- Rscript -e "btw::btw_mcp_server()"
 }\if{html}{\out{</div>}}
 
-For \href{https://continue.dev}{Continue}, include the following in your \href{https://docs.continue.dev/customize/deep-dives/configuration}{config file}:
+For \href{https://www.continue.dev/}{Continue}, include the following in your
+\href{https://docs.continue.dev/customize/deep-dives/configuration}{config file}:
 
 \if{html}{\out{<div class="sourceCode json">}}\preformatted{"experimental": \{
   "modelContextProtocolServers": [
