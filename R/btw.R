@@ -14,7 +14,7 @@
 #'
 #'    ```r
 #'    btw(vignette("colwise", "dplyr"), dplyr::across, dplyr::starwars)
-#'    #> ✔ btw copied to the clipboard!
+#'    #> btw copied to the clipboard!
 #'    ```
 #'
 #' 2. Pair `btw()` with [ellmer::Chat] during a chat session to create a prompt

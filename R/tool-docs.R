@@ -11,12 +11,12 @@ NULL
 #'
 #' btw_tool_docs_help_page("btw", "btw")
 #'
+#' \dontrun{
 #' # show the TOC of vignettes in the dplyr package
 #' btw_tool_docs_available_vignettes("dplyr")
 #'
 #' # returns a whole bunch of output and relies on
 #' # dplyr to have the mentioned vignettes available
-#' \dontrun{
 #' # grab the intro vignette
 #' btw_tool_docs_vignette("dplyr")
 #'

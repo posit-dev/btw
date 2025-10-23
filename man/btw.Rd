@@ -36,7 +36,7 @@ an LLM, like ChatGPT or Claude. By default, \code{btw()} copies the prompt to
 the clipboard for you.
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{btw(vignette("colwise", "dplyr"), dplyr::across, dplyr::starwars)
-#> ✔ btw copied to the clipboard!
+#> btw copied to the clipboard!
 }\if{html}{\out{</div>}}
 \item Pair \code{btw()} with \link[ellmer:Chat]{ellmer::Chat} during a chat session to create a prompt
 that includes additional context drawn from your environment and help

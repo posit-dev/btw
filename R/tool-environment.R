@@ -16,7 +16,7 @@
 #'
 #' @seealso [btw_tool_env_describe_environment()]
 #'
-#' @family `btw_this()` methods
+#' @family btw formatting methods
 #' @export
 btw_this.environment <- function(x, ..., items = NULL) {
   btw_tool_env_describe_environment_impl(environment = x, items = items)@value

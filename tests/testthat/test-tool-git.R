@@ -243,6 +243,9 @@ test_that("btw_tool_git_branch_checkout()", {
 
 test_that("git tools are registered only when in a git repo", {
   skip_if_not_installed("gert")
+  local_mocked_bindings(
+    btw_can_register_gh_tool = function() FALSE
+  )
 
   # Not in a git repo
   withr::with_tempdir({

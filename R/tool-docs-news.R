@@ -13,9 +13,12 @@ NULL
 #'
 #' btw("@news dplyr join_by", clipboard = FALSE)
 #'
-#' if (R.version$major == 4 && R.version$minor > "2.0") {
-#'   # Should find a NEWS entry from R 4.2
-#'   btw("@news R dynamic rd content", clipboard = FALSE)
+#' if (interactive()) { # can be slow
+#'   if (R.version$major == 4 && R.version$minor > "2.0") {
+#'     # Search through R's release notes.
+#'     # This should find a NEWS entry from R 4.2
+#'     btw("@news R dynamic rd content", clipboard = FALSE)
+#'   }
 #' }
 #'
 #' # Tool use by LLMs via ellmer or MCP ----

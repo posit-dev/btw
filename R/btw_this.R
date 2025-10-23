@@ -15,7 +15,7 @@
 #'   arguments are silently ignored.
 #'
 #' @return A character vector of lines describing the object.
-#' @family `btw_this()` methods
+#' @family btw formatting methods
 #' @export
 btw_this <- function(x, ...) {
   UseMethod("btw_this")
@@ -150,7 +150,7 @@ as_btw_capture <- function(x) {
 #'
 #' @inherit btw_this return
 #'
-#' @family `btw_this()` methods
+#' @family btw formatting methods
 #' @export
 btw_this.character <- function(x, ..., caller_env = parent.frame()) {
   check_string(x)
