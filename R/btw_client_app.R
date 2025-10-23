@@ -367,7 +367,7 @@ btw_app_from_client <- function(client, messages = list(), ...) {
     })
 
     shiny::observeEvent(input$show_sidebar, {
-      bslib::sidebar_toggle("tools_sidebar")
+      bslib::toggle_sidebar("tools_sidebar")
     })
 
     tool_groups <- unique(btw_tools_df()$group)
