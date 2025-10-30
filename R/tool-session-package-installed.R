@@ -95,11 +95,25 @@ package_version <- function(package_name) {
 find_package_candidates <- function(package_name, installed_only = TRUE) {
   all_packages <-
     if (installed_only) {
-      package_names <- lapply(.libPaths(), dir, pattern = "^[[:alnum:]]")
-      unique(unlist(package_names))
+      found <- vector("list", length = length(.libPaths()))
+      tryCatch(
+        {
+          setTimeLimit(elapsed = 5, transient = TRUE)
+          for (i in seq_along(.libPaths())) {
+            lib_path <- .libPaths()[i]
+            found[[i]] <- dir(lib_path, pattern = "^[[:alnum:]]")
+          }
+        },
+        error = function(err) NULL
+      )
+      unique(unlist(found))
     } else {
       rownames(utils::available.packages())
     }
+
+  if (!length(all_packages)) {
+    return(character())
+  }
 
   dists <- utils::adist(tolower(package_name), tolower(all_packages))
 
