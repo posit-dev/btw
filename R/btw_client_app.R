@@ -17,6 +17,10 @@ btw_app <- function(
   rlang::check_installed("htmltools")
   rlang::check_installed("shinychat", version = "0.2.0")
 
+  if (getOption("btw.app.close_on_session_end", FALSE)) {
+    cli::cli_alert("Starting up {.fn btw::btw_app} ...")
+  }
+
   if (!inherits(client, "AsIs")) {
     client <- btw_client(
       client = client,
@@ -369,10 +373,6 @@ btw_app_from_client <- function(client, messages = list(), ...) {
       },
     )
 
-    shiny::observeEvent(input$close_btn, {
-      shiny::stopApp()
-    })
-
     shiny::observeEvent(input$show_sidebar, {
       bslib::toggle_sidebar("tools_sidebar")
     })
@@ -468,6 +468,17 @@ btw_app_from_client <- function(client, messages = list(), ...) {
 
       app_tool_group_choice_input("other", other_tools_df)
     })
+
+    shiny::observeEvent(input$close_btn, {
+      shiny::stopApp()
+    })
+
+    if (getOption("btw.app.close_on_session_end", FALSE)) {
+      shiny::onSessionEnded(function() {
+        cli::cli_alert_success("Shutting down background {.fn btw::btw_app}.")
+        shiny::stopApp()
+      })
+    }
   }
 
   old_load <- shiny::getShinyOption("load.interface")
