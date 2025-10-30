@@ -25,6 +25,8 @@ This tool allows an LLM to run \code{\link[gert:git_diff]{gert::git_diff_patch()
 \dontshow{if (rlang::is_installed("gert")) withAutoprint(\{ # examplesIf}
 withr::with_tempdir({
   gert::git_init()
+  gert::git_config_set("user.name", "R Example")
+  gert::git_config_set("user.email", "ex@example.com")
 
   writeLines("hello, world", "hello.md")
   gert::git_add("hello.md")

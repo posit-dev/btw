@@ -34,6 +34,8 @@ equivalent to \verb{git branch <branch>} in the terminal.
 \dontshow{if (rlang::is_installed("gert")) withAutoprint(\{ # examplesIf}
 withr::with_tempdir({
   gert::git_init()
+  gert::git_config_set("user.name", "R Example")
+  gert::git_config_set("user.email", "ex@example.com")
 
   fs::file_touch("hello.md")
   gert::git_add("hello.md")

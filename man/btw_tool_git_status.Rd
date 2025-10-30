@@ -31,6 +31,9 @@ directory.
 \dontshow{if (rlang::is_installed("gert")) withAutoprint(\{ # examplesIf}
 withr::with_tempdir({
   gert::git_init()
+  gert::git_config_set("user.name", "R Example")
+  gert::git_config_set("user.email", "ex@example.com")
+
   writeLines("hello, world", "hello.md")
 
   # What the LLM sees

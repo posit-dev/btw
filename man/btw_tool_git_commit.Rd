@@ -29,6 +29,9 @@ terminal, respectively.
 \dontshow{if (rlang::is_installed("gert")) withAutoprint(\{ # examplesIf}
 withr::with_tempdir({
   gert::git_init()
+  gert::git_config_set("user.name", "R Example")
+  gert::git_config_set("user.email", "ex@example.com")
+
   writeLines("hello, world", "hello.md")
 
   res <- btw_tool_git_commit("Initial commit", files = "hello.md")

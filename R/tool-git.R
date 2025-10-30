@@ -26,6 +26,9 @@ btw_can_register_git_tool <- function() {
 #' @examplesIf rlang::is_installed("gert")
 #' withr::with_tempdir({
 #'   gert::git_init()
+#'   gert::git_config_set("user.name", "R Example")
+#'   gert::git_config_set("user.email", "ex@example.com")
+#'
 #'   writeLines("hello, world", "hello.md")
 #'
 #'   # What the LLM sees
@@ -124,6 +127,8 @@ RETURNS: A list of file paths, their status (new, modified, deleted, etc.), and 
 #' @examplesIf rlang::is_installed("gert")
 #' withr::with_tempdir({
 #'   gert::git_init()
+#'   gert::git_config_set("user.name", "R Example")
+#'   gert::git_config_set("user.email", "ex@example.com")
 #'
 #'   writeLines("hello, world", "hello.md")
 #'   gert::git_add("hello.md")
@@ -219,6 +224,8 @@ LIMITATION: This tool does not support diffing between two arbitrary commits.
 #' @examplesIf rlang::is_installed("gert")
 #' withr::with_tempdir({
 #'   gert::git_init()
+#'   gert::git_config_set("user.name", "R Example")
+#'   gert::git_config_set("user.email", "ex@example.com")
 #'
 #'   writeLines("hello, world", "hello.md")
 #'   gert::git_add("hello.md")
@@ -345,6 +352,9 @@ RETURNS: A list of commits with SHA (short), author, timestamp, number of files,
 #' @examplesIf rlang::is_installed("gert")
 #' withr::with_tempdir({
 #'   gert::git_init()
+#'   gert::git_config_set("user.name", "R Example")
+#'   gert::git_config_set("user.email", "ex@example.com")
+#'
 #'   writeLines("hello, world", "hello.md")
 #'
 #'   res <- btw_tool_git_commit("Initial commit", files = "hello.md")
@@ -448,6 +458,9 @@ RETURNS: The commit SHA and confirmation message.
 #' @examplesIf rlang::is_installed("gert")
 #' withr::with_tempdir({
 #'   gert::git_init()
+#'   gert::git_config_set("user.name", "R Example")
+#'   gert::git_config_set("user.email", "ex@example.com")
+#'
 #'   fs::file_touch("hello.md")
 #'   gert::git_add("hello.md")
 #'   gert::git_commit("Initial commit")
@@ -542,6 +555,8 @@ RETURNS: A table of branch names, upstream tracking, and last update time.
 #' @examplesIf rlang::is_installed("gert")
 #' withr::with_tempdir({
 #'   gert::git_init()
+#'   gert::git_config_set("user.name", "R Example")
+#'   gert::git_config_set("user.email", "ex@example.com")
 #'
 #'   fs::file_touch("hello.md")
 #'   gert::git_add("hello.md")
@@ -652,6 +667,9 @@ RETURNS: Confirmation message with branch name and ref.
 #' @examplesIf rlang::is_installed("gert")
 #' withr::with_tempdir({
 #'   gert::git_init()
+#'   gert::git_config_set("user.name", "R Example")
+#'   gert::git_config_set("user.email", "ex@example.com")
+#'
 #'   fs::file_touch("hello.md")
 #'
 #'   gert::git_add("hello.md")
