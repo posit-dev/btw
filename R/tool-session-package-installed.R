@@ -95,7 +95,8 @@ package_version <- function(package_name) {
 find_package_candidates <- function(package_name, installed_only = TRUE) {
   all_packages <-
     if (installed_only) {
-      rownames(installed.packages())
+      package_names <- lapply(.libPaths(), dir, pattern = "^[[:alnum:]]")
+      unique(unlist(package_names))
     } else {
       rownames(utils::available.packages())
     }
