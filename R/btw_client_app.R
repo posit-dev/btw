@@ -493,8 +493,15 @@ btw_app_from_client <- function(client, messages = list(), ...) {
   ))
 
   app <- shiny::shinyApp(ui, server, ...)
-  tryCatch(shiny::runGadget(app), interrupt = function(cnd) NULL)
-  invisible(client)
+  if (getOption("btw.app.in_addin", FALSE)) {
+    shiny::runApp(app, launch.browser = function(url) {
+      rstudioapi::setPersistentValue("btw_app_addin_url", url)
+      invisible(url)
+    })
+  } else {
+    tryCatch(shiny::runGadget(app), interrupt = function(cnd) NULL)
+    invisible(client)
+  }
 }
 
 btw_tools_df <- function() {

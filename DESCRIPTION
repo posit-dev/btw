@@ -69,6 +69,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Collate:
     'aaa-tools.R'
+    'addins.R'
     'btw-package.R'
     'btw.R'
     'btw_client.R'
