@@ -56,22 +56,32 @@ chat$chat(btw(
 ))
 }\if{html}{\out{</div>}}
 }
+\subsection{Additional examples}{
+\enumerate{
+\item Use \code{btw()} without arguments to describe all objects in your workspace:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{btw()
+#> btw copied to the clipboard!
+}\if{html}{\out{</div>}}
+\item Describe a function (it's documentation) and a data frame:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{btw(dplyr::mutate, mtcars)
+#> btw copied to the clipboard!
+}\if{html}{\out{</div>}}
+\item Use \code{btw()} to give additional context to an \link[ellmer:Chat]{ellmer::Chat} session:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{library(ellmer)
+
+chat <- chat_ollama(model = "llama3.1:8b")
+chat$chat(
+  btw(mtcars, "Are there cars with 8 cylinders in this dataset?")
+)
+}\if{html}{\out{</div>}}
+}
+}
 }
 \examples{
-btw()
-
+# See documentation for detailed examples
 btw(mtcars)
-
-btw(btw::btw)
-
-if (FALSE) {
-  # btw() can also be used directly in {ellmer} chats
-  library(ellmer)
-
-  chat <- chat_ollama(model = "llama3.1:8b")
-  chat$chat(
-    btw(mtcars, "Are there cars with 8 cylinders in this dataset?")
-  )
-}
 
 }

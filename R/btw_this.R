@@ -5,10 +5,6 @@
 #' @examples
 #' btw_this(mtcars) # describe the mtcars dataset
 #' btw_this(dplyr::mutate) # include function source
-#' \dontrun{
-#' btw_this("{dplyr}") # include dplyr's intro vignette
-#' btw_this("./") # list files in the current working directory
-#' }
 #'
 #' @param x The thing to describe.
 #' @param ... Additional arguments passed down to underlying methods. Unused
@@ -136,13 +132,8 @@ as_btw_capture <- function(x) {
 #'   evaluated in your R console.
 #'
 #' @examples
-#' btw_this("?btw::btw_this")
-#' \dontrun{
-#' btw_this("@pkg dplyr")
-#' btw_this("@help mutate")
-#' btw_this("@git status")
-#' btw_this("@issue #65")
-#' }
+#' mtcars[1:3, 1:4]
+#' cat(btw_this("@last_value"))
 #'
 #' @param x A character string
 #' @param ... Ignored.

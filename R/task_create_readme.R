@@ -93,22 +93,24 @@ btw_task_create_readme <- function(
   }
 
   if (mode == "tool") {
+    btw_task_create_readme_tool <- function(prompt = "") {
+      this_client <- client$clone()
+
+      sys_prompt <- paste0(
+        this_client$get_system_prompt(),
+        "\n\n---\n\n",
+        "YOU ARE NOW OPERATING IN TOOL MODE. ",
+        "The user cannot respond directly to you. ",
+        "Because you cannot talk to the user, you will need to make your own decisions using the information available to you and the best of your abilities. ",
+        "You may compensate by doing additional file exploration as needed."
+      )
+
+      this_client$set_system_prompt(sys_prompt)
+      this_client$chat(prompt)
+    }
+
     tool <- ellmer::tool(
-      function(prompt = "") {
-        this_client <- client$clone()
-
-        sys_prompt <- paste0(
-          this_client$get_system_prompt(),
-          "\n\n---\n\n",
-          "YOU ARE NOW OPERATING IN TOOL MODE. ",
-          "The user cannot respond directly to you. ",
-          "Because you cannot talk to the user, you will need to make your own decisions using the information available to you and the best of your abilities. ",
-          "You may compensate by doing additional file exploration as needed."
-        )
-
-        this_client$set_system_prompt(sys_prompt)
-        this_client$chat(prompt)
-      },
+      function(prompt) btw_task_create_readme_tool(prompt),
       name = "btw_task_create_readme",
       description = "Create a polished, user-focused README file for your project.",
       arguments = list(
@@ -151,15 +153,17 @@ btw_task_create_readme <- function(
 
 #' Re-initialize README File
 #'
+#' @description
 #' A tool that wraps usethis README functions to re-create README.md or
 #' README.Rmd files with fresh templates. The existing file is backed up
 #' and restored if an error occurs.
 #'
-#' @examples
+#' ```r
 #' chat <- ellmer::chat_openai()
 #' chat$register_tool(tool_use_readme())
 #' chat$chat("Create a new README.Rmd file")
 #' chat$chat("Make sure my project is configured to use a README.Rmd file")
+#' ```
 #'
 #' @return An `ellmer::tool()` object if the `usethis` package is installed.
 #' @noRd
@@ -306,16 +310,18 @@ Call this tool ONLY ONCE to set up the README file. Use `btw_tool_write_text_fil
 
 #' Generate README Badge Markup
 #'
+#' @description
 #' A tool that wraps usethis badge functions to generate markdown badge markup
 #' for README files. The LLM calls the appropriate usethis function by
 #' specifying the function name and its arguments as JSON.
 #'
-#' @examples
+#' ```r
 #' chat <- ellmer::chat_openai()
 #' chat$register_tool(tool_readme_add_badge())
 #' chat$chat("Generate a CRAN badge")
 #' chat$chat("Generate a lifecycle badge for a stable package")
 #' chat$chat("Generate a GitHub Actions badge for R-CMD-check.yaml")
+#' ```
 #'
 #' @return An `ellmer::tool()` object if the `usethis` package is installed.
 #' @noRd

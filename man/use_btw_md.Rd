@@ -49,6 +49,26 @@ the current directory, the project directory or your home directory.
 for editing.
 
 }}
+\section{Additional Examples}{
+
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{# Create a project-level btw.md
+use_btw_md()
+
+# Create a user-level btw.md
+use_btw_md("user")
+
+# Create an AGENTS.md file
+use_btw_md("AGENTS.md")
+
+# Edit the context file that btw_client() would use
+edit_btw_md()
+
+# Edit a specific context file
+edit_btw_md("user")
+}\if{html}{\out{</div>}}
+}
+
 \section{Project Context}{
 
 
@@ -201,22 +221,13 @@ an LLM to help you create a \code{btw.md} file for your project.
 }
 
 \examples{
-\dontrun{
-# Create a project-level btw.md
-use_btw_md()
+# See additional examples in the sections above
 
-# Create a user-level btw.md
-use_btw_md("user")
-
-# Create an AGENTS.md file
-use_btw_md("AGENTS.md")
-
-# Edit the context file that btw_client() would use
-edit_btw_md()
-
-# Edit a specific context file
-edit_btw_md("user")
-}
+withr::with_tempdir({
+  withr::with_tempfile("btw_md_tmp", fileext = ".md", {
+    use_btw_md(btw_md_tmp)
+  })
+})
 
 }
 \seealso{

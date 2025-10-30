@@ -44,7 +44,7 @@ this function have access to the tools:
 \subsection{Group: env}{\tabular{ll}{
    Name \tab Description \cr
    \code{\link[=btw_tool_env_describe_data_frame]{btw_tool_env_describe_data_frame()}} \tab Show the data frame or table or get information about the structure of a data frame or table. \cr
-   \code{\link[=btw_tool_env_describe_environment]{btw_tool_env_describe_environment()}} \tab List and describe items in an environment. \cr
+   \code{\link[=btw_tool_env_describe_environment]{btw_tool_env_describe_environment()}} \tab List and describe items in the R session's global environment. \cr
 }
 
 }
@@ -111,8 +111,8 @@ this function have access to the tools:
 }
 }
 \examples{
+\dontshow{if (identical(Sys.getenv("IN_PKGDOWN"), "true")) withAutoprint(\{ # examplesIf}
 # requires an ANTHROPIC_API_KEY
-\dontrun{
 ch <- ellmer::chat_anthropic()
 
 # register all of the available tools
@@ -123,8 +123,7 @@ ch$set_tools(btw_tools("docs"))
 
 # ensure that the current tools persist
 ch$set_tools(c(ch$get_tools(), btw_tools()))
-}
-
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Other Tools: 

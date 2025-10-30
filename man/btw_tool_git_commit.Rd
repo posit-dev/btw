@@ -20,13 +20,23 @@ explain why it called the tool.}
 Returns the commit SHA.
 }
 \description{
-Tool: Git Commit
+This tool allows an LLM stage files and create a git commit. This tool uses a
+combination of \code{\link[gert:git_commit]{gert::git_add()}} to stage files and \code{\link[gert:git_commit]{gert::git_commit()}} to
+commit them, which is equivalent to \verb{git add} and \verb{git commit} in the
+terminal, respectively.
 }
 \examples{
-\dontrun{
-btw_tool_git_commit(message = "Fix bug in analysis", files = c("analysis.R"))
-}
+\dontshow{if (rlang::is_installed("gert")) withAutoprint(\{ # examplesIf}
+withr::with_tempdir({
+  gert::git_init()
+  writeLines("hello, world", "hello.md")
 
+  res <- btw_tool_git_commit("Initial commit", files = "hello.md")
+
+  # What the LLM sees
+  cat(res@value)
+})
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Other git tools: 

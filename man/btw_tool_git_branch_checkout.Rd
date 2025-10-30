@@ -20,13 +20,28 @@ explain why it called the tool.}
 Returns a confirmation message.
 }
 \description{
-Tool: Git Branch Checkout
+Allows an LLM to switch to a different git branch using
+\code{\link[gert:git_branch]{gert::git_branch_checkout()}}, equivalent to \verb{git checkout <branch>} in
+the terminal.
 }
 \examples{
-\dontrun{
-btw_tool_git_branch_checkout(branch = "main")
-}
+\dontshow{if (rlang::is_installed("gert")) withAutoprint(\{ # examplesIf}
+withr::with_tempdir({
+  gert::git_init()
+  fs::file_touch("hello.md")
 
+  gert::git_add("hello.md")
+  gert::git_commit("Initial commit")
+
+  gert::git_branch_create("feature-1")
+
+  # LLM checks out an existing branch
+  res <- btw_tool_git_branch_checkout(branch = "feature-1")
+
+  # What the LLM sees
+  cat(res@value)
+})
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Other git tools: 

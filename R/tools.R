@@ -8,6 +8,19 @@
 #'
 #' `r .docs_list_tools()`
 #'
+#' @examplesIf identical(Sys.getenv("IN_PKGDOWN"), "true")
+#' # requires an ANTHROPIC_API_KEY
+#' ch <- ellmer::chat_anthropic()
+#'
+#' # register all of the available tools
+#' ch$set_tools(btw_tools())
+#'
+#' # or register only the tools related to fetching documentation
+#' ch$set_tools(btw_tools("docs"))
+#'
+#' # ensure that the current tools persist
+#' ch$set_tools(c(ch$get_tools(), btw_tools()))
+#'
 #' @param ... Optional names of tools or tool groups to include when registering
 #'   tools. By default all btw tools are included. For example, use `"docs"` to
 #'   include only the documentation related tools, or `"env", "docs",
@@ -24,21 +37,6 @@
 #'
 #' @returns Registers the tools with `chat`, updating the `chat` object in
 #'   place. The `chat` input is returned invisibly.
-#'
-#' @examples
-#' # requires an ANTHROPIC_API_KEY
-#' \dontrun{
-#' ch <- ellmer::chat_anthropic()
-#'
-#' # register all of the available tools
-#' ch$set_tools(btw_tools())
-#'
-#' # or register only the tools related to fetching documentation
-#' ch$set_tools(btw_tools("docs"))
-#'
-#' # ensure that the current tools persist
-#' ch$set_tools(c(ch$get_tools(), btw_tools()))
-#' }
 #'
 #' @family Tools
 #' @export

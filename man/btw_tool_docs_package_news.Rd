@@ -25,6 +25,7 @@ Include release notes for a package, either the release notes for the most
 recent package release or release notes matching a search term.
 }
 \examples{
+\dontshow{if (rmarkdown::pandoc_available()) withAutoprint(\{ # examplesIf}
 # Copy release notes to the clipboard for use in any AI app
 btw("@news dplyr", clipboard = FALSE)
 
@@ -42,7 +43,7 @@ if (interactive()) { # can be slow
 btw_tool_docs_package_news("dplyr")
 
 btw_tool_docs_package_news("dplyr", "join_by")
-
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=btw_tools]{btw_tools()}}

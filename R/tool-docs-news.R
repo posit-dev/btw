@@ -7,7 +7,7 @@ NULL
 #' Include release notes for a package, either the release notes for the most
 #' recent package release or release notes matching a search term.
 #'
-#' @examples
+#' @examplesIf rmarkdown::pandoc_available()
 #' # Copy release notes to the clipboard for use in any AI app
 #' btw("@news dplyr", clipboard = FALSE)
 #'

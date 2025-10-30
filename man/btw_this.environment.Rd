@@ -22,9 +22,10 @@ each object's printed representation.
 Describe the contents of an environment
 }
 \examples{
-cyl_6 <- mtcars[mtcars$cyl == 6, ]
-gear_5 <- mtcars[mtcars$gear == 5, ]
-btw_this(environment())
+env <- new.env()
+env$cyl_6 <- mtcars[mtcars$cyl == 6, ]
+env$gear_5 <- mtcars[mtcars$gear == 5, ]
+btw_this(env)
 
 }
 \seealso{

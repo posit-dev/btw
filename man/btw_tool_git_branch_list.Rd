@@ -18,14 +18,24 @@ explain why it called the tool.}
 Returns a character table of branches.
 }
 \description{
-Tool: Git Branch List
+This tool allows an LLM to list git branches in the repository using
+\code{\link[gert:git_branch]{gert::git_branch_list()}}, equivalent to \verb{git branch} in the terminal.
 }
 \examples{
-\dontrun{
-btw_tool_git_branch_list()
-btw_tool_git_branch_list(local = FALSE)  # remote branches
-}
+\dontshow{if (rlang::is_installed("gert")) withAutoprint(\{ # examplesIf}
+withr::with_tempdir({
+  gert::git_init()
+  fs::file_touch("hello.md")
+  gert::git_add("hello.md")
+  gert::git_commit("Initial commit")
 
+  gert::git_branch_create("feature-1")
+  gert::git_branch_create("feature-2")
+
+  # What the LLM sees
+  cat(btw_tool_git_branch_list()@value)
+})
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Other git tools: 

@@ -36,6 +36,33 @@
 #'    ))
 #'    ```
 #'
+#' ## Additional examples
+#'
+#' 1. Use `btw()` without arguments to describe all objects in your workspace:
+#'
+#'    ```r
+#'    btw()
+#'    #> btw copied to the clipboard!
+#'    ```
+#'
+#' 2. Describe a function (it's documentation) and a data frame:
+#'
+#'    ```r
+#'    btw(dplyr::mutate, mtcars)
+#'    #> btw copied to the clipboard!
+#'    ```
+#'
+#' 3. Use `btw()` to give additional context to an [ellmer::Chat] session:
+#'
+#'    ```r
+#'    library(ellmer)
+#'
+#'    chat <- chat_ollama(model = "llama3.1:8b")
+#'    chat$chat(
+#'      btw(mtcars, "Are there cars with 8 cylinders in this dataset?")
+#'    )
+#'    ```
+#'
 #' @param ... Objects to describe from your R environment. You can pass objects
 #'   themselves, like data frames or functions, or the function also accepts
 #'   output from `btw_tool_*()` functions like
@@ -46,21 +73,8 @@
 #'   A single logical value; will default to `TRUE` when run interactively.
 #'
 #' @examples
-#' btw()
-#'
+#' # See documentation for detailed examples
 #' btw(mtcars)
-#'
-#' btw(btw::btw)
-#'
-#' if (FALSE) {
-#'   # btw() can also be used directly in {ellmer} chats
-#'   library(ellmer)
-#'
-#'   chat <- chat_ollama(model = "llama3.1:8b")
-#'   chat$chat(
-#'     btw(mtcars, "Are there cars with 8 cylinders in this dataset?")
-#'   )
-#' }
 #'
 #' @returns
 #' Returns an [ellmer::ContentText] object with the collected prompt. If

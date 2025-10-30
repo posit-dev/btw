@@ -18,14 +18,24 @@ explain why it called the tool.}
 Returns a diff patch as a formatted string.
 }
 \description{
-Tool: Git Diff
+This tool allows an LLM to run \code{\link[gert:git_diff]{gert::git_diff_patch()}}, equivalent to
+\verb{git diff} in the terminal, and to see the detailed changes made in a commit.
 }
 \examples{
-\dontrun{
-btw_tool_git_diff()
-btw_tool_git_diff(ref = "HEAD")
-}
+\dontshow{if (rlang::is_installed("gert")) withAutoprint(\{ # examplesIf}
+withr::with_tempdir({
+  gert::git_init()
 
+  writeLines("hello, world", "hello.md")
+  gert::git_add("hello.md")
+  gert::git_commit("Initial commit")
+
+  writeLines("hello, universe", "hello.md")
+
+  # What the LLM sees
+  cat(btw_tool_git_diff()@value)
+})
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Other git tools: 
