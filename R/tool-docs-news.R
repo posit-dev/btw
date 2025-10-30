@@ -242,6 +242,10 @@ as_package_or_r_version <- function(v) {
 }
 
 extract_relevant_news <- function(news_html, search_term) {
+  if (!nzchar(news_html)) {
+    return(NA_character_)
+  }
+
   doc <- xml2::read_html(news_html)
 
   # Find all first-level <li> elements and top-level <p> elements
