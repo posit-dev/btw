@@ -182,16 +182,19 @@ parse_at_command <- function(x) {
     return(NULL)
   }
 
-  # Find first space to split command from args
-  space_pos <- regexpr(" ", x, fixed = TRUE)
+  x <- substring(x, 2)
 
-  if (space_pos == -1) {
-    # No arguments, just the command
-    command <- substring(x, 2)
-    args <- ""
+  # Split command from args
+  parts <- strsplit(x, " ", fixed = TRUE)[[1]]
+
+  command <- parts[1]
+
+  args <- if (length(parts) > 1) {
+    # Put args back together as a single string; each tool might have its own
+    # way to parse these arguments.
+    paste(parts[-1], collapse = " ")
   } else {
-    command <- substring(x, 2, space_pos - 1)
-    args <- trimws(substring(x, space_pos + 1))
+    ""
   }
 
   list(command = command, args = args)
