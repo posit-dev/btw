@@ -1,3 +1,10 @@
+local_mocked_bindings(
+  pandoc_convert_text = function(text, ...) {
+    # Skip actual pandoc conversion for speed
+    text
+  }
+)
+
 test_that("btw_tool_docs_package_news()", {
   expect_equal(
     ellmer::contents_text(btw(news(package = "dplyr"))),
