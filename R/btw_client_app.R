@@ -284,8 +284,8 @@ btw_app_from_client <- function(client, messages = list(), ...) {
 # Status Bar ----
 
 btw_status_bar_ui <- function(id, provider_model) {
-  ns <- NS(id)
-  tagList(
+  ns <- shiny::NS(id)
+  shiny::tagList(
     shiny::tags$footer(
       class = "status-footer d-flex align-items-center gap-3 small text-muted",
       style = "width: min(725px, 100%); margin-inline: auto;",
@@ -347,7 +347,7 @@ btw_status_bar_ui <- function(id, provider_model) {
 }
 
 btw_status_bar_server <- function(id, chat) {
-  moduleServer(
+  shiny::moduleServer(
     id,
     function(input, output, session) {
       chat_get_tokens <- function() {
