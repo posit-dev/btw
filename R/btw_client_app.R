@@ -63,7 +63,11 @@ btw_app_from_client <- function(client, messages = list(), ...) {
         if (in_sidebar) {
           shiny::span(logo)
         } else {
-          shiny::actionLink("show_sidebar", logo)
+          shiny::actionLink(
+            "show_sidebar",
+            logo,
+            class = "text-decoration-none"
+          )
         }
       },
       "Chat with",
