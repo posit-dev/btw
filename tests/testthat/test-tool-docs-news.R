@@ -36,18 +36,18 @@ test_that("btw_tool_docs_package_news() with R package", {
 
   .package_news <- package_news
   .btw_this_news <- btw_this_news
+  .news_cache <- new.env(parent = emptyenv())
   local_mocked_bindings(
-    package_news = local({
-      cache <- list()
-      function(package_name) {
-        # It takes a long time for utils::news() to compile the R news
-        if (package_name %in% names(cache)) {
-          return(cache[[package_name]])
-        }
-
-        (cache[[package_name]] <<- head(.package_news(package_name), 2))
+    package_news = function(package_name) {
+      # It takes a long time for utils::news() to compile the R news
+      if (package_name %in% names(.news_cache)) {
+        return(.news_cache[[package_name]])
       }
-    }),
+
+      res <- head(.package_news(package_name), 2)
+      .news_cache[[package_name]] <<- res
+      res
+    },
     btw_this_news = function(args) {
       expect_equal(args, "R")
       .btw_this_news(args)

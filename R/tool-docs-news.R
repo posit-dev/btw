@@ -45,7 +45,7 @@ btw_tool_docs_package_news <- function(package_name, search_term, `_intent`) {}
 btw_tool_docs_package_news_impl <- function(package_name, search_term = "") {
   news <- package_news_search(package_name, search_term %||% "")
 
-  if (!nrow(news)) {
+  if (nrow(news) == 0) {
     if (nzchar(search_term)) {
       cli::cli_abort(
         "No NEWS entries found for package '{package_name}' matching '{search_term}'."
