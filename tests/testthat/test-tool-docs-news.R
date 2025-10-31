@@ -47,7 +47,7 @@ test_that("btw_tool_docs_package_news() with R package", {
         return(cached)
       }
 
-      res <- head(.package_news(package_name), 2)
+      res <- .package_news(package_name)
       .news_cache[[package_name]] <<- res
       res
     },
