@@ -33,6 +33,7 @@ test_that("btw_tool_docs_package_news() with non-existent package", {
 
 test_that("btw_tool_docs_package_news() with R package", {
   btw_package_news <- package_news
+  skip_if_not(nrow(news(package = "R")) > 0, "R news is not available")
 
   local_mocked_bindings(
     package_news = local({
