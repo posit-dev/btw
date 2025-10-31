@@ -10,3 +10,12 @@
 .btw-status-unknown {
   text-decoration: line-through;
 }
+
+.status-footer a { color: inherit; }
+.status-footer svg { height: 1em; width: 1em; }
+.status-provider-model {
+  text-overflow: ellipsis;
+  text-wrap-mode: nowrap;
+  overflow: hidden;
+}
+.modal { --bs-modal-margin: min(2rem, 10%); }

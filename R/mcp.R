@@ -21,7 +21,7 @@
 #' To configure this server with MCP clients, use the command `Rscript` and the
 #' args `-e "btw::btw_mcp_server()"`. For example, in [Claude Desktop's
 #' configuration
-#' format](https://docs.anthropic.com/en/docs/claude-code/mcp#add-mcp-servers-from-json-configuration):
+#' format](https://docs.claude.com/en/docs/claude-code/mcp#add-mcp-servers-from-json-configuration):
 #'
 #' ```json
 #' {
@@ -34,14 +34,14 @@
 #' }
 #' ```
 #'
-#' For [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview):
+#' For [Claude Code](https://docs.claude.com/en/docs/claude-code/overview):
 #'
 #' ```bash
 #' claude mcp add -s "user" r-btw -- Rscript -e "btw::btw_mcp_server()"
 #' ```
 #'
-#' For [Continue](https://continue.dev), include the following in your [config
-#' file](https://docs.continue.dev/customize/deep-dives/configuration):
+#' For [Continue](https://www.continue.dev/), include the following in your
+#' [config file](https://docs.continue.dev/customize/deep-dives/configuration):
 #'
 #' ```json
 #' "experimental": {
@@ -61,21 +61,38 @@
 #' }
 #' ```
 #'
-#' @examples
-#' # Should only be run non-interactively, and
-#' # will block the current R process once called.
-#' if (FALSE) {
-#'   # To start a server with btw tools:
-#'   btw_mcp_server()
+#' @section Additional Examples:
 #'
-#'   # To only do so with a subset of btw's tools, e.g. those
-#'   # that fetch package documentation:
-#'   btw_mcp_server(tools = btw_tools("docs"))
-#' }
+#' `btw_mcp_server()` should only be run non-interactively, as it will block the
+#' current R process once called.
 #'
-#' # To allow the server to access variables in specific
-#' # sessions, call `btw_mcp_session()` in that session:
+#' To start a server with btw tools:
+#'
+#' ```r
+#' btw_mcp_server()
+#' ```
+#'
+#' Or to only do so with a subset of btw's tools, e.g. those that fetch package
+#' documentation:
+#'
+#' ```r
+#' btw_mcp_server(tools = btw_tools("docs"))
+#' ```
+#'
+#' To allow the server to access variables in specific sessions, call
+#' `btw_mcp_session()` in that session:
+#'
+#' ```r
 #' btw_mcp_session()
+#' ```
+#'
+#' @examples
+#' # btw_mcp_server() and btw_mcp_session() are only intended to be run in
+#' # non-interactive R sessions, e.g. when started by an MCP client like
+#' # Claude Desktop or Claude Code. Therefore, we don't run these functions
+#' # in examples.
+#'
+#' # See above for more details and examples.
 #'
 #' @param tools A list of [ellmer::tool()]s to use in the MCP server, defaults
 #'   to the tools provided by [btw_tools()]. Use [btw_tools()] to subset to

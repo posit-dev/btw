@@ -6,23 +6,31 @@ NULL
 #' @description
 #' These functions describe package documentation in plain text.
 #'
-#' @examples
+#' ## Additional Examples
+#'
+#' Show a list of available vignettes in the `dplyr` package:
+#'
+#' ```r
+#' btw_tool_docs_available_vignettes("dplyr")
+#' ```
+#'
+#' Get the introductory vignette for the `dplyr` package:
+#'
+#' ```r
+#' btw_tool_docs_vignette("dplyr")
+#' ```
+#'
+#' Get a specific vignette, such as the programming vignette for the `dplyr`
+#' package:
+#'
+#' ```r
+#' btw_tool_docs_vignette("dplyr", "programming")
+#' ```
+#'
+#' @examplesIf rmarkdown::pandoc_available()
 #' btw_tool_docs_package_help_topics("btw")
 #'
 #' btw_tool_docs_help_page("btw", "btw")
-#'
-#' # show the TOC of vignettes in the dplyr package
-#' btw_tool_docs_available_vignettes("dplyr")
-#'
-#' # returns a whole bunch of output and relies on
-#' # dplyr to have the mentioned vignettes available
-#' \dontrun{
-#' # grab the intro vignette
-#' btw_tool_docs_vignette("dplyr")
-#'
-#' # grab the programming vignette specifically
-#' btw_tool_docs_vignette("dplyr", "programming")
-#' }
 #'
 #' @param package_name The name of the package as a string, e.g. `"shiny"`.
 #' @param topic The `topic_id` or `alias` of the help page, e.g.

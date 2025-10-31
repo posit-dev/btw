@@ -77,7 +77,7 @@ paths, regardless of the \code{btw.files_code_search.exclusions} option.
 }
 }
 \examples{
-\dontshow{if (getRversion() >= "4.2.0") withAutoprint(\{ # examplesIf}
+\dontshow{if (identical(Sys.getenv("IN_PKGDOWN"), "true")) withAutoprint(\{ # examplesIf}
 withr::with_tempdir({
   writeLines(state.name[1:25], "state_names_1.md")
   writeLines(state.name[26:50], "state_names_2.md")

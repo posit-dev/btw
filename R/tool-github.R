@@ -182,8 +182,9 @@ get_github_repo <- function(owner = NULL, repo = NULL) {
 #' 4. Built-in allow rules
 #' 5. Default: reject (if no rules match)
 #'
-#' @examples
-#' \dontrun{
+#' ## Additional Examples
+#'
+#' ```r
 #' # Get an issue
 #' btw_tool_github(
 #'   code = 'gh("/repos/{owner}/{repo}/issues/123", owner = owner, repo = repo)'
@@ -202,7 +203,11 @@ get_github_repo <- function(owner = NULL, repo = NULL) {
 #'
 #' # Target a different repository
 #' btw_tool_github(code = 'gh("/repos/tidyverse/dplyr/issues/123")')
-#' }
+#' ```
+#'
+#' @examples
+#' # This tool requires the gh package and authentication to GitHub.
+#' # See additional examples in the documentation above.
 #'
 #' @param code R code that calls `gh()` or `gh_whoami()`. The code will be
 #'   evaluated in an environment where `owner` and `repo` variables are

@@ -36,7 +36,7 @@
 #' the tool will also respect the `.gitignore` file and exclude any ignored
 #' paths, regardless of the `btw.files_code_search.exclusions` option.
 #'
-#' @examplesIf getRversion() >= "4.2.0"
+#' @examplesIf identical(Sys.getenv("IN_PKGDOWN"), "true")
 #' withr::with_tempdir({
 #'   writeLines(state.name[1:25], "state_names_1.md")
 #'   writeLines(state.name[26:50], "state_names_2.md")

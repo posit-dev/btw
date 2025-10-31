@@ -19,11 +19,15 @@ A string describing the environment contents with \verb{#>} prefixing
 each object's printed representation.
 }
 \description{
-Tool: Describe an environment
+This tool can be used by the LLM to describe the contents of an R session,
+i.e. the data frames and other objects loaded into the global environment.
+This tool will only see variables that you've named and created in the
+global environment, it cannot reach into package namespaces, see which
+packages you have loaded, or access files on your computer.
 }
 \examples{
 my_cars <- mtcars[mtcars$mpg > 25, ]
- btw_tool_env_describe_environment("my_cars")
+btw_tool_env_describe_environment("my_cars")
 
 }
 \seealso{

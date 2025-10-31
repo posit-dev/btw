@@ -27,13 +27,27 @@ explain why it called the tool.}
 Returns a confirmation message.
 }
 \description{
-Tool: Git Branch Create
+Allows an LLM to create a new git branch using \code{\link[gert:git_branch]{gert::git_branch_create()}},
+equivalent to \verb{git branch <branch>} in the terminal.
 }
 \examples{
-\dontrun{
-btw_tool_git_branch_create(branch = "feature/new-analysis")
-}
+\dontshow{if (rlang::is_installed("gert")) withAutoprint(\{ # examplesIf}
+withr::with_tempdir({
+  gert::git_init()
+  gert::git_config_set("user.name", "R Example")
+  gert::git_config_set("user.email", "ex@example.com")
 
+  fs::file_touch("hello.md")
+  gert::git_add("hello.md")
+  gert::git_commit("Initial commit")
+
+  # LLM creates a new branch
+  res <- btw_tool_git_branch_create(branch = "feature/new-analysis")
+
+  # What the LLM sees
+  cat(res@value)
+})
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Other git tools: 

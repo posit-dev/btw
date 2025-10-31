@@ -12,6 +12,25 @@
 #' `edit_btw_md()` opens an existing context file for editing. Without
 #' arguments, it opens the same file that [btw_client()] would use by default.
 #'
+#' @section Additional Examples:
+#'
+#' ```r
+#' # Create a project-level btw.md
+#' use_btw_md()
+#'
+#' # Create a user-level btw.md
+#' use_btw_md("user")
+#'
+#' # Create an AGENTS.md file
+#' use_btw_md("AGENTS.md")
+#'
+#' # Edit the context file that btw_client() would use
+#' edit_btw_md()
+#'
+#' # Edit a specific context file
+#' edit_btw_md("user")
+#' ```
+#'
 #' @section Project Context:
 #'
 #' You can use a `btw.md` or [`AGENTS.md`](https://agents.md) file to keep track
@@ -161,22 +180,13 @@
 #' an LLM to help you create a `btw.md` file for your project.
 #'
 #' @examples
-#' \dontrun{
-#' # Create a project-level btw.md
-#' use_btw_md()
+#' # See additional examples in the sections above
 #'
-#' # Create a user-level btw.md
-#' use_btw_md("user")
-#'
-#' # Create an AGENTS.md file
-#' use_btw_md("AGENTS.md")
-#'
-#' # Edit the context file that btw_client() would use
-#' edit_btw_md()
-#'
-#' # Edit a specific context file
-#' edit_btw_md("user")
-#' }
+#' withr::with_tempdir({
+#'   withr::with_tempfile("btw_md_tmp", fileext = ".md", {
+#'     use_btw_md(btw_md_tmp)
+#'   })
+#' })
 #'
 #' @param scope The scope of the context file. Can be:
 #'   - `"project"` (default): Creates/opens `btw.md` (by default) or `AGENTS.md`

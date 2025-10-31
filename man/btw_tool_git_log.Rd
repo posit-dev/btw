@@ -23,14 +23,28 @@ explain why it called the tool.}
 Returns a character table of commit history.
 }
 \description{
-Tool: Git Log
+This tool allows an LLM to run \code{\link[gert:git_commit]{gert::git_log()}}, equivalent to \verb{git log} in
+the terminal, and to see the commit history of a repository.
 }
 \examples{
-\dontrun{
-btw_tool_git_log()
-btw_tool_git_log(max = 20, ref = "main")
-}
+\dontshow{if (rlang::is_installed("gert")) withAutoprint(\{ # examplesIf}
+withr::with_tempdir({
+  gert::git_init()
+  gert::git_config_set("user.name", "R Example")
+  gert::git_config_set("user.email", "ex@example.com")
 
+  writeLines("hello, world", "hello.md")
+  gert::git_add("hello.md")
+  gert::git_commit("Initial commit")
+
+  writeLines("hello, universe", "hello.md")
+  gert::git_add("hello.md")
+  gert::git_commit("Update hello.md")
+
+  # What the LLM sees
+  cat(btw_tool_git_log()@value)
+})
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Other git tools: 

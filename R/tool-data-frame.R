@@ -36,7 +36,7 @@
 #' @seealso [btw_tool_env_describe_data_frame()]
 #'
 #' @describeIn btw_this.data.frame Summarize a data frame.
-#' @family `btw_this()` methods
+#' @family btw formatting methods
 #' @export
 btw_this.data.frame <- function(
   x,
@@ -57,7 +57,7 @@ btw_this.data.frame <- function(
 }
 
 #' @describeIn btw_this.data.frame Summarize a `tbl`.
-#' @family `btw_this()` methods
+#' @family btw formatting methods
 #' @export
 btw_this.tbl <- function(
   x,

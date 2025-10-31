@@ -59,7 +59,7 @@ btw_task_create_btw_md <- function(
   if (mode == "tool") {
     # Don't interpolate the prompt yet, we'll do that inside the tool
     sys_prompt <- paste(
-      readLines(system.file("prompts/btw-init-tool.md", package = "btw")),
+      readLines(system.file("prompts/btw-init.md", package = "btw")),
       collapse = "\n"
     )
   } else {
@@ -92,26 +92,28 @@ btw_task_create_btw_md <- function(
   if (mode == "tool") {
     path_default <- path
 
+    task_create_btw_md_tool <- function(prompt, path = NULL) {
+      sys_prompt <- ellmer::interpolate(
+        this_client$get_system_prompt(),
+        path_summary_file = path %||% path_default
+      )
+
+      sys_prompt <- paste0(
+        sys_prompt,
+        "\n\n---\n\n",
+        "YOU ARE NOW OPERATING IN TOOL MODE. ",
+        "The user cannot respond directly to you. ",
+        "Because you cannot talk to the user, you will need to make your own decisions using the information available to you and the best of your abilities. ",
+        "You may do additional file exploration if needed."
+      )
+
+      this_client <- client$clone()
+      this_client$set_system_prompt(sys_prompt)
+      this_client$chat(prompt)
+    }
+
     tool <- ellmer::tool(
-      function(prompt, path = NULL) {
-        sys_prompt <- ellmer::interpolate(
-          this_client$get_system_prompt(),
-          path_summary_file = path %||% path_default
-        )
-
-        sys_prompt <- paste0(
-          sys_prompt,
-          "\n\n---\n\n",
-          "YOU ARE NOW OPERATING IN TOOL MODE. ",
-          "The user cannot respond directly to you. ",
-          "Because you cannot talk to the user, you will need to make your own decisions using the information available to you and the best of your abilities. ",
-          "You may do additional file exploration if needed."
-        )
-
-        this_client <- client$clone()
-        this_client$set_system_prompt(sys_prompt)
-        this_client$chat(prompt)
-      },
+      function(prompt, path = NULL) task_create_btw_md_tool(prompt, path),
       name = "btw_task_create_btw_md",
       description = "Create a comprehensive context file for your project.",
       arguments = list(

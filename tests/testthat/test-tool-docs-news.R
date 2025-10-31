@@ -1,3 +1,10 @@
+local_mocked_bindings(
+  pandoc_convert_text = function(text, ...) {
+    # Skip actual pandoc conversion for speed
+    text
+  }
+)
+
 test_that("btw_tool_docs_package_news()", {
   expect_equal(
     ellmer::contents_text(btw(news(package = "dplyr"))),
@@ -32,43 +39,77 @@ test_that("btw_tool_docs_package_news() with non-existent package", {
 })
 
 test_that("btw_tool_docs_package_news() with R package", {
-  r_major <- sprintf("R-%s", R.version$major)
-  news_r_major <- sprintf("@news %s", r_major)
+  skip_if_not(nrow(news(package = "R")) > 0, "R news is not available")
 
-  btw_package_news <- package_news
-
+  .package_news <- package_news
+  .btw_this_news <- btw_this_news
+  .news_cache <- new.env(parent = emptyenv())
   local_mocked_bindings(
-    package_news = local({
-      cache <- list()
-      function(package_name) {
-        # It takes a long time for utils::news() to compile the R news
-        if (package_name %in% names(cache)) {
-          return(cache[[package_name]])
-        }
+    package_news = function(package_name) {
+      # It takes a long time for utils::news() to compile the R news
+      expect_in(package_name, c("R", "R-3"))
 
-        (cache[[package_name]] <<- head(btw_package_news(package_name), 2))
+      cached <- get0(package_name, envir = .news_cache, ifnotfound = NULL)
+      if (!is.null(cached)) {
+        return(cached)
       }
-    }),
+
+      res <- .package_news(package_name)
+      .news_cache[[package_name]] <<- res
+      res
+    },
+    btw_this_news = function(args) {
+      expect_equal(args, "R")
+      .btw_this_news(args)
+    }
   )
 
   expect_equal(
     ellmer::contents_text(btw(package_news(package_name = "R"))),
-    ellmer::contents_text(btw(!!news_r_major))
+    ellmer::contents_text(btw("@news R"))
   )
 
   expect_equal(
     I(btw_tool_docs_package_news("R")@value),
-    btw_this(!!news_r_major)
+    btw_this("@news R")
   )
 
   expect_btw_tool_result(btw_tool_docs_package_news("R"), has_data = FALSE)
   expect_btw_tool_result(
-    btw_tool_docs_package_news(r_major),
+    btw_tool_docs_package_news("R-3"),
     has_data = FALSE
   )
-  expect_equal(
-    btw_tool_docs_package_news("R"),
-    btw_tool_docs_package_news(r_major)
+})
+
+test_that("btw_tool_docs_package_news() when no news is found", {
+  local_mocked_bindings(
+    package_news = function(...) {
+      structure(
+        list(
+          Version = character(0),
+          Date = character(0),
+          Category = character(0),
+          Text = character(0),
+          HTML = character(0)
+        ),
+        package = "R",
+        row.names = integer(0),
+        class = c("news_db_from_Rd", "news_db", "data.frame")
+      )
+    }
+  )
+
+  expect_message(
+    expect_s3_class(btw(package_news("R")), "btw::btw"),
+    "Nothing to include"
+  )
+
+  expect_message(
+    expect_equal(
+      ellmer::contents_text(btw(package_news("R"))),
+      ""
+    ),
+    "Nothing to include"
   )
 })
 

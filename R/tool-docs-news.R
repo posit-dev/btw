@@ -7,15 +7,18 @@ NULL
 #' Include release notes for a package, either the release notes for the most
 #' recent package release or release notes matching a search term.
 #'
-#' @examples
+#' @examplesIf rmarkdown::pandoc_available()
 #' # Copy release notes to the clipboard for use in any AI app
 #' btw("@news dplyr", clipboard = FALSE)
 #'
 #' btw("@news dplyr join_by", clipboard = FALSE)
 #'
-#' if (R.version$major == 4 && R.version$minor > "2.0") {
-#'   # Should find a NEWS entry from R 4.2
-#'   btw("@news R dynamic rd content", clipboard = FALSE)
+#' if (interactive()) { # can be slow
+#'   if (R.version$major == 4 && R.version$minor > "2.0") {
+#'     # Search through R's release notes.
+#'     # This should find a NEWS entry from R 4.2
+#'     btw("@news R dynamic rd content", clipboard = FALSE)
+#'   }
 #' }
 #'
 #' # Tool use by LLMs via ellmer or MCP ----
@@ -42,7 +45,7 @@ btw_tool_docs_package_news <- function(package_name, search_term, `_intent`) {}
 btw_tool_docs_package_news_impl <- function(package_name, search_term = "") {
   news <- package_news_search(package_name, search_term %||% "")
 
-  if (!nrow(news)) {
+  if (nrow(news) == 0) {
     if (nzchar(search_term)) {
       cli::cli_abort(
         "No NEWS entries found for package '{package_name}' matching '{search_term}'."
@@ -239,6 +242,10 @@ as_package_or_r_version <- function(v) {
 }
 
 extract_relevant_news <- function(news_html, search_term) {
+  if (!nzchar(news_html)) {
+    return(NA_character_)
+  }
+
   doc <- xml2::read_html(news_html)
 
   # Find all first-level <li> elements and top-level <p> elements

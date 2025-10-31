@@ -42,25 +42,31 @@ string.
 }
 \description{
 These functions describe package documentation in plain text.
+\subsection{Additional Examples}{
+
+Show a list of available vignettes in the \code{dplyr} package:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{btw_tool_docs_available_vignettes("dplyr")
+}\if{html}{\out{</div>}}
+
+Get the introductory vignette for the \code{dplyr} package:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{btw_tool_docs_vignette("dplyr")
+}\if{html}{\out{</div>}}
+
+Get a specific vignette, such as the programming vignette for the \code{dplyr}
+package:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{btw_tool_docs_vignette("dplyr", "programming")
+}\if{html}{\out{</div>}}
+}
 }
 \examples{
+\dontshow{if (rmarkdown::pandoc_available()) withAutoprint(\{ # examplesIf}
 btw_tool_docs_package_help_topics("btw")
 
 btw_tool_docs_help_page("btw", "btw")
-
-# show the TOC of vignettes in the dplyr package
-btw_tool_docs_available_vignettes("dplyr")
-
-# returns a whole bunch of output and relies on
-# dplyr to have the mentioned vignettes available
-\dontrun{
-# grab the intro vignette
-btw_tool_docs_vignette("dplyr")
-
-# grab the programming vignette specifically
-btw_tool_docs_vignette("dplyr", "programming")
-}
-
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=btw_tools]{btw_tools()}}

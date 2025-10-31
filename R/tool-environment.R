@@ -1,9 +1,10 @@
 #' Describe the contents of an environment
 #'
 #' @examples
-#' cyl_6 <- mtcars[mtcars$cyl == 6, ]
-#' gear_5 <- mtcars[mtcars$gear == 5, ]
-#' btw_this(environment())
+#' env <- new.env()
+#' env$cyl_6 <- mtcars[mtcars$cyl == 6, ]
+#' env$gear_5 <- mtcars[mtcars$gear == 5, ]
+#' btw_this(env)
 #'
 #' @param x An environment.
 #' @param items Optional. A character vector of objects in the environment to
@@ -16,7 +17,7 @@
 #'
 #' @seealso [btw_tool_env_describe_environment()]
 #'
-#' @family `btw_this()` methods
+#' @family btw formatting methods
 #' @export
 btw_this.environment <- function(x, ..., items = NULL) {
   btw_tool_env_describe_environment_impl(environment = x, items = items)@value
@@ -24,9 +25,15 @@ btw_this.environment <- function(x, ..., items = NULL) {
 
 #' Tool: Describe an environment
 #'
+#' This tool can be used by the LLM to describe the contents of an R session,
+#' i.e. the data frames and other objects loaded into the global environment.
+#' This tool will only see variables that you've named and created in the
+#' global environment, it cannot reach into package namespaces, see which
+#' packages you have loaded, or access files on your computer.
+#'
 #' @examples
 #' my_cars <- mtcars[mtcars$mpg > 25, ]
-#'  btw_tool_env_describe_environment("my_cars")
+#' btw_tool_env_describe_environment("my_cars")
 #'
 #' @inheritParams btw_this.environment
 #' @inheritParams btw_tool_docs_package_news
@@ -141,7 +148,7 @@ btw_tool_env_describe_environment_impl <- function(
         btw_tool_env_describe_environment_impl(items = items)
       },
       name = "btw_tool_env_describe_environment",
-      description = "List and describe items in an environment.",
+      description = "List and describe items in the R session's global environment.",
       annotations = ellmer::tool_annotations(
         title = "Object in Session",
         read_only_hint = TRUE,

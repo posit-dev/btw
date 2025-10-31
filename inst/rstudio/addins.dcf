@@ -1,0 +1,4 @@
+Name: btw app
+Description: Start a local btw app
+Binding: btw_app_addin
+Interactive: true

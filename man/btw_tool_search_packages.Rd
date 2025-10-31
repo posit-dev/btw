@@ -39,6 +39,7 @@ A listing of packages matching the search term.
 Uses \code{\link[pkgsearch:pkg_search]{pkgsearch::pkg_search()}} to search for R packages on CRAN.
 }
 \examples{
+\dontshow{if (identical(Sys.getenv("IN_PKGDOWN"), "true")) withAutoprint(\{ # examplesIf}
 # Copy pkgsearch results to the clipboard for use in any LLM app
 btw(
   pkgsearch::pkg_search("network visualization", size = 1),
@@ -48,12 +49,7 @@ btw(
   pkgsearch::pkg_search("network visualization", format = "long", size = 1),
   clipboard = FALSE
 )
-
-# LLMs can use the tool directly, e.g. in `btw_client()` or `btw_app()`
-\dontrun{
-btw_tool_search_packages("network visualization")
-}
-
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=btw_tools]{btw_tools()}}

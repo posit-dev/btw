@@ -101,7 +101,8 @@ platform_info <- function() {
 #' package is installed; check the version number of a specific packages; or
 #' determine which packages are already in use in a session.
 #'
-#' @seealso [btw_tools()], [btw_tool_session_platform_info()]
+#' @examples
+#' btw_tool_session_package_info("btw")
 #'
 #' @param packages Which packages to show, or `"loaded"` to show all loaded
 #'   packages, `"attached"` to show all attached packages, or `"installed"` to
@@ -112,9 +113,7 @@ platform_info <- function() {
 #'
 #' @returns Returns a string describing the selected packages.
 #'
-#' @examples
-#' btw_tool_session_package_info("btw")
-#'
+#' @seealso [btw_tools()], [btw_tool_session_platform_info()]
 #' @family Tools
 #' @export
 btw_tool_session_package_info <- function(packages, dependencies, `_intent`) {}

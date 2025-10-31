@@ -19,10 +19,21 @@ btw_can_register_git_tool <- function() {
 
 #' Tool: Git Status
 #'
-#' @examples
-#' \dontrun{
-#' btw_tool_git_status()
-#' }
+#' This tool allows the LLM to run [gert::git_status()], equivalent to `git
+#' status` in the terminal, and to see the current status of the working
+#' directory.
+#'
+#' @examplesIf rlang::is_installed("gert")
+#' withr::with_tempdir({
+#'   gert::git_init()
+#'   gert::git_config_set("user.name", "R Example")
+#'   gert::git_config_set("user.email", "ex@example.com")
+#'
+#'   writeLines("hello, world", "hello.md")
+#'
+#'   # What the LLM sees
+#'   cat(btw_tool_git_status()@value)
+#' })
 #'
 #' @param include One of `"both"`, `"staged"`, or `"unstaged"`. Use `"both"` to
 #'   show both staged and unstaged files (default).
@@ -110,11 +121,24 @@ RETURNS: A list of file paths, their status (new, modified, deleted, etc.), and 
 
 #' Tool: Git Diff
 #'
-#' @examples
-#' \dontrun{
-#' btw_tool_git_diff()
-#' btw_tool_git_diff(ref = "HEAD")
-#' }
+#' This tool allows an LLM to run [gert::git_diff_patch()], equivalent to
+#' `git diff` in the terminal, and to see the detailed changes made in a commit.
+#'
+#' @examplesIf rlang::is_installed("gert")
+#' withr::with_tempdir({
+#'   gert::git_init()
+#'   gert::git_config_set("user.name", "R Example")
+#'   gert::git_config_set("user.email", "ex@example.com")
+#'
+#'   writeLines("hello, world", "hello.md")
+#'   gert::git_add("hello.md")
+#'   gert::git_commit("Initial commit")
+#'
+#'   writeLines("hello, universe", "hello.md")
+#'
+#'   # What the LLM sees
+#'   cat(btw_tool_git_diff()@value)
+#' })
 #'
 #' @inheritParams gert::git_diff_patch
 #' @inheritParams btw_tool_docs_package_news
@@ -194,11 +218,26 @@ LIMITATION: This tool does not support diffing between two arbitrary commits.
 
 #' Tool: Git Log
 #'
-#' @examples
-#' \dontrun{
-#' btw_tool_git_log()
-#' btw_tool_git_log(max = 20, ref = "main")
-#' }
+#' This tool allows an LLM to run [gert::git_log()], equivalent to `git log` in
+#' the terminal, and to see the commit history of a repository.
+#'
+#' @examplesIf rlang::is_installed("gert")
+#' withr::with_tempdir({
+#'   gert::git_init()
+#'   gert::git_config_set("user.name", "R Example")
+#'   gert::git_config_set("user.email", "ex@example.com")
+#'
+#'   writeLines("hello, world", "hello.md")
+#'   gert::git_add("hello.md")
+#'   gert::git_commit("Initial commit")
+#'
+#'   writeLines("hello, universe", "hello.md")
+#'   gert::git_add("hello.md")
+#'   gert::git_commit("Update hello.md")
+#'
+#'   # What the LLM sees
+#'   cat(btw_tool_git_log()@value)
+#' })
 #'
 #' @param ref Revision string with a branch/tag/commit value. Defaults to
 #'   `"HEAD"`.
@@ -305,10 +344,24 @@ RETURNS: A list of commits with SHA (short), author, timestamp, number of files,
 
 #' Tool: Git Commit
 #'
-#' @examples
-#' \dontrun{
-#' btw_tool_git_commit(message = "Fix bug in analysis", files = c("analysis.R"))
-#' }
+#' This tool allows an LLM stage files and create a git commit. This tool uses a
+#' combination of [gert::git_add()] to stage files and [gert::git_commit()] to
+#' commit them, which is equivalent to `git add` and `git commit` in the
+#' terminal, respectively.
+#'
+#' @examplesIf rlang::is_installed("gert")
+#' withr::with_tempdir({
+#'   gert::git_init()
+#'   gert::git_config_set("user.name", "R Example")
+#'   gert::git_config_set("user.email", "ex@example.com")
+#'
+#'   writeLines("hello, world", "hello.md")
+#'
+#'   res <- btw_tool_git_commit("Initial commit", files = "hello.md")
+#'
+#'   # What the LLM sees
+#'   cat(res@value)
+#' })
 #'
 #' @param message A commit message describing the changes.
 #' @param files Optional character vector of file paths to stage and commit.
@@ -399,11 +452,25 @@ RETURNS: The commit SHA and confirmation message.
 
 #' Tool: Git Branch List
 #'
-#' @examples
-#' \dontrun{
-#' btw_tool_git_branch_list()
-#' btw_tool_git_branch_list(local = FALSE)  # remote branches
-#' }
+#' This tool allows an LLM to list git branches in the repository using
+#' [gert::git_branch_list()], equivalent to `git branch` in the terminal.
+#'
+#' @examplesIf rlang::is_installed("gert")
+#' withr::with_tempdir({
+#'   gert::git_init()
+#'   gert::git_config_set("user.name", "R Example")
+#'   gert::git_config_set("user.email", "ex@example.com")
+#'
+#'   fs::file_touch("hello.md")
+#'   gert::git_add("hello.md")
+#'   gert::git_commit("Initial commit")
+#'
+#'   gert::git_branch_create("feature-1")
+#'   gert::git_branch_create("feature-2")
+#'
+#'   # What the LLM sees
+#'   cat(btw_tool_git_branch_list()@value)
+#' })
 #'
 #' @param include Once of `"local"` (default), `"remote"`, or `"all"` to filter
 #'   branches to local branches only, remote branches only, or all branches.
@@ -482,10 +549,25 @@ RETURNS: A table of branch names, upstream tracking, and last update time.
 
 #' Tool: Git Branch Create
 #'
-#' @examples
-#' \dontrun{
-#' btw_tool_git_branch_create(branch = "feature/new-analysis")
-#' }
+#' Allows an LLM to create a new git branch using [gert::git_branch_create()],
+#' equivalent to `git branch <branch>` in the terminal.
+#'
+#' @examplesIf rlang::is_installed("gert")
+#' withr::with_tempdir({
+#'   gert::git_init()
+#'   gert::git_config_set("user.name", "R Example")
+#'   gert::git_config_set("user.email", "ex@example.com")
+#'
+#'   fs::file_touch("hello.md")
+#'   gert::git_add("hello.md")
+#'   gert::git_commit("Initial commit")
+#'
+#'   # LLM creates a new branch
+#'   res <- btw_tool_git_branch_create(branch = "feature/new-analysis")
+#'
+#'   # What the LLM sees
+#'   cat(res@value)
+#' })
 #'
 #' @param branch Name of the new branch to create.
 #' @param ref Optional reference point for the new branch. Defaults to `"HEAD"`.
@@ -578,10 +660,29 @@ RETURNS: Confirmation message with branch name and ref.
 
 #' Tool: Git Branch Checkout
 #'
-#' @examples
-#' \dontrun{
-#' btw_tool_git_branch_checkout(branch = "main")
-#' }
+#' Allows an LLM to switch to a different git branch using
+#' [gert::git_branch_checkout()], equivalent to `git checkout <branch>` in
+#' the terminal.
+#'
+#' @examplesIf rlang::is_installed("gert")
+#' withr::with_tempdir({
+#'   gert::git_init()
+#'   gert::git_config_set("user.name", "R Example")
+#'   gert::git_config_set("user.email", "ex@example.com")
+#'
+#'   fs::file_touch("hello.md")
+#'
+#'   gert::git_add("hello.md")
+#'   gert::git_commit("Initial commit")
+#'
+#'   gert::git_branch_create("feature-1")
+#'
+#'   # LLM checks out an existing branch
+#'   res <- btw_tool_git_branch_checkout(branch = "feature-1")
+#'
+#'   # What the LLM sees
+#'   cat(res@value)
+#' })
 #'
 #' @param branch Name of branch to check out.
 #' @param force Whether to force checkout even with uncommitted changes.

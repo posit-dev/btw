@@ -21,16 +21,12 @@ A generic function used to describe an object for use by LLM.
 \examples{
 btw_this(mtcars) # describe the mtcars dataset
 btw_this(dplyr::mutate) # include function source
-\dontrun{
-btw_this("{dplyr}") # include dplyr's intro vignette
-btw_this("./") # list files in the current working directory
-}
 
 }
 \seealso{
-Other \code{btw_this()} methods: 
+Other btw formatting methods: 
 \code{\link{btw_this.character}()},
 \code{\link{btw_this.data.frame}()},
 \code{\link{btw_this.environment}()}
 }
-\concept{\code{btw_this()} methods}
+\concept{btw formatting methods}

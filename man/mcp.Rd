@@ -36,7 +36,7 @@ environment.
 \section{Configuration}{
 
 To configure this server with MCP clients, use the command \code{Rscript} and the
-args \verb{-e "btw::btw_mcp_server()"}. For example, in \href{https://docs.anthropic.com/en/docs/claude-code/mcp#add-mcp-servers-from-json-configuration}{Claude Desktop's configuration format}:
+args \verb{-e "btw::btw_mcp_server()"}. For example, in \href{https://docs.claude.com/en/docs/claude-code/mcp#add-mcp-servers-from-json-configuration}{Claude Desktop's configuration format}:
 
 \if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
   "mcpServers": \{
@@ -48,12 +48,13 @@ args \verb{-e "btw::btw_mcp_server()"}. For example, in \href{https://docs.anthr
 \}
 }\if{html}{\out{</div>}}
 
-For \href{https://docs.anthropic.com/en/docs/claude-code/overview}{Claude Code}:
+For \href{https://docs.claude.com/en/docs/claude-code/overview}{Claude Code}:
 
 \if{html}{\out{<div class="sourceCode bash">}}\preformatted{claude mcp add -s "user" r-btw -- Rscript -e "btw::btw_mcp_server()"
 }\if{html}{\out{</div>}}
 
-For \href{https://continue.dev}{Continue}, include the following in your \href{https://docs.continue.dev/customize/deep-dives/configuration}{config file}:
+For \href{https://www.continue.dev/}{Continue}, include the following in your
+\href{https://docs.continue.dev/customize/deep-dives/configuration}{config file}:
 
 \if{html}{\out{<div class="sourceCode json">}}\preformatted{"experimental": \{
   "modelContextProtocolServers": [
@@ -73,21 +74,37 @@ For \href{https://continue.dev}{Continue}, include the following in your \href{h
 }\if{html}{\out{</div>}}
 }
 
-\examples{
-# Should only be run non-interactively, and
-# will block the current R process once called.
-if (FALSE) {
-  # To start a server with btw tools:
-  btw_mcp_server()
+\section{Additional Examples}{
 
-  # To only do so with a subset of btw's tools, e.g. those
-  # that fetch package documentation:
-  btw_mcp_server(tools = btw_tools("docs"))
+
+\code{btw_mcp_server()} should only be run non-interactively, as it will block the
+current R process once called.
+
+To start a server with btw tools:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{btw_mcp_server()
+}\if{html}{\out{</div>}}
+
+Or to only do so with a subset of btw's tools, e.g. those that fetch package
+documentation:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{btw_mcp_server(tools = btw_tools("docs"))
+}\if{html}{\out{</div>}}
+
+To allow the server to access variables in specific sessions, call
+\code{btw_mcp_session()} in that session:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{btw_mcp_session()
+}\if{html}{\out{</div>}}
 }
 
-# To allow the server to access variables in specific
-# sessions, call `btw_mcp_session()` in that session:
-btw_mcp_session()
+\examples{
+# btw_mcp_server() and btw_mcp_session() are only intended to be run in
+# non-interactive R sessions, e.g. when started by an MCP client like
+# Claude Desktop or Claude Code. Therefore, we don't run these functions
+# in examples.
+
+# See above for more details and examples.
 
 }
 \seealso{
