@@ -40,8 +40,11 @@ test_that("btw_tool_docs_package_news() with R package", {
   local_mocked_bindings(
     package_news = function(package_name) {
       # It takes a long time for utils::news() to compile the R news
-      if (package_name %in% names(.news_cache)) {
-        return(.news_cache[[package_name]])
+      expect_in(package_name, c("R", "R-3"))
+
+      cached <- get0(package_name, envir = .news_cache, ifnotfound = NULL)
+      if (!is.null(cached)) {
+        return(cached)
       }
 
       res <- head(.package_news(package_name), 2)
