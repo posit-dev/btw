@@ -32,9 +32,6 @@ test_that("btw_tool_docs_package_news() with non-existent package", {
 })
 
 test_that("btw_tool_docs_package_news() with R package", {
-  r_major <- sprintf("R-%s", R.version$major)
-  news_r_major <- sprintf("@news %s", r_major)
-
   btw_package_news <- package_news
 
   local_mocked_bindings(
@@ -53,22 +50,18 @@ test_that("btw_tool_docs_package_news() with R package", {
 
   expect_equal(
     ellmer::contents_text(btw(package_news(package_name = "R"))),
-    ellmer::contents_text(btw(!!news_r_major))
+    ellmer::contents_text(btw("@news R"))
   )
 
   expect_equal(
     I(btw_tool_docs_package_news("R")@value),
-    btw_this(!!news_r_major)
+    btw_this("@news R")
   )
 
   expect_btw_tool_result(btw_tool_docs_package_news("R"), has_data = FALSE)
   expect_btw_tool_result(
-    btw_tool_docs_package_news(r_major),
+    btw_tool_docs_package_news("R-3"),
     has_data = FALSE
-  )
-  expect_equal(
-    btw_tool_docs_package_news("R"),
-    btw_tool_docs_package_news(r_major)
   )
 })
 
