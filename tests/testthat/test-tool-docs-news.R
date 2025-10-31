@@ -32,9 +32,10 @@ test_that("btw_tool_docs_package_news() with non-existent package", {
 })
 
 test_that("btw_tool_docs_package_news() with R package", {
-  btw_package_news <- package_news
   skip_if_not(nrow(news(package = "R")) > 0, "R news is not available")
 
+  .package_news <- package_news
+  .btw_this_news <- btw_this_news
   local_mocked_bindings(
     package_news = local({
       cache <- list()
@@ -44,9 +45,13 @@ test_that("btw_tool_docs_package_news() with R package", {
           return(cache[[package_name]])
         }
 
-        (cache[[package_name]] <<- head(btw_package_news(package_name), 2))
+        (cache[[package_name]] <<- head(.package_news(package_name), 2))
       }
     }),
+    btw_this_news = function(args) {
+      expect_equal(args, "R")
+      .btw_this_news(args)
+    }
   )
 
   expect_equal(
