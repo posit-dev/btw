@@ -530,6 +530,10 @@ btw_tools_df <- function() {
     if (is.null(tool)) {
       return()
     }
+    if (def$group == "env" && isTRUE(getOption("btw.app.in_addin"))) {
+      # TODO: Remove this check when the addin can reach the global env
+      return()
+    }
     dplyr::tibble(
       group = def$group,
       name = tool@name,
