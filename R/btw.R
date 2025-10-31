@@ -102,7 +102,7 @@ btw <- function(..., clipboard = TRUE) {
 
   if (identical(res, "")) {
     cli::cli_alert_warning("Nothing to include in the btw() context.")
-    return(invisible(""))
+    return(invisible(BTW("")))
   }
 
   BTW(text = res, settings = env(clipboard = clipboard))
@@ -119,7 +119,7 @@ BTW <- S7::new_class(
 )
 
 S7::method(print, BTW) <- function(x, ...) {
-  if (!x@settings$clipboard) {
+  if (!isTRUE(x@settings$clipboard)) {
     writeLines(x@text)
     return(invisible(x))
   }

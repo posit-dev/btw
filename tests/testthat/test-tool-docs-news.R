@@ -72,6 +72,38 @@ test_that("btw_tool_docs_package_news() with R package", {
   )
 })
 
+test_that("btw_tool_docs_package_news() when no news is found", {
+  local_mocked_bindings(
+    package_news = function(...) {
+      structure(
+        list(
+          Version = character(0),
+          Date = character(0),
+          Category = character(0),
+          Text = character(0),
+          HTML = character(0)
+        ),
+        package = "R",
+        row.names = integer(0),
+        class = c("news_db_from_Rd", "news_db", "data.frame")
+      )
+    }
+  )
+
+  expect_message(
+    expect_s3_class(btw(package_news("R")), "btw::btw"),
+    "Nothing to include"
+  )
+
+  expect_message(
+    expect_equal(
+      ellmer::contents_text(btw(package_news("R"))),
+      ""
+    ),
+    "Nothing to include"
+  )
+})
+
 test_that("btw_tool_docs_package_news() with unmatched search term or version", {
   if (package_version("dplyr") != "1.1.1") {
     with_mocked_bindings(
