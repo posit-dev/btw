@@ -1,4 +1,4 @@
-# write_to_clipboard() works
+# btw() works without clipboard access
 
     Code
       btw("Interactive call but clipboard not available")

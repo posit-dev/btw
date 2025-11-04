@@ -6,7 +6,7 @@ NULL
 #' @description
 #' Uses [pkgsearch::pkg_search()] to search for R packages on CRAN.
 #'
-#' @examples
+#' @examplesIf identical(Sys.getenv("IN_PKGDOWN"), "true")
 #' # Copy pkgsearch results to the clipboard for use in any LLM app
 #' btw(
 #'   pkgsearch::pkg_search("network visualization", size = 1),
@@ -16,11 +16,6 @@ NULL
 #'   pkgsearch::pkg_search("network visualization", format = "long", size = 1),
 #'   clipboard = FALSE
 #' )
-#'
-#' # LLMs can use the tool directly, e.g. in `btw_client()` or `btw_app()`
-#' \dontrun{
-#' btw_tool_search_packages("network visualization")
-#' }
 #'
 #' @inheritParams pkgsearch::pkg_search
 #' @param n_results Number of search results to include. Defaults to 10 for
@@ -190,14 +185,11 @@ Bad: Search for `"statistical analysis tools for permutation test"`
 #' @description
 #' Describes a CRAN package using [pkgsearch::cran_package()].
 #'
-#' @examples
+#' @examplesIf identical(Sys.getenv("IN_PKGDOWN"), "true")
 #' cli::cat_line(
 #'   btw_this(pkgsearch::cran_package("anyflights"))
 #' )
 #'
-#' \dontrun{
-#' btw_tool_search_package_info("anyflights")
-#' }
 #'
 #' @param package_name The name of a package on CRAN.
 #' @inheritParams btw_tool_docs_package_news

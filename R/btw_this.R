@@ -5,17 +5,13 @@
 #' @examples
 #' btw_this(mtcars) # describe the mtcars dataset
 #' btw_this(dplyr::mutate) # include function source
-#' \dontrun{
-#' btw_this("{dplyr}") # include dplyr's intro vignette
-#' btw_this("./") # list files in the current working directory
-#' }
 #'
 #' @param x The thing to describe.
 #' @param ... Additional arguments passed down to underlying methods. Unused
 #'   arguments are silently ignored.
 #'
 #' @return A character vector of lines describing the object.
-#' @family `btw_this()` methods
+#' @family btw formatting methods
 #' @export
 btw_this <- function(x, ...) {
   UseMethod("btw_this")
@@ -136,13 +132,8 @@ as_btw_capture <- function(x) {
 #'   evaluated in your R console.
 #'
 #' @examples
-#' btw_this("?btw::btw_this")
-#' \dontrun{
-#' btw_this("@pkg dplyr")
-#' btw_this("@help mutate")
-#' btw_this("@git status")
-#' btw_this("@issue #65")
-#' }
+#' mtcars[1:3, 1:4]
+#' cat(btw_this("@last_value"))
 #'
 #' @param x A character string
 #' @param ... Ignored.
@@ -150,7 +141,7 @@ as_btw_capture <- function(x) {
 #'
 #' @inherit btw_this return
 #'
-#' @family `btw_this()` methods
+#' @family btw formatting methods
 #' @export
 btw_this.character <- function(x, ..., caller_env = parent.frame()) {
   check_string(x)
@@ -191,16 +182,19 @@ parse_at_command <- function(x) {
     return(NULL)
   }
 
-  # Find first space to split command from args
-  space_pos <- regexpr(" ", x, fixed = TRUE)
+  x <- substring(x, 2)
 
-  if (space_pos == -1) {
-    # No arguments, just the command
-    command <- substring(x, 2)
-    args <- ""
+  # Split command from args
+  parts <- strsplit(x, " ", fixed = TRUE)[[1]]
+
+  command <- parts[1]
+
+  args <- if (length(parts) > 1) {
+    # Put args back together as a single string; each tool might have its own
+    # way to parse these arguments.
+    paste(parts[-1], collapse = " ")
   } else {
-    command <- substring(x, 2, space_pos - 1)
-    args <- trimws(substring(x, space_pos + 1))
+    ""
   }
 
   list(command = command, args = args)

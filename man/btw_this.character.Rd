@@ -101,19 +101,14 @@ evaluated in your R console.
 }
 }
 \examples{
-btw_this("?btw::btw_this")
-\dontrun{
-btw_this("@pkg dplyr")
-btw_this("@help mutate")
-btw_this("@git status")
-btw_this("@issue #65")
-}
+mtcars[1:3, 1:4]
+cat(btw_this("@last_value"))
 
 }
 \seealso{
-Other \code{btw_this()} methods: 
+Other btw formatting methods: 
 \code{\link{btw_this}()},
 \code{\link{btw_this.data.frame}()},
 \code{\link{btw_this.environment}()}
 }
-\concept{\code{btw_this()} methods}
+\concept{btw formatting methods}

@@ -3,25 +3,23 @@ import { CountUp } from './countUp.min.js';
 const statusCounters = new WeakMap();
 
 const statusPrefixes = {
-  'status_tokens_input': '&uparrow;',
-  'status_tokens_output': '&downarrow;',
-  'status_cost': '$'
+  'tokens_input': '&uparrow;',
+  'tokens_output': '&downarrow;',
+  'cost': '$'
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  ['status_tokens_input', 'status_tokens_output', 'status_cost'].forEach(id => {
-    const element = document.getElementById(id);
-    if (element) {
-      const counter = new CountUp(element, 0, {
-        duration: 1,
-        prefix: statusPrefixes[id],
-        separator: ',',
-        decimal: '.',
-        decimalPlaces: id === 'status_cost' ? 2 : 0,
-      });
-      statusCounters.set(element, counter);
-    }
-  });
+  document.querySelectorAll(".status-countup").forEach(element => {
+    const statusType = element.dataset.type;
+    const counter = new CountUp(element, 0, {
+      duration: 1,
+      prefix: statusPrefixes[statusType],
+      separator: ',',
+      decimal: '.',
+      decimalPlaces: statusType === 'cost' ? 2 : 0,
+    });
+    statusCounters.set(element, counter);
+  })
 });
 
 if (typeof Shiny !== 'undefined') {

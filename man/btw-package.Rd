@@ -3,11 +3,11 @@
 \docType{package}
 \name{btw-package}
 \alias{btw-package}
-\title{btw: Describe R Stuff to Large Language Models}
+\title{btw: A Toolkit for Connecting R and Large Language Models}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Provides a number of utilities for describing R objects and package documentation in plain text. For interactive use, this is especially powerful for describing relevant pieces of context to large language models. When used programmatically, these utilities can be registered with 'ellmer' chats as tool calls, enabling language models to peruse package documentation and explore your computational environment.
+A complete toolkit for connecting 'R' environments with Large Language Models (LLMs). Provides utilities for describing 'R' objects, package documentation, and workspace state in plain text formats optimized for LLM consumption. Supports multiple workflows: interactive copy-paste to external chat interfaces, programmatic tool registration with 'ellmer' chat clients, batteries-included chat applications via 'shinychat', and exposure to external coding agents through the Model Context Protocol. Project configuration files enable stable, repeatable conversations with project-specific context and preferred LLM settings.
 }
 \seealso{
 Useful links:

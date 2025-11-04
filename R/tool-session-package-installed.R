@@ -92,13 +92,12 @@ package_version <- function(package_name) {
   }
 }
 
-find_package_candidates <- function(package_name, installed_only = TRUE) {
-  all_packages <-
-    if (installed_only) {
-      rownames(installed.packages())
-    } else {
-      rownames(utils::available.packages())
-    }
+find_package_candidates <- function(package_name) {
+  all_packages <- rownames(utils::available.packages())
+
+  if (!length(all_packages)) {
+    return(character())
+  }
 
   dists <- utils::adist(tolower(package_name), tolower(all_packages))
 

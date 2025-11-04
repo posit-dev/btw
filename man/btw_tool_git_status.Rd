@@ -24,13 +24,22 @@ explain why it called the tool.}
 Returns a character table of file statuses.
 }
 \description{
-Tool: Git Status
+This tool allows the LLM to run \code{\link[gert:git_commit]{gert::git_status()}}, equivalent to \verb{git status} in the terminal, and to see the current status of the working
+directory.
 }
 \examples{
-\dontrun{
-btw_tool_git_status()
-}
+\dontshow{if (rlang::is_installed("gert")) withAutoprint(\{ # examplesIf}
+withr::with_tempdir({
+  gert::git_init()
+  gert::git_config_set("user.name", "R Example")
+  gert::git_config_set("user.email", "ex@example.com")
 
+  writeLines("hello, world", "hello.md")
+
+  # What the LLM sees
+  cat(btw_tool_git_status()@value)
+})
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Other git tools: 

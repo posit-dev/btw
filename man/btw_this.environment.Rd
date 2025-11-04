@@ -22,17 +22,18 @@ each object's printed representation.
 Describe the contents of an environment
 }
 \examples{
-cyl_6 <- mtcars[mtcars$cyl == 6, ]
-gear_5 <- mtcars[mtcars$gear == 5, ]
-btw_this(environment())
+env <- new.env()
+env$cyl_6 <- mtcars[mtcars$cyl == 6, ]
+env$gear_5 <- mtcars[mtcars$gear == 5, ]
+btw_this(env)
 
 }
 \seealso{
 \code{\link[=btw_tool_env_describe_environment]{btw_tool_env_describe_environment()}}
 
-Other \code{btw_this()} methods: 
+Other btw formatting methods: 
 \code{\link{btw_this}()},
 \code{\link{btw_this.character}()},
 \code{\link{btw_this.data.frame}()}
 }
-\concept{\code{btw_this()} methods}
+\concept{btw formatting methods}

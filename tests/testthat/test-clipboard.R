@@ -1,4 +1,4 @@
-test_that("write_to_clipboard() works", {
+test_that("btw() works without clipboard access", {
   withr::local_envvar(list(CLIPR_ALLOW = FALSE))
   withr::local_options(list(rlang_interactive = TRUE))
 

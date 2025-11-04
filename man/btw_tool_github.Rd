@@ -84,20 +84,20 @@ The precedence order for rules is:
 \item Default: reject (if no rules match)
 }
 }
-}
-\examples{
-\dontrun{
-# Get an issue
+
+\subsection{Additional Examples}{
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{# Get an issue
 btw_tool_github(
-  code = 'gh("/repos/{owner}/{repo}/issues/123", owner = owner, repo = repo)'
+  code = 'gh("/repos/\{owner\}/\{repo\}/issues/123", owner = owner, repo = repo)'
 )
 
 # Create an issue
 btw_tool_github(code = r"(
   gh(
-    "POST /repos/{owner}/{repo}/issues",
-    title = \"Bug report\",
-    body = \"Description of bug\",
+    "POST /repos/\{owner\}/\{repo\}/issues",
+    title = \\"Bug report\\",
+    body = \\"Description of bug\\",
     owner = owner,
     repo = repo
   )
@@ -105,7 +105,12 @@ btw_tool_github(code = r"(
 
 # Target a different repository
 btw_tool_github(code = 'gh("/repos/tidyverse/dplyr/issues/123")')
+}\if{html}{\out{</div>}}
 }
+}
+\examples{
+# This tool requires the gh package and authentication to GitHub.
+# See additional examples in the documentation above.
 
 }
 \concept{github tools}
