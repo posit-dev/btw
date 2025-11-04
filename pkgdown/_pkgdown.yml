@@ -1,5 +1,8 @@
 url: https://posit-dev.github.io/btw/
 
+development:
+  mode: auto
+
 authors:
   Garrick Aden-Buie:
     href: https://garrickadenbuie.com
