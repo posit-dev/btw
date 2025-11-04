@@ -21,7 +21,7 @@ arguments, it opens the same file that btw_client() would use by default."><meta
 
     <a class="navbar-brand me-2" href="../index.html">btw</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.6.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,6 +99,26 @@ the current directory, the project directory or your home directory.</p></li>
 <li><p><code>edit_btw_md()</code>: Open an existing <code>btw.md</code> or <code>AGENTS.md</code> context file
 for editing.</p></li>
 </ul></div>
+    <div class="section level2">
+    <h2 id="additional-examples">Additional Examples<a class="anchor" aria-label="anchor" href="#additional-examples"></a></h2>
+
+
+
+<p></p><div class="sourceCode r"><pre><code><span><span class="co"># Create a project-level btw.md</span></span>
+<span><span class="fu"><a href="../reference/use_btw_md.html">use_btw_md</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create a user-level btw.md</span></span>
+<span><span class="fu"><a href="../reference/use_btw_md.html">use_btw_md</a></span><span class="op">(</span><span class="st">"user"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Create an AGENTS.md file</span></span>
+<span><span class="fu"><a href="../reference/use_btw_md.html">use_btw_md</a></span><span class="op">(</span><span class="st">"AGENTS.md"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Edit the context file that btw_client() would use</span></span>
+<span><span class="fu"><a href="../reference/use_btw_md.html">edit_btw_md</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Edit a specific context file</span></span>
+<span><span class="fu"><a href="../reference/use_btw_md.html">edit_btw_md</a></span><span class="op">(</span><span class="st">"user"</span><span class="op">)</span></span></code></pre><p></p></div>
+    </div>
     <div class="section level2">
     <h2 id="project-context">Project Context<a class="anchor" aria-label="anchor" href="#project-context"></a></h2>
 
@@ -238,22 +258,18 @@ available tools.</p></div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="co"># Create a project-level btw.md</span></span></span>
-<span class="r-in"><span><span class="fu">use_btw_md</span><span class="op">(</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># See additional examples in the sections above</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Create a user-level btw.md</span></span></span>
-<span class="r-in"><span><span class="fu">use_btw_md</span><span class="op">(</span><span class="st">"user"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Create an AGENTS.md file</span></span></span>
-<span class="r-in"><span><span class="fu">use_btw_md</span><span class="op">(</span><span class="st">"AGENTS.md"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Edit the context file that btw_client() would use</span></span></span>
-<span class="r-in"><span><span class="fu">edit_btw_md</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Edit a specific context file</span></span></span>
-<span class="r-in"><span><span class="fu">edit_btw_md</span><span class="op">(</span><span class="st">"user"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-in"><span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_tempfile.html" class="external-link">with_tempdir</a></span><span class="op">(</span><span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_tempfile.html" class="external-link">with_tempfile</a></span><span class="op">(</span><span class="st">"btw_md_tmp"</span>, fileext <span class="op">=</span> <span class="st">".md"</span>, <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="fu">use_btw_md</span><span class="op">(</span><span class="va">btw_md_tmp</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Created <span style="color: #0000BB;">/tmp/Rtmpz9a07c/file258c704bb130.md</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> See `?btw::btw_client()` for format details</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> See `?btw::btw_tools()` for available tools</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Call `btw::btw_task_create_btw_md()` to use an LLM to help you initialize the</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   project context.</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -22,7 +22,7 @@ Group: env
 
 NameDescription
 btw_tool_env_describe_data_frame()Show the data frame or table or get information about the structure of a data frame or table.
-btw_tool_env_describe_environment()List and describe items in an environment.
+btw_tool_env_describe_environment()List and describe items in the R session's global environment.
 
 
 
@@ -140,7 +140,7 @@ Group: env
 
 NameDescription
 btw_tool_env_describe_data_frame()Show the data frame or table or get information about the structure of a data frame or table.
-btw_tool_env_describe_environment()List and describe items in an environment.
+btw_tool_env_describe_environment()List and describe items in the R session's global environment.
 
 
 
@@ -243,7 +243,7 @@ btw_tool_web_read_url()Read a web page and convert it to Markdown format.
 
     <a class="navbar-brand me-2" href="../index.html">btw</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.6.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -284,7 +284,7 @@ this function have access to the tools:</p><div class="section">
 
 <div class="section">
 <h3 id="group-env">Group: env<a class="anchor" aria-label="anchor" href="#group-env"></a></h3>
-<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_env_describe_data_frame.html">btw_tool_env_describe_data_frame()</a></code></td><td>Show the data frame or table or get information about the structure of a data frame or table.</td></tr><tr><td><code><a href="btw_tool_env_describe_environment.html">btw_tool_env_describe_environment()</a></code></td><td>List and describe items in an environment.</td></tr></table></div>
+<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_env_describe_data_frame.html">btw_tool_env_describe_data_frame()</a></code></td><td>Show the data frame or table or get information about the structure of a data frame or table.</td></tr><tr><td><code><a href="btw_tool_env_describe_environment.html">btw_tool_env_describe_environment()</a></code></td><td>List and describe items in the R session's global environment.</td></tr></table></div>
 
 <div class="section">
 <h3 id="group-files">Group: files<a class="anchor" aria-label="anchor" href="#group-files"></a></h3>
@@ -364,19 +364,21 @@ place. The <code>chat</code> input is returned invisibly.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># requires an ANTHROPIC_API_KEY</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="va">ch</span> <span class="op">&lt;-</span> <span class="fu">ellmer</span><span class="fu">::</span><span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_anthropic.html" class="external-link">chat_anthropic</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using <span style="color: #00BB00;">model</span> = <span style="color: #0000BB;">"claude-sonnet-4-20250514"</span>.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in anthropic_key():</span> Can't find env var `ANTHROPIC_API_KEY`.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># register all of the available tools</span></span></span>
 <span class="r-in"><span><span class="va">ch</span><span class="op">$</span><span class="fu">set_tools</span><span class="op">(</span><span class="fu">btw_tools</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'ch' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># or register only the tools related to fetching documentation</span></span></span>
 <span class="r-in"><span><span class="va">ch</span><span class="op">$</span><span class="fu">set_tools</span><span class="op">(</span><span class="fu">btw_tools</span><span class="op">(</span><span class="st">"docs"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'ch' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># ensure that the current tools persist</span></span></span>
 <span class="r-in"><span><span class="va">ch</span><span class="op">$</span><span class="fu">set_tools</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">ch</span><span class="op">$</span><span class="fu">get_tools</span><span class="op">(</span><span class="op">)</span>, <span class="fu">btw_tools</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-<span class="r-in"><span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'ch' not found</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -9,7 +9,7 @@ recent package release or release notes matching a search term."><meta property=
 
     <a class="navbar-brand me-2" href="../index.html">btw</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.6.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -190,20 +190,13 @@ package, or the release notes matching the search term.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   compatibility, the default is `"drop"`, but you can also choose to</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   `"error"` if dropped rows would be surprising.</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="va">R.version</span><span class="op">$</span><span class="va">major</span> <span class="op">==</span> <span class="fl">4</span> <span class="op">&amp;&amp;</span> <span class="va">R.version</span><span class="op">$</span><span class="va">minor</span> <span class="op">&gt;</span> <span class="st">"2.0"</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="co"># Should find a NEWS entry from R 4.2</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="btw.html">btw</a></span><span class="op">(</span><span class="st">"@news R dynamic rd content"</span>, clipboard <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span> <span class="co"># can be slow</span></span></span>
+<span class="r-in"><span>  <span class="kw">if</span> <span class="op">(</span><span class="va">R.version</span><span class="op">$</span><span class="va">major</span> <span class="op">==</span> <span class="fl">4</span> <span class="op">&amp;&amp;</span> <span class="va">R.version</span><span class="op">$</span><span class="va">minor</span> <span class="op">&gt;</span> <span class="st">"2.0"</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="co"># Search through R's release notes.</span></span></span>
+<span class="r-in"><span>    <span class="co"># This should find a NEWS entry from R 4.2</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="btw.html">btw</a></span><span class="op">(</span><span class="st">"@news R dynamic rd content"</span>, clipboard <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ## Context</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ### R v4.2.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> #### UTILITIES</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> For packages using the `⁠\doi⁠`{style="white-space: pre;"} Rd macro (now</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> an install-time `⁠\Sexpr⁠`{style="white-space: pre;"}) but no other</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> dynamic Rd content, `R CMD build` now produces a smaller tarball and is</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> considerably faster -- skipping temporary package installation.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Tool use by LLMs via ellmer or MCP ----</span></span></span>
 <span class="r-in"><span><span class="fu">btw_tool_docs_package_news</span><span class="op">(</span><span class="st">"dplyr"</span><span class="op">)</span></span></span>
@@ -223,7 +216,6 @@ package, or the release notes matching the search term.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ display:List of 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ markdown: chr "### dplyr v1.1.4\n\n`join_by()` now allows its helper functions to be namespaced with\n`dplyr::`, like `join_by"| __truncated__</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ request: NULL</span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
