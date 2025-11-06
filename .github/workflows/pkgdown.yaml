@@ -12,6 +12,11 @@ name: pkgdown.yaml
 
 permissions: read-all
 
+env:
+  # Fake keys for docs to at least get past ellmer::chat_*() initialization
+  ANTHROPIC_API_KEY: boop
+  OPENAI_API_KEY: beep
+
 jobs:
   pkgdown:
     runs-on: ubuntu-latest
