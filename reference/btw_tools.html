@@ -366,19 +366,24 @@ place. The <code>chat</code> input is returned invisibly.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># requires an ANTHROPIC_API_KEY</span></span></span>
 <span class="r-in"><span><span class="va">ch</span> <span class="op">&lt;-</span> <span class="fu">ellmer</span><span class="fu">::</span><span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_anthropic.html" class="external-link">chat_anthropic</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Using <span style="color: #00BB00;">model</span> = <span style="color: #0000BB;">"claude-sonnet-4-20250514"</span>.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in anthropic_key():</span> Can't find env var `ANTHROPIC_API_KEY`.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># register all of the available tools</span></span></span>
 <span class="r-in"><span><span class="va">ch</span><span class="op">$</span><span class="fu">set_tools</span><span class="op">(</span><span class="fu">btw_tools</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'ch' not found</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>GitHub tools are not available because you are not authenticated with the gh package.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Run `gh::gh_whoami()` to check your authentication status.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Run `gitcreds::gitcreds_set()` or set the GITHUB_PAT environment variable to authenticate.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">This warning is displayed once per session.</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># or register only the tools related to fetching documentation</span></span></span>
 <span class="r-in"><span><span class="va">ch</span><span class="op">$</span><span class="fu">set_tools</span><span class="op">(</span><span class="fu">btw_tools</span><span class="op">(</span><span class="st">"docs"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'ch' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># ensure that the current tools persist</span></span></span>
 <span class="r-in"><span><span class="va">ch</span><span class="op">$</span><span class="fu">set_tools</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">ch</span><span class="op">$</span><span class="fu">get_tools</span><span class="op">(</span><span class="op">)</span>, <span class="fu">btw_tools</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'ch' not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_package_news tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_package_help_topics tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_help_page tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_available_vignettes tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_vignette tool.</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
