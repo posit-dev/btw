@@ -57,35 +57,26 @@ remove_base64_images <- function(html) {
     return(html)
   }
 
-  img_nodes <- xml2::xml_find_all(doc, "//img[@src]")
+  # Find all <img> tags with data: URIs (includes base64 and other data URIs)
+  img_nodes <- xml2::xml_find_all(doc, "//img[contains(@src, 'data:')]")
 
   if (length(img_nodes) == 0) {
     return(html)
   }
 
-  # Replace base64 images with text placeholders
+  # Replace data: URI images with text placeholders
   for (img in img_nodes) {
-    src <- xml2::xml_attr(img, "src")
-
-    if (is.na(src) || !grepl("^data:image", src)) {
-      next
-    }
-
     alt_text <- xml2::xml_attr(img, "alt")
     replacement <- if (!is.na(alt_text) && nzchar(alt_text)) {
-      paste0("[Image: ", alt_text, "]")
+      sprintf("[Image: %s]", alt_text)
     } else {
       "[Image]"
     }
 
-    xml2::xml_replace(
-      img,
-      xml2::read_xml(paste0("<span>", replacement, "</span>"))
-    )
+    xml2::xml_replace(img, "span", replacement)
   }
 
-  result <- as.character(doc)
-  strsplit(result, "\n")[[1]]
+  as.character(doc)
 }
 
 cli_escape <- function(x) {
