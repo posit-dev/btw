@@ -22,9 +22,7 @@ function initializeCountUp(element, initialValue, options) {
 
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll(".status-countup").forEach((element) => {
-    const counter = initializeCountUp(element, 0, {
-      decimalPlaces: element.dataset.type === "cost" ? 4 : 0
-    });
+    const counter = initializeCountUp(element, 0);
     statusCounters.set(element, counter);
   });
 });
@@ -39,11 +37,11 @@ if (typeof Shiny !== "undefined") {
       if (counter && message.value) {
         if (
           element.dataset.type === "cost" &&
-          lastValue < 0.01 &&
-          message.value >= 0.01
+          (lastValue < 0.1 || message.value < 0.1)
         ) {
           const newCounter = initializeCountUp(element, lastValue, {
-            decimalPlaces: 2,
+            decimalPlaces:
+              message.value < 0.01 ? 4 : message.value < 0.1 ? 3 : 2,
           });
           statusCounters.set(element, newCounter);
           newCounter.update(message.value);
