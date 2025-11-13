@@ -351,9 +351,45 @@ btw_status_bar_server <- function(id, chat) {
     id,
     function(input, output, session) {
       chat_get_tokens <- function() {
-        tryCatch(
+        tokens <- tryCatch(
           chat$client$get_tokens(),
           error = function(e) NULL
+        )
+        if (is.null(tokens)) {
+          return(NULL)
+        }
+
+        input_tokens <- 0
+        output_tokens <- 0
+        cached_tokens <- 0
+
+        if (!is.null(tokens) && nrow(tokens) > 0) {
+          if (utils::packageVersion("ellmer") <= "0.3.0") {
+            last_user <- tokens[tokens$role == "user", ]
+            if (nrow(last_user) > 0) {
+              input_tokens <- as.integer(utils::tail(last_user$tokens_total, 1))
+            }
+            tokens_assistant <- tokens[tokens$role == "assistant", ]
+            if (nrow(tokens_assistant) > 0) {
+              output_tokens <- as.integer(sum(tokens_assistant$tokens))
+            }
+          } else {
+            if ("input" %in% colnames(tokens)) {
+              input_tokens <- sum(tokens$input)
+            }
+            if ("output" %in% colnames(tokens)) {
+              output_tokens <- sum(tokens$output)
+            }
+            if ("cached_input" %in% colnames(tokens)) {
+              cached_tokens <- sum(tokens$cached_input)
+            }
+          }
+        }
+
+        list(
+          input = input_tokens,
+          output = output_tokens,
+          cached = cached_tokens
         )
       }
 
@@ -401,30 +437,17 @@ btw_status_bar_server <- function(id, chat) {
 
       shiny::observeEvent(chat_tokens(), {
         tokens <- chat_tokens()
-        value <- 0
 
-        if (!is.null(tokens) && nrow(tokens) > 1) {
-          last_user <- tokens[tokens$role == "user", ]
-          if (nrow(last_user) > 0) {
-            value <- as.integer(utils::tail(last_user$tokens_total, 1))
-          }
-        }
-
-        send_status_message("status_tokens_input", "ready", value = value)
-      })
-
-      shiny::observeEvent(chat_tokens(), {
-        tokens <- chat_tokens()
-        value <- 0
-
-        if (!is.null(tokens) && nrow(tokens) > 1) {
-          tokens_assistant <- tokens[tokens$role == "assistant", ]
-          if (nrow(tokens_assistant) > 0) {
-            value <- as.integer(sum(tokens_assistant$tokens))
-          }
-        }
-
-        send_status_message("status_tokens_output", "ready", value = value)
+        send_status_message(
+          "status_tokens_input",
+          "ready",
+          value = tokens$input
+        )
+        send_status_message(
+          "status_tokens_output",
+          "ready",
+          value = tokens$output
+        )
       })
 
       shiny::observeEvent(chat_cost(), {
