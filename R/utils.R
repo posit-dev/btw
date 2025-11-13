@@ -29,9 +29,54 @@ pandoc_html_simplify <- function(
   ),
   to = "markdown_strict-raw_html+pipe_tables+backtick_code_blocks"
 ) {
+  # Remove base64 embedded images to avoid bloating the output
+  html <- remove_base64_images(html)
+
   tmp_input <- withr::local_tempfile()
   writeLines(html, tmp_input)
   pandoc_convert(tmp_input, from = "html", to = to, ...)
+}
+
+#' Remove base64 embedded images from HTML
+#'
+#' Replaces <img> tags with base64 data URIs with a text placeholder
+#' containing the alt text if available.
+#'
+#' @param html Character vector of HTML content
+#' @return Character vector with images removed/replaced
+#' @noRd
+remove_base64_images <- function(html) {
+  html_text <- paste(html, collapse = "\n")
+
+  doc <- tryCatch(
+    xml2::read_html(html_text),
+    error = function(e) NULL
+  )
+
+  if (is.null(doc)) {
+    return(html)
+  }
+
+  # Find all <img> tags with data: URIs (includes base64 and other data URIs)
+  img_nodes <- xml2::xml_find_all(doc, "//img[contains(@src, 'data:')]")
+
+  if (length(img_nodes) == 0) {
+    return(html)
+  }
+
+  # Replace data: URI images with text placeholders
+  for (img in img_nodes) {
+    alt_text <- xml2::xml_attr(img, "alt")
+    replacement <- if (!is.na(alt_text) && nzchar(alt_text)) {
+      sprintf("[Image: %s]", alt_text)
+    } else {
+      "[Image]"
+    }
+
+    xml2::xml_replace(img, "span", replacement)
+  }
+
+  as.character(doc)
 }
 
 cli_escape <- function(x) {
