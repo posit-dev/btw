@@ -41,8 +41,7 @@
 
 
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -53,25 +52,29 @@
 
         </dt>
         <dd>Plain-text descriptions of R objects</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_this.html">btw_this()</a></code>
 
         </dt>
         <dd>Describe something for use by an LLM</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_client.html">btw_client()</a></code> <code><a href="btw_client.html">btw_app()</a></code>
 
         </dt>
         <dd>Create a btw-enhanced ellmer chat client</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tools.html">btw_tools()</a></code>
 
         </dt>
         <dd>Tools: Register tools from btw</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="mcp.html">btw_mcp_server()</a></code> <code><a href="mcp.html">btw_mcp_session()</a></code>
 
@@ -82,8 +85,7 @@
 
 
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -94,7 +96,8 @@
 
         </dt>
         <dd>Create or edit a btw.md context file</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_task_create_btw_md.html">btw_task_create_btw_md()</a></code>
 
@@ -105,8 +108,7 @@
 
 
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -117,19 +119,22 @@
 
         </dt>
         <dd>Describe something for use by an LLM</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_this.character.html">btw_this(<i>&lt;character&gt;</i>)</a></code>
 
         </dt>
         <dd>Describe objects</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_this.data.frame.html">btw_this(<i>&lt;data.frame&gt;</i>)</a></code> <code><a href="btw_this.data.frame.html">btw_this(<i>&lt;tbl&gt;</i>)</a></code>
 
         </dt>
         <dd>Describe a data frame in plain text</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_this.environment.html">btw_this(<i>&lt;environment&gt;</i>)</a></code>
 
@@ -140,8 +145,7 @@
 
       <div class="section-desc"><p>Tasks, or agents, are higher-level functions that combine system prompts and tools to perform more complex operations.</p><p>Tasks are typically designed for interactive use (e.g. to collaboratively create a project context file), but they can also be used programmatically.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -152,7 +156,8 @@
 
         </dt>
         <dd>Task: Initialize Project Context File</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_task_create_readme.html">btw_task_create_readme()</a></code>
 
@@ -163,8 +168,7 @@
 
       <div class="section-desc"><p>Register all of these tools with an <a href="https://ellmer.tidyverse.org" class="external-link">ellmer</a> chat using <code>chat$set_tools(btw_tools())</code>. These tools generally all have counterparts available via <code><a href="../reference/btw.html">btw()</a></code> and <code><a href="../reference/btw_this.html">btw_this()</a></code> for interactive use. The long and awkward function names are for LLMs and to avoid name clashes with other tools.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -175,133 +179,155 @@
 
         </dt>
         <dd>Tool: Package Release Notes</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_env_describe_data_frame.html">btw_tool_env_describe_data_frame()</a></code>
 
         </dt>
         <dd>Tool: Describe data frame</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_env_describe_environment.html">btw_tool_env_describe_environment()</a></code>
 
         </dt>
         <dd>Tool: Describe an environment</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_files_code_search.html">btw_tool_files_code_search()</a></code>
 
         </dt>
         <dd>Tool: Code Search in Project</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_files_list_files.html">btw_tool_files_list_files()</a></code>
 
         </dt>
         <dd>Tool: List files</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_files_read_text_file.html">btw_tool_files_read_text_file()</a></code>
 
         </dt>
         <dd>Tool: Read a file</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_files_write_text_file.html">btw_tool_files_write_text_file()</a></code>
 
         </dt>
         <dd>Tool: Write a text file</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_git_branch_checkout.html">btw_tool_git_branch_checkout()</a></code>
 
         </dt>
         <dd>Tool: Git Branch Checkout</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_git_branch_create.html">btw_tool_git_branch_create()</a></code>
 
         </dt>
         <dd>Tool: Git Branch Create</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_git_branch_list.html">btw_tool_git_branch_list()</a></code>
 
         </dt>
         <dd>Tool: Git Branch List</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_git_commit.html">btw_tool_git_commit()</a></code>
 
         </dt>
         <dd>Tool: Git Commit</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_git_diff.html">btw_tool_git_diff()</a></code>
 
         </dt>
         <dd>Tool: Git Diff</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_git_log.html">btw_tool_git_log()</a></code>
 
         </dt>
         <dd>Tool: Git Log</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_git_status.html">btw_tool_git_status()</a></code>
 
         </dt>
         <dd>Tool: Git Status</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_github.html">btw_tool_github()</a></code>
 
         </dt>
         <dd>Tool: GitHub</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_ide_read_current_editor.html">btw_tool_ide_read_current_editor()</a></code>
 
         </dt>
         <dd>Tool: Read current file</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_package_docs.html">btw_tool_docs_package_help_topics()</a></code> <code><a href="btw_tool_package_docs.html">btw_tool_docs_help_page()</a></code> <code><a href="btw_tool_package_docs.html">btw_tool_docs_available_vignettes()</a></code> <code><a href="btw_tool_package_docs.html">btw_tool_docs_vignette()</a></code>
 
         </dt>
         <dd>Tool: Describe R package documentation</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_search_package_info.html">btw_tool_search_package_info()</a></code>
 
         </dt>
         <dd>Tool: Describe a CRAN package</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_search_packages.html">btw_tool_search_packages()</a></code>
 
         </dt>
         <dd>Tool: Search for an R package on CRAN</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_session_check_package_installed.html">btw_tool_session_check_package_installed()</a></code>
 
         </dt>
         <dd>Tool: Check if a package is installed</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_session_package_info.html">btw_tool_session_package_info()</a></code>
 
         </dt>
         <dd>Tool: Gather information about a package or currently loaded packages</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_session_platform_info.html">btw_tool_session_platform_info()</a></code>
 
         </dt>
         <dd>Tool: Describe user's platform</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="btw_tool_web_read_url.html">btw_tool_web_read_url()</a></code>
 
@@ -317,7 +343,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>
