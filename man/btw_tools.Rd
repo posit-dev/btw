@@ -27,7 +27,7 @@ place. The \code{chat} input is returned invisibly.
 }
 \description{
 The \code{btw_tools()} function provides a list of tools that can be registered
-with an ellmer chat via \code{chat$set_tools()} that allow the chat to
+with an ellmer chat via \code{chat$register_tools()} that allow the chat to
 interface with your computational environment. Chats returned by
 this function have access to the tools:
 \subsection{Group: docs}{\tabular{ll}{
@@ -116,13 +116,13 @@ this function have access to the tools:
 ch <- ellmer::chat_anthropic()
 
 # register all of the available tools
-ch$set_tools(btw_tools())
+ch$register_tools(btw_tools())
 
 # or register only the tools related to fetching documentation
-ch$set_tools(btw_tools("docs"))
+ch$register_tools(btw_tools("docs"))
 
 # ensure that the current tools persist
-ch$set_tools(c(ch$get_tools(), btw_tools()))
+ch$register_tools(c(ch$get_tools(), btw_tools()))
 \dontshow{\}) # examplesIf}
 }
 \seealso{
