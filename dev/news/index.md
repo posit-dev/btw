@@ -2,6 +2,11 @@
 
 ## btw (development version)
 
+- btw now removes large inline base64-encoded images, replacing them
+  with a placeholder containing the image’s alt text
+  ([@jeanchristophe13v](https://github.com/jeanchristophe13v),
+  [\#119](https://github.com/posit-dev/btw/issues/119)).
+
 - [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
   now works correctly with [ellmer](https://ellmer.tidyverse.org) v0.4.0
   ([\#121](https://github.com/posit-dev/btw/issues/121)).
