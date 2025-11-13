@@ -53,7 +53,7 @@ used programmatically.
 
 Register all of these tools with an
 [ellmer](https://ellmer.tidyverse.org) chat using
-`chat$set_tools(btw_tools())`. These tools generally all have
+`chat$register_tools(btw_tools())`. These tools generally all have
 counterparts available via
 [`btw()`](https://posit-dev.github.io/btw/dev/reference/btw.md) and
 [`btw_this()`](https://posit-dev.github.io/btw/dev/reference/btw_this.md)

@@ -1,9 +1,9 @@
 # Tools: Register tools from btw
 
 The `btw_tools()` function provides a list of tools that can be
-registered with an ellmer chat via `chat$set_tools()` that allow the
-chat to interface with your computational environment. Chats returned by
-this function have access to the tools:
+registered with an ellmer chat via `chat$register_tools()` that allow
+the chat to interface with your computational environment. Chats
+returned by this function have access to the tools:
 
 ### Group: docs
 
@@ -141,20 +141,68 @@ ch <- ellmer::chat_anthropic()
 #> Using model = "claude-sonnet-4-20250514".
 
 # register all of the available tools
-ch$set_tools(btw_tools())
+ch$register_tools(btw_tools())
 #> Warning: GitHub tools are not available because you are not authenticated with the gh package.
 #> ℹ Run `gh::gh_whoami()` to check your authentication status.
 #> ℹ Run `gitcreds::gitcreds_set()` or set the GITHUB_PAT environment variable to authenticate.
 #> This warning is displayed once per session.
 
 # or register only the tools related to fetching documentation
-ch$set_tools(btw_tools("docs"))
-
-# ensure that the current tools persist
-ch$set_tools(c(ch$get_tools(), btw_tools()))
+ch$register_tools(btw_tools("docs"))
 #> Replacing existing btw_tool_docs_package_news tool.
 #> Replacing existing btw_tool_docs_package_help_topics tool.
 #> Replacing existing btw_tool_docs_help_page tool.
 #> Replacing existing btw_tool_docs_available_vignettes tool.
 #> Replacing existing btw_tool_docs_vignette tool.
+
+# ensure that the current tools persist
+ch$register_tools(c(ch$get_tools(), btw_tools()))
+#> Replacing existing btw_tool_env_describe_data_frame tool.
+#> Replacing existing btw_tool_docs_package_news tool.
+#> Replacing existing btw_tool_docs_package_help_topics tool.
+#> Replacing existing btw_tool_docs_help_page tool.
+#> Replacing existing btw_tool_docs_available_vignettes tool.
+#> Replacing existing btw_tool_docs_vignette tool.
+#> Replacing existing btw_tool_env_describe_environment tool.
+#> Replacing existing btw_tool_files_code_search tool.
+#> Replacing existing btw_tool_files_list_files tool.
+#> Replacing existing btw_tool_files_read_text_file tool.
+#> Replacing existing btw_tool_files_write_text_file tool.
+#> Replacing existing btw_tool_git_status tool.
+#> Replacing existing btw_tool_git_diff tool.
+#> Replacing existing btw_tool_git_log tool.
+#> Replacing existing btw_tool_git_commit tool.
+#> Replacing existing btw_tool_git_branch_list tool.
+#> Replacing existing btw_tool_git_branch_create tool.
+#> Replacing existing btw_tool_git_branch_checkout tool.
+#> Replacing existing btw_tool_search_packages tool.
+#> Replacing existing btw_tool_search_package_info tool.
+#> Replacing existing btw_tool_session_check_package_installed tool.
+#> Replacing existing btw_tool_session_platform_info tool.
+#> Replacing existing btw_tool_session_package_info tool.
+#> Replacing existing btw_tool_web_read_url tool.
+#> Replacing existing btw_tool_env_describe_data_frame tool.
+#> Replacing existing btw_tool_docs_package_news tool.
+#> Replacing existing btw_tool_docs_package_help_topics tool.
+#> Replacing existing btw_tool_docs_help_page tool.
+#> Replacing existing btw_tool_docs_available_vignettes tool.
+#> Replacing existing btw_tool_docs_vignette tool.
+#> Replacing existing btw_tool_env_describe_environment tool.
+#> Replacing existing btw_tool_files_code_search tool.
+#> Replacing existing btw_tool_files_list_files tool.
+#> Replacing existing btw_tool_files_read_text_file tool.
+#> Replacing existing btw_tool_files_write_text_file tool.
+#> Replacing existing btw_tool_git_status tool.
+#> Replacing existing btw_tool_git_diff tool.
+#> Replacing existing btw_tool_git_log tool.
+#> Replacing existing btw_tool_git_commit tool.
+#> Replacing existing btw_tool_git_branch_list tool.
+#> Replacing existing btw_tool_git_branch_create tool.
+#> Replacing existing btw_tool_git_branch_checkout tool.
+#> Replacing existing btw_tool_search_packages tool.
+#> Replacing existing btw_tool_search_package_info tool.
+#> Replacing existing btw_tool_session_check_package_installed tool.
+#> Replacing existing btw_tool_session_platform_info tool.
+#> Replacing existing btw_tool_session_package_info tool.
+#> Replacing existing btw_tool_web_read_url tool.
 ```
