@@ -260,8 +260,15 @@ format_help_page_markdown <- function(
 
   tools::Rd2HTML(rd_obj, out = tmp_rd_file)
 
+  # Simplify HTML tables before converting to markdown
+  html <- readLines(tmp_rd_file)
+  html <- simplify_help_tables(html)
+
+  tmp_simplified <- withr::local_tempfile()
+  writeLines(html, tmp_simplified)
+
   pandoc_convert(
-    tmp_rd_file,
+    tmp_simplified,
     to = to,
     ...
   )

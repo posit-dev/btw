@@ -157,3 +157,170 @@ describe("pandoc_html_simplify()", {
     expect_true(any(grepl("\\|", result)))
   })
 })
+
+# Tests for simplify_help_tables() ----------------------------------------
+
+describe("simplify_help_tables()", {
+  it("simplifies argument tables to paragraph format", {
+    html <- paste0(
+      '<html><body>',
+      '<table role="presentation">',
+      '<tr><td><code>x</code></td><td><p>A numeric vector.</p></td></tr>',
+      '<tr><td><code>y</code></td><td><p>Another vector.</p></td></tr>',
+      '</table>',
+      '</body></html>'
+    )
+    result <- simplify_help_tables(html)
+
+    expect_type(result, "character")
+    expect_false(grepl('<table role="presentation">', result, fixed = TRUE))
+    expect_true(grepl(
+      "<code>x</code>: A numeric vector.",
+      result,
+      fixed = TRUE
+    ))
+    expect_true(grepl("<code>y</code>: Another vector.", result, fixed = TRUE))
+  })
+
+  it("preserves tables without role='presentation'", {
+    html <- paste0(
+      '<html><body>',
+      '<table>',
+      '<tr><td>Data</td><td>Value</td></tr>',
+      '</table>',
+      '</body></html>'
+    )
+    result <- simplify_help_tables(html)
+
+    expect_true(grepl("<table>", result))
+  })
+
+  it("handles multiple paragraphs in description", {
+    html <- paste0(
+      '<html><body>',
+      '<table role="presentation">',
+      '<tr><td><code>data</code></td>',
+      '<td><p>First paragraph.</p><p>Second paragraph.</p></td></tr>',
+      '</table>',
+      '</body></html>'
+    )
+    result <- simplify_help_tables(html)
+
+    expect_true(grepl(
+      "<code>data</code>: First paragraph. Second paragraph.",
+      result,
+      fixed = TRUE
+    ))
+  })
+
+  it("handles rows without code tags", {
+    html <- paste0(
+      '<html><body>',
+      '<table role="presentation">',
+      '<tr><td><code>x</code></td><td><p>Valid param</p></td></tr>',
+      '<tr><td>Not a param</td><td>Should be skipped</td></tr>',
+      '</table>',
+      '</body></html>'
+    )
+    result <- simplify_help_tables(html)
+
+    expect_true(grepl("<code>x</code>: Valid param", result, fixed = TRUE))
+    expect_false(grepl("Not a param", result))
+  })
+
+  it("normalizes whitespace in descriptions", {
+    html <- paste0(
+      '<html><body>',
+      '<table role="presentation">',
+      '<tr><td><code>param</code></td>',
+      '<td><p>Text with\n  multiple   spaces\nand newlines.</p></td></tr>',
+      '</table>',
+      '</body></html>'
+    )
+    result <- simplify_help_tables(html)
+
+    expect_true(grepl(
+      "<code>param</code>: Text with multiple spaces and newlines.",
+      result,
+      fixed = TRUE
+    ))
+  })
+
+  it("handles empty tables", {
+    html <- paste0(
+      '<html><body>',
+      '<table role="presentation">',
+      '</table>',
+      '</body></html>'
+    )
+    result <- simplify_help_tables(html)
+
+    expect_type(result, "character")
+  })
+
+  it("handles tables with single cell rows", {
+    html <- paste0(
+      '<html><body>',
+      '<table role="presentation">',
+      '<tr><td><code>x</code></td></tr>',
+      '<tr><td><code>y</code></td><td><p>Valid</p></td></tr>',
+      '</table>',
+      '</body></html>'
+    )
+    result <- simplify_help_tables(html)
+
+    expect_false(grepl("<code>x</code>:", result))
+    expect_true(grepl("<code>y</code>: Valid", result, fixed = TRUE))
+  })
+
+  it("handles descriptions without paragraph tags", {
+    html <- paste0(
+      '<html><body>',
+      '<table role="presentation">',
+      '<tr><td><code>simple</code></td><td>Plain text description.</td></tr>',
+      '</table>',
+      '</body></html>'
+    )
+    result <- simplify_help_tables(html)
+
+    expect_true(grepl(
+      "<code>simple</code>: Plain text description.",
+      result,
+      fixed = TRUE
+    ))
+  })
+
+  it("returns original input on invalid HTML", {
+    html <- c("not", "valid", "html")
+    result <- simplify_help_tables(html)
+
+    expect_identical(result, html)
+  })
+
+  it("handles HTML with no argument tables", {
+    html <- '<html><body><p>Just text, no tables</p></body></html>'
+    result <- simplify_help_tables(html)
+
+    expect_type(result, "character")
+    expect_true(grepl("Just text, no tables", result))
+  })
+
+  it("handles multiple argument tables", {
+    html <- paste0(
+      '<html><body>',
+      '<h3>Arguments</h3>',
+      '<table role="presentation">',
+      '<tr><td><code>x</code></td><td><p>First param</p></td></tr>',
+      '</table>',
+      '<h3>More Arguments</h3>',
+      '<table role="presentation">',
+      '<tr><td><code>y</code></td><td><p>Second param</p></td></tr>',
+      '</table>',
+      '</body></html>'
+    )
+    result <- simplify_help_tables(html)
+
+    expect_true(grepl("<code>x</code>: First param", result, fixed = TRUE))
+    expect_true(grepl("<code>y</code>: Second param", result, fixed = TRUE))
+  })
+})
