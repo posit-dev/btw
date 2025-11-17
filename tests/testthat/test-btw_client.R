@@ -1,6 +1,7 @@
 local_mocked_bindings(
   btw_can_register_gh_tool = function() FALSE
 )
+withr::local_options(btw.client.quiet = TRUE)
 
 describe("btw_client() chat client", {
   withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))

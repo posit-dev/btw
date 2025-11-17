@@ -10,9 +10,13 @@ test_that("with_retry() works", {
     }
   })
 
-  with_retry(times = 5, {
-    third_try()
-  })
+  with_retry(
+    times = 5,
+    {
+      third_try()
+    },
+    verbose = FALSE
+  )
 })
 
 test_that("ci: prep chromote", {

@@ -191,7 +191,7 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
     chat_client <- call2(.ns = "ellmer", chat_fn, !!!chat_args)
     config$client <- eval(chat_client)
 
-    if (!is.null(chat_args$model)) {
+    if (!is.null(chat_args$model) && !isTRUE(getOption("btw.client.quiet"))) {
       cli::cli_inform(
         "Using {.field {chat_args$model}} from {.strong {config$client$get_provider()@name}}."
       )

@@ -31,6 +31,9 @@ test_that("use_btw_md() creates btw.md in user scope", {
     path_home = function(...) fs::path(wd, ...),
     .package = "fs"
   )
+  local_mocked_bindings(
+    use_build_ignore_btw_md = function(...) invisible()
+  )
 
   expect_snapshot(
     path <- use_btw_md("user")
@@ -62,6 +65,10 @@ test_that("use_btw_md() creates AGENTS.md with correct template", {
   wd <- withr::local_tempdir()
   withr::local_dir(wd)
 
+  local_mocked_bindings(
+    use_build_ignore_btw_md = function(...) invisible()
+  )
+
   expect_snapshot(
     path <- use_btw_md("AGENTS.md")
   )
@@ -79,6 +86,10 @@ test_that("use_btw_md() creates AGENTS.md with correct template", {
 test_that("use_btw_md() does not overwrite existing file", {
   wd <- withr::local_tempdir()
   withr::local_dir(wd)
+
+  local_mocked_bindings(
+    use_build_ignore_btw_md = function(...) invisible()
+  )
 
   writeLines("existing content", "btw.md")
 
@@ -98,9 +109,10 @@ test_that("use_btw_md() adds to .Rbuildignore in R package", {
 
   # Create a package structure
   writeLines("Package: testpkg", "DESCRIPTION")
-  usethis::local_project(wd)
-
-  suppressMessages(path <- use_btw_md("project"))
+  usethis::ui_silence({
+    usethis::local_project(wd)
+    suppressMessages(path <- use_btw_md("project"))
+  })
 
   # Check .Rbuildignore was created and contains btw.md
   if (fs::file_exists(".Rbuildignore")) {
@@ -117,13 +129,15 @@ test_that("use_btw_md() handles .Rbuildignore even when file exists", {
 
   # Create a package structure
   writeLines("Package: testpkg", "DESCRIPTION")
-  usethis::local_project(wd)
 
   # Create existing btw.md
   writeLines("existing", "btw.md")
 
   # Should still add to .Rbuildignore
-  suppressMessages(use_btw_md("project"))
+  usethis::ui_silence({
+    usethis::local_project(wd)
+    suppressMessages(use_btw_md("project"))
+  })
 
   if (fs::file_exists(".Rbuildignore")) {
     buildignore <- readLines(".Rbuildignore")
