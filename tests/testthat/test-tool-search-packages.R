@@ -20,7 +20,7 @@ test_that("btw_tool_search_packages()", {
 })
 
 test_that("btw_tool_search_packages() snapshots", {
-  skip_if_not_macos()
+  skip_if_not_snapshot_env()
   local_mocked_bindings(
     pkg_search = mock_pkgsearch
   )
@@ -69,7 +69,7 @@ test_that("btw_tool_search_package_info()", {
 })
 
 test_that("btw_tool_search_package_info() snapshots", {
-  skip_if_not_macos()
+  skip_if_not_snapshot_env()
 
   local_mocked_bindings(
     cran_package = mock_cran_package

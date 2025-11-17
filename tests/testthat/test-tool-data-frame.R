@@ -1,4 +1,4 @@
-skip_if_not_macos()
+skip_if_not_snapshot_env()
 
 test_that("btw_this.data.frame() works", {
   expect_snapshot(cli::cat_line(btw_this(mtcars)))

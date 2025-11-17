@@ -15,10 +15,11 @@ use_latest_pandoc <- function(.envir = parent.frame()) {
   pandoc::pandoc_activate(v, quiet = TRUE)
 }
 
-skip_if_not_macos <- function() {
+skip_if_not_snapshot_env <- function() {
   # Skip helper: snapshots only on macos for now
   skip_on_os("windows")
   skip_on_os("linux")
+  skip_if_not_installed("ellmer", "0.4.0")
 }
 
 expect_btw_tool_result <- function(

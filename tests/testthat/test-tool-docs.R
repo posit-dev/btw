@@ -15,7 +15,7 @@ test_that("btw_tool_docs_help_page() works", {
   expect_equal(res@extra$package, "stats")
   expect_type(res@extra$help_text, "character")
 
-  skip_if_not_macos()
+  skip_if_not_snapshot_env()
   expect_snapshot(cli::cat_line(res@value))
 })
 

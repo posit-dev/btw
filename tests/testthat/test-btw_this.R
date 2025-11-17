@@ -1,7 +1,7 @@
 use_latest_pandoc()
 
 test_that("btw_this.function()", {
-  skip_if_not_macos()
+  skip_if_not_snapshot_env()
   expect_snapshot(cli::cat_line(btw_this(dplyr::mutate)))
 })
 
@@ -379,7 +379,7 @@ test_that("@issue detects current repo when only number provided", {
   expect_match(result, "Test Issue")
   expect_match(result, "Test body")
 
-  skip_if_not_macos()
+  skip_if_not_snapshot_env()
   expect_snapshot(cli::cat_line(result))
 })
 
@@ -415,7 +415,7 @@ test_that("@pr marks pull requests correctly", {
   expect_match(result, "Pull Request")
   expect_match(result, "merged: 2025-01-02T00:00:00Z")
 
-  skip_if_not_macos()
+  skip_if_not_snapshot_env()
   expect_snapshot(cli::cat_line(result))
 })
 

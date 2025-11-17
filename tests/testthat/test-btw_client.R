@@ -27,7 +27,7 @@ describe("btw_client() chat client", {
       "You have access to tools"
     )
 
-    skip_if_not_macos()
+    skip_if_not_snapshot_env()
     expect_snapshot(print(chat), transform = scrub_system_info)
   })
 
@@ -97,7 +97,7 @@ test_that("btw_client() adds `btw.md` context file to system prompt", {
     fixed = TRUE
   )
 
-  skip_if_not_macos()
+  skip_if_not_snapshot_env()
   expect_snapshot(print(chat), transform = scrub_system_info)
 })
 
@@ -201,7 +201,7 @@ describe("btw_client() with context files", {
       chat$get_system_prompt()
     )
 
-    skip_if_not_macos()
+    skip_if_not_snapshot_env()
     expect_snapshot(print(chat), transform = scrub_system_info)
   })
 
@@ -212,7 +212,7 @@ describe("btw_client() with context files", {
       chat_parent_llms <- btw_client()
     })
 
-    skip_if_not_macos()
+    skip_if_not_snapshot_env()
     expect_snapshot(print(chat_parent_llms), transform = scrub_system_info)
   })
 
@@ -294,7 +294,7 @@ describe("btw_client() project vs user settings", {
     expect_equal(chat$get_model(), "claude-3-5-sonnet-20241022")
     expect_s3_class(chat$get_provider(), "ellmer::ProviderAnthropic")
 
-    skip_if_not_macos()
+    skip_if_not_snapshot_env()
     expect_snapshot(print(chat), transform = scrub_system_info)
   })
 
@@ -333,7 +333,7 @@ describe("btw_client() project vs user settings", {
     expect_equal(chat$get_model(), "gpt-4o")
     expect_s3_class(chat$get_provider(), "ellmer::ProviderOpenAI")
 
-    skip_if_not_macos()
+    skip_if_not_snapshot_env()
     expect_snapshot(print(chat), transform = scrub_system_info)
   })
 

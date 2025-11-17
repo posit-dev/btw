@@ -145,7 +145,7 @@ test_that("btw_tool_docs_package_news() with unmatched search term or version", 
 })
 
 test_that("btw_tool_docs_package_news() snapshots", {
-  skip_if_not_macos()
+  skip_if_not_snapshot_env()
 
   local_mocked_bindings(
     package_version = function(package_name) {

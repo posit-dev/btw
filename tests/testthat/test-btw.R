@@ -1,5 +1,5 @@
 test_that("btw() formats output as expected", {
-  skip_if_not_macos()
+  skip_if_not_snapshot_env()
 
   expect_snapshot(cli::cat_line(btw(mtcars)))
 })

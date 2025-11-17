@@ -4,7 +4,7 @@ test_that("check_installed() works", {
   expect_invisible(check_installed("somepackage"))
   expect_null(check_installed("somepackage"))
 
-  skip_if_not_macos()
+  skip_if_not_snapshot_env()
 
   # informative error if not installed
   local_mocked_bindings(

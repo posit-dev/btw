@@ -176,7 +176,7 @@ test_that("@current_file", {
     btw_tool_ide_read_current_editor(selection = FALSE, consent = TRUE)
   )
 
-  skip_if_not_macos()
+  skip_if_not_snapshot_env()
   expect_snapshot(
     cli::cat_line(btw("@current_file"))
   )
@@ -198,7 +198,7 @@ test_that("@current_selection", {
     I(btw_tool_ide_read_current_editor(consent = TRUE)@value)
   )
 
-  skip_if_not_macos()
+  skip_if_not_snapshot_env()
   expect_snapshot(
     cli::cat_line(btw("@current_selection"))
   )

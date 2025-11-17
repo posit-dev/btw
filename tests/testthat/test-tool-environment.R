@@ -1,5 +1,5 @@
 test_that("btw_this.environment() works", {
-  skip_if_not_macos()
+  skip_if_not_snapshot_env()
   env <- new_environment(list(mtcars = mtcars, boop = "bop"))
 
   expect_snapshot(cli::cat_line(btw_this(env)))
