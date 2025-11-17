@@ -262,7 +262,7 @@ format_help_page_markdown <- function(
 
   # Simplify HTML tables before converting to markdown
   html <- readLines(tmp_rd_file)
-  html <- simplify_help_tables(html)
+  html <- simplify_help_page_arguments(html)
 
   tmp_simplified <- withr::local_tempfile()
   writeLines(html, tmp_simplified)

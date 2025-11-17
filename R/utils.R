@@ -79,15 +79,17 @@ remove_base64_images <- function(html) {
   as.character(doc)
 }
 
-#' Simplify help page argument tables
+#' Simplify help page argument tables to heading format
 #'
-#' Converts HTML tables in help pages to simple text format, extracting
-#' only parameter names and descriptions to reduce token usage.
+#' Converts argument tables in the Arguments section to heading format.
+#' Each parameter becomes a heading with its description preserved in full,
+#' including multi-paragraph descriptions and lists. This avoids pandoc's
+#' issues with complex table content while maintaining full information.
 #'
 #' @param html Character vector of HTML content
 #' @return Character vector with simplified argument tables
 #' @noRd
-simplify_help_tables <- function(html) {
+simplify_help_page_arguments <- function(html) {
   html_text <- paste(html, collapse = "\n")
 
   doc <- tryCatch(
@@ -99,56 +101,71 @@ simplify_help_tables <- function(html) {
     return(html)
   }
 
-  # Find argument tables (tables with role="presentation")
-  tables <- xml2::xml_find_all(doc, "//table[@role='presentation']")
-
-  if (length(tables) == 0) {
+  # Find the Arguments section heading
+  # Note: R help HTML h3 tags don't have id attributes, so we match by text
+  args_heading <- xml2::xml_find_first(doc, "//h3[normalize-space(text())='Arguments']")
+  if (length(args_heading) == 0 || is.na(args_heading)) {
+    # No Arguments section found
     return(html)
   }
 
-  for (table in tables) {
-    rows <- xml2::xml_find_all(table, ".//tr")
-    if (length(rows) == 0) next
+  # Find the table immediately following the Arguments heading
+  # We only want to transform the first table under Arguments section
+  args_table <- xml2::xml_find_first(
+    args_heading,
+    "following-sibling::table[@role='presentation'][1]"
+  )
 
-    # Extract parameter name and description from each row
-    items <- lapply(rows, function(row) {
-      cells <- xml2::xml_find_all(row, ".//td")
-      if (length(cells) < 2) return(NULL)
-
-      # First cell contains parameter name
-      name_node <- xml2::xml_find_first(cells[[1]], ".//code")
-      if (is.na(name_node)) return(NULL)
-      name <- xml2::xml_text(name_node)
-
-      # Second cell contains description - preserve structure
-      desc_parts <- xml2::xml_find_all(cells[[2]], ".//p")
-      if (length(desc_parts) > 0) {
-        desc <- vapply(desc_parts, xml2::xml_text, character(1))
-        desc <- vapply(desc, function(x) {
-          x <- gsub("\\s+", " ", x)
-          trimws(x)
-        }, character(1))
-        desc <- paste(desc, collapse = " ")
-      } else {
-        desc <- xml2::xml_text(cells[[2]])
-        desc <- gsub("\\s+", " ", desc)
-        desc <- trimws(desc)
-      }
-
-      list(name = name, desc = desc)
-    })
-
-    items <- Filter(Negate(is.null), items)
-    if (length(items) == 0) next
-
-    # Build simple paragraphs with code tags
-    paragraphs <- vapply(items, function(item) {
-      sprintf("<p><code>%s</code>: %s</p>", item$name, item$desc)
-    }, character(1))
-
-    replacement <- sprintf("<div>%s</div>", paste(paragraphs, collapse = "\n\n"))
-    xml2::xml_replace(table, xml2::read_html(replacement))
+  if (length(args_table) == 0 || is.na(args_table)) {
+    # No table found in Arguments section
+    return(html)
   }
+
+  rows <- xml2::xml_find_all(args_table, ".//tr")
+  if (length(rows) == 0) {
+    return(html)
+  }
+
+  # Extract parameter name and description from each row
+  items <- lapply(rows, function(row) {
+    cells <- xml2::xml_find_all(row, ".//td")
+    if (length(cells) < 2) return(NULL)
+
+    # First cell contains parameter name
+    name_node <- xml2::xml_find_first(cells[[1]], ".//code")
+    if (is.na(name_node)) return(NULL)
+    name <- xml2::xml_text(name_node)
+
+    # Second cell contains description - preserve full HTML structure
+    # This includes lists, multiple paragraphs, code blocks, etc.
+    desc_children <- xml2::xml_children(cells[[2]])
+    if (length(desc_children) > 0) {
+      desc_html <- paste(
+        vapply(desc_children, as.character, character(1)),
+        collapse = "\n"
+      )
+    } else {
+      # Fallback for simple text content
+      desc_html <- paste0("<p>", xml2::xml_text(cells[[2]]), "</p>")
+    }
+
+    list(name = name, desc_html = desc_html)
+  })
+
+  items <- Filter(Negate(is.null), items)
+  if (length(items) == 0) {
+    return(html)
+  }
+
+  # Build heading structure
+  # Use h3 because btw_tool_docs_help_page() shifts heading levels by +1,
+  # so h3 becomes h4 (####) in the final markdown
+  headings <- vapply(items, function(item) {
+    sprintf("<h3><code>%s</code></h3>\n%s", item$name, item$desc_html)
+  }, character(1))
+
+  replacement <- sprintf("<div>%s</div>", paste(headings, collapse = "\n\n"))
+  xml2::xml_replace(args_table, xml2::read_html(replacement))
 
   as.character(doc)
 }
