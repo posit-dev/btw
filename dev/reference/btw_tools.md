@@ -138,7 +138,7 @@ Other Tools:
 ``` r
 # requires an ANTHROPIC_API_KEY
 ch <- ellmer::chat_anthropic()
-#> Using model = "claude-sonnet-4-20250514".
+#> Using model = "claude-sonnet-4-5-20250929".
 
 # register all of the available tools
 ch$register_tools(btw_tools())
