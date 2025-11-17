@@ -261,7 +261,7 @@ test_that("btw_md_template() selects correct template", {
   # btw.md template
   template <- btw_md_template("btw.md")
   expect_true(fs::file_exists(template))
-  expect_match(basename(template), "btw\\.md")
+  expect_match(basename(template), "^btw.*\\.md$")
 
   # AGENTS.md template
   template <- btw_md_template("AGENTS.md")
@@ -270,5 +270,5 @@ test_that("btw_md_template() selects correct template", {
 
   # Custom name gets btw.md template
   template <- btw_md_template("custom.md")
-  expect_match(basename(template), "btw\\.md")
+  expect_match(basename(template), "^btw.*\\.md$")
 })

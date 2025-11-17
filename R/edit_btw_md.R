@@ -347,6 +347,24 @@ btw_md_template <- function(path) {
     cli::cli_abort("Could not find template {.file {template_name}}")
   }
 
+  if (name_without_ext == "btw") {
+    provider <- "claude"
+    model <- withr::with_envvar(list(ANTHROPIC_API_KEY = "test"), {
+      suppressMessages(ellmer::chat_anthropic()$get_model())
+    })
+    template_contents <- ellmer::interpolate_file(
+      template_path,
+      PROVIDER = provider,
+      MODEL = model
+    )
+    template_path <- withr::local_tempfile(
+      lines = template_contents,
+      pattern = "btw",
+      fileext = ".md",
+      .local_envir = parent.frame()
+    )
+  }
+
   template_path
 }
 

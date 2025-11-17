@@ -1,5 +1,5 @@
 ---
-client: claude/claude-4-5-sonnet-latest
+client: {{ PROVIDER }}/{{ MODEL }}
 tools:
   - docs
   - env
