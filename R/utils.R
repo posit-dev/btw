@@ -37,6 +37,17 @@ pandoc_html_simplify <- function(
   pandoc_convert(tmp_input, from = "html", to = to, ...)
 }
 
+xml_from_html <- function(html) {
+  html_text <- paste(html, collapse = "\n")
+
+  doc <- tryCatch(
+    xml2::read_html(html_text),
+    error = function(e) NULL
+  )
+
+  doc
+}
+
 #' Remove base64 embedded images from HTML
 #'
 #' Replaces <img> tags with base64 data URIs with a text placeholder
@@ -46,12 +57,7 @@ pandoc_html_simplify <- function(
 #' @return Character vector with images removed/replaced
 #' @noRd
 remove_base64_images <- function(html) {
-  html_text <- paste(html, collapse = "\n")
-
-  doc <- tryCatch(
-    xml2::read_html(html_text),
-    error = function(e) NULL
-  )
+  doc <- xml_from_html(html)
 
   if (is.null(doc)) {
     return(html)
@@ -90,12 +96,7 @@ remove_base64_images <- function(html) {
 #' @return Character vector with simplified argument tables
 #' @noRd
 simplify_help_page_arguments <- function(html) {
-  html_text <- paste(html, collapse = "\n")
-
-  doc <- tryCatch(
-    xml2::read_html(html_text),
-    error = function(e) NULL
-  )
+  doc <- xml_from_html(html)
 
   if (is.null(doc)) {
     return(html)
@@ -103,7 +104,10 @@ simplify_help_page_arguments <- function(html) {
 
   # Find the Arguments section heading
   # Note: R help HTML h3 tags don't have id attributes, so we match by text
-  args_heading <- xml2::xml_find_first(doc, "//h3[normalize-space(text())='Arguments']")
+  args_heading <- xml2::xml_find_first(
+    doc,
+    "//h3[normalize-space(text())='Arguments']"
+  )
   if (length(args_heading) == 0 || is.na(args_heading)) {
     # No Arguments section found
     return(html)
@@ -129,11 +133,15 @@ simplify_help_page_arguments <- function(html) {
   # Extract parameter name and description from each row
   items <- lapply(rows, function(row) {
     cells <- xml2::xml_find_all(row, ".//td")
-    if (length(cells) < 2) return(NULL)
+    if (length(cells) < 2) {
+      return(NULL)
+    }
 
     # First cell contains parameter name
     name_node <- xml2::xml_find_first(cells[[1]], ".//code")
-    if (is.na(name_node)) return(NULL)
+    if (is.na(name_node)) {
+      return(NULL)
+    }
     name <- xml2::xml_text(name_node)
 
     # Second cell contains description - preserve full HTML structure
@@ -160,9 +168,13 @@ simplify_help_page_arguments <- function(html) {
   # Build heading structure
   # Use h3 because btw_tool_docs_help_page() shifts heading levels by +1,
   # so h3 becomes h4 (####) in the final markdown
-  headings <- vapply(items, function(item) {
-    sprintf("<h3><code>%s</code></h3>\n%s", item$name, item$desc_html)
-  }, character(1))
+  headings <- vapply(
+    items,
+    function(item) {
+      sprintf("<h3><code>%s</code></h3>\n%s", item$name, item$desc_html)
+    },
+    character(1)
+  )
 
   replacement <- sprintf("<div>%s</div>", paste(headings, collapse = "\n\n"))
   xml2::xml_replace(args_table, xml2::read_html(replacement))
