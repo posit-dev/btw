@@ -24,15 +24,35 @@
       
       #### Arguments
       
-      |  |  |
-      |----|----|
-      | `x`, `q` | vector of quantiles. |
-      | `p` | vector of probabilities. |
-      | `n` | number of observations. If `length(n) > 1`, the length is taken to be the number required. |
-      | `mean` | vector of means. |
-      | `sd` | vector of standard deviations. |
-      | `log`, `log.p` | logical; if TRUE, probabilities p are given as log(p). |
-      | `lower.tail` | logical; if TRUE (default), probabilities are `P[X \le x]` otherwise, `P[X > x]`. |
+      ##### `x`
+      
+      vector of quantiles.
+      
+      ##### `p`
+      
+      vector of probabilities.
+      
+      ##### `n`
+      
+      number of observations. If `length(n) > 1`, the length is taken to be
+      the number required.
+      
+      ##### `mean`
+      
+      vector of means.
+      
+      ##### `sd`
+      
+      vector of standard deviations.
+      
+      ##### `log`
+      
+      logical; if TRUE, probabilities p are given as log(p).
+      
+      ##### `lower.tail`
+      
+      logical; if TRUE (default), probabilities are `P[X \le x]` otherwise,
+      `P[X > x]`.
       
       #### Details
       

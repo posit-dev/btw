@@ -1,10 +1,10 @@
-# btw_client() chat client: works with `btw.client` option
+# btw_client() chat client / works with `btw.client` option
 
     Code
       print(chat)
     Output
-      <Chat Anthropic/claude-sonnet-4-20250514 turns=1 tokens=0/0 $0.00>
-      -- system [0] ------------------------------------------------------------------
+      <Chat Anthropic/claude-sonnet-4-5-20250929 turns=1 input=0 output=0 cost=$0.00>
+      -- system ----------------------------------------------------------------------
       # System and Session Context
       
       Please account for the following R session and system settings in all responses.
@@ -35,8 +35,8 @@
     Code
       print(chat)
     Output
-      <Chat Anthropic/claude-sonnet-4-20250514 turns=1 tokens=0/0 $0.00>
-      -- system [0] ------------------------------------------------------------------
+      <Chat Anthropic/claude-sonnet-4-5-20250929 turns=1 input=0 output=0 cost=$0.00>
+      -- system ----------------------------------------------------------------------
       # System and Session Context
       
       Please account for the following R session and system settings in all responses.
@@ -68,13 +68,13 @@
       
       I like to have my own system prompt.
 
-# btw_client() with context files: finds `btw.md` in parent directories
+# btw_client() with context files / finds `btw.md` in parent directories
 
     Code
       print(chat)
     Output
-      <Chat OpenAI/gpt-4o turns=1 tokens=0/0 $0.00>
-      -- system [0] ------------------------------------------------------------------
+      <Chat OpenAI/gpt-4o turns=1 input=0 output=0 cost=$0.00>
+      -- system ----------------------------------------------------------------------
       # System and Session Context
       
       Please account for the following R session and system settings in all responses.
@@ -106,13 +106,13 @@
       
       I like to have my own system prompt
 
-# btw_client() with context files: uses `llms.txt` in wd and `btw.md` from parent
+# btw_client() with context files / uses `llms.txt` in wd and `btw.md` from parent
 
     Code
       print(chat_parent_llms)
     Output
-      <Chat OpenAI/gpt-4o turns=1 tokens=0/0 $0.00>
-      -- system [0] ------------------------------------------------------------------
+      <Chat OpenAI/gpt-4o turns=1 input=0 output=0 cost=$0.00>
+      -- system ----------------------------------------------------------------------
       # System and Session Context
       
       Please account for the following R session and system settings in all responses.
@@ -146,13 +146,13 @@
       
       I like to have my own system prompt
 
-# btw_client() project vs user settings: falls through to use client settings from user-level btw.md
+# btw_client() project vs user settings / falls through to use client settings from user-level btw.md
 
     Code
       print(chat)
     Output
-      <Chat Anthropic/claude-3-5-sonnet-20241022 turns=1 tokens=0/0 $0.00>
-      -- system [0] ------------------------------------------------------------------
+      <Chat Anthropic/claude-3-5-sonnet-20241022 turns=1 input=0 output=0 cost=$0.00>
+      -- system ----------------------------------------------------------------------
       # System and Session Context
       
       Please account for the following R session and system settings in all responses.
@@ -184,13 +184,13 @@
       
       
 
-# btw_client() project vs user settings: falls back to user client settings when project has no client
+# btw_client() project vs user settings / falls back to user client settings when project has no client
 
     Code
       print(chat)
     Output
-      <Chat OpenAI/gpt-4o turns=1 tokens=0/0 $0.00>
-      -- system [0] ------------------------------------------------------------------
+      <Chat OpenAI/gpt-4o turns=1 input=0 output=0 cost=$0.00>
+      -- system ----------------------------------------------------------------------
       # System and Session Context
       
       Please account for the following R session and system settings in all responses.

@@ -37,6 +37,17 @@ pandoc_html_simplify <- function(
   pandoc_convert(tmp_input, from = "html", to = to, ...)
 }
 
+xml_from_html <- function(html) {
+  html_text <- paste(html, collapse = "\n")
+
+  doc <- tryCatch(
+    xml2::read_html(html_text),
+    error = function(e) NULL
+  )
+
+  doc
+}
+
 #' Remove base64 embedded images from HTML
 #'
 #' Replaces <img> tags with base64 data URIs with a text placeholder
@@ -46,12 +57,7 @@ pandoc_html_simplify <- function(
 #' @return Character vector with images removed/replaced
 #' @noRd
 remove_base64_images <- function(html) {
-  html_text <- paste(html, collapse = "\n")
-
-  doc <- tryCatch(
-    xml2::read_html(html_text),
-    error = function(e) NULL
-  )
+  doc <- xml_from_html(html)
 
   if (is.null(doc)) {
     return(html)

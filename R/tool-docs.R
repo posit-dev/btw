@@ -260,8 +260,15 @@ format_help_page_markdown <- function(
 
   tools::Rd2HTML(rd_obj, out = tmp_rd_file)
 
+  # Simplify HTML tables before converting to markdown
+  html <- readLines(tmp_rd_file)
+  html <- simplify_help_page_arguments(html)
+
+  tmp_simplified <- withr::local_tempfile()
+  writeLines(html, tmp_simplified)
+
   pandoc_convert(
-    tmp_rd_file,
+    tmp_simplified,
     to = to,
     ...
   )
@@ -319,6 +326,103 @@ format_help_page_text <- function(help_page) {
     )
   }
 )
+
+#' Simplify help page argument tables to heading format
+#'
+#' Converts argument tables in the Arguments section to heading format.
+#' Each parameter becomes a heading with its description preserved in full,
+#' including multi-paragraph descriptions and lists. This avoids pandoc's
+#' issues with complex table content while maintaining full information.
+#'
+#' @param html Character vector of HTML content
+#' @return Character vector with simplified argument tables
+#' @noRd
+simplify_help_page_arguments <- function(html) {
+  doc <- xml_from_html(html)
+
+  if (is.null(doc)) {
+    return(html)
+  }
+
+  # Find the Arguments section heading
+  # Note: R help HTML h3 tags don't have id attributes, so we match by text
+  args_heading <- xml2::xml_find_first(
+    doc,
+    "//h3[normalize-space(text())='Arguments']"
+  )
+  if (length(args_heading) == 0 || is.na(args_heading)) {
+    # No Arguments section found
+    return(html)
+  }
+
+  # Find the table immediately following the Arguments heading
+  # We only want to transform the first table under Arguments section
+  args_table <- xml2::xml_find_first(
+    args_heading,
+    "following-sibling::table[@role='presentation'][1]"
+  )
+
+  if (length(args_table) == 0 || is.na(args_table)) {
+    # No table found in Arguments section
+    return(html)
+  }
+
+  rows <- xml2::xml_find_all(args_table, ".//tr")
+  if (length(rows) == 0) {
+    return(html)
+  }
+
+  # Extract parameter name and description from each row
+  items <- map(rows, function(row) {
+    cells <- xml2::xml_find_all(row, ".//td")
+    if (length(cells) < 2) {
+      return(NULL)
+    }
+
+    # First cell contains parameter name
+    param_node <- xml2::xml_find_first(cells[[1]], ".//code")
+    if (is.na(param_node)) {
+      return(NULL)
+    }
+    param <- xml2::xml_text(param_node)
+
+    # Second cell contains description - preserve full HTML structure
+    # This includes lists, multiple paragraphs, code blocks, etc.
+    children <- xml2::xml_children(cells[[2]])
+    if (length(children) > 0) {
+      description <- paste(map_chr(children, as.character), collapse = "\n")
+    } else {
+      # Fallback for simple text content
+      description <- paste0("<p>", xml2::xml_text(cells[[2]]), "</p>")
+    }
+
+    list(param = param, description = description)
+  })
+
+  items <- discard(items, is.null)
+  if (length(items) == 0) {
+    return(html)
+  }
+
+  # Build heading structure
+  # Use h4 because btw_tool_docs_help_page() shifts heading levels by +1,
+  # so h4 becomes h5 (#####) in the final markdown
+  replacement <- map_chr(
+    items,
+    function(item) {
+      sprintf(
+        "<h4><code>%s</code></h4>\n%s",
+        item$param,
+        as.character(item$description)
+      )
+    }
+  )
+
+  replacement <- sprintf("<div>%s</div>", paste(replacement, collapse = "\n\n"))
+  xml2::xml_replace(args_table, xml2::read_html(replacement))
+
+  as.character(doc)
+}
 
 #' @name btw_tool_package_docs
 #' @export
