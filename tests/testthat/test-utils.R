@@ -174,9 +174,9 @@ describe("simplify_help_page_arguments()", {
     result <- simplify_help_page_arguments(html)
 
     expect_type(result, "character")
-    expect_false(grepl('<table role="presentation">', result, fixed = TRUE))
-    expect_true(grepl("<h3><code>x</code></h3>", result, fixed = TRUE))
-    expect_true(grepl("<h3><code>y</code></h3>", result, fixed = TRUE))
+    expect_no_match(result, '<table role="presentation">', fixed = TRUE)
+    expect_match(result, "<h4><code>x</code></h4>", fixed = TRUE)
+    expect_match(result, "<h4><code>y</code></h4>", fixed = TRUE)
   })
 
   it("preserves tables without Arguments section", {
@@ -191,7 +191,7 @@ describe("simplify_help_page_arguments()", {
     result <- simplify_help_page_arguments(html)
 
     # Should not transform non-Arguments tables
-    expect_true(grepl('<table role="presentation">', result, fixed = TRUE))
+    expect_match(result, '<table role="presentation">', fixed = TRUE)
   })
 
   it("preserves full HTML structure including lists", {
@@ -206,9 +206,9 @@ describe("simplify_help_page_arguments()", {
     )
     result <- simplify_help_page_arguments(html)
 
-    expect_true(grepl("<h3><code>.f</code></h3>", result, fixed = TRUE))
-    expect_true(grepl("<ul>", result))
-    expect_true(grepl("<li>Named function</li>", result))
+    expect_match(result, "<h4><code>.f</code></h4>", fixed = TRUE)
+    expect_match(result, "<ul>", fixed = TRUE)
+    expect_match(result, "<li>Named function</li>", fixed = TRUE)
   })
 
   it("handles rows without code tags", {
@@ -223,8 +223,8 @@ describe("simplify_help_page_arguments()", {
     )
     result <- simplify_help_page_arguments(html)
 
-    expect_true(grepl("<h3><code>x</code></h3>", result, fixed = TRUE))
-    expect_false(grepl("<h3>Not a param</h3>", result))
+    expect_match(result, "<h4><code>x</code></h4>", fixed = TRUE)
+    expect_no_match(result, "<h4>Not a param</h4>", fixed = TRUE)
   })
 
   it("handles empty tables", {
@@ -252,8 +252,8 @@ describe("simplify_help_page_arguments()", {
     )
     result <- simplify_help_page_arguments(html)
 
-    expect_false(grepl("<h3><code>x</code></h3>", result))
-    expect_true(grepl("<h3><code>y</code></h3>", result, fixed = TRUE))
+    expect_no_match(result, "<h4><code>x</code></h4>", fixed = TRUE)
+    expect_match(result, "<h4><code>y</code></h4>", fixed = TRUE)
   })
 
   it("handles descriptions without paragraph tags", {
@@ -267,12 +267,8 @@ describe("simplify_help_page_arguments()", {
     )
     result <- simplify_help_page_arguments(html)
 
-    expect_true(grepl(
-      "<h3><code>simple</code></h3>",
-      result,
-      fixed = TRUE
-    ))
-    expect_true(grepl("<p>Plain text description.</p>", result, fixed = TRUE))
+    expect_match(result, "<h4><code>simple</code></h4>", fixed = TRUE)
+    expect_match(result, "<p>Plain text description.</p>", fixed = TRUE)
   })
 
   it("returns original input on invalid HTML", {
@@ -306,8 +302,8 @@ describe("simplify_help_page_arguments()", {
     result <- simplify_help_page_arguments(html)
 
     # Arguments table should be transformed
-    expect_true(grepl("<h3><code>x</code></h3>", result, fixed = TRUE))
+    expect_match(result, "<h4><code>x</code></h4>", fixed = TRUE)
     # Value table should not be transformed
-    expect_true(grepl('<td><code>y</code></td>', result, fixed = TRUE))
+    expect_match(result, '<td><code>y</code></td>', fixed = TRUE)
   })
 })
