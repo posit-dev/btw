@@ -59,7 +59,7 @@ Assembles context and copies to clipboard for pasting into any chat interface.
 **Programmatic Tool Registration (`btw_tools()`)**
 ```r
 chat <- ellmer::chat_anthropic()
-chat$set_tools(btw_tools("docs", "env"))  # Only doc and environment tools
+chat$register_tools(btw_tools("docs", "env"))  # Only doc and environment tools
 ```
 Register specific tool groups with ellmer chat clients.
 
