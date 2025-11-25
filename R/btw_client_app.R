@@ -597,6 +597,7 @@ app_tool_group_choice_input <- function(
     group,
     "docs" = shiny::span(label_icon, "Documentation"),
     "env" = shiny::span(label_icon, "Environment"),
+    "eval" = shiny::span(label_icon, "Code Evaluation"),
     "files" = shiny::span(label_icon, "Files"),
     "git" = shiny::span(label_icon, "Git"),
     "github" = shiny::span(label_icon, "GitHub"),

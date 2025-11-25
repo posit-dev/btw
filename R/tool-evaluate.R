@@ -44,21 +44,21 @@ ContentError <- S7::new_class(
 #' @examples
 #' \dontrun{
 #' # Simple calculation
-#' btw_tool_evaluate("2 + 2")
+#' btw_tool_evaluate_r("2 + 2")
 #'
 #' # Code with plot
-#' btw_tool_evaluate("hist(rnorm(100))")
+#' btw_tool_evaluate_r("hist(rnorm(100))")
 #'
 #' # Code with warning
-#' btw_tool_evaluate("mean(c(1, 2, NA))")
+#' btw_tool_evaluate_r("mean(c(1, 2, NA))")
 #' }
 #'
 #' @seealso [btw_tools()]
 #' @family Tools
 #' @export
-btw_tool_evaluate <- function(code, `_intent`) {}
+btw_tool_evaluate_r <- function(code, `_intent`) {}
 
-btw_tool_evaluate_impl <- function(code, ...) {
+btw_tool_evaluate_r_impl <- function(code, ...) {
   check_dots_empty()
   check_string(code)
 
@@ -177,14 +177,14 @@ btw_tool_evaluate_impl <- function(code, ...) {
 }
 
 .btw_add_to_tools(
-  name = "btw_tool_evaluate",
-  group = "env",
+  name = "btw_tool_evaluate_r",
+  group = "eval",
   tool = function() {
     ellmer::tool(
       function(code) {
-        btw_tool_evaluate_impl(code = code)
+        btw_tool_evaluate_r_impl(code = code)
       },
-      name = "btw_tool_evaluate",
+      name = "btw_tool_evaluate_r",
       description = "Execute R code and return results as Content objects. Captures text output, plots, messages, warnings, and errors. Stops on first error.",
       annotations = ellmer::tool_annotations(
         title = "Evaluate R Code",

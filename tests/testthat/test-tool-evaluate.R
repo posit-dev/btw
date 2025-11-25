@@ -1,21 +1,21 @@
-test_that("btw_tool_evaluate() returns simple calculations", {
+test_that("btw_tool_evaluate_r() returns simple calculations", {
   skip_if_not_installed("evaluate")
 
-  res <- btw_tool_evaluate_impl("2 + 2")
+  res <- btw_tool_evaluate_r_impl("2 + 2")
   expect_s7_class(res, BtwToolResult)
   expect_type(res@value, "list")
-  # The actual value is stored in extra
-  expect_equal(res@extra$value, 4)
+  # The actual value is stored in extra$data
+  expect_equal(res@extra$data, 4)
   # The visible output is captured as text
   expect_length(res@value, 1)
   expect_s7_class(res@value[[1]], ellmer::ContentText)
   expect_match(res@value[[1]]@text, "4")
 })
 
-test_that("btw_tool_evaluate() captures messages", {
+test_that("btw_tool_evaluate_r() captures messages", {
   skip_if_not_installed("evaluate")
 
-  res <- btw_tool_evaluate_impl('message("hello")')
+  res <- btw_tool_evaluate_r_impl('message("hello")')
   expect_s7_class(res, BtwToolResult)
   expect_type(res@value, "list")
   expect_length(res@value, 1)
@@ -23,10 +23,10 @@ test_that("btw_tool_evaluate() captures messages", {
   expect_equal(res@value[[1]]@text, "hello")
 })
 
-test_that("btw_tool_evaluate() captures warnings", {
+test_that("btw_tool_evaluate_r() captures warnings", {
   skip_if_not_installed("evaluate")
 
-  res <- btw_tool_evaluate_impl('warning("beware")')
+  res <- btw_tool_evaluate_r_impl('warning("beware")')
   expect_s7_class(res, BtwToolResult)
   expect_type(res@value, "list")
   expect_length(res@value, 1)
@@ -34,10 +34,10 @@ test_that("btw_tool_evaluate() captures warnings", {
   expect_match(res@value[[1]]@text, "beware")
 })
 
-test_that("btw_tool_evaluate() captures errors and stops", {
+test_that("btw_tool_evaluate_r() captures errors and stops", {
   skip_if_not_installed("evaluate")
 
-  res <- btw_tool_evaluate_impl('x <- 1; stop("error"); y <- 2')
+  res <- btw_tool_evaluate_r_impl('x <- 1; stop("error"); y <- 2')
   expect_s7_class(res, BtwToolResult)
   expect_type(res@value, "list")
   # Should have the error content
@@ -51,10 +51,10 @@ test_that("btw_tool_evaluate() captures errors and stops", {
   expect_false(exists("y", envir = globalenv()))
 })
 
-test_that("btw_tool_evaluate() captures plots", {
+test_that("btw_tool_evaluate_r() captures plots", {
   skip_if_not_installed("evaluate")
 
-  res <- btw_tool_evaluate_impl('plot(1:10)')
+  res <- btw_tool_evaluate_r_impl('plot(1:10)')
   expect_s7_class(res, BtwToolResult)
   expect_type(res@value, "list")
   # Should have at least one ContentImageInline
@@ -66,7 +66,7 @@ test_that("btw_tool_evaluate() captures plots", {
   expect_true(has_plot)
 })
 
-test_that("btw_tool_evaluate() handles multiple outputs", {
+test_that("btw_tool_evaluate_r() handles multiple outputs", {
   skip_if_not_installed("evaluate")
 
   code <- '
@@ -75,7 +75,7 @@ test_that("btw_tool_evaluate() handles multiple outputs", {
     mean(x)
     warning("careful")
   '
-  res <- btw_tool_evaluate_impl(code)
+  res <- btw_tool_evaluate_r_impl(code)
   expect_s7_class(res, BtwToolResult)
   expect_type(res@value, "list")
   expect_gte(length(res@value), 3)
@@ -102,11 +102,11 @@ test_that("btw_tool_evaluate() handles multiple outputs", {
   expect_true(has_warning)
 })
 
-test_that("btw_tool_evaluate() requires string input", {
+test_that("btw_tool_evaluate_r() requires string input", {
   skip_if_not_installed("evaluate")
 
-  expect_error(btw_tool_evaluate_impl(123), class = "rlang_error")
-  expect_error(btw_tool_evaluate_impl(NULL), class = "rlang_error")
+  expect_error(btw_tool_evaluate_r_impl(123), class = "rlang_error")
+  expect_error(btw_tool_evaluate_r_impl(NULL), class = "rlang_error")
 })
 
 test_that("ContentMessage, ContentWarning, ContentError inherit from ContentText", {

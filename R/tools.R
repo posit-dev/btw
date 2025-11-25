@@ -135,6 +135,7 @@ tool_group_icon <- function(group, default = NULL) {
     group,
     "docs" = tool_icon("dictionary"),
     "env" = tool_icon("source-environment"),
+    "eval" = tool_icon("play-circle"),
     "files" = tool_icon("folder-open"),
     "git" = tool_icon("git"),
     "github" = tool_icon("github"),
