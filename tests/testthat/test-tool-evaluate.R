@@ -4,10 +4,11 @@ test_that("btw_tool_evaluate() returns simple calculations", {
   res <- btw_tool_evaluate_impl("2 + 2")
   expect_s7_class(res, BtwToolResult)
   expect_type(res@value, "list")
-  # The value is captured as text output for visible values
+  # The actual value is stored in extra
+  expect_equal(res@extra$value, 4)
+  # The visible output is captured as text
   expect_length(res@value, 1)
   expect_s7_class(res@value[[1]], ellmer::ContentText)
-  # Check that the output contains "4"
   expect_match(res@value[[1]]@text, "4")
 })
 
@@ -80,9 +81,21 @@ test_that("btw_tool_evaluate() handles multiple outputs", {
   expect_gte(length(res@value), 3)
 
   # Check we have message, text output, and warning
-  has_message <- any(vapply(res@value, function(x) S7::S7_inherits(x, ContentMessage), logical(1)))
-  has_text <- any(vapply(res@value, function(x) S7::S7_inherits(x, ellmer::ContentText), logical(1)))
-  has_warning <- any(vapply(res@value, function(x) S7::S7_inherits(x, ContentWarning), logical(1)))
+  has_message <- any(vapply(
+    res@value,
+    function(x) S7::S7_inherits(x, ContentMessage),
+    logical(1)
+  ))
+  has_text <- any(vapply(
+    res@value,
+    function(x) S7::S7_inherits(x, ellmer::ContentText),
+    logical(1)
+  ))
+  has_warning <- any(vapply(
+    res@value,
+    function(x) S7::S7_inherits(x, ContentWarning),
+    logical(1)
+  ))
 
   expect_true(has_message)
   expect_true(has_text)

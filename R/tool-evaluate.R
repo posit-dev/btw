@@ -65,86 +65,113 @@ btw_tool_evaluate_impl <- function(code, ...) {
   # Check if evaluate package is available
   check_installed("evaluate", "to evaluate R code.")
 
-  # Evaluate the code, stopping on first error
-  result <- evaluate::evaluate(
-    code,
-    envir = global_env(),
-    stop_on_error = 1,
-    new_device = TRUE
-  )
-
   # Initialize list to store Content objects
   contents <- list()
   # Store the last value for potential use
   last_value <- NULL
 
-  # Process each output
-  for (output in result) {
-    if (is.character(output)) {
+  # Create output handler that converts to Content types as outputs are generated
+  handler <- evaluate::new_output_handler(
+    source = function(src, expr) {
+      # Skip source code echoing by returning NULL
+      NULL
+    },
+    text = function(text) {
       # Text output (from print, cat, etc.)
-      contents <- append(contents, list(ellmer::ContentText(output)))
-
-    } else if (inherits(output, "source")) {
-      # Skip source code echoing
-      next
-
-    } else if (inherits(output, "recordedplot")) {
+      contents <<- append(contents, list(ellmer::ContentText(text)))
+      text
+    },
+    graphics = function(plot) {
       # Save plot to temporary file
       tmp <- withr::local_tempfile(fileext = ".png")
       grDevices::png(tmp, width = 768, height = 768)
-      grDevices::replayPlot(output)
+      grDevices::replayPlot(plot)
       grDevices::dev.off()
 
       # Read and encode as base64
       img_data <- base64enc::base64encode(tmp)
-      contents <- append(contents, list(
-        ellmer::ContentImageInline(type = "image/png", data = img_data)
-      ))
+      contents <<- append(
+        contents,
+        list(
+          ellmer::ContentImageInline(type = "image/png", data = img_data)
+        )
+      )
 
-    } else if (inherits(output, "warning")) {
-      # Warning message
-      warn_text <- conditionMessage(output)
-      contents <- append(contents, list(
-        ContentWarning(text = warn_text)
-      ))
-
-    } else if (inherits(output, "message")) {
+      plot
+    },
+    message = function(msg) {
       # Message output
-      msg_text <- conditionMessage(output)
+      msg_text <- conditionMessage(msg)
       # Remove trailing newline that message() adds
       msg_text <- sub("\n$", "", msg_text)
-      contents <- append(contents, list(
-        ContentMessage(text = msg_text)
-      ))
-
-    } else if (inherits(output, "error")) {
+      contents <<- append(
+        contents,
+        list(
+          ContentMessage(text = msg_text)
+        )
+      )
+      msg
+    },
+    warning = function(warn) {
+      # Warning message
+      warn_text <- conditionMessage(warn)
+      contents <<- append(
+        contents,
+        list(
+          ContentWarning(text = warn_text)
+        )
+      )
+      warn
+    },
+    error = function(err) {
       # Error message
-      err_text <- conditionMessage(output)
-      contents <- append(contents, list(
-        ContentError(text = err_text)
-      ))
+      err_text <- conditionMessage(err)
+      contents <<- append(
+        contents,
+        list(
+          ContentError(text = err_text)
+        )
+      )
+      err
+    },
+    value = function(value, visible) {
+      # Store the actual value when it's visible (meaningful output)
+      # Invisible values include assignments and side-effect returns
+      if (visible) {
+        last_value <<- value
+        # Also add as text content
+        value_text <- paste(
+          utils::capture.output(print(value)),
+          collapse = "\n"
+        )
+        contents <<- append(
+          contents,
+          list(
+            ellmer::ContentText(value_text)
+          )
+        )
+      }
 
-    } else if (is.null(output)) {
-      # NULL values - skip
-      next
-
-    } else {
-      # Other output types - capture as text
-      # This handles visible return values
-      last_value <- output
-      output_text <- paste(utils::capture.output(print(output)), collapse = "\n")
-      contents <- append(contents, list(
-        ellmer::ContentText(output_text)
-      ))
+      if (visible) value
     }
-  }
+  )
+
+  # Evaluate the code with our custom handler
+  evaluate::evaluate(
+    code,
+    envir = global_env(),
+    stop_on_error = 1,
+    new_device = TRUE,
+    output_handler = handler
+  )
 
   # Return as ContentToolResult with contents in extra
   # The value is stored but the contents list is what gets displayed
   BtwToolResult(
     contents,
     extra = list(
-      value = last_value
+      data = last_value,
+      code = code
     )
   )
 }
