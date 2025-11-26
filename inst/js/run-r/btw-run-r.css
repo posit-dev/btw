@@ -73,6 +73,9 @@ btw-run-r-result .card-body {
 
 /* Code section styling */
 .btw-run-code {
+  max-height: var(--btw-run-code-source-max-height, 300px);
+  overflow: auto;
+
   pre {
     border: none;
     border-radius: 0;
