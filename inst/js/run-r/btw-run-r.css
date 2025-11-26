@@ -1,15 +1,15 @@
 /**
- * Styles for btw-evaluate-r-result custom element
+ * Styles for btw-run-r-result custom element
  */
 
-btw-evaluate-r-result {
+btw-run-r-result {
   --shiny-tool-card-max-height: auto;
   display: block;
   margin-bottom: var(--bslib-spacer, 1em);
 }
 
 /* Remove horizontal padding from card body for full-width code */
-btw-evaluate-r-result .card-body {
+btw-run-r-result .card-body {
   padding: 0;
   gap: 0;
 }
@@ -17,7 +17,7 @@ btw-evaluate-r-result .card-body {
 /* Output container with visual treatment */
 
 /* Code output blocks */
-.btw-evaluate-output pre {
+.btw-run-output pre {
   margin: 0.25rem 0;
   padding: 0.5rem;
   background-color: var(--bs-light, #f8f9fa);
@@ -25,12 +25,12 @@ btw-evaluate-r-result .card-body {
   overflow-x: auto;
 }
 
-.btw-evaluate-output .code-copy-button {
+.btw-run-output .code-copy-button {
   /* TODO: Figure out how to disable markdown-stream code copy button */
   display: none;
 }
 
-.btw-evaluate-output pre code {
+.btw-run-output pre code {
   font-family: var(--bs-font-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace);
   font-size: 0.875em;
   white-space: pre-wrap;
@@ -38,7 +38,7 @@ btw-evaluate-r-result .card-body {
   padding: 0;
 }
 
-.btw-evaluate-output pre {
+.btw-run-output pre {
   margin-block: 0;
   border-radius: 0;
   border: none;
@@ -46,25 +46,25 @@ btw-evaluate-r-result .card-body {
 }
 
 /* Message output (blue left border) */
-.btw-evaluate-output pre.btw-output-message {
+.btw-run-output pre.btw-output-message {
   border-left: 3px solid var(--bs-info, #0dcaf0);
   background-color: rgba(13, 202, 240, 0.1);
 }
 
 /* Warning output (yellow/orange left border) */
-.btw-evaluate-output pre.btw-output-warning {
+.btw-run-output pre.btw-output-warning {
   border-left: 3px solid var(--bs-warning, #ffc107);
   background-color: rgba(255, 193, 7, 0.1);
 }
 
 /* Error output (red left border) */
-.btw-evaluate-output pre.btw-output-error {
+.btw-run-output pre.btw-output-error {
   border-left: 3px solid var(--bs-danger, #dc3545);
   background-color: rgba(220, 53, 69, 0.1);
 }
 
 /* Images in output */
-.btw-evaluate-output img {
+.btw-run-output img {
   max-width: 100%;
   height: auto;
   margin: 0.5rem 0;
@@ -72,7 +72,7 @@ btw-evaluate-r-result .card-body {
 }
 
 /* Code section styling */
-.btw-evaluate-code {
+.btw-run-code {
   pre {
     border: none;
     border-radius: 0;

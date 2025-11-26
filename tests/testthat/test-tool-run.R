@@ -1,8 +1,8 @@
-test_that("btw_tool_evaluate_r() returns simple calculations", {
+test_that("btw_tool_run_r() returns simple calculations", {
   skip_if_not_installed("evaluate")
 
-  res <- btw_tool_evaluate_r_impl("2 + 2")
-  expect_s7_class(res, BtwEvaluateToolResult)
+  res <- btw_tool_run_r_impl("2 + 2")
+  expect_s7_class(res, BtwRunToolResult)
   expect_type(res@value, "list")
   # The actual value is stored in extra$data
   expect_equal(res@extra$data, 4)
@@ -14,33 +14,33 @@ test_that("btw_tool_evaluate_r() returns simple calculations", {
   expect_true(nzchar(res@extra$output_html))
 })
 
-test_that("btw_tool_evaluate_r() captures messages", {
+test_that("btw_tool_run_r() captures messages", {
   skip_if_not_installed("evaluate")
 
-  res <- btw_tool_evaluate_r_impl('message("hello")')
-  expect_s7_class(res, BtwEvaluateToolResult)
+  res <- btw_tool_run_r_impl('message("hello")')
+  expect_s7_class(res, BtwRunToolResult)
   expect_type(res@value, "list")
   expect_length(res@value, 1)
   expect_s7_class(res@value[[1]], ContentMessage)
   expect_equal(res@value[[1]]@text, "hello")
 })
 
-test_that("btw_tool_evaluate_r() captures warnings", {
+test_that("btw_tool_run_r() captures warnings", {
   skip_if_not_installed("evaluate")
 
-  res <- btw_tool_evaluate_r_impl('warning("beware")')
-  expect_s7_class(res, BtwEvaluateToolResult)
+  res <- btw_tool_run_r_impl('warning("beware")')
+  expect_s7_class(res, BtwRunToolResult)
   expect_type(res@value, "list")
   expect_length(res@value, 1)
   expect_s7_class(res@value[[1]], ContentWarning)
   expect_match(res@value[[1]]@text, "beware")
 })
 
-test_that("btw_tool_evaluate_r() captures errors and stops", {
+test_that("btw_tool_run_r() captures errors and stops", {
   skip_if_not_installed("evaluate")
 
-  res <- btw_tool_evaluate_r_impl('x <- 1; stop("error"); y <- 2')
-  expect_s7_class(res, BtwEvaluateToolResult)
+  res <- btw_tool_run_r_impl('x <- 1; stop("error"); y <- 2')
+  expect_s7_class(res, BtwRunToolResult)
   expect_type(res@value, "list")
   # Should have the error content
   has_error <- any(vapply(
@@ -55,11 +55,11 @@ test_that("btw_tool_evaluate_r() captures errors and stops", {
   expect_false(is.null(res@error))
 })
 
-test_that("btw_tool_evaluate_r() captures plots", {
+test_that("btw_tool_run_r() captures plots", {
   skip_if_not_installed("evaluate")
 
-  res <- btw_tool_evaluate_r_impl('plot(1:10)')
-  expect_s7_class(res, BtwEvaluateToolResult)
+  res <- btw_tool_run_r_impl('plot(1:10)')
+  expect_s7_class(res, BtwRunToolResult)
   expect_type(res@value, "list")
   # Should have at least one ContentImageInline
   has_plot <- any(vapply(
@@ -70,7 +70,7 @@ test_that("btw_tool_evaluate_r() captures plots", {
   expect_true(has_plot)
 })
 
-test_that("btw_tool_evaluate_r() handles multiple outputs", {
+test_that("btw_tool_run_r() handles multiple outputs", {
   skip_if_not_installed("evaluate")
 
   code <- '
@@ -79,8 +79,8 @@ test_that("btw_tool_evaluate_r() handles multiple outputs", {
     mean(x)
     warning("careful")
   '
-  res <- btw_tool_evaluate_r_impl(code)
-  expect_s7_class(res, BtwEvaluateToolResult)
+  res <- btw_tool_run_r_impl(code)
+  expect_s7_class(res, BtwRunToolResult)
   expect_type(res@value, "list")
   expect_gte(length(res@value), 3)
 
@@ -106,11 +106,11 @@ test_that("btw_tool_evaluate_r() handles multiple outputs", {
   expect_true(has_warning)
 })
 
-test_that("btw_tool_evaluate_r() requires string input", {
+test_that("btw_tool_run_r() requires string input", {
   skip_if_not_installed("evaluate")
 
-  expect_error(btw_tool_evaluate_r_impl(123), class = "rlang_error")
-  expect_error(btw_tool_evaluate_r_impl(NULL), class = "rlang_error")
+  expect_error(btw_tool_run_r_impl(123), class = "rlang_error")
+  expect_error(btw_tool_run_r_impl(NULL), class = "rlang_error")
 })
 
 test_that("ContentCode, ContentMessage, ContentWarning, ContentError inherit from ContentText", {
@@ -151,18 +151,18 @@ test_that("adjacent content of same type is merged", {
   skip_if_not_installed("evaluate")
 
   # Multiple messages should be merged
-  res <- btw_tool_evaluate_r_impl('message("a"); message("b")')
+  res <- btw_tool_run_r_impl('message("a"); message("b")')
   expect_length(res@value, 1)
   expect_s7_class(res@value[[1]], ContentMessage)
   expect_match(res@value[[1]]@text, "a\nb")
 
   # Multiple code outputs should be merged
-  res <- btw_tool_evaluate_r_impl('1 + 1; 2 + 2')
+  res <- btw_tool_run_r_impl('1 + 1; 2 + 2')
   expect_length(res@value, 1)
   expect_s7_class(res@value[[1]], ContentCode)
 
   # Different types should not be merged
-  res <- btw_tool_evaluate_r_impl('message("a"); 1 + 1; warning("b")')
+  res <- btw_tool_run_r_impl('message("a"); 1 + 1; warning("b")')
   expect_length(res@value, 3)
   expect_s7_class(res@value[[1]], ContentMessage)
   expect_s7_class(res@value[[2]], ContentCode)

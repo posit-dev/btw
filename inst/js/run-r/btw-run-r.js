@@ -1,6 +1,6 @@
 /**
- * Custom element for displaying btw_tool_evaluate_r results in shinychat.
- * @module btw-evaluate-r
+ * Custom element for displaying btw_tool_run_r results in shinychat.
+ * @module btw-run-r
  */
 
 // Ensure shinychat's hidden requests set exists
@@ -37,23 +37,23 @@ function markdownCodeBlock(content, language = "r") {
 }
 
 /**
- * Web component that displays the result of btw_tool_evaluate_r execution.
+ * Web component that displays the result of btw_tool_run_r execution.
  *
- * @element btw-evaluate-r-result
+ * @element btw-run-r-result
  * @attr {string} request-id - Unique identifier linking to the tool request
  * @attr {string} code - The R code that was executed
  * @attr {string} status - Execution status: "success" or "error"
  *
  * @example
- * <btw-evaluate-r-result
+ * <btw-run-r-result
  *   request-id="abc123"
  *   code="1 + 1"
  *   status="success"
  * >
  *   <pre><code>[1] 2</code></pre>
- * </btw-evaluate-r-result>
+ * </btw-run-r-result>
  */
-class BtwEvaluateRResult extends HTMLElement {
+class BtwRunRResult extends HTMLElement {
   /** @type {boolean} */
   expanded = true
 
@@ -108,7 +108,7 @@ class BtwEvaluateRResult extends HTMLElement {
    * @returns {string}
    */
   formatTitle() {
-    const title = '<span class="tool-title-name">Evaluate R Code</span>'
+    const title = '<span class="tool-title-name">Run R Code</span>'
     return this.titleTemplate.replace("{title}", title)
   }
 
@@ -147,13 +147,13 @@ class BtwEvaluateRResult extends HTMLElement {
           aria-labelledby="${headerId}"
           ${!this.expanded ? 'inert=""' : ""}
         >
-          <div class="btw-evaluate-code">
+          <div class="btw-run-code">
             <shiny-markdown-stream
               content="${this.escapeAttr(markdownCodeBlock(code, "r"))}"
               content-type="markdown"
             ></shiny-markdown-stream>
           </div>
-          <div class="btw-evaluate-output">
+          <div class="btw-run-output">
             ${outputHtml}
           </div>
         </div>
@@ -183,4 +183,4 @@ class BtwEvaluateRResult extends HTMLElement {
 }
 
 // Register the custom element
-customElements.define("btw-evaluate-r-result", BtwEvaluateRResult)
+customElements.define("btw-run-r-result", BtwRunRResult)

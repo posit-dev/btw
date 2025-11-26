@@ -1,10 +1,10 @@
-#' Tool: Evaluate R code
+#' Tool: Run R code
 #'
-#' This tool evaluates R code and returns results as ellmer Content objects.
+#' This tool runs R code and returns results as ellmer Content objects.
 #' It captures text output, plots, messages, warnings, and errors.
-#' Code evaluation stops on the first error, returning all results up to that point.
+#' Code execution stops on the first error, returning all results up to that point.
 #'
-#' @param code A character string containing R code to evaluate.
+#' @param code A character string containing R code to run.
 #' @param `_intent` Intent description (automatically added by ellmer).
 #'
 #' @returns A list of ellmer Content objects:
@@ -12,31 +12,31 @@
 #'   - `ContentMessage`: messages from `message()`
 #'   - `ContentWarning`: warnings from `warning()`
 #'   - `ContentError`: errors from `stop()`
-#'   - `ContentImageInline`: plots created during evaluation
+#'   - `ContentImageInline`: plots created during execution
 #'
 #' @examples
 #' \dontrun{
 #' # Simple calculation
-#' btw_tool_evaluate_r("2 + 2")
+#' btw_tool_run_r("2 + 2")
 #'
 #' # Code with plot
-#' btw_tool_evaluate_r("hist(rnorm(100))")
+#' btw_tool_run_r("hist(rnorm(100))")
 #'
 #' # Code with warning
-#' btw_tool_evaluate_r("mean(c(1, 2, NA))")
+#' btw_tool_run_r("mean(c(1, 2, NA))")
 #' }
 #'
 #' @seealso [btw_tools()]
 #' @family Tools
 #' @export
-btw_tool_evaluate_r <- function(code, `_intent`) {}
+btw_tool_run_r <- function(code, `_intent`) {}
 
-btw_tool_evaluate_r_impl <- function(code, ...) {
+btw_tool_run_r_impl <- function(code, ...) {
   check_dots_empty()
   check_string(code)
 
   # Check if evaluate package is available
-  check_installed("evaluate", "to evaluate R code.")
+  check_installed("evaluate", "to run R code.")
 
   # Initialize list to store Content objects
   contents <- list()
@@ -152,8 +152,8 @@ btw_tool_evaluate_r_impl <- function(code, ...) {
   )
   output_html <- paste(output_html, collapse = "\n")
 
-  # Return as BtwEvaluateToolResult
-  BtwEvaluateToolResult(
+  # Return as BtwRunToolResult
+  BtwRunToolResult(
     value = contents,
     error = if (had_error) contents[[length(contents)]]@text else NULL,
     extra = list(
@@ -165,24 +165,24 @@ btw_tool_evaluate_r_impl <- function(code, ...) {
 }
 
 .btw_add_to_tools(
-  name = "btw_tool_evaluate_r",
-  group = "eval",
+  name = "btw_tool_run_r",
+  group = "run",
   tool = function() {
     ellmer::tool(
       function(code) {
-        btw_tool_evaluate_r_impl(code = code)
+        btw_tool_run_r_impl(code = code)
       },
-      name = "btw_tool_evaluate_r",
-      description = "Execute R code and return results as Content objects. Captures text output, plots, messages, warnings, and errors. Stops on first error.",
+      name = "btw_tool_run_r",
+      description = "Run R code and return results as Content objects. Captures text output, plots, messages, warnings, and errors. Stops on first error.",
       annotations = ellmer::tool_annotations(
-        title = "Evaluate R Code",
+        title = "Run R Code",
         read_only_hint = FALSE,
         open_world_hint = FALSE,
         btw_can_register = function() TRUE
       ),
       arguments = list(
         code = ellmer::type_string(
-          "R code to evaluate as a string."
+          "R code to run as a string."
         )
       )
     )
@@ -210,8 +210,8 @@ ContentError <- S7::new_class(
   parent = ellmer::ContentText
 )
 
-BtwEvaluateToolResult <- S7::new_class(
-  "BtwEvaluateToolResult",
+BtwRunToolResult <- S7::new_class(
+  "BtwRunToolResult",
   parent = ellmer::ContentToolResult
 )
 
@@ -257,24 +257,24 @@ contents_shinychat <- S7::new_external_generic(
   dispatch_args = "content"
 )
 
-S7::method(contents_shinychat, BtwEvaluateToolResult) <- function(content) {
+S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
   code <- content@extra$code
   output_html <- content@extra$output_html
   request_id <- content@request@id
   status <- if (!is.null(content@error)) "error" else "success"
 
   dep <- htmltools::htmlDependency(
-    name = "btw-evaluate-r",
+    name = "btw-run-r",
     version = utils::packageVersion("btw"),
     package = "btw",
-    src = "js/evaluate-r",
-    script = list(list(src = "btw-evaluate-r.js", type = "module")),
-    stylesheet = "btw-evaluate-r.css",
+    src = "js/run-r",
+    script = list(list(src = "btw-run-r.js", type = "module")),
+    stylesheet = "btw-run-r.css",
     all_files = FALSE
   )
 
   htmltools::tag(
-    "btw-evaluate-r-result",
+    "btw-run-r-result",
     list(
       `request-id` = request_id,
       code = code,
