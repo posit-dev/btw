@@ -1,30 +1,3 @@
-#' S7 Content Types for Code Evaluation Results
-#'
-#' These S7 classes extend ellmer's ContentText to provide semantic meaning
-#' to different types of text output from code evaluation.
-#'
-#' @name ContentTypes
-#' @keywords internal
-NULL
-
-#' @rdname ContentTypes
-ContentMessage <- S7::new_class(
-  "ContentMessage",
-  parent = ellmer::ContentText
-)
-
-#' @rdname ContentTypes
-ContentWarning <- S7::new_class(
-  "ContentWarning",
-  parent = ellmer::ContentText
-)
-
-#' @rdname ContentTypes
-ContentError <- S7::new_class(
-  "ContentError",
-  parent = ellmer::ContentText
-)
-
 #' Tool: Evaluate R code
 #'
 #' This tool evaluates R code and returns results as ellmer Content objects.
@@ -69,6 +42,8 @@ btw_tool_evaluate_r_impl <- function(code, ...) {
   contents <- list()
   # Store the last value for potential use
   last_value <- NULL
+  # Track if an error occurred
+  had_error <- FALSE
 
   # Create output handler that converts to Content types as outputs are generated
   handler <- evaluate::new_output_handler(
@@ -78,7 +53,7 @@ btw_tool_evaluate_r_impl <- function(code, ...) {
     },
     text = function(text) {
       # Text output (from print, cat, etc.)
-      contents <<- append(contents, list(ellmer::ContentText(text)))
+      contents <<- append(contents, list(ContentCode(text = text)))
       text
     },
     graphics = function(plot) {
@@ -126,6 +101,7 @@ btw_tool_evaluate_r_impl <- function(code, ...) {
     error = function(err) {
       # Error message
       err_text <- conditionMessage(err)
+      had_error <<- TRUE
       contents <<- append(
         contents,
         list(
@@ -139,7 +115,7 @@ btw_tool_evaluate_r_impl <- function(code, ...) {
       # Invisible values include assignments and side-effect returns
       if (visible) {
         last_value <<- value
-        # Also add as text content
+        # Also add as code content
         value_text <- paste(
           utils::capture.output(print(value)),
           collapse = "\n"
@@ -147,7 +123,7 @@ btw_tool_evaluate_r_impl <- function(code, ...) {
         contents <<- append(
           contents,
           list(
-            ellmer::ContentText(value_text)
+            ContentCode(text = value_text)
           )
         )
       }
@@ -165,13 +141,25 @@ btw_tool_evaluate_r_impl <- function(code, ...) {
     output_handler = handler
   )
 
-  # Return as ContentToolResult with contents in extra
-  # The value is stored but the contents list is what gets displayed
-  BtwToolResult(
+  # Merge adjacent content of the same type
+  contents <- merge_adjacent_content(contents)
+
+  # Render all content objects to HTML
+  output_html <- vapply(
     contents,
+    function(content) ellmer::contents_html(content),
+    character(1)
+  )
+  output_html <- paste(output_html, collapse = "\n")
+
+  # Return as BtwEvaluateToolResult
+  BtwEvaluateToolResult(
+    value = contents,
+    error = if (had_error) contents[[length(contents)]]@text else NULL,
     extra = list(
       data = last_value,
-      code = code
+      code = code,
+      output_html = output_html
     )
   )
 }
@@ -200,3 +188,152 @@ btw_tool_evaluate_r_impl <- function(code, ...) {
     )
   }
 )
+
+# ---- Content Types ----
+ContentCode <- S7::new_class(
+  "ContentCode",
+  parent = ellmer::ContentText
+)
+
+ContentMessage <- S7::new_class(
+  "ContentMessage",
+  parent = ellmer::ContentText
+)
+
+ContentWarning <- S7::new_class(
+  "ContentWarning",
+  parent = ellmer::ContentText
+)
+
+ContentError <- S7::new_class(
+  "ContentError",
+  parent = ellmer::ContentText
+)
+
+BtwEvaluateToolResult <- S7::new_class(
+  "BtwEvaluateToolResult",
+  parent = ellmer::ContentToolResult
+)
+
+contents_html <- S7::new_external_generic(
+  package = "ellmer",
+  name = "contents_html",
+  dispatch_args = "content"
+)
+
+S7::method(contents_html, ContentCode) <- function(content, ...) {
+  text <- htmltools::htmlEscape(content@text)
+  sprintf('<pre><code>%s</code></pre>', trimws(text))
+}
+
+S7::method(contents_html, ContentMessage) <- function(content, ...) {
+  text <- htmltools::htmlEscape(content@text)
+
+  sprintf(
+    '<pre class="btw-output-message"><code>%s</code></pre>',
+    trimws(text)
+  )
+}
+
+S7::method(contents_html, ContentWarning) <- function(content, ...) {
+  text <- htmltools::htmlEscape(content@text)
+  sprintf(
+    '<pre class="btw-output-warning"><code>%s</code></pre>',
+    trimws(text)
+  )
+}
+
+S7::method(contents_html, ContentError) <- function(content, ...) {
+  text <- htmltools::htmlEscape(content@text)
+  sprintf(
+    '<pre class="btw-output-error"><code>%s</code></pre>',
+    trimws(text)
+  )
+}
+
+contents_shinychat <- S7::new_external_generic(
+  package = "shinychat",
+  name = "contents_shinychat",
+  dispatch_args = "content"
+)
+
+S7::method(contents_shinychat, BtwEvaluateToolResult) <- function(content) {
+  code <- content@extra$code
+  output_html <- content@extra$output_html
+  request_id <- content@request@id
+  status <- if (!is.null(content@error)) "error" else "success"
+
+  dep <- htmltools::htmlDependency(
+    name = "btw-evaluate-r",
+    version = utils::packageVersion("btw"),
+    package = "btw",
+    src = "js/evaluate-r",
+    script = list(list(src = "btw-evaluate-r.js", type = "module")),
+    stylesheet = "btw-evaluate-r.css",
+    all_files = FALSE
+  )
+
+  htmltools::tag(
+    "btw-evaluate-r-result",
+    list(
+      `request-id` = request_id,
+      code = code,
+      status = status,
+      htmltools::HTML(output_html),
+      dep
+    )
+  )
+}
+
+is_mergeable_content <- function(x, y) {
+  mergeable_content_types <- list(
+    ContentCode,
+    ContentMessage,
+    ContentWarning,
+    ContentError
+  )
+
+  for (cls in mergeable_content_types) {
+    if (S7::S7_inherits(x, cls) && S7::S7_inherits(y, cls)) {
+      return(TRUE)
+    }
+  }
+
+  FALSE
+}
+
+#' Merge adjacent content of the same type
+#'
+#' Reduces a list of Content objects by concatenating adjacent elements
+#' of the same mergeable type (ContentCode, ContentMessage, ContentWarning,
+#' ContentError) into single elements.
+#'
+#' @param contents List of Content objects
+#' @returns List of Content objects with adjacent same-type elements merged
+#' @keywords internal
+merge_adjacent_content <- function(contents) {
+  if (length(contents) <= 1) {
+    return(contents)
+  }
+
+  reduce(
+    contents,
+    function(acc, item) {
+      if (length(acc) == 0) {
+        return(list(item))
+      }
+
+      last <- acc[[length(acc)]]
+
+      if (is_mergeable_content(last, item)) {
+        # Merge by concatenating text with newline
+        merged_text <- paste(last@text, item@text, sep = "\n")
+        S7::prop(acc[[length(acc)]], "text") <- merged_text
+        acc
+      } else {
+        append(acc, list(item))
+      }
+    },
+    .init = list()
+  )
+}
