@@ -61,10 +61,9 @@ test_that("btw_tool_run_r() captures plots", {
   res <- btw_tool_run_r_impl('plot(1:10)')
   expect_s7_class(res, BtwRunToolResult)
   expect_type(res@value, "list")
-  # Should have at least one ContentImageInline
   has_plot <- any(vapply(
     res@value,
-    function(x) S7::S7_inherits(x, ellmer::ContentImageInline),
+    function(x) S7::S7_inherits(x, ellmer::ContentImage),
     logical(1)
   ))
   expect_true(has_plot)
