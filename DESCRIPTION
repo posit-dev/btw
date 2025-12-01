@@ -53,6 +53,7 @@ Suggests:
     chromote,
     DBI,
     duckdb,
+    evaluate,
     gert,
     gh,
     htmltools,

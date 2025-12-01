@@ -31,15 +31,14 @@
 #' @export
 btw_tool_run_r <- function(code, `_intent`) {}
 
-btw_tool_run_r_impl <- function(code, ...) {
-  check_dots_empty()
+btw_tool_run_r_impl <- function(code) {
   check_string(code)
-
-  # Check if evaluate package is available
   check_installed("evaluate", "to run R code.")
 
   # Initialize list to store Content objects
   contents <- list()
+  append_content <- function(x) contents <<- c(contents, list(x))
+
   # Store the last value for potential use
   last_value <- NULL
   # Track if an error occurred
@@ -53,25 +52,17 @@ btw_tool_run_r_impl <- function(code, ...) {
     },
     text = function(text) {
       # Text output (from print, cat, etc.)
-      contents <<- append(contents, list(ContentCode(text = text)))
+      append_content(ContentCode(text = text))
       text
     },
     graphics = function(plot) {
       # Save plot to temporary file
-      tmp <- withr::local_tempfile(fileext = ".png")
-      grDevices::png(tmp, width = 768, height = 768)
+      path_plot <- withr::local_tempfile(fileext = ".png")
+      grDevices::png(path_plot, width = 768, height = 768)
       grDevices::replayPlot(plot)
       grDevices::dev.off()
 
-      # Read and encode as base64
-      img_data <- base64enc::base64encode(tmp)
-      contents <<- append(
-        contents,
-        list(
-          ellmer::ContentImageInline(type = "image/png", data = img_data)
-        )
-      )
-
+      append_content(ellmer::content_image_file(path_plot))
       plot
     },
     message = function(msg) {
@@ -79,35 +70,18 @@ btw_tool_run_r_impl <- function(code, ...) {
       msg_text <- conditionMessage(msg)
       # Remove trailing newline that message() adds
       msg_text <- sub("\n$", "", msg_text)
-      contents <<- append(
-        contents,
-        list(
-          ContentMessage(text = msg_text)
-        )
-      )
+      append_content(ContentMessage(text = msg_text))
       msg
     },
     warning = function(warn) {
       # Warning message
-      warn_text <- conditionMessage(warn)
-      contents <<- append(
-        contents,
-        list(
-          ContentWarning(text = warn_text)
-        )
-      )
+      append_content(ContentWarning(conditionMessage(warn)))
       warn
     },
     error = function(err) {
       # Error message
-      err_text <- conditionMessage(err)
       had_error <<- TRUE
-      contents <<- append(
-        contents,
-        list(
-          ContentError(text = err_text)
-        )
-      )
+      append_content(ContentError(conditionMessage(err)))
       err
     },
     value = function(value, visible) {
@@ -120,12 +94,7 @@ btw_tool_run_r_impl <- function(code, ...) {
           utils::capture.output(print(value)),
           collapse = "\n"
         )
-        contents <<- append(
-          contents,
-          list(
-            ContentCode(text = value_text)
-          )
-        )
+        append_content(ContentCode(text = value_text))
       }
 
       if (visible) value
@@ -164,26 +133,26 @@ btw_tool_run_r_impl <- function(code, ...) {
   )
 }
 
+btw_can_register_run_r_tool <- function() {
+  rlang::is_installed("evaluate")
+}
+
 .btw_add_to_tools(
   name = "btw_tool_run_r",
   group = "run",
   tool = function() {
     ellmer::tool(
-      function(code) {
-        btw_tool_run_r_impl(code = code)
-      },
+      btw_tool_run_r_impl,
       name = "btw_tool_run_r",
       description = "Run R code and return results as Content objects. Captures text output, plots, messages, warnings, and errors. Stops on first error.",
       annotations = ellmer::tool_annotations(
         title = "Run R Code",
         read_only_hint = FALSE,
         open_world_hint = FALSE,
-        btw_can_register = function() TRUE
+        btw_can_register = btw_can_register_run_r_tool
       ),
       arguments = list(
-        code = ellmer::type_string(
-          "R code to run as a string."
-        )
+        code = ellmer::type_string("R code to run as a string.")
       )
     )
   }
