@@ -31,18 +31,37 @@
 #' @export
 btw_tool_run_r <- function(code, `_intent`) {}
 
-btw_tool_run_r_impl <- function(code) {
+btw_tool_run_r_impl <- function(code, .envir = global_env()) {
   check_string(code)
   check_installed("evaluate", "to run R code.")
 
-  # Initialize list to store Content objects
+  last_value <- NULL # Store the last value for potential use
+  had_error <- FALSE # Track if an error occurred
+
+  # Content results from evaluating the R code
   contents <- list()
   append_content <- function(x) contents <<- c(contents, list(x))
 
-  # Store the last value for potential use
-  last_value <- NULL
-  # Track if an error occurred
-  had_error <- FALSE
+  last_plot <- NULL
+  append_last_plot <- function() {
+    if (is.null(last_plot)) {
+      return()
+    }
+
+    path_plot <- withr::local_tempfile(fileext = ".png")
+    run_r_plot_device(filename = path_plot, width = 768, height = 768)
+    tryCatch(
+      grDevices::replayPlot(last_plot),
+      finally = {
+        grDevices::dev.off()
+      }
+    )
+
+    append_content(ellmer::content_image_file(path_plot, resize = "none"))
+    last_plot <<- NULL
+  }
+
+  local_reproducible_output(disable_ansi_features = !is_installed("fansi"))
 
   # Create output handler that converts to Content types as outputs are generated
   handler <- evaluate::new_output_handler(
@@ -51,26 +70,24 @@ btw_tool_run_r_impl <- function(code) {
       NULL
     },
     text = function(text) {
+      append_last_plot()
       # Text output (from print, cat, etc.)
       append_content(ContentCode(text = text))
       text
     },
     graphics = function(plot) {
-      # Save plot to temporary file
-      path_plot <- withr::local_tempfile(fileext = ".png")
-      run_r_plot_device(filename = path_plot, width = 768, height = 768)
-      tryCatch(
-        grDevices::replayPlot(plot),
-        finally = {
-          grDevices::dev.off()
+      if (!is.null(last_plot)) {
+        if (!last_plot %is_plot_prefix_of% plot) {
+          # New plot is not an extension of the last plot, so add the last plot
+          append_last_plot()
         }
-      )
+      }
 
-      append_content(ellmer::content_image_file(path_plot, resize = "none"))
+      last_plot <<- plot
       plot
     },
     message = function(msg) {
-      # Message output
+      append_last_plot()
       msg_text <- conditionMessage(msg)
       # Remove trailing newline that message() adds
       msg_text <- sub("\n$", "", msg_text)
@@ -78,12 +95,12 @@ btw_tool_run_r_impl <- function(code) {
       msg
     },
     warning = function(warn) {
-      # Warning message
+      append_last_plot()
       append_content(ContentWarning(conditionMessage(warn)))
       warn
     },
     error = function(err) {
-      # Error message
+      append_last_plot()
       had_error <<- TRUE
       append_content(ContentError(conditionMessage(err)))
       err
@@ -105,36 +122,51 @@ btw_tool_run_r_impl <- function(code) {
     }
   )
 
-  # Evaluate the code with our custom handler
+  # Evaluate the R code, collecting results along the way
   evaluate::evaluate(
     code,
-    envir = global_env(),
+    envir = .envir,
     stop_on_error = 1,
     new_device = TRUE,
     output_handler = handler
   )
 
+  # Ensure last plot is added if not caught by other handlers
+  append_last_plot()
+
   # Merge adjacent content of the same type
   contents <- merge_adjacent_content(contents)
 
-  # Render all content objects to HTML
-  output_html <- vapply(
-    contents,
-    function(content) ellmer::contents_html(content),
-    character(1)
-  )
-  output_html <- paste(output_html, collapse = "\n")
+  # For `value`, remove all ANSI codes
+  value <- map(contents, run_r_content_handle_ansi)
 
-  # Return as BtwRunToolResult
   BtwRunToolResult(
-    value = contents,
-    error = if (had_error) contents[[length(contents)]]@text else NULL,
+    value = value,
     extra = list(
       data = last_value,
       code = code,
-      output_html = output_html
+      contents = contents,
+      # We always return contents up to the error as `value` because `error`
+      # cannot handle rich output. We'll show status separately in the UI.
+      status = if (had_error) "error" else "success"
     )
   )
+}
+
+`%is_plot_prefix_of%` <- function(x, y) {
+  # See https://github.com/r-lib/evaluate/blob/20333c/R/graphics.R#L87-L88
+
+  stopifnot(inherits(x, "recordedplot"))
+  stopifnot(inherits(y, "recordedplot"))
+
+  x <- x[[1]]
+  y <- y[[1]]
+
+  if (length(x) > length(y)) {
+    return(FALSE)
+  }
+
+  identical(x[], y[seq_along(x)])
 }
 
 run_r_plot_device <- function(...) {
@@ -155,12 +187,29 @@ btw_can_register_run_r_tool <- function() {
   rlang::is_installed("evaluate")
 }
 
+run_r_content_handle_ansi <- function(x, plain = TRUE) {
+  if (!S7::S7_inherits(x, ellmer::ContentText)) {
+    return(x)
+  }
+
+  text <-
+    if (isTRUE(plain)) {
+      htmltools::htmlEscape(strip_ansi(x@text))
+    } else {
+      fansi::to_html(fansi::html_esc(x@text))
+    }
+
+  S7::set_props(x, text = text)
+}
+
 .btw_add_to_tools(
   name = "btw_tool_run_r",
   group = "run",
   tool = function() {
     ellmer::tool(
-      btw_tool_run_r_impl,
+      function(code) {
+        btw_tool_run_r_impl(code)
+      },
       name = "btw_tool_run_r",
       description = "Run R code and return results as Content objects. Captures text output, plots, messages, warnings, and errors. Stops on first error.",
       annotations = ellmer::tool_annotations(
@@ -209,32 +258,30 @@ contents_html <- S7::new_external_generic(
 )
 
 S7::method(contents_html, ContentCode) <- function(content, ...) {
-  text <- htmltools::htmlEscape(content@text)
-  sprintf('<pre><code>%s</code></pre>', trimws(text))
+  sprintf(
+    '<pre><code class="nohighlight">%s</code></pre>',
+    trimws(content@text)
+  )
 }
 
 S7::method(contents_html, ContentMessage) <- function(content, ...) {
-  text <- htmltools::htmlEscape(content@text)
-
   sprintf(
-    '<pre class="btw-output-message"><code>%s</code></pre>',
-    trimws(text)
+    '<pre class="btw-output-message"><code class="nohighlight">%s</code></pre>',
+    trimws(content@text)
   )
 }
 
 S7::method(contents_html, ContentWarning) <- function(content, ...) {
-  text <- htmltools::htmlEscape(content@text)
   sprintf(
-    '<pre class="btw-output-warning"><code>%s</code></pre>',
-    trimws(text)
+    '<pre class="btw-output-warning"><code class="nohighlight">%s</code></pre>',
+    trimws(content@text)
   )
 }
 
 S7::method(contents_html, ContentError) <- function(content, ...) {
-  text <- htmltools::htmlEscape(content@text)
   sprintf(
-    '<pre class="btw-output-error"><code>%s</code></pre>',
-    trimws(text)
+    '<pre class="btw-output-error"><code class="nohighlight">%s</code></pre>',
+    trimws(content@text)
   )
 }
 
@@ -246,9 +293,29 @@ contents_shinychat <- S7::new_external_generic(
 
 S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
   code <- content@extra$code
-  output_html <- content@extra$output_html
-  request_id <- content@request@id
-  status <- if (!is.null(content@error)) "error" else "success"
+
+  # Render all content objects to HTML
+  contents <- content@extra$contents
+  # ---- Deal with ANSI codes in content objects
+  contents <- map(contents, function(x) {
+    run_r_content_handle_ansi(x, plain = !is_installed("fansi"))
+  })
+  output_html <- map_chr(contents, ellmer::contents_html)
+  output_html <- paste(output_html, collapse = "\n")
+
+  status <- content@extra$status
+  request_id <- NULL
+  tool_title <- NULL
+
+  if (!is.null(content@request)) {
+    request_id <- content@request@id
+
+    tool_title <- NULL
+    tool <- content@request@tool
+    if (!is.null(tool)) {
+      tool_title <- tool@annotations$title
+    }
+  }
 
   dep <- htmltools::htmlDependency(
     name = "btw-run-r",
@@ -266,6 +333,7 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
       `request-id` = request_id,
       code = code,
       status = status,
+      `tool-title` = tool_title,
       htmltools::HTML(output_html),
       dep
     )

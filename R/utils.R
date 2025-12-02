@@ -189,22 +189,40 @@ path_btw_cache <- function(...) {
 local_reproducible_output <- function(
   width = 80L,
   max.print = 100,
+  disable_ansi_features = TRUE,
   .env = parent.frame()
 ) {
   # Replicating testthat::local_reproducible_output()
   withr::local_options(width = width, cli.width = width, .local_envir = .env)
   withr::local_envvar(RSTUDIO_CONSOLE_WIDTH = width, .local_envir = .env)
-  withr::local_envvar(list(NO_COLOR = "true"), .local_envir = .env)
+
+  if (disable_ansi_features) {
+    withr::local_envvar(list(NO_COLOR = "true"), .local_envir = .env)
+    withr::local_options(
+      crayon.enabled = FALSE,
+      cli.dynamic = FALSE,
+      cli.unicode = FALSE,
+      cli.condition_width = Inf,
+      cli.num_colors = 1L,
+      .local_envir = .env
+    )
+  } else {
+    withr::local_envvar(list(NO_COLOR = NA), .local_envir = .env)
+    withr::local_options(
+      crayon.enabled = TRUE,
+      cil.dynamic = TRUE,
+      cli.unicode = TRUE,
+      cli.condition_width = width,
+      cli.num_colors = 16L,
+      .local_envir = .env
+    )
+  }
+
   withr::local_options(
-    crayon.enabled = FALSE,
     cli.hyperlink = FALSE,
     cli.hyperlink_run = FALSE,
     cli.hyperlink_help = FALSE,
     cli.hyperlink_vignette = FALSE,
-    cli.dynamic = FALSE,
-    cli.unicode = FALSE,
-    cli.condition_width = Inf,
-    cli.num_colors = 1L,
     useFancyQuotes = FALSE,
     lifecycle_verbosity = "warning",
     OutDec = ".",
@@ -212,6 +230,12 @@ local_reproducible_output <- function(
     max.print = max.print,
     .local_envir = .env
   )
+}
+
+strip_ansi <- function(text) {
+  # Matches codes like "\x1B[31;43m", "\x1B[1;3;4m"
+  ansi_pattern <- "(\x1B|\x033)\\[[0-9;?=<>]*[@-~]"
+  gsub(ansi_pattern, "", text)
 }
 
 to_title_case <- function(x) {

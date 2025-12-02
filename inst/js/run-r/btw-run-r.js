@@ -22,7 +22,7 @@ const ICONS = {
   plus: `<svg xmlns="http://www.w3.org/2000/svg" width="10px" height="10px" viewBox="4 4 12 12" fill="none">
   <path class="horizontal" d="M5 11C4.44772 11 4 10.5523 4 10C4 9.44772 4.44772 9 5 9H15C15.5523 9 16 9.44772 16 10C16 10.5523 15.5523 11 15 11H5Z" fill="currentColor"/>
   <path class="vertical" d="M9 5C9 4.44772 9.44772 4 10 4C10.5523 4 11 4.44772 11 5V15C11 15.5523 10.5523 16 10 16C9.44772 16 9 15.5523 9 15V5Z" fill="currentColor"/>
-</svg>`
+</svg>`,
 }
 
 /**
@@ -59,6 +59,8 @@ class BtwRunRResult extends HTMLElement {
 
   constructor() {
     super()
+
+    this.toolTitle = this.getAttribute("tool-title") || "Run R Code"
   }
 
   connectedCallback() {
@@ -82,8 +84,8 @@ class BtwRunRResult extends HTMLElement {
         new CustomEvent("shiny-tool-request-hide", {
           detail: { request_id: requestId },
           bubbles: true,
-          cancelable: true
-        })
+          cancelable: true,
+        }),
       )
     }
 
@@ -104,12 +106,15 @@ class BtwRunRResult extends HTMLElement {
   }
 
   /**
-   * Format the title for display
+   * Formats the title for display in the card header. Uses the `titleTemplate`,
+   * replacing `{title}` with the actual title or name of the tool.
    * @returns {string}
    */
   formatTitle() {
-    const title = '<span class="tool-title-name">Run R Code</span>'
-    return this.titleTemplate.replace("{title}", title)
+    const displayTitle = `<span class="tool-title-name">${
+      this.toolTitle || "Run R Code"
+    }</span>`
+    return this.titleTemplate.replace("{title}", displayTitle)
   }
 
   /**
@@ -136,7 +141,9 @@ class BtwRunRResult extends HTMLElement {
           aria-controls="${contentId}"
         >
           <div class="tool-icon ${this.classStatus}">${this.icon}</div>
-          <div class="tool-title ${this.classStatus}">${this.formatTitle()}</div>
+          <div class="tool-title ${
+            this.classStatus
+          }">${this.formatTitle()}</div>
           <div class="tool-spacer"></div>
           <div class="collapse-indicator">${ICONS.plus}</div>
         </button>

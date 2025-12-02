@@ -10,8 +10,8 @@ test_that("btw_tool_run_r() returns simple calculations", {
   expect_length(res@value, 1)
   expect_s7_class(res@value[[1]], ContentCode)
   expect_match(res@value[[1]]@text, "4")
-  # Output HTML is rendered
-  expect_true(nzchar(res@extra$output_html))
+  # The contents in extra should match value
+  expect_equal(res@value, res@extra$contents)
 })
 
 test_that("btw_tool_run_r() captures messages", {
@@ -52,7 +52,7 @@ test_that("btw_tool_run_r() captures errors and stops", {
   # y should not be assigned (code stopped at error)
   expect_false(exists("y", envir = globalenv()))
   # Error should be set on result
-  expect_false(is.null(res@error))
+  expect_equal(res@extra$status, "error")
 })
 
 test_that("btw_tool_run_r() captures plots", {
@@ -140,7 +140,7 @@ test_that("contents_html() renders Content types correctly", {
   warn_html <- ellmer::contents_html(warn)
   err_html <- ellmer::contents_html(err)
 
-  expect_match(code_html, "<pre><code>")
+  expect_match(code_html, "<pre><code class=\"nohighlight\">")
   expect_match(msg_html, 'class="btw-output-message"')
   expect_match(warn_html, 'class="btw-output-warning"')
   expect_match(err_html, 'class="btw-output-error"')
@@ -166,4 +166,28 @@ test_that("adjacent content of same type is merged", {
   expect_s7_class(res@value[[1]], ContentMessage)
   expect_s7_class(res@value[[2]], ContentCode)
   expect_s7_class(res@value[[3]], ContentWarning)
+})
+
+test_that("intermediate plots are dropped", {
+  skip_if_not_installed("evaluate")
+
+  code <- "
+plot(1:3)
+text(1, 1, 'x')
+text(1, 1, 'y')"
+
+  res <- btw_tool_run_r_impl(code)
+  expect_s7_class(res, BtwRunToolResult)
+
+  expect_type(res@value, "list")
+  plot_contents <- keep(res@value, S7::S7_inherits, ellmer::ContentImage)
+  expect_length(plot_contents, 1)
+
+  expect_type(res@extra$contents, "list")
+  plot_contents_all <- keep(
+    res@extra$contents,
+    S7::S7_inherits,
+    ellmer::ContentImage
+  )
+  expect_length(plot_contents_all, 1)
 })
