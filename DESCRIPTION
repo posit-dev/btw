@@ -58,6 +58,7 @@ Suggests:
     gh,
     htmltools,
     pandoc,
+    ragg,
     shiny,
     shinychat (>= 0.2.0),
     testthat (>= 3.0.0),

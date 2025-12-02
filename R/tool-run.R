@@ -58,11 +58,15 @@ btw_tool_run_r_impl <- function(code) {
     graphics = function(plot) {
       # Save plot to temporary file
       path_plot <- withr::local_tempfile(fileext = ".png")
-      grDevices::png(path_plot, width = 768, height = 768)
-      grDevices::replayPlot(plot)
-      grDevices::dev.off()
+      run_r_plot_device(filename = path_plot, width = 768, height = 768)
+      tryCatch(
+        grDevices::replayPlot(plot),
+        finally = {
+          grDevices::dev.off()
+        }
+      )
 
-      append_content(ellmer::content_image_file(path_plot))
+      append_content(ellmer::content_image_file(path_plot, resize = "none"))
       plot
     },
     message = function(msg) {
@@ -131,6 +135,20 @@ btw_tool_run_r_impl <- function(code) {
       output_html = output_html
     )
   )
+}
+
+run_r_plot_device <- function(...) {
+  dev_fn <- getOption("btw.run_r.graphics_device", default = NULL)
+  if (!is.null(dev_fn)) {
+    check_function(dev_fn)
+    return(dev_fn(...))
+  }
+
+  if (rlang::is_installed("ragg")) {
+    return(ragg::agg_png(...))
+  }
+
+  grDevices::png(...)
 }
 
 btw_can_register_run_r_tool <- function() {
