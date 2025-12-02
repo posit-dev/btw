@@ -9,7 +9,7 @@ btw_tool_run_r(code, `_intent` = "")
 \arguments{
 \item{code}{A character string containing R code to run.}
 
-\item{`_intent`}{Intent description (automatically added by ellmer).}
+\item{_intent}{Intent description (automatically added by ellmer).}
 }
 \value{
 A list of ellmer Content objects:

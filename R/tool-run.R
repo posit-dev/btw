@@ -5,7 +5,7 @@
 #' Code execution stops on the first error, returning all results up to that point.
 #'
 #' @param code A character string containing R code to run.
-#' @param `_intent` Intent description (automatically added by ellmer).
+#' @param _intent Intent description (automatically added by ellmer).
 #'
 #' @returns A list of ellmer Content objects:
 #'   - `ContentText`: visible return values and text output
