@@ -196,10 +196,46 @@ run_r_content_handle_ansi <- function(x, plain = TRUE) {
     if (isTRUE(plain)) {
       htmltools::htmlEscape(strip_ansi(x@text))
     } else {
-      fansi::to_html(fansi::html_esc(x@text))
+      fansi_to_html(x@text)
     }
 
   S7::set_props(x, text = text)
+}
+
+#' Convert ANSI text to HTML with btw CSS classes
+#'
+#' Wrapper around fansi::to_html() that uses btw's CSS classes for ANSI colors.
+#' Supports all 16 ANSI colors (basic + bright) with Bootstrap 5 theme integration.
+#'
+#' @param text Character string with ANSI escape codes
+#' @returns Character string with HTML span elements using btw ANSI CSS classes
+#' @noRd
+fansi_to_html <- function(text) {
+  # Define 32 class names for all ANSI 16 colors (foreground + background).
+  # Order must alternate fg/bg for each color: black, red, green, yellow, blue,
+  # magenta, cyan, white, then bright versions of each
+
+  # Color names for basic (0-7) and bright (8-15) colors
+  colors_basic <- c(
+    "black",
+    "red",
+    "green",
+    "yellow",
+    "blue",
+    "magenta",
+    "cyan",
+    "white"
+  )
+  colors_bright <- paste("bright", colors_basic, sep = "-")
+  colors_all <- c(colors_basic, colors_bright)
+
+  # Generate class names: for each color, create fg and bg class
+  classes_32 <- paste0(
+    "btw-ansi-",
+    c(rbind(paste0("fg-", colors_all), paste0("bg-", colors_all)))
+  )
+
+  fansi::to_html(fansi::html_esc(text), classes = classes_32)
 }
 
 .btw_add_to_tools(

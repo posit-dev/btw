@@ -25,6 +25,10 @@ btw-run-r-result .card-body {
   overflow-x: auto;
 }
 
+[data-bs-theme="dark"] .btw-run-output pre {
+  background-color: var(--bs-black);
+}
+
 .btw-run-output .code-copy-button {
   /* TODO: Figure out how to disable markdown-stream code copy button */
   display: none;
@@ -85,3 +89,128 @@ btw-run-r-result .card-body {
     }
   }
 }
+
+/* ANSI color variables */
+:root {
+  /* Basic foreground colors (0-7) - Bootstrap defaults work well on white */
+  --btw-ansi-fg-black: var(--bs-dark);
+  --btw-ansi-fg-red: var(--bs-danger);
+  --btw-ansi-fg-green: var(--bs-success);
+  --btw-ansi-fg-yellow: var(--bs-warning);
+  --btw-ansi-fg-blue: var(--bs-primary);
+  --btw-ansi-fg-magenta: var(--bs-pink);
+  --btw-ansi-fg-cyan: var(--bs-info);
+  --btw-ansi-fg-white: var(--bs-light);
+
+  /* Bright foreground colors (8-15) */
+  --btw-ansi-fg-bright-black: var(--bs-secondary);
+  --btw-ansi-fg-bright-red: color-mix(in srgb, var(--bs-danger) 70%, var(--bs-white) 30%);
+  --btw-ansi-fg-bright-green: color-mix(in srgb, var(--bs-success) 70%, var(--bs-white) 30%);
+  --btw-ansi-fg-bright-yellow: color-mix(in srgb, var(--bs-warning) 70%, var(--bs-white) 30%);
+  --btw-ansi-fg-bright-blue: color-mix(in srgb, var(--bs-primary) 70%, var(--bs-white) 30%);
+  --btw-ansi-fg-bright-magenta: var(--bs-purple);
+  --btw-ansi-fg-bright-cyan: color-mix(in srgb, var(--bs-info) 70%, var(--bs-white) 30%);
+  --btw-ansi-fg-bright-white: var(--bs-white);
+
+  /* Basic background colors (0-7) */
+  --btw-ansi-bg-black: var(--bs-dark);
+  --btw-ansi-bg-red: var(--bs-danger);
+  --btw-ansi-bg-green: var(--bs-success);
+  --btw-ansi-bg-yellow: var(--bs-warning);
+  --btw-ansi-bg-blue: var(--bs-primary);
+  --btw-ansi-bg-magenta: var(--bs-pink);
+  --btw-ansi-bg-cyan: var(--bs-info);
+  --btw-ansi-bg-white: var(--bs-light);
+
+  /* Bright background colors (8-15) */
+  --btw-ansi-bg-bright-black: var(--bs-secondary);
+  --btw-ansi-bg-bright-red: color-mix(in srgb, var(--bs-danger) 70%, var(--bs-white) 30%);
+  --btw-ansi-bg-bright-green: color-mix(in srgb, var(--bs-success) 70%, var(--bs-white) 30%);
+  --btw-ansi-bg-bright-yellow: color-mix(in srgb, var(--bs-warning) 70%, var(--bs-white) 30%);
+  --btw-ansi-bg-bright-blue: color-mix(in srgb, var(--bs-primary) 70%, var(--bs-white) 30%);
+  --btw-ansi-bg-bright-magenta: var(--bs-purple);
+  --btw-ansi-bg-bright-cyan: color-mix(in srgb, var(--bs-info) 70%, var(--bs-white) 30%);
+  --btw-ansi-bg-bright-white: var(--bs-white);
+}
+
+[data-bs-theme="dark"] {
+  /* Basic foreground colors (0-7) - Lighten for better contrast on dark background */
+  --btw-ansi-fg-black: color-mix(in srgb, var(--bs-dark) 40%, var(--bs-white) 60%);
+  --btw-ansi-fg-red: color-mix(in srgb, var(--bs-danger) 60%, var(--bs-white) 40%);
+  --btw-ansi-fg-green: color-mix(in srgb, var(--bs-success) 60%, var(--bs-white) 40%);
+  --btw-ansi-fg-yellow: color-mix(in srgb, var(--bs-warning) 60%, var(--bs-white) 40%);
+  --btw-ansi-fg-blue: color-mix(in srgb, var(--bs-primary) 60%, var(--bs-white) 40%);
+  --btw-ansi-fg-magenta: color-mix(in srgb, var(--bs-pink) 60%, var(--bs-white) 40%);
+  --btw-ansi-fg-cyan: color-mix(in srgb, var(--bs-info) 60%, var(--bs-white) 40%);
+  --btw-ansi-fg-white: var(--bs-light);
+
+  /* Bright foreground colors (8-15) - Even lighter for bright variants */
+  --btw-ansi-fg-bright-black: color-mix(in srgb, var(--bs-secondary) 50%, var(--bs-white) 50%);
+  --btw-ansi-fg-bright-red: color-mix(in srgb, var(--bs-danger) 50%, var(--bs-white) 50%);
+  --btw-ansi-fg-bright-green: color-mix(in srgb, var(--bs-success) 50%, var(--bs-white) 50%);
+  --btw-ansi-fg-bright-yellow: color-mix(in srgb, var(--bs-warning) 50%, var(--bs-white) 50%);
+  --btw-ansi-fg-bright-blue: color-mix(in srgb, var(--bs-primary) 50%, var(--bs-white) 50%);
+  --btw-ansi-fg-bright-magenta: color-mix(in srgb, var(--bs-purple) 50%, var(--bs-white) 50%);
+  --btw-ansi-fg-bright-cyan: color-mix(in srgb, var(--bs-info) 50%, var(--bs-white) 50%);
+  --btw-ansi-fg-bright-white: var(--bs-white);
+
+  /* Basic background colors (0-7) - Lighten for visibility on dark background */
+  --btw-ansi-bg-black: color-mix(in srgb, var(--bs-dark) 70%, var(--bs-white) 30%);
+  --btw-ansi-bg-red: color-mix(in srgb, var(--bs-danger) 60%, var(--bs-white) 40%);
+  --btw-ansi-bg-green: color-mix(in srgb, var(--bs-success) 60%, var(--bs-white) 40%);
+  --btw-ansi-bg-yellow: color-mix(in srgb, var(--bs-warning) 60%, var(--bs-white) 40%);
+  --btw-ansi-bg-blue: color-mix(in srgb, var(--bs-primary) 60%, var(--bs-white) 40%);
+  --btw-ansi-bg-magenta: color-mix(in srgb, var(--bs-pink) 60%, var(--bs-white) 40%);
+  --btw-ansi-bg-cyan: color-mix(in srgb, var(--bs-info) 60%, var(--bs-white) 40%);
+  --btw-ansi-bg-white: color-mix(in srgb, var(--bs-light) 80%, var(--bs-white) 20%);
+
+  /* Bright background colors (8-15) - Even lighter */
+  --btw-ansi-bg-bright-black: color-mix(in srgb, var(--bs-secondary) 60%, var(--bs-white) 40%);
+  --btw-ansi-bg-bright-red: color-mix(in srgb, var(--bs-danger) 50%, var(--bs-white) 50%);
+  --btw-ansi-bg-bright-green: color-mix(in srgb, var(--bs-success) 50%, var(--bs-white) 50%);
+  --btw-ansi-bg-bright-yellow: color-mix(in srgb, var(--bs-warning) 50%, var(--bs-white) 50%);
+  --btw-ansi-bg-bright-blue: color-mix(in srgb, var(--bs-primary) 50%, var(--bs-white) 50%);
+  --btw-ansi-bg-bright-magenta: color-mix(in srgb, var(--bs-purple) 50%, var(--bs-white) 50%);
+  --btw-ansi-bg-bright-cyan: color-mix(in srgb, var(--bs-info) 50%, var(--bs-white) 50%);
+  --btw-ansi-bg-bright-white: var(--bs-white);
+}
+
+/* ANSI Basic Foreground Colors (0-7) */
+.btw-ansi-fg-black { color: var(--btw-ansi-fg-black); }
+.btw-ansi-fg-red { color: var(--btw-ansi-fg-red); }
+.btw-ansi-fg-green { color: var(--btw-ansi-fg-green); }
+.btw-ansi-fg-yellow { color: var(--btw-ansi-fg-yellow); }
+.btw-ansi-fg-blue { color: var(--btw-ansi-fg-blue); }
+.btw-ansi-fg-magenta { color: var(--btw-ansi-fg-magenta); }
+.btw-ansi-fg-cyan { color: var(--btw-ansi-fg-cyan); }
+.btw-ansi-fg-white { color: var(--btw-ansi-fg-white); }
+
+/* ANSI Bright Foreground Colors (8-15) */
+.btw-ansi-fg-bright-black { color: var(--btw-ansi-fg-bright-black); }
+.btw-ansi-fg-bright-red { color: var(--btw-ansi-fg-bright-red); }
+.btw-ansi-fg-bright-green { color: var(--btw-ansi-fg-bright-green); }
+.btw-ansi-fg-bright-yellow { color: var(--btw-ansi-fg-bright-yellow); }
+.btw-ansi-fg-bright-blue { color: var(--btw-ansi-fg-bright-blue); }
+.btw-ansi-fg-bright-magenta { color: var(--btw-ansi-fg-bright-magenta); }
+.btw-ansi-fg-bright-cyan { color: var(--btw-ansi-fg-bright-cyan); }
+.btw-ansi-fg-bright-white { color: var(--btw-ansi-fg-bright-white); }
+
+/* ANSI Basic Background Colors (0-7) */
+.btw-ansi-bg-black { background-color: var(--btw-ansi-bg-black); }
+.btw-ansi-bg-red { background-color: var(--btw-ansi-bg-red); }
+.btw-ansi-bg-green { background-color: var(--btw-ansi-bg-green); }
+.btw-ansi-bg-yellow { background-color: var(--btw-ansi-bg-yellow); }
+.btw-ansi-bg-blue { background-color: var(--btw-ansi-bg-blue); }
+.btw-ansi-bg-magenta { background-color: var(--btw-ansi-bg-magenta); }
+.btw-ansi-bg-cyan { background-color: var(--btw-ansi-bg-cyan); }
+.btw-ansi-bg-white { background-color: var(--btw-ansi-bg-white); }
+
+/* ANSI Bright Background Colors (8-15) */
+.btw-ansi-bg-bright-black { background-color: var(--btw-ansi-bg-bright-black); }
+.btw-ansi-bg-bright-red { background-color: var(--btw-ansi-bg-bright-red); }
+.btw-ansi-bg-bright-green { background-color: var(--btw-ansi-bg-bright-green); }
+.btw-ansi-bg-bright-yellow { background-color: var(--btw-ansi-bg-bright-yellow); }
+.btw-ansi-bg-bright-blue { background-color: var(--btw-ansi-bg-bright-blue); }
+.btw-ansi-bg-bright-magenta { background-color: var(--btw-ansi-bg-bright-magenta); }
+.btw-ansi-bg-bright-cyan { background-color: var(--btw-ansi-bg-bright-cyan); }
+.btw-ansi-bg-bright-white { background-color: var(--btw-ansi-bg-bright-white); }
