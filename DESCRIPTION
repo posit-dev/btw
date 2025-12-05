@@ -54,6 +54,7 @@ Suggests:
     DBI,
     duckdb,
     evaluate,
+    fansi,
     gert,
     gh,
     htmltools,
