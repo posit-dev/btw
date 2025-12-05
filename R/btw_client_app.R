@@ -118,6 +118,7 @@ btw_app_from_client <- function(client, messages = list(), ...) {
         class = "btn-close",
         style = "position: fixed; top: 6px; right: 6px;"
       ),
+      class = "bslib-page-dashboard",
       btw_title(FALSE),
       shinychat::chat_mod_ui(
         "chat",
