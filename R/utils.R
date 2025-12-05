@@ -210,7 +210,7 @@ local_reproducible_output <- function(
     withr::local_envvar(list(NO_COLOR = NA), .local_envir = .env)
     withr::local_options(
       crayon.enabled = TRUE,
-      cil.dynamic = TRUE,
+      cli.ansi = TRUE,
       cli.unicode = TRUE,
       cli.condition_width = width,
       cli.num_colors = 16L,
@@ -219,6 +219,8 @@ local_reproducible_output <- function(
   }
 
   withr::local_options(
+    cil.dynamic = FALSE,
+    cli.spinner = FALSE,
     cli.hyperlink = FALSE,
     cli.hyperlink_run = FALSE,
     cli.hyperlink_help = FALSE,
