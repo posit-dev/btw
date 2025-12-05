@@ -138,6 +138,13 @@ btw_app_from_client <- function(client, messages = list(), ...) {
         .sidebar-collapsed > .main > main .sidebar-title { display: block; }
         .bslib-sidebar-layout.sidebar-collapsed>.collapse-toggle { top: 1.8rem; }
         .bslib-page-main { gap: 0.5rem; }
+        aside#tools_sidebar {
+            box-shadow: 2px 2px 5px rgba(var(--bs-emphasis-color-rgb), 10%);
+        }
+        shiny-chat-message .message-icon {
+          background-color: var(--bs-white);
+          box-shadow: 2px 2px 5px rgba(var(--bs-emphasis-color-rgb), 10%);
+        }
       "
         )),
       )
