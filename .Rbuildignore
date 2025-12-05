@@ -16,3 +16,5 @@
 ^scripts$
 ^\.claude$
 ^CRAN-SUBMISSION$
+^\.prettierrc$
+^node_modules$
