@@ -1,8 +1,42 @@
 #' Tool: Run R code
 #'
-#' This tool runs R code and returns results as ellmer Content objects.
-#' It captures text output, plots, messages, warnings, and errors.
-#' Code execution stops on the first error, returning all results up to that point.
+#' @description
+#' This tool runs R code and returns results as a list of [ellmer::Content()]
+#' objects. It captures text output, plots, messages, warnings, and errors. Code
+#' execution stops on the first error, returning all results up to that point.
+#'
+#' @section Enabling this tool:
+#' This tool is not enabled by default in [btw_tools()], [btw_app()] or
+#' [btw_client()]. To enable the function, you have a few options:
+#'
+#' 1. Set the `btw.run_r.enabled` option to `TRUE` in your R session, or in your
+#'    `.Rprofile` file to enable it globally.
+#' 2. Set the `BTW_RUN_R_ENABLED` environment variable to `true` in your
+#'    `.Renviron` file or your system environment.
+#' 3. Explicitly include the tool when calling `btw_tools("run")` (unless the
+#'    above options disable it).
+#'
+#' In your [btw.md file][use_btw_md], you can explicitly enable the tool by
+#' naming it in the tools option
+#'
+#' ```md
+#' ---
+#' tools:
+#'   - run_r
+#' ---
+#' ```
+#'
+#' or you can enable the tool by setting the `btw.run_r.enabled` option from the
+#' `options` list in `btw.md` (this approach is useful if you've globally
+#' disabled the tool but want to enable it for a specific btw chat):
+#'
+#' ```md
+#' ---
+#' options:
+#'   run_r:
+#'     enabled: true
+#' ---
+#' ```
 #'
 #' @param code A character string containing R code to run.
 #' @param _intent Intent description (automatically added by ellmer).
@@ -184,7 +218,26 @@ run_r_plot_device <- function(...) {
 }
 
 btw_can_register_run_r_tool <- function() {
-  rlang::is_installed("evaluate")
+  rlang::is_installed("evaluate") &&
+    btw_run_r_tool_is_enabled()
+}
+
+btw_run_r_tool_is_enabled <- function() {
+  opt <- getOption("btw.run_r.enabled", default = NULL)
+  if (!is.null(opt)) {
+    return(isTRUE(opt))
+  }
+
+  envvar <- Sys.getenv("BTW_RUN_R_ENABLED", unset = "")
+  if (nzchar(envvar)) {
+    return(tolower(trimws(envvar)) %in% c("true", "1"))
+  }
+
+  switch(
+    getOption(".btw_tools.match_mode", default = "default"),
+    "explicit" = TRUE,
+    FALSE
+  )
 }
 
 run_r_content_handle_ansi <- function(x, plain = TRUE) {

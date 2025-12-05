@@ -133,7 +133,7 @@ btw_client <- function(
 }
 
 btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
-  config$options <- flatten_config_options(config$options)
+  # Options should be flattened and btw-prefixed by `read_btw_file()`.
   withr::local_options(config$options)
 
   config$tools <-
@@ -275,7 +275,11 @@ flatten_config_options <- function(opts, prefix = "btw", sep = ".") {
       }
 
       for (i in seq_along(x)) {
-        new_key <- paste(key_prefix, nm[i], sep = sep)
+        if (nzchar(key_prefix)) {
+          new_key <- paste(key_prefix, nm[i], sep = sep)
+        } else {
+          new_key <- nm[i]
+        }
         recurse(x[[i]], new_key)
       }
     } else {

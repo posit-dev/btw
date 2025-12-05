@@ -22,10 +22,44 @@ A list of ellmer Content objects:
 }
 }
 \description{
-This tool runs R code and returns results as ellmer Content objects.
-It captures text output, plots, messages, warnings, and errors.
-Code execution stops on the first error, returning all results up to that point.
+This tool runs R code and returns results as a list of \code{\link[ellmer:Content]{ellmer::Content()}}
+objects. It captures text output, plots, messages, warnings, and errors. Code
+execution stops on the first error, returning all results up to that point.
 }
+\section{Enabling this tool}{
+
+This tool is not enabled by default in \code{\link[=btw_tools]{btw_tools()}}, \code{\link[=btw_app]{btw_app()}} or
+\code{\link[=btw_client]{btw_client()}}. To enable the function, you have a few options:
+\enumerate{
+\item Set the \code{btw.run_r.enabled} option to \code{TRUE} in your R session, or in your
+\code{.Rprofile} file to enable it globally.
+\item Set the \code{BTW_RUN_R_ENABLED} environment variable to \code{true} in your
+\code{.Renviron} file or your system environment.
+\item Explicitly include the tool when calling \code{btw_tools("run")} (unless the
+above options disable it).
+}
+
+In your \link[=use_btw_md]{btw.md file}, you can explicitly enable the tool by
+naming it in the tools option
+
+\if{html}{\out{<div class="sourceCode md">}}\preformatted{---
+tools:
+  - run_r
+---
+}\if{html}{\out{</div>}}
+
+or you can enable the tool by setting the \code{btw.run_r.enabled} option from the
+\code{options} list in \code{btw.md} (this approach is useful if you've globally
+disabled the tool but want to enable it for a specific btw chat):
+
+\if{html}{\out{<div class="sourceCode md">}}\preformatted{---
+options:
+  run_r:
+    enabled: true
+---
+}\if{html}{\out{</div>}}
+}
+
 \examples{
 \dontrun{
 # Simple calculation

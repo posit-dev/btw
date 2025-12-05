@@ -45,8 +45,10 @@ btw_tools <- function(...) {
   check_character(tools, allow_null = TRUE)
 
   if (length(tools) == 0) {
+    withr::local_options(.btw_tools.match_mode = "all")
     tools <- names(.btw_tools)
   } else {
+    withr::local_options(.btw_tools.match_mode = "explicit")
     tool_names <- map_chr(.btw_tools, function(x) x$name)
     tool_groups <- map_chr(.btw_tools, function(x) x$group)
 

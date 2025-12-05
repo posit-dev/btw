@@ -191,3 +191,136 @@ text(1, 1, 'y')"
   )
   expect_length(plot_contents_all, 1)
 })
+
+test_that("btw_tool_run_r() is not included in btw_tools() by default", {
+  local_mocked_bindings(is_installed = function(...) TRUE)
+  withr::local_envvar(BTW_RUN_R_ENABLED = NULL)
+  withr::local_options(btw.run_r.enabled = NULL)
+
+  tools <- btw_tools()
+  tool_names <- map_chr(tools, function(x) x@name)
+  expect_false("btw_tool_run_r" %in% tool_names)
+})
+
+test_that("btw_tool_run_r() is included in btw_tools() when requested", {
+  local_mocked_bindings(is_installed = function(...) TRUE)
+  withr::local_envvar(BTW_RUN_R_ENABLED = NULL)
+  withr::local_options(btw.run_r.enabled = NULL)
+
+  tools <- btw_tools("run")
+  tool_names <- map_chr(tools, function(x) x@name)
+  expect_true("btw_tool_run_r" %in% tool_names)
+
+  tools <- btw_tools("btw_tool_run_r")
+  tool_names <- map_chr(tools, function(x) x@name)
+  expect_true("btw_tool_run_r" %in% tool_names)
+})
+
+describe("btw_tool_run_r() in btw_tools()", {
+  local_mocked_bindings(is_installed = function(...) TRUE)
+
+  it("can be enabled via option", {
+    withr::local_options(btw.run_r.enabled = TRUE)
+    tools <- btw_tools()
+    tool_names <- map_chr(tools, function(x) x@name)
+    expect_true("btw_tool_run_r" %in% tool_names)
+  })
+
+  it("can be enabled via environment variable", {
+    withr::local_envvar(BTW_RUN_R_ENABLED = "TRUE")
+    tools <- btw_tools()
+    expect_true("btw_tool_run_r" %in% names(tools))
+  })
+
+  it("can be enabled via btw.md", {
+    path_btw <- withr::local_tempfile(
+      lines = c(
+        "---",
+        "options:",
+        "  run_r:",
+        "    enabled: true",
+        "---"
+      )
+    )
+
+    withr::local_envvar(ANTHROPIC_API_KEY = "boop")
+    client <- btw_client(path_btw = path_btw)
+
+    tools <- client$get_tools()
+    expect_true("btw_tool_run_r" %in% names(tools))
+  })
+
+  it("is not included if explicitly disabled", {
+    path_btw <- withr::local_tempfile(
+      lines = c(
+        "---",
+        "tools: ['run']",
+        "options:",
+        "  run_r:",
+        "    enabled: false",
+        "---"
+      )
+    )
+
+    withr::local_envvar(ANTHROPIC_API_KEY = "boop")
+    client <- btw_client(path_btw = path_btw)
+
+    tools <- client$get_tools()
+    expect_false("btw_tool_run_r" %in% names(tools))
+  })
+
+  it("is included if explicitly mentioned", {
+    path_btw <- withr::local_tempfile(
+      lines = c(
+        "---",
+        "tools: ['run']",
+        "---"
+      )
+    )
+
+    withr::local_envvar(ANTHROPIC_API_KEY = "boop")
+    client <- btw_client(path_btw = path_btw)
+
+    tools <- client$get_tools()
+    expect_true("btw_tool_run_r" %in% names(tools))
+  })
+
+  it("is not included if explicitly mentioned but disabled", {
+    path_btw <- withr::local_tempfile(
+      lines = c(
+        "---",
+        "tools: ['run']",
+        "---"
+      )
+    )
+
+    withr::local_envvar(BTW_RUN_R_ENABLED = "false")
+    withr::local_envvar(ANTHROPIC_API_KEY = "boop")
+    client <- btw_client(path_btw = path_btw)
+
+    tools <- client$get_tools()
+    expect_false("btw_tool_run_r" %in% names(tools))
+  })
+
+  it("is included if mentioned and enabled, even if globally disabled", {
+    path_btw <- withr::local_tempfile(
+      lines = c(
+        "---",
+        "tools: ['run']",
+        "options:",
+        "  run_r:",
+        "    enabled: true",
+        "---"
+      )
+    )
+
+    withr::local_options(btw.run_r.enabled = FALSE)
+    withr::local_envvar(ANTHROPIC_API_KEY = "boop")
+    client <- btw_client(path_btw = path_btw)
+
+    expect_equal(getOption("btw.run_r.enabled"), FALSE)
+
+    tools <- client$get_tools()
+    expect_true("btw_tool_run_r" %in% names(tools))
+  })
+})
