@@ -88,7 +88,7 @@ this function have access to the tools:
 
 \subsection{Group: run}{\tabular{ll}{
    Name \tab Description \cr
-   \code{\link[=btw_tool_run_r]{btw_tool_run_r()}} \tab Run R code and return results as Content objects. \cr
+   \code{\link[=btw_tool_run_r]{btw_tool_run_r()}} \tab Run R code. \cr
 }
 
 }

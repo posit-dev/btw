@@ -1,9 +1,28 @@
 #' Tool: Run R code
 #'
 #' @description
+#' `r lifecycle::badge("experimental")`
 #' This tool runs R code and returns results as a list of [ellmer::Content()]
 #' objects. It captures text output, plots, messages, warnings, and errors. Code
 #' execution stops on the first error, returning all results up to that point.
+#'
+#' @section Security Considerations:
+#' Executing arbitrary R code can pose significant security risks, especially
+#' in shared or multi-user environments. Furthermore, neither \pkg{shinychat}
+#' (as of v0.4.0) or nor \pkg{ellmer} (as of v0.4.0) provide a mechanism to
+#' review and reject the code before execution. Even more, the code is executed
+#' in the global environment and does not have any sandboxing or R code
+#' limitations applied.
+#'
+#' It is your responsibility to ensure that you are taking appropriate measures
+#' to reduce the risk of the LLM writing arbitrary code. Most often, this means
+#' not prompting the model to take large or potentially destructive actions.
+#' At this time, we do not recommend that you enable this tool in a publicly-
+#' available environment without strong safeguards in place.
+#'
+#' That said, this tool is very powerful and can greatly enhance the
+#' capabilities of your btw chatbots. Please use it responsibly! If you'd like
+#' to enable the tool, please read the instructions below.
 #'
 #' @section Enabling this tool:
 #' This tool is not enabled by default in [btw_tools()], [btw_app()] or
@@ -300,7 +319,20 @@ fansi_to_html <- function(text) {
         btw_tool_run_r_impl(code)
       },
       name = "btw_tool_run_r",
-      description = "Run R code and return results as Content objects. Captures text output, plots, messages, warnings, and errors. Stops on first error.",
+      description = r"---(Run R code.
+
+This tool executes R code and returns the results, including text output,
+plots, messages, warnings, and errors.
+
+With great power comes great responsibility: the R code you write should be
+safe and appropriate for execution in a shared environment. Do not write files
+or perform dangerous or irreversible actions. Always consider the security
+implications of the code that you write. If you have any doubts, consult the
+user with a preview of the code you would like to write before executing it.
+
+If an error occurs during execution, the tool will return all results up to
+the point of the error. Inspect the error message to understand what went wrong.
+      )---",
       annotations = ellmer::tool_annotations(
         title = "Run R Code",
         read_only_hint = FALSE,
@@ -308,7 +340,7 @@ fansi_to_html <- function(text) {
         btw_can_register = btw_can_register_run_r_tool
       ),
       arguments = list(
-        code = ellmer::type_string("R code to run as a string.")
+        code = ellmer::type_string("The R code to run")
       )
     )
   }

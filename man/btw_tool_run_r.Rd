@@ -22,10 +22,31 @@ A list of ellmer Content objects:
 }
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 This tool runs R code and returns results as a list of \code{\link[ellmer:Content]{ellmer::Content()}}
 objects. It captures text output, plots, messages, warnings, and errors. Code
 execution stops on the first error, returning all results up to that point.
 }
+\section{Security Considerations}{
+
+Executing arbitrary R code can pose significant security risks, especially
+in shared or multi-user environments. Furthermore, neither \pkg{shinychat}
+(as of v0.4.0) or nor \pkg{ellmer} (as of v0.4.0) provide a mechanism to
+review and reject the code before execution. Even more, the code is executed
+in the global environment and does not have any sandboxing or R code
+limitations applied.
+
+It is your responsibility to ensure that you are taking appropriate measures
+to reduce the risk of the LLM writing arbitrary code. Most often, this means
+not prompting the model to take large or potentially destructive actions.
+At this time, we do not recommend that you enable this tool in a publicly-
+available environment without strong safeguards in place.
+
+That said, this tool is very powerful and can greatly enhance the
+capabilities of your btw chatbots. Please use it responsibly! If you'd like
+to enable the tool, please read the instructions below.
+}
+
 \section{Enabling this tool}{
 
 This tool is not enabled by default in \code{\link[=btw_tools]{btw_tools()}}, \code{\link[=btw_app]{btw_app()}} or
