@@ -579,22 +579,27 @@ test_that("@url requires URL", {
 test_that("btw_this() allows file paths outside working directory for list files", {
   skip_on_cran()
 
-  # Create a temp directory outside the current working directory
-  temp_dir <- withr::local_tempdir()
-  temp_subdir <- file.path(temp_dir, "test_subdir")
-  dir.create(temp_subdir)
+  # Create a temp directory structure:
+  # temp_root/
+  #   working_dir/
+  #   outside_dir/
+  #     test.txt
+  temp_root <- withr::local_tempdir()
+  outside_dir <- file.path(temp_root, "outside_dir")
+  dir.create(outside_dir)
+  working_dir <- file.path(temp_root, "working_dir")
+  dir.create(working_dir)
   
-  # Create a test file
-  test_file <- file.path(temp_subdir, "test.txt")
+  # Create a test file in outside_dir
+  test_file <- file.path(outside_dir, "test.txt")
   writeLines("test content", test_file)
   
-  # Create another temp directory to use as working directory
-  work_dir <- withr::local_tempdir()
-  withr::local_dir(work_dir)
+  # Set working directory to working_dir
+  withr::local_dir(working_dir)
   
-  # Now temp_dir and temp_subdir are outside the working directory
+  # Now we can use a relative path to access outside_dir
   # This should work because btw_this() calls with check_within_wd = FALSE
-  result <- btw_this(paste0("./", temp_subdir))
+  result <- btw_this("./../outside_dir")
   
   # Should successfully list files
   expect_true(is.character(result))
@@ -604,18 +609,24 @@ test_that("btw_this() allows file paths outside working directory for list files
 test_that("btw_this() allows file paths outside working directory for reading files", {
   skip_on_cran()
 
-  # Create a temp file outside the current working directory
-  temp_dir <- withr::local_tempdir()
-  test_file <- file.path(temp_dir, "outside.txt")
+  # Create a temp directory structure:
+  # temp_root/
+  #   working_dir/
+  #   outside.txt
+  temp_root <- withr::local_tempdir()
+  working_dir <- file.path(temp_root, "working_dir")
+  dir.create(working_dir)
+  
+  # Create a test file in temp_root
+  test_file <- file.path(temp_root, "outside.txt")
   writeLines(c("line 1", "line 2", "line 3"), test_file)
   
-  # Create another temp directory to use as working directory
-  work_dir <- withr::local_tempdir()
-  withr::local_dir(work_dir)
+  # Set working directory to working_dir
+  withr::local_dir(working_dir)
   
-  # Now test_file is outside the working directory
+  # Now we can use a relative path to access the file outside working_dir
   # This should work because btw_this() calls with check_within_wd = FALSE
-  result <- btw_this(paste0("./", test_file))
+  result <- btw_this("./../outside.txt")
   
   # Should successfully read the file
   expect_true(is.character(result))
