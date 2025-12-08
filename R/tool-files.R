@@ -43,9 +43,8 @@ btw_tool_files_list_files_impl <- function(
 
   regexp <- if (nzchar(regexp)) regexp
 
-  # Disallow listing files outside of the project directory (when called by LLMs)
   if (check_within_wd) {
-    check_path_within_current_wd(path)
+    check_path_within_current_wd(path, call = parent.frame())
   }
 
   info <-
@@ -173,7 +172,7 @@ btw_tool_files_read_text_file_impl <- function(
   check_within_wd = TRUE
 ) {
   if (check_within_wd) {
-    check_path_within_current_wd(path)
+    check_path_within_current_wd(path, call = parent.frame())
   }
 
   if (!fs::is_file(path) || !fs::file_exists(path)) {
@@ -184,7 +183,8 @@ btw_tool_files_read_text_file_impl <- function(
 
   if (!isTRUE(is_text_file(path))) {
     cli::cli_abort(
-      "Path {.path {path}} is not a path to a text file."
+      "Path {.path {path}} is not a path to a text file.",
+      call = parent.frame()
     )
   }
 
@@ -314,10 +314,11 @@ check_path_exists <- function(path) {
   }
 }
 
-check_path_within_current_wd <- function(path) {
+check_path_within_current_wd <- function(path, call = parent.frame()) {
   if (!fs::path_has_parent(path, getwd())) {
     cli::cli_abort(
-      "You are not allowed to list or read files outside of the project directory. Make sure that `path` is relative to the current working directory."
+      "You are not allowed to list or read files outside of the project directory. Make sure that `path` is relative to the current working directory.",
+      call = call
     )
   }
 }
