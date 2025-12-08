@@ -79,12 +79,26 @@ btw_tool_files_list_files_impl <- function(
   )
 }
 
+# Wrapper for tool registration that doesn't expose check_within_wd to LLMs
+btw_tool_files_list_files_tool <- function(
+  path = NULL,
+  type = c("any", "file", "directory"),
+  regexp = ""
+) {
+  btw_tool_files_list_files_impl(
+    path = path,
+    type = type,
+    regexp = regexp,
+    check_within_wd = TRUE
+  )
+}
+
 .btw_add_to_tools(
   name = "btw_tool_files_list_files",
   group = "files",
   tool = function() {
     ellmer::tool(
-      btw_tool_files_list_files_impl,
+      btw_tool_files_list_files_tool,
       name = "btw_tool_files_list_files",
       description = r"---(List files or directories in the project.
 
@@ -206,12 +220,26 @@ BtwTextFileToolResult <- S7::new_class(
   parent = BtwToolResult
 )
 
+# Wrapper for tool registration that doesn't expose check_within_wd to LLMs
+btw_tool_files_read_text_file_tool <- function(
+  path,
+  line_start = 1,
+  line_end = 1000
+) {
+  btw_tool_files_read_text_file_impl(
+    path = path,
+    line_start = line_start,
+    line_end = line_end,
+    check_within_wd = TRUE
+  )
+}
+
 .btw_add_to_tools(
   name = "btw_tool_files_read_text_file",
   group = "files",
   tool = function() {
     ellmer::tool(
-      btw_tool_files_read_text_file_impl,
+      btw_tool_files_read_text_file_tool,
       name = "btw_tool_files_read_text_file",
       description = "Read an entire text file.",
       annotations = ellmer::tool_annotations(
