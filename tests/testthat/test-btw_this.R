@@ -573,3 +573,60 @@ test_that("@url requires URL", {
     "@url.*must be followed by a valid URL"
   )
 })
+
+# Test file paths outside working directory (user-provided) ------------------
+
+test_that("btw_this() allows file paths outside working directory for list files", {
+  # Create a temp directory structure:
+  # temp_root/
+  #   working_dir/
+  #   outside_dir/
+  #     test.txt
+  temp_root <- withr::local_tempdir()
+  outside_dir <- file.path(temp_root, "outside_dir")
+  dir.create(outside_dir)
+  working_dir <- file.path(temp_root, "working_dir")
+  dir.create(working_dir)
+
+  # Create a test file in outside_dir
+  test_file <- file.path(outside_dir, "test.txt")
+  writeLines("test content", test_file)
+
+  # Set working directory to working_dir
+  withr::local_dir(working_dir)
+
+  # Now we can use a relative path to access outside_dir
+  # This should work because btw_this() calls with check_within_wd = FALSE
+  result <- btw_this("./../outside_dir")
+
+  # Should successfully list files
+  expect_true(is.character(result))
+  expect_match(result, "test.txt", all = FALSE)
+})
+
+test_that("btw_this() allows file paths outside working directory for reading files", {
+  # Create a temp directory structure:
+  # temp_root/
+  #   working_dir/
+  #   outside.txt
+  temp_root <- withr::local_tempdir()
+  working_dir <- file.path(temp_root, "working_dir")
+  dir.create(working_dir)
+
+  # Create a test file in temp_root
+  test_file <- file.path(temp_root, "outside.txt")
+  writeLines(c("line 1", "line 2", "line 3"), test_file)
+
+  # Set working directory to working_dir
+  withr::local_dir(working_dir)
+
+  # Now we can use a relative path to access the file outside working_dir
+  # This should work because btw_this() calls with check_within_wd = FALSE
+  result <- btw_this("./../outside.txt")
+
+  # Should successfully read the file
+  expect_true(is.character(result))
+  expect_match(result, "line 1", all = FALSE)
+  expect_match(result, "line 2", all = FALSE)
+  expect_match(result, "line 3", all = FALSE)
+})
