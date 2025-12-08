@@ -122,7 +122,7 @@ btw_app(..., client = NULL, tools = NULL, path_btw = NULL, messages = list())
 - messages:
 
   A list of initial messages to show in the chat, passed to
-  [`shinychat::chat_mod_ui()`](https://rdrr.io/pkg/shinychat/man/chat_app.html).
+  [`shinychat::chat_mod_ui()`](https://posit-dev.github.io/shinychat/r/reference/chat_app.html).
 
 ## Value
 
