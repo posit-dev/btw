@@ -193,6 +193,14 @@ btw_tool_run_r_impl <- function(code, .envir = global_env()) {
   # For `value`, remove all ANSI codes
   value <- map(contents, run_r_content_handle_ansi)
 
+  if (length(value) == 0) {
+    value <- if (had_error) {
+      "(The code encountered an error but did not produce any output.)"
+    } else {
+      "(The code ran successfully but did not produce any output.)"
+    }
+  }
+
   BtwRunToolResult(
     value = value,
     extra = list(
