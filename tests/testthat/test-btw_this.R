@@ -573,3 +573,53 @@ test_that("@url requires URL", {
     "@url.*must be followed by a valid URL"
   )
 })
+
+# Test file paths outside working directory (user-provided) ------------------
+
+test_that("btw_this() allows file paths outside working directory for list files", {
+  skip_on_cran()
+
+  # Create a temp directory outside the current working directory
+  temp_dir <- withr::local_tempdir()
+  temp_subdir <- file.path(temp_dir, "test_subdir")
+  dir.create(temp_subdir)
+  
+  # Create a test file
+  test_file <- file.path(temp_subdir, "test.txt")
+  writeLines("test content", test_file)
+  
+  # Create another temp directory to use as working directory
+  work_dir <- withr::local_tempdir()
+  withr::local_dir(work_dir)
+  
+  # Now temp_dir and temp_subdir are outside the working directory
+  # This should work because btw_this() calls with check_within_wd = FALSE
+  result <- btw_this(paste0("./", temp_subdir))
+  
+  # Should successfully list files
+  expect_true(is.character(result))
+  expect_match(result, "test.txt", all = FALSE)
+})
+
+test_that("btw_this() allows file paths outside working directory for reading files", {
+  skip_on_cran()
+
+  # Create a temp file outside the current working directory
+  temp_dir <- withr::local_tempdir()
+  test_file <- file.path(temp_dir, "outside.txt")
+  writeLines(c("line 1", "line 2", "line 3"), test_file)
+  
+  # Create another temp directory to use as working directory
+  work_dir <- withr::local_tempdir()
+  withr::local_dir(work_dir)
+  
+  # Now test_file is outside the working directory
+  # This should work because btw_this() calls with check_within_wd = FALSE
+  result <- btw_this(paste0("./", test_file))
+  
+  # Should successfully read the file
+  expect_true(is.character(result))
+  expect_match(result, "line 1", all = FALSE)
+  expect_match(result, "line 2", all = FALSE)
+  expect_match(result, "line 3", all = FALSE)
+})

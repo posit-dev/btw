@@ -29,7 +29,8 @@ btw_tool_files_list_files <- function(path, type, regexp, `_intent`) {}
 btw_tool_files_list_files_impl <- function(
   path = NULL,
   type = c("any", "file", "directory"),
-  regexp = ""
+  regexp = "",
+  check_within_wd = TRUE
 ) {
   path <- path %||% getwd()
   type <- type %||% "any"
@@ -42,8 +43,10 @@ btw_tool_files_list_files_impl <- function(
 
   regexp <- if (nzchar(regexp)) regexp
 
-  # Disallow listing files outside of the project directory
-  check_path_within_current_wd(path)
+  # Disallow listing files outside of the project directory (when called by LLMs)
+  if (check_within_wd) {
+    check_path_within_current_wd(path)
+  }
 
   info <-
     if (fs::is_file(path)) {
@@ -158,9 +161,12 @@ btw_tool_files_read_text_file <- function(
 btw_tool_files_read_text_file_impl <- function(
   path,
   line_start = 1,
-  line_end = 1000
+  line_end = 1000,
+  check_within_wd = TRUE
 ) {
-  check_path_within_current_wd(path)
+  if (check_within_wd) {
+    check_path_within_current_wd(path)
+  }
 
   if (!fs::is_file(path) || !fs::file_exists(path)) {
     cli::cli_abort(
