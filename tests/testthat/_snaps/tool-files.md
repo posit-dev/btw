@@ -13,7 +13,7 @@
     Code
       btw_tool_files_list_files("/")
     Condition
-      Error in `check_path_within_current_wd()`:
+      Error in `btw_tool_files_list_files()`:
       ! You are not allowed to list or read files outside of the project directory. Make sure that `path` is relative to the current working directory.
 
 ---
@@ -21,7 +21,7 @@
     Code
       btw_tool_files_list_files("../")
     Condition
-      Error in `check_path_within_current_wd()`:
+      Error in `btw_tool_files_list_files()`:
       ! You are not allowed to list or read files outside of the project directory. Make sure that `path` is relative to the current working directory.
 
 # btw_tool_files_read_text_file() works
@@ -37,7 +37,7 @@
     Code
       btw_tool_files_read_text_file("../mtcars.rds")
     Condition
-      Error in `check_path_within_current_wd()`:
+      Error in `btw_tool_files_read_text_file()`:
       ! You are not allowed to list or read files outside of the project directory. Make sure that `path` is relative to the current working directory.
 
 # btw_tool_files_write_text_file() works
@@ -45,6 +45,6 @@
     Code
       btw_tool_files_write_text_file("../test.txt", "content")
     Condition
-      Error in `check_path_within_current_wd()`:
+      Error in `btw_tool_files_write_text_file()`:
       ! You are not allowed to list or read files outside of the project directory. Make sure that `path` is relative to the current working directory.
 

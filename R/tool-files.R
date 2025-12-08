@@ -29,7 +29,8 @@ btw_tool_files_list_files <- function(path, type, regexp, `_intent`) {}
 btw_tool_files_list_files_impl <- function(
   path = NULL,
   type = c("any", "file", "directory"),
-  regexp = ""
+  regexp = "",
+  check_within_wd = TRUE
 ) {
   path <- path %||% getwd()
   type <- type %||% "any"
@@ -42,8 +43,9 @@ btw_tool_files_list_files_impl <- function(
 
   regexp <- if (nzchar(regexp)) regexp
 
-  # Disallow listing files outside of the project directory
-  check_path_within_current_wd(path)
+  if (check_within_wd) {
+    check_path_within_current_wd(path, call = parent.frame())
+  }
 
   info <-
     if (fs::is_file(path)) {
@@ -81,7 +83,15 @@ btw_tool_files_list_files_impl <- function(
   group = "files",
   tool = function() {
     ellmer::tool(
-      btw_tool_files_list_files_impl,
+      function(path = NULL, type = c("any", "file", "directory"), regexp = "") {
+        btw_tool_files_list_files_impl(
+          path = path,
+          type = type,
+          regexp = regexp,
+          # LLM tool calls should be restricted to the working directory
+          check_within_wd = TRUE
+        )
+      },
       name = "btw_tool_files_list_files",
       description = r"---(List files or directories in the project.
 
@@ -158,9 +168,12 @@ btw_tool_files_read_text_file <- function(
 btw_tool_files_read_text_file_impl <- function(
   path,
   line_start = 1,
-  line_end = 1000
+  line_end = 1000,
+  check_within_wd = TRUE
 ) {
-  check_path_within_current_wd(path)
+  if (check_within_wd) {
+    check_path_within_current_wd(path, call = parent.frame())
+  }
 
   if (!fs::is_file(path) || !fs::file_exists(path)) {
     cli::cli_abort(
@@ -170,7 +183,8 @@ btw_tool_files_read_text_file_impl <- function(
 
   if (!isTRUE(is_text_file(path))) {
     cli::cli_abort(
-      "Path {.path {path}} is not a path to a text file."
+      "Path {.path {path}} is not a path to a text file.",
+      call = parent.frame()
     )
   }
 
@@ -205,7 +219,15 @@ BtwTextFileToolResult <- S7::new_class(
   group = "files",
   tool = function() {
     ellmer::tool(
-      btw_tool_files_read_text_file_impl,
+      function(path, line_start = 1, line_end = 1000) {
+        btw_tool_files_read_text_file_impl(
+          path = path,
+          line_start = line_start,
+          line_end = line_end,
+          # LLM tool calls should be restricted to the working directory
+          check_within_wd = TRUE
+        )
+      },
       name = "btw_tool_files_read_text_file",
       description = "Read an entire text file.",
       annotations = ellmer::tool_annotations(
@@ -292,10 +314,11 @@ check_path_exists <- function(path) {
   }
 }
 
-check_path_within_current_wd <- function(path) {
+check_path_within_current_wd <- function(path, call = parent.frame()) {
   if (!fs::path_has_parent(path, getwd())) {
     cli::cli_abort(
-      "You are not allowed to list or read files outside of the project directory. Make sure that `path` is relative to the current working directory."
+      "You are not allowed to list or read files outside of the project directory. Make sure that `path` is relative to the current working directory.",
+      call = call
     )
   }
 }
