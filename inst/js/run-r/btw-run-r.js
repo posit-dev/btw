@@ -79,6 +79,7 @@ class BtwRunRResult extends HTMLElement {
     // Hide the corresponding tool request
     const requestId = this.getAttribute("request-id")
     if (requestId) {
+      // TODO: Remove after next shinychat release (posit-dev/shinychat#163)
       window.shinychat.hiddenToolRequests.add(requestId)
       this.dispatchEvent(
         new CustomEvent("shiny-tool-request-hide", {
@@ -167,7 +168,6 @@ class BtwRunRResult extends HTMLElement {
       </div>
     `
 
-    // Add click handler to header
     const header = this.querySelector(".card-header")
     if (header) {
       header.addEventListener("click", (e) => this.toggleCollapse(e))
@@ -189,5 +189,6 @@ class BtwRunRResult extends HTMLElement {
   }
 }
 
-// Register the custom element
-customElements.define("btw-run-r-result", BtwRunRResult)
+if (!customElements.get("btw-run-r-result")) {
+  customElements.define("btw-run-r-result", BtwRunRResult)
+}
