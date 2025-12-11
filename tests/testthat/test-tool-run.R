@@ -6,12 +6,15 @@ test_that("btw_tool_run_r() returns simple calculations", {
   expect_type(res@value, "list")
   # The actual value is stored in extra$data
   expect_equal(res@extra$data, 4)
-  # The visible output is captured as ContentCode
+  # The visible output is captured as ContentOutput
   expect_length(res@value, 1)
-  expect_s7_class(res@value[[1]], ContentCode)
+  expect_s7_class(res@value[[1]], ContentOutput)
   expect_match(res@value[[1]]@text, "4")
-  # The contents in extra should match value
-  expect_equal(res@value, res@extra$contents)
+  # The contents in extra should match value (except source blocks)
+  expect_equal(
+    res@value,
+    keep(res@extra$contents, Negate(S7::S7_inherits), ContentSource)
+  )
 })
 
 test_that("btw_tool_run_r() captures messages", {
@@ -91,7 +94,7 @@ test_that("btw_tool_run_r() handles multiple outputs", {
   ))
   has_code <- any(vapply(
     res@value,
-    function(x) S7::S7_inherits(x, ContentCode),
+    function(x) S7::S7_inherits(x, ContentOutput),
     logical(1)
   ))
   has_warning <- any(vapply(
@@ -112,8 +115,8 @@ test_that("btw_tool_run_r() requires string input", {
   expect_error(btw_tool_run_r_impl(NULL), class = "rlang_error")
 })
 
-test_that("ContentCode, ContentMessage, ContentWarning, ContentError inherit from ContentText", {
-  code <- ContentCode(text = "output")
+test_that("ContentOutput, ContentMessage, ContentWarning, ContentError inherit from ContentText", {
+  code <- ContentOutput(text = "output")
   msg <- ContentMessage(text = "hello")
   warn <- ContentWarning(text = "warning")
   err <- ContentError(text = "error")
@@ -130,7 +133,7 @@ test_that("ContentCode, ContentMessage, ContentWarning, ContentError inherit fro
 })
 
 test_that("contents_html() renders Content types correctly", {
-  code <- ContentCode(text = "[1] 42")
+  code <- ContentOutput(text = "[1] 42")
   msg <- ContentMessage(text = "info message")
   warn <- ContentWarning(text = "warning message")
   err <- ContentError(text = "error message")
@@ -158,13 +161,13 @@ test_that("adjacent content of same type is merged", {
   # Multiple code outputs should be merged
   res <- btw_tool_run_r_impl('1 + 1; 2 + 2')
   expect_length(res@value, 1)
-  expect_s7_class(res@value[[1]], ContentCode)
+  expect_s7_class(res@value[[1]], ContentOutput)
 
   # Different types should not be merged
   res <- btw_tool_run_r_impl('message("a"); 1 + 1; warning("b")')
   expect_length(res@value, 3)
   expect_s7_class(res@value[[1]], ContentMessage)
-  expect_s7_class(res@value[[2]], ContentCode)
+  expect_s7_class(res@value[[2]], ContentOutput)
   expect_s7_class(res@value[[3]], ContentWarning)
 })
 

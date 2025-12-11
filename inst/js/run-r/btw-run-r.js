@@ -155,12 +155,6 @@ class BtwRunRResult extends HTMLElement {
           aria-labelledby="${headerId}"
           ${!this.expanded ? 'inert=""' : ""}
         >
-          <div class="btw-run-source">
-            <shiny-markdown-stream
-              content="${this.escapeAttr(markdownCodeBlock(code, "r"))}"
-              content-type="markdown"
-            ></shiny-markdown-stream>
-          </div>
           <div class="btw-run-output">
             ${outputHtml}
           </div>

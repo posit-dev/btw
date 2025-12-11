@@ -120,12 +120,12 @@ btw_tool_run_r_impl <- function(code, .envir = global_env()) {
   handler <- evaluate::new_output_handler(
     source = function(src, expr) {
       # Skip source code echoing by returning NULL
-      NULL
+      append_content(ContentSource(text = src$src))
     },
     text = function(text) {
       append_last_plot()
       # Text output (from print, cat, etc.)
-      append_content(ContentCode(text = text))
+      append_content(ContentOutput(text = text))
       text
     },
     graphics = function(plot) {
@@ -168,7 +168,7 @@ btw_tool_run_r_impl <- function(code, .envir = global_env()) {
           utils::capture.output(print(value)),
           collapse = "\n"
         )
-        append_content(ContentCode(text = value_text))
+        append_content(ContentOutput(text = value_text))
       }
 
       if (visible) value
@@ -190,8 +190,9 @@ btw_tool_run_r_impl <- function(code, .envir = global_env()) {
   # Merge adjacent content of the same type
   contents <- merge_adjacent_content(contents)
 
-  # For `value`, remove all ANSI codes
-  value <- map(contents, run_r_content_handle_ansi)
+  # For `value`, drop source code blocks and remove all ANSI codes
+  value <- keep(contents, function(x) !S7::S7_inherits(x, ContentSource))
+  value <- map(value, run_r_content_handle_ansi)
 
   if (length(value) == 0) {
     value <- if (had_error) {
@@ -340,6 +341,10 @@ user with a preview of the code you would like to write before executing it.
 
 If an error occurs during execution, the tool will return all results up to
 the point of the error. Inspect the error message to understand what went wrong.
+
+**Formatted output**: When creating formatted output, use a single `cat()` call
+to emit the complete formatted text, rather than multiple `cat()` calls. This is
+much easier for the user to read.
       )---",
       annotations = ellmer::tool_annotations(
         title = "Run R Code",
@@ -355,8 +360,13 @@ the point of the error. Inspect the error message to understand what went wrong.
 )
 
 # ---- Content Types ----
-ContentCode <- S7::new_class(
-  "ContentCode",
+ContentSource <- S7::new_class(
+  "ContentSource",
+  parent = ellmer::ContentText
+)
+
+ContentOutput <- S7::new_class(
+  "ContentOutput",
   parent = ellmer::ContentText
 )
 
@@ -386,7 +396,14 @@ contents_html <- S7::new_external_generic(
   dispatch_args = "content"
 )
 
-S7::method(contents_html, ContentCode) <- function(content, ...) {
+S7::method(contents_html, ContentSource) <- function(content, ...) {
+  sprintf(
+    '<pre class="btw-output-source"><code class="language-r">%s</code></pre>',
+    trimws(content@text)
+  )
+}
+
+S7::method(contents_html, ContentOutput) <- function(content, ...) {
   sprintf(
     '<pre><code class="nohighlight">%s</code></pre>',
     trimws(content@text)
@@ -471,7 +488,8 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
 
 is_mergeable_content <- function(x, y) {
   mergeable_content_types <- list(
-    ContentCode,
+    ContentSource,
+    ContentOutput,
     ContentMessage,
     ContentWarning,
     ContentError
@@ -489,7 +507,7 @@ is_mergeable_content <- function(x, y) {
 #' Merge adjacent content of the same type
 #'
 #' Reduces a list of Content objects by concatenating adjacent elements
-#' of the same mergeable type (ContentCode, ContentMessage, ContentWarning,
+#' of the same mergeable type (ContentOutput, ContentMessage, ContentWarning,
 #' ContentError) into single elements.
 #'
 #' @param contents List of Content objects
