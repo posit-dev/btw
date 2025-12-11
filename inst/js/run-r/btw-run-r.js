@@ -100,6 +100,17 @@ class BtwRunRResult extends HTMLElement {
     this.dispatchEvent(new CustomEvent("shiny-chat-maybe-scroll-to-bottom"))
   }
 
+  disconnectedCallback() {
+    // Clean up tooltip when component is removed from DOM
+    const copyBtn = this.querySelector(".copy-code-btn")
+    if (copyBtn) {
+      const tooltip = window.bootstrap?.Tooltip?.getInstance(copyBtn)
+      if (tooltip) {
+        tooltip.dispose()
+      }
+    }
+  }
+
   /**
    * Toggle the collapsed/expanded state
    * @param {Event} e
