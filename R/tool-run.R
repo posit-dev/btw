@@ -341,9 +341,14 @@ user with a preview of the code you would like to write before executing it.
 If an error occurs during execution, the tool will return all results up to
 the point of the error. Inspect the error message to understand what went wrong.
 
-**Formatted output**: When creating formatted output, use a single `cat()` call
-to emit the complete formatted text, rather than multiple `cat()` calls. This is
-much easier for the user to read.
+A few style guidelines to keep in mind when using this tool:
+
+* Return results implicitly, like `x`, rather than with `print(x)` or `cat(x)`.
+* Return plots implicitly rather than assigning them to intermediate variables and then displaying the variable.
+* Do not communicate with the user via the `code` argument to this tool, instead explaining choices you've made and interpretations of output in a message to them directly.
+* Do not decorate output with custom displays, e.g. avoid using `cat()` and instead create data frames, tibbles or simple lists.
+* If you *need* to use `cat()`, you MUST group all output into a SINGLE `cat()` call for better readability.
+* Respect the user's environment. Do not set environment variables, change options, or modify global state without explicit instruction to do so.
       )---",
       annotations = ellmer::tool_annotations(
         title = "Run R Code",
@@ -500,7 +505,7 @@ is_mergeable_content <- function(x, y) {
     ContentSource,
     ContentOutput,
     ContentMessage,
-      btw_run_tool_card_dep()
+    ContentWarning,
     ContentError
   )
 
