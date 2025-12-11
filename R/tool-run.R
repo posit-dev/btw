@@ -120,7 +120,8 @@ btw_tool_run_r_impl <- function(code, .envir = global_env()) {
   handler <- evaluate::new_output_handler(
     source = function(src, expr) {
       # Skip source code echoing by returning NULL
-      append_content(ContentSource(text = src$src))
+      src_code <- sub("\n$", "", src$src)
+      append_content(ContentSource(text = src_code))
     },
     text = function(text) {
       append_last_plot()
@@ -170,8 +171,6 @@ btw_tool_run_r_impl <- function(code, .envir = global_env()) {
         )
         append_content(ContentOutput(text = value_text))
       }
-
-      if (visible) value
     }
   )
 
@@ -396,38 +395,43 @@ contents_html <- S7::new_external_generic(
   dispatch_args = "content"
 )
 
+trim_outer_nl <- function(x) {
+  x <- sub("^\r?\n", "", x)
+  sub("\r?\n$", "", x)
+}
+
 S7::method(contents_html, ContentSource) <- function(content, ...) {
   sprintf(
     '<pre class="btw-output-source"><code class="language-r">%s</code></pre>',
-    trimws(content@text)
+    trim_outer_nl(content@text)
   )
 }
 
 S7::method(contents_html, ContentOutput) <- function(content, ...) {
   sprintf(
-    '<pre><code class="nohighlight">%s</code></pre>',
-    trimws(content@text)
+    '<pre class="btw-output-output"><code class="nohighlight">%s</code></pre>',
+    trim_outer_nl(content@text)
   )
 }
 
 S7::method(contents_html, ContentMessage) <- function(content, ...) {
   sprintf(
     '<pre class="btw-output-message"><code class="nohighlight">%s</code></pre>',
-    trimws(content@text)
+    trim_outer_nl(content@text)
   )
 }
 
 S7::method(contents_html, ContentWarning) <- function(content, ...) {
   sprintf(
     '<pre class="btw-output-warning"><code class="nohighlight">%s</code></pre>',
-    trimws(content@text)
+    trim_outer_nl(content@text)
   )
 }
 
 S7::method(contents_html, ContentError) <- function(content, ...) {
   sprintf(
     '<pre class="btw-output-error"><code class="nohighlight">%s</code></pre>',
-    trimws(content@text)
+    trim_outer_nl(content@text)
   )
 }
 
