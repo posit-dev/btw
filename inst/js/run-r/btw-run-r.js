@@ -122,6 +122,53 @@ class BtwRunRResult extends HTMLElement {
   }
 
   /**
+   * Generate reprex-style output from the code and results
+   * @returns {string} Formatted reprex output
+   */
+  generateReprexOutput() {
+    const outputContainer = this.querySelector(".btw-run-output")
+    if (!outputContainer) {
+      return this.getAttribute("code") || ""
+    }
+
+    const parts = []
+    const preElements = outputContainer.querySelectorAll("pre")
+
+    preElements.forEach((pre) => {
+      // Skip if this is inside an image or other non-text content
+      if (pre.closest("img")) {
+        return
+      }
+
+      // Get the text content
+      const code = pre.querySelector("code")
+      const text = code ? code.textContent : pre.textContent
+
+      if (!text.trim()) {
+        return
+      }
+
+      // Source code is added as-is
+      if (pre.classList.contains("btw-output-source")) {
+        parts.push(text.trimEnd())
+      }
+      // Other outputs get #> prefix on each line
+      else if (
+        pre.classList.contains("btw-output-output") ||
+        pre.classList.contains("btw-output-message") ||
+        pre.classList.contains("btw-output-warning") ||
+        pre.classList.contains("btw-output-error")
+      ) {
+        const lines = text.trimEnd().split("\n")
+        const prefixed = lines.map((line) => "#> " + line).join("\n")
+        parts.push(prefixed)
+      }
+    })
+
+    return parts.join("\n")
+  }
+
+  /**
    * Copy code to clipboard
    * @param {Event} e
    */
@@ -132,11 +179,11 @@ class BtwRunRResult extends HTMLElement {
     // Save reference to button before async operation
     // (e.currentTarget becomes null after await)
     const copyBtn = e.currentTarget
-    const code = this.getAttribute("code") || ""
 
     try {
       const originalHtml = copyBtn.innerHTML
-      await navigator.clipboard.writeText(code)
+      const reprexOutput = this.generateReprexOutput()
+      await navigator.clipboard.writeText(reprexOutput)
 
       // Get the tooltip instance
       const tooltip = window.bootstrap?.Tooltip?.getInstance(copyBtn)
