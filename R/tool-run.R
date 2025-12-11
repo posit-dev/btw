@@ -526,7 +526,7 @@ is_mergeable_content <- function(x, y) {
 #'
 #' @param contents List of Content objects
 #' @returns List of Content objects with adjacent same-type elements merged
-#' @keywords internal
+#' @noRd
 merge_adjacent_content <- function(contents) {
   if (length(contents) <= 1) {
     return(contents)
