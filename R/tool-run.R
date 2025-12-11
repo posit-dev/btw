@@ -467,16 +467,6 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
     }
   }
 
-  dep <- htmltools::htmlDependency(
-    name = "btw-run-r",
-    version = utils::packageVersion("btw"),
-    package = "btw",
-    src = "js/run-r",
-    script = list(list(src = "btw-run-r.js", type = "module")),
-    stylesheet = "btw-run-r.css",
-    all_files = FALSE
-  )
-
   htmltools::tag(
     "btw-run-r-result",
     list(
@@ -485,8 +475,23 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
       status = status,
       `tool-title` = tool_title,
       htmltools::HTML(output_html),
-      dep
+      btw_run_tool_card_dep()
     )
+  )
+}
+
+btw_run_tool_card_dep <- function() {
+  htmltools::htmlDependency(
+    name = "btw-run-r",
+    version = utils::packageVersion("btw"),
+    package = "btw",
+    src = "js/run-r",
+    script = list(
+      list(src = "btw-icons.js", type = "module"),
+      list(src = "btw-run-r.js", type = "module")
+    ),
+    stylesheet = "btw-run-r.css",
+    all_files = FALSE
   )
 }
 
@@ -495,7 +500,7 @@ is_mergeable_content <- function(x, y) {
     ContentSource,
     ContentOutput,
     ContentMessage,
-    ContentWarning,
+      btw_run_tool_card_dep()
     ContentError
   )
 
