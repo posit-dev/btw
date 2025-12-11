@@ -23,6 +23,10 @@ const ICONS = {
   <path class="horizontal" d="M5 11C4.44772 11 4 10.5523 4 10C4 9.44772 4.44772 9 5 9H15C15.5523 9 16 9.44772 16 10C16 10.5523 15.5523 11 15 11H5Z" fill="currentColor"/>
   <path class="vertical" d="M9 5C9 4.44772 9.44772 4 10 4C10.5523 4 11 4.44772 11 5V15C11 15.5523 10.5523 16 10 16C9.44772 16 9 15.5523 9 15V5Z" fill="currentColor"/>
 </svg>`,
+  copy: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
+  <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/>
+  <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/>
+</svg>`,
 }
 
 /**
@@ -107,6 +111,58 @@ class BtwRunRResult extends HTMLElement {
   }
 
   /**
+   * Copy code to clipboard
+   * @param {Event} e
+   */
+  async copyCode(e) {
+    e.preventDefault()
+    e.stopPropagation() // Prevent triggering collapse toggle
+
+    // Save reference to button before async operation
+    // (e.currentTarget becomes null after await)
+    const copyBtn = e.currentTarget
+    const code = this.getAttribute("code") || ""
+
+    try {
+      const originalHtml = copyBtn.innerHTML
+      await navigator.clipboard.writeText(code)
+
+      // Get the tooltip instance
+      const tooltip = window.bootstrap?.Tooltip?.getInstance(copyBtn)
+
+      // Visual feedback - change icon briefly and update tooltip
+      copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
+        <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425z"/>
+      </svg>`
+
+      // Update tooltip to show success message
+      if (tooltip) {
+        const originalTitle = copyBtn.getAttribute("data-bs-original-title")
+        copyBtn.setAttribute("data-bs-original-title", "Copied code!")
+        tooltip.setContent({ ".tooltip-inner": "Copied code!" })
+        if (copyBtn.matches(":hover")) {
+          tooltip.show()
+        }
+
+        setTimeout(() => {
+          copyBtn.innerHTML = originalHtml
+          copyBtn.setAttribute("data-bs-original-title", originalTitle || "Copy source code")
+          tooltip.setContent({
+            ".tooltip-inner": originalTitle || "Copy source code",
+          })
+          tooltip.hide()
+        }, 1500)
+      } else {
+        setTimeout(() => {
+          copyBtn.innerHTML = originalHtml
+        }, 1500)
+      }
+    } catch (err) {
+      console.error("Failed to copy code:", err)
+    }
+  }
+
+  /**
    * Formats the title for display in the card header. Uses the `titleTemplate`,
    * replacing `{title}` with the actual title or name of the tool.
    * @returns {string}
@@ -133,21 +189,41 @@ class BtwRunRResult extends HTMLElement {
 
     const collapsedClass = this.expanded ? "" : " collapsed"
 
+    // Dispose of existing tooltip before re-rendering
+    const oldCopyBtn = this.querySelector(".copy-code-btn")
+    if (oldCopyBtn) {
+      const oldTooltip = window.bootstrap?.Tooltip?.getInstance(oldCopyBtn)
+      if (oldTooltip) {
+        oldTooltip.dispose()
+      }
+    }
+
     this.innerHTML = `
       <div class="shiny-tool-card card bslib-card html-fill-item html-fill-container m-0">
-        <button
-          class="card-header"
-          id="${headerId}"
-          aria-expanded="${this.expanded}"
-          aria-controls="${contentId}"
-        >
+        <div class="card-header" id="${headerId}">
           <div class="tool-icon ${this.classStatus}">${this.icon}</div>
           <div class="tool-title ${
             this.classStatus
           }">${this.formatTitle()}</div>
           <div class="tool-spacer"></div>
-          <div class="collapse-indicator">${ICONS.plus}</div>
-        </button>
+          <button
+            class="copy-code-btn"
+            aria-label="Copy code to clipboard"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            data-bs-title="Copy source code"
+          >
+            ${ICONS.copy}
+          </button>
+          <button
+            class="collapse-toggle-btn"
+            aria-expanded="${this.expanded}"
+            aria-controls="${contentId}"
+            aria-label="${this.expanded ? "Collapse" : "Expand"} tool output"
+          >
+            <div class="collapse-indicator">${ICONS.plus}</div>
+          </button>
+        </div>
         <div
           class="card-body bslib-gap-spacing html-fill-item html-fill-container${collapsedClass}"
           id="${contentId}"
@@ -162,9 +238,31 @@ class BtwRunRResult extends HTMLElement {
       </div>
     `
 
+    const collapseBtn = this.querySelector(".collapse-toggle-btn")
+    if (collapseBtn) {
+      collapseBtn.addEventListener("click", (e) => this.toggleCollapse(e))
+    }
+
+    const copyBtn = this.querySelector(".copy-code-btn")
+    if (copyBtn) {
+      copyBtn.addEventListener("click", (e) => this.copyCode(e))
+
+      // Initialize Bootstrap tooltip
+      if (window.bootstrap?.Tooltip) {
+        new window.bootstrap.Tooltip(copyBtn)
+      }
+    }
+
+    // Allow clicking anywhere on the header to toggle, except on action buttons
     const header = this.querySelector(".card-header")
     if (header) {
-      header.addEventListener("click", (e) => this.toggleCollapse(e))
+      header.addEventListener("click", (e) => {
+        // Don't toggle if clicking on a button
+        if (e.target.closest(".copy-code-btn") || e.target.closest(".collapse-toggle-btn")) {
+          return
+        }
+        this.toggleCollapse(e)
+      })
     }
   }
 

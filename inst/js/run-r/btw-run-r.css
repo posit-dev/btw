@@ -8,6 +8,11 @@ btw-run-r-result {
   margin-bottom: var(--bslib-spacer, 1em);
 }
 
+/* Make header clickable for collapsing */
+btw-run-r-result .card-header {
+  cursor: pointer;
+}
+
 /* Remove horizontal padding from card body for full-width code */
 btw-run-r-result .card-body {
   padding: 0;
@@ -201,3 +206,60 @@ btw-run-r-result .card-body {
 .btw-ansi-bg-bright-magenta { background-color: var(--btw-ansi-bg-bright-magenta); }
 .btw-ansi-bg-bright-cyan { background-color: var(--btw-ansi-bg-bright-cyan); }
 .btw-ansi-bg-bright-white { background-color: var(--btw-ansi-bg-bright-white); }
+
+/* Copy code button in header */
+.copy-code-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: var(--bs-body-color);
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.copy-code-btn:hover {
+  opacity: 1;
+}
+
+.copy-code-btn:focus {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 2px;
+  opacity: 1;
+}
+
+.copy-code-btn svg {
+  display: block;
+}
+
+/* Collapse toggle button */
+.collapse-toggle-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.collapse-toggle-btn:hover .collapse-indicator {
+  opacity: 1;
+}
+
+.collapse-toggle-btn:focus {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 2px;
+}
+
+.collapse-toggle-btn:focus .collapse-indicator {
+  opacity: 1;
+}
