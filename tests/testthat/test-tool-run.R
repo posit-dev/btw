@@ -364,3 +364,42 @@ test_that("btw_run_r_plot_dimensions works with numeric ratio input", {
   expect_equal(dims$width, 768L)
   expect_equal(dims$height, as.integer(round(768 / (16 / 9))))
 })
+
+test_that("btw_tool_run_r() restores working directory, options, and envvars", {
+  skip_if_not_installed("evaluate")
+
+  # Save original state
+  orig_wd <- withr::local_tempdir()
+  orig_opt <- "original_option"
+  orig_env <- "original_env"
+
+  withr::local_dir(orig_wd)
+  withr::local_options(".test_option" = orig_opt)
+  withr::local_envvar("_TEST_ENV_VAR" = orig_env)
+
+  # Set test values
+  options(test_option = "original_value")
+  Sys.setenv(TEST_ENV_VAR = "original_env")
+
+  # Create a temporary directory for testing
+  temp_dir <- withr::local_tempdir()
+
+  # Code that modifies working directory, options, and envvars
+  code <- sprintf(
+    '
+    setwd("%s")
+    options(.test_option = "modified_value")
+    Sys.setenv("_TEST_ENV_VAR" = "modified_env")
+    getwd()
+  ',
+    temp_dir
+  )
+
+  res <- btw_tool_run_r_impl(code)
+  expect_s7_class(res, BtwRunToolResult)
+
+  # Verify the state was restored
+  expect_equal(fs::path_real(getwd()), fs::path_real(orig_wd))
+  expect_equal(getOption(".test_option"), orig_opt)
+  expect_equal(Sys.getenv("_TEST_ENV_VAR"), orig_env)
+})
