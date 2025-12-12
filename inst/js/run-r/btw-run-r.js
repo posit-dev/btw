@@ -164,7 +164,7 @@ class BtwRunRResult extends HTMLElement {
     try {
       const originalHtml = copyBtn.innerHTML
       const reprexOutput = this.generateReprexOutput()
-      await navigator.clipboard.writeText(reprexOutput)
+      await copyToClipboard(reprexOutput)
 
       // Get the tooltip instance
       const tooltip = window.bootstrap?.Tooltip?.getInstance(copyBtn)
@@ -316,6 +316,57 @@ class BtwRunRResult extends HTMLElement {
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
   }
+}
+
+/**
+ * Copy text to clipboard with fallback for older browsers
+ * @param {string} text - The text to copy
+ * @returns {Promise<void>}
+ */
+function copyToClipboard(text) {
+  if (window.isSecureContext && navigator.clipboard) {
+    return navigator.clipboard.writeText(text).catch(() => fallbackCopy(text))
+  } else {
+    return fallbackCopy(text)
+  }
+}
+
+/**
+ * Fallback clipboard copy using document.execCommand
+ * @param {string} text - The text to copy
+ * @returns {Promise<void>}
+ */
+function fallbackCopy(text) {
+  return new Promise((resolve, reject) => {
+    const textArea = document.createElement("textarea")
+    textArea.value = text
+    textArea.style.position = "fixed"
+    textArea.style.opacity = "0"
+    document.body.appendChild(textArea)
+    textArea.focus()
+    textArea.select()
+    try {
+      const successful = document.execCommand("copy")
+      document.body.removeChild(textArea)
+      if (successful) {
+        resolve()
+      } else {
+        throw new Error("execCommand copy failed")
+      }
+    } catch (err) {
+      document.body.removeChild(textArea)
+      window.dispatchEvent(
+        new CustomEvent("shiny:client-message", {
+          detail: {
+            headline: "Could not copy text",
+            message: "Unfortunately, this browser does not support copying to the clipboard automatically. Please copy the text manually.",
+            status: "warning"
+          },
+        }),
+      )
+      reject(err)
+    }
+  })
 }
 
 if (!customElements.get("btw-run-r-result")) {
