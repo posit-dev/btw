@@ -52,6 +52,14 @@ btw-run-r-result .card-body {
   padding: 0;
 }
 
+.btw-run-output > img:last-child {
+    margin-bottom: 0;
+}
+
+.btw-output-output:has(> code:empty) {
+    display: none;
+}
+
 .btw-run-output pre.btw-output-source {
   background-color: unset;
 }
