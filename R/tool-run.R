@@ -57,6 +57,40 @@
 #' ---
 #' ```
 #'
+#' @details
+#' ## Configuration Options
+#'
+#' The behavior of the `btw_tool_run_r` tool can be customized using the
+#' following R options:
+#'
+#' * `btw.run_r.graphics_device`: A function that creates a graphics device used
+#'   for rendering plots. By default, it uses `ragg::agg_png()` if the `ragg`
+#'   package is installed, otherwise it falls back to `grDevices::png()`.
+#' * `btw.run_r.plot_aspect_ratio`: Aspect ratio for plots created during code
+#'   execution. Can be a character string of the form `"w:h"` (e.g., `"16:9"`)
+#'   or a numeric value representing width/height (e.g., `16/9`). Default is
+#'   `"3:2"`.
+#' * `btw.run_r.plot_size`: Integer pixel size for the longest side of plots.
+#'   Default is `768L`. This image size was selected to match [OpenAI's image
+#'   resizing rules](https://platform.openai.com/docs/guides/images-vision?api-mode=responses),
+#'   where images are resized such that the largest size is 768px. Another
+#'   common choice is 512px. Larger images may be used but will result in
+#'   increased token sizes.
+#' * `btw.run_r.enabled`: Logical flag to enable or disable the tool globally.
+#'
+#' These values can be set using [options()] in your R session or `.Rprofile` or
+#' in a [btw.md file][use_btw_md] under the `options` section.
+#'
+#' ```md
+#' ---
+#' options:
+#'  run_r:
+#'    enabled: true
+#'    plot_aspect_ratio: "16:9"
+#'    plot_size: 512
+#' ---
+#' ```
+#'
 #' @param code A character string containing R code to run.
 #' @param _intent Intent description (automatically added by ellmer).
 #'
@@ -101,8 +135,17 @@ btw_tool_run_r_impl <- function(code, .envir = global_env()) {
       return()
     }
 
+    dims <- btw_run_r_plot_dimensions(
+      ratio = getOption("btw.run_r.plot_aspect_ratio", "3:2"),
+      longest_side = getOption("btw.run_r.plot_size", 768L)
+    )
+
     path_plot <- withr::local_tempfile(fileext = ".png")
-    run_r_plot_device(filename = path_plot, width = 768, height = 768)
+    run_r_plot_device(
+      filename = path_plot,
+      width = dims$width,
+      height = dims$height
+    )
     tryCatch(
       grDevices::replayPlot(last_plot),
       finally = {
@@ -238,7 +281,7 @@ run_r_plot_device <- function(...) {
   }
 
   if (rlang::is_installed("ragg")) {
-    return(ragg::agg_png(...))
+    return(ragg::agg_png(..., scaling = 1.5))
   }
 
   grDevices::png(...)
@@ -415,39 +458,38 @@ trim_outer_nl <- function(x) {
   sub("\r?\n$", "", x)
 }
 
-S7::method(contents_html, ContentSource) <- function(content, ...) {
+btw_pre_output <- function(text, pre_class, code_class = "nohighlight") {
+  text <- trim_outer_nl(text)
+  if (!nzchar(text)) {
+    return("")
+  }
+
   sprintf(
-    '<pre class="btw-output-source"><code class="language-r">%s</code></pre>',
-    trim_outer_nl(content@text)
+    '<pre class="btw-output-%s"><code class="%s">%s</code></pre>',
+    pre_class,
+    code_class,
+    text
   )
+}
+
+S7::method(contents_html, ContentSource) <- function(content, ...) {
+  btw_pre_output(content@text, pre_class = "source", code_class = "language-r")
 }
 
 S7::method(contents_html, ContentOutput) <- function(content, ...) {
-  sprintf(
-    '<pre class="btw-output-output"><code class="nohighlight">%s</code></pre>',
-    trim_outer_nl(content@text)
-  )
+  btw_pre_output(content@text, pre_class = "output")
 }
 
 S7::method(contents_html, ContentMessage) <- function(content, ...) {
-  sprintf(
-    '<pre class="btw-output-message"><code class="nohighlight">%s</code></pre>',
-    trim_outer_nl(content@text)
-  )
+  btw_pre_output(content@text, pre_class = "message")
 }
 
 S7::method(contents_html, ContentWarning) <- function(content, ...) {
-  sprintf(
-    '<pre class="btw-output-warning"><code class="nohighlight">%s</code></pre>',
-    trim_outer_nl(content@text)
-  )
+  btw_pre_output(content@text, pre_class = "warning")
 }
 
 S7::method(contents_html, ContentError) <- function(content, ...) {
-  sprintf(
-    '<pre class="btw-output-error"><code class="nohighlight">%s</code></pre>',
-    trim_outer_nl(content@text)
-  )
+  btw_pre_output(content@text, pre_class = "error")
 }
 
 contents_shinychat <- S7::new_external_generic(
@@ -562,4 +604,64 @@ merge_adjacent_content <- function(contents) {
     },
     .init = list()
   )
+}
+
+#' Compute plot dimensions from aspect ratio
+#'
+#' @param ratio Either:
+#'   - character of the form "w:h" (e.g. "16:9", "5:9"), or
+#'   - numeric giving width/height (e.g. 16/9, 1.777...).
+#' @param longest_side Integer pixel size for the longest side (default 768).
+#'
+#' @return Named list with `width` and `height` in pixels, where
+#'   max(width, height) == longest_side.
+#' @noRd
+btw_run_r_plot_dimensions <- function(ratio, longest_side = 768L) {
+  r <- parse_ratio(ratio)
+
+  if (r >= 1) {
+    # Width is longer
+    width <- longest_side
+    height <- longest_side / r
+  } else {
+    # Height is longer
+    height <- longest_side
+    width <- longest_side * r
+  }
+
+  list(
+    width = as.integer(round(width)),
+    height = as.integer(round(height))
+  )
+}
+
+#' Parse an aspect ratio specification
+#'
+#' @param ratio Either:
+#'   - character of the form "w:h" (e.g. "16:9", "5:9"), or
+#'   - numeric giving width/height (e.g. 16/9, 1.777...).
+#'
+#' @return Numeric scalar giving width/height.
+#' @noRd
+parse_ratio <- function(ratio) {
+  if (is.character(ratio)) {
+    parts <- strsplit(ratio, ":", fixed = TRUE)[[1]]
+    if (length(parts) != 2L) {
+      cli::cli_abort(
+        "Invalid ratio string '{ratio}'. Use the form 'w:h', e.g. '16:9'.",
+        call = caller_env(n = 2)
+      )
+    }
+    nums <- suppressWarnings(as.numeric(parts))
+    if (any(is.na(nums)) || any(nums <= 0)) {
+      cli::cli_abort(
+        "Both sides of the ratio must be positive numbers, e.g. '16:9'.",
+        call = caller_env(n = 2)
+      )
+    }
+    return(nums[1] / nums[2])
+  }
+
+  check_number_decimal(ratio, allow_infinite = FALSE, min = 0)
+  ratio
 }

@@ -27,6 +27,40 @@ This tool runs R code and returns results as a list of \code{\link[ellmer:Conten
 objects. It captures text output, plots, messages, warnings, and errors. Code
 execution stops on the first error, returning all results up to that point.
 }
+\details{
+\subsection{Configuration Options}{
+
+The behavior of the \code{btw_tool_run_r} tool can be customized using the
+following R options:
+\itemize{
+\item \code{btw.run_r.graphics_device}: A function that creates a graphics device used
+for rendering plots. By default, it uses \code{ragg::agg_png()} if the \code{ragg}
+package is installed, otherwise it falls back to \code{grDevices::png()}.
+\item \code{btw.run_r.plot_aspect_ratio}: Aspect ratio for plots created during code
+execution. Can be a character string of the form \code{"w:h"} (e.g., \code{"16:9"})
+or a numeric value representing width/height (e.g., \code{16/9}). Default is
+\code{"3:2"}.
+\item \code{btw.run_r.plot_size}: Integer pixel size for the longest side of plots.
+Default is \code{768L}. This image size was selected to match \href{https://platform.openai.com/docs/guides/images-vision?api-mode=responses}{OpenAI's image resizing rules},
+where images are resized such that the largest size is 768px. Another
+common choice is 512px. Larger images may be used but will result in
+increased token sizes.
+\item \code{btw.run_r.enabled}: Logical flag to enable or disable the tool globally.
+}
+
+These values can be set using \code{\link[=options]{options()}} in your R session or \code{.Rprofile} or
+in a \link[=use_btw_md]{btw.md file} under the \code{options} section.
+
+\if{html}{\out{<div class="sourceCode md">}}\preformatted{---
+options:
+ run_r:
+   enabled: true
+   plot_aspect_ratio: "16:9"
+   plot_size: 512
+---
+}\if{html}{\out{</div>}}
+}
+}
 \section{Security Considerations}{
 
 Executing arbitrary R code can pose significant security risks, especially

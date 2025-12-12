@@ -331,3 +331,36 @@ describe("btw_tool_run_r() in btw_tools()", {
     expect_true("btw_tool_run_r" %in% names(tools))
   })
 })
+
+
+test_that("parse_ratio correctly parses 'w:h' strings", {
+  expect_equal(parse_ratio("16:9"), 16 / 9)
+  expect_equal(parse_ratio("5:9"), 5 / 9)
+})
+
+test_that("parse_ratio accepts numeric ratios", {
+  expect_equal(parse_ratio(16 / 9), 16 / 9)
+})
+
+test_that("btw_run_r_plot_dimensions computes correct dimensions for landscape ratio", {
+  dims <- btw_run_r_plot_dimensions("16:9")
+  exp_width <- 768L
+  exp_height <- as.integer(round(768 / (16 / 9)))
+
+  expect_equal(dims$width, !!exp_width)
+  expect_equal(dims$height, !!exp_height)
+  expect_equal(max(unlist(dims)), 768L)
+})
+
+test_that("btw_run_r_plot_dimensions computes correct dimensions for portrait ratio", {
+  dims <- btw_run_r_plot_dimensions("5:9")
+  expect_equal(dims$height, 768L)
+  expect_equal(dims$width, as.integer(round(768 * (5 / 9))))
+  expect_equal(max(unlist(dims)), 768L)
+})
+
+test_that("btw_run_r_plot_dimensions works with numeric ratio input", {
+  dims <- btw_run_r_plot_dimensions(16 / 9)
+  expect_equal(dims$width, 768L)
+  expect_equal(dims$height, as.integer(round(768 / (16 / 9))))
+})
