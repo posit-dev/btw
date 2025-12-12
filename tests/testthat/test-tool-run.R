@@ -143,7 +143,8 @@ test_that("contents_html() renders Content types correctly", {
   warn_html <- ellmer::contents_html(warn)
   err_html <- ellmer::contents_html(err)
 
-  expect_match(code_html, "<pre><code class=\"nohighlight\">")
+  expect_match(code_html, 'code class="nohighlight"')
+  expect_match(code_html, 'pre class="btw-output-output"')
   expect_match(msg_html, 'class="btw-output-message"')
   expect_match(warn_html, 'class="btw-output-warning"')
   expect_match(err_html, 'class="btw-output-error"')
@@ -196,7 +197,10 @@ text(1, 1, 'y')"
 })
 
 test_that("btw_tool_run_r() is not included in btw_tools() by default", {
-  local_mocked_bindings(is_installed = function(...) TRUE)
+  local_mocked_bindings(
+    is_installed = function(...) TRUE,
+    btw_can_register_gh_tool = function() FALSE
+  )
   withr::local_envvar(BTW_RUN_R_ENABLED = NULL)
   withr::local_options(btw.run_r.enabled = NULL)
 
