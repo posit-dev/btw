@@ -395,6 +395,7 @@ Executes R code and captures printed values, text output, plots, messages, warni
     - Network requests
     - Package installation or updates
 - SHOULD NOT change global state (options, environment variables, working directory, etc.)
+    - Working directory, options and environment variables are reset between tool calls
 - MUST use temporary files for any ephemeral storage needs (`tempfile()`)
 
 ## CODE AND OUTPUT STYLE
