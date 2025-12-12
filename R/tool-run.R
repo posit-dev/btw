@@ -329,26 +329,36 @@ fansi_to_html <- function(text) {
       name = "btw_tool_run_r",
       description = r"---(Run R code.
 
-This tool executes R code and returns the results, including text output,
-plots, messages, warnings, and errors.
+Executes R code and captures printed values, text output, plots, messages, warnings, and errors.
 
-With great power comes great responsibility: the R code you write should be
-safe and appropriate for execution in a shared environment. Do not write files
-or perform dangerous or irreversible actions. Always consider the security
-implications of the code that you write. If you have any doubts, consult the
-user with a preview of the code you would like to write before executing it.
+## CORE RULES (FOLLOW STRICTLY)
+- MUST work incrementally: each call should do one small, well-defined task
+- MUST create no more than one rendered figure per tool call. Use separate calls for multiple figures.
+- MUST NOT use this tool to "talk to the user". Explanations and interpretation belong in the assistant message
+- MUST read any error messages carefully
+- MUST NOT make more than 2 attempts to fix an error
+    - After 2 failed attempts: stop, summarize what you tried, include the error(s), and propose the next change without executing it.
 
-If an error occurs during execution, the tool will return all results up to
-the point of the error. Inspect the error message to understand what went wrong.
+## SAFETY REQUIREMENTS (MUST FOLLOW)
+- This code runs in a global environment. Write code that is safe, reversible, and non-destructive
+- MUST NOT perform any of the following UNLESS the user explicitly requests it and you first show the code and target paths/URLs:
+    - File writes or modifications (persistent output, overwriting, deleting)
+    - System/shell execution (system, system2, pipe, shell)
+    - Network requests
+    - Package installation or updates
+- SHOULD NOT change global state (options, environment variables, working directory, etc.)
+- MUST use temporary files for any ephemeral storage needs (`tempfile()`)
 
-A few style guidelines to keep in mind when using this tool:
-
-* Return results implicitly, like `x`, rather than with `print(x)` or `cat(x)`.
-* Return plots implicitly rather than assigning them to intermediate variables and then displaying the variable.
-* Do not communicate with the user via the `code` argument to this tool, instead explaining choices you've made and interpretations of output in a message to them directly.
-* Do not decorate output with custom displays, e.g. avoid using `cat()` and instead create data frames, tibbles or simple lists.
-* If you *need* to use `cat()`, you MUST group all output into a SINGLE `cat()` call for better readability.
-* Respect the user's environment. Do not set environment variables, change options, or modify global state without explicit instruction to do so.
+## CODE AND OUTPUT STYLE
+- ALWAYS write clear, concise, and idiomatic R code, preferring packages and functions from the tidyverse ecosystem when available
+- PREFER less than 50 lines of code per tool call
+- SHOULD use code comments to explain only the non-obvious parts of the code
+    - AVOID using comments to literally describe the code
+- DO return results implicitly (`x`, not `print(x)`)
+- DO make the last expression the object you want to show (e.g. a data frame, tibble, list or scalar)
+- AVOID `print()` and `cat()` unless necessary. If `cat()` is unavoidable, you MUST use a SINGLE `cat()` call and keep it concise
+- PREFER returning structured objects (tibbles, data frames, lists) and brief summaries (`head()`, `str()`, `summary()`)
+- AVOID extremely large outputs; show summaries and return key results
       )---",
       annotations = ellmer::tool_annotations(
         title = "Run R Code",
