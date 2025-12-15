@@ -157,12 +157,12 @@ btw_tool_run_r_impl <- function(code, .envir = global_env()) {
     last_plot <<- NULL
   }
 
-  local_reproducible_output(disable_ansi_features = !is_installed("fansi"))
-
   # Ensure working directory, options, envvar are restored after execution
   withr::local_dir(getwd())
   withr::local_options()
   withr::local_envvar()
+
+  local_reproducible_output(disable_ansi_features = !is_installed("fansi"))
 
   # Create output handler that converts to Content types as outputs are generated
   handler <- evaluate::new_output_handler(
