@@ -210,8 +210,9 @@ btw_tool_run_r_impl <- function(code, .envir = global_env()) {
     value = function(value, visible) {
       # Store the actual value when it's visible (meaningful output)
       # Invisible values include assignments and side-effect returns
+      last_value <<- value
+
       if (visible) {
-        last_value <<- value
         # Also add as code content
         value_text <- paste(
           utils::capture.output(print(value)),
