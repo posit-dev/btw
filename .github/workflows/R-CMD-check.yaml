@@ -18,7 +18,7 @@ jobs:
     runs-on: ${{ matrix.config.os }}
 
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
-    timeout-minutes: 45
+    timeout-minutes: 180
 
     strategy:
       fail-fast: false
@@ -53,13 +53,6 @@ jobs:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
-
-      - name: Install duckdb on ubuntu-latest
-        if: matrix.config.os == 'ubuntu-latest'
-        shell: Rscript {0}
-        run: |
-          dir.create(Sys.getenv("R_LIBS_SITE"), recursive = TRUE, showWarnings = FALSE)
-          install.packages("duckdb", repos = "https://packagemanager.posit.co/cran/__linux__/noble/latest", lib = Sys.getenv("R_LIBS_SITE"))
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
