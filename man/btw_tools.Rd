@@ -86,6 +86,15 @@ this function have access to the tools:
 
 }
 
+\subsection{Group: pkg}{\tabular{ll}{
+   Name \tab Description \cr
+   \code{\link[=btw_tool_pkg_check]{btw_tool_pkg_check()}} \tab Run comprehensive package checks. \cr
+   \code{\link[=btw_tool_pkg_document]{btw_tool_pkg_document()}} \tab Generate package documentation. \cr
+   \code{\link[=btw_tool_pkg_test]{btw_tool_pkg_test()}} \tab Run testthat tests for an R package. \cr
+}
+
+}
+
 \subsection{Group: run}{\tabular{ll}{
    Name \tab Description \cr
    \code{\link[=btw_tool_run_r]{btw_tool_run_r()}} \tab Run R code. \cr
@@ -143,6 +152,9 @@ Other Tools:
 \code{\link{btw_tool_files_write_text_file}()},
 \code{\link{btw_tool_ide_read_current_editor}()},
 \code{\link{btw_tool_package_docs}},
+\code{\link{btw_tool_pkg_check}()},
+\code{\link{btw_tool_pkg_document}()},
+\code{\link{btw_tool_pkg_test}()},
 \code{\link{btw_tool_run_r}()},
 \code{\link{btw_tool_search_packages}()},
 \code{\link{btw_tool_session_package_info}()},

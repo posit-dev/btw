@@ -223,6 +223,17 @@ test_that("btw_tool_run_r() is included in btw_tools() when requested", {
   expect_true("btw_tool_run_r" %in% tool_names)
 })
 
+test_that("btw_tool_run_r() runs code without a dynamic tty", {
+  withr::local_options(cli.dynamic = TRUE)
+  withr::local_envvar(R_CLI_DYNAMIC = "TRUE")
+
+  expect_true(cli::is_dynamic_tty())
+  expect_equal(
+    btw_tool_run_r_impl("cli::is_dynamic_tty()")@extra$contents[[2]]@text,
+    "[1] FALSE"
+  )
+})
+
 describe("btw_tool_run_r() in btw_tools()", {
   local_mocked_bindings(is_installed = function(...) TRUE)
 

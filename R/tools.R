@@ -142,6 +142,7 @@ tool_group_icon <- function(group, default = NULL) {
     "git" = tool_icon("git"),
     "github" = tool_icon("github"),
     "ide" = tool_icon("code-blocks"),
+    "pkg" = tool_icon("package"),
     "search" = tool_icon("search"),
     "session" = tool_icon("screen-search-desktop"),
     "web" = tool_icon("globe-book"),

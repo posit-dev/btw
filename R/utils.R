@@ -194,13 +194,16 @@ local_reproducible_output <- function(
 ) {
   # Replicating testthat::local_reproducible_output()
   withr::local_options(width = width, cli.width = width, .local_envir = .env)
-  withr::local_envvar(RSTUDIO_CONSOLE_WIDTH = width, .local_envir = .env)
+  withr::local_envvar(
+    RSTUDIO_CONSOLE_WIDTH = width,
+    R_CLI_DYNAMIC = "false",
+    .local_envir = .env
+  )
 
   if (disable_ansi_features) {
-    withr::local_envvar(list(NO_COLOR = "true"), .local_envir = .env)
+    withr::local_envvar(NO_COLOR = "true", .local_envir = .env)
     withr::local_options(
       crayon.enabled = FALSE,
-      cli.dynamic = FALSE,
       cli.unicode = FALSE,
       cli.condition_width = Inf,
       cli.num_colors = 1L,
@@ -219,7 +222,7 @@ local_reproducible_output <- function(
   }
 
   withr::local_options(
-    cil.dynamic = FALSE,
+    cli.dynamic = FALSE,
     cli.spinner = FALSE,
     cli.hyperlink = FALSE,
     cli.hyperlink_run = FALSE,

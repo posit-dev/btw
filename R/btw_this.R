@@ -650,7 +650,9 @@ btw_this_file_path <- function(x) {
     path <- "."
   }
   if (fs::is_file(path)) {
-    return(btw_tool_files_read_text_file_impl(path, check_within_wd = FALSE)@value)
+    return(
+      btw_tool_files_read_text_file_impl(path, check_within_wd = FALSE)@value
+    )
   } else {
     return(btw_tool_files_list_files_impl(path, check_within_wd = FALSE)@value)
   }
