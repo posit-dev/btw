@@ -51,6 +51,7 @@ Imports:
 Suggests:
     bslib (>= 0.7.0),
     chromote,
+    covr,
     DBI,
     devtools,
     duckdb,
@@ -60,6 +61,7 @@ Suggests:
     gh,
     htmltools,
     pandoc,
+    pkgload,
     ragg,
     roxygen2,
     shiny,
