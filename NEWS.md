@@ -1,6 +1,6 @@
 # btw (development version)
 
-* New "pkg" tool group with package development tools: `btw_tool_pkg_document()`, `btw_tool_pkg_check()`, and `btw_tool_pkg_test()` provide LLMs with the ability to document, check, and test R packages during development (#133).
+* New "pkg" tool group with package development tools: `btw_tool_pkg_document()`, `btw_tool_pkg_check()`, `btw_tool_pkg_test()` and `btw_tool_pkg_coverage()` provide LLMs with the ability to document, check, test, and check test coverage of R packages during development (#133, #136).
 
 * New `btw_tool_run_r()` tool allows LLMs to run R code and to see the output, including of plots. Because this tool lets LLMs run R arbitrary R code in the global environment (which can be great but can also have security implications), it is opt-in and disabled by default. See `?btw_tool_run_r` for more details (#126).
 
