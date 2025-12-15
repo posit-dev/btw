@@ -2,6 +2,15 @@
 
 ## btw (development version)
 
+- New “pkg” tool group with package development tools:
+  [`btw_tool_pkg_document()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_document.md),
+  [`btw_tool_pkg_check()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_check.md),
+  and
+  [`btw_tool_pkg_test()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_test.md)
+  provide LLMs with the ability to document, check, and test R packages
+  during development
+  ([\#133](https://github.com/posit-dev/btw/issues/133)).
+
 - New
   [`btw_tool_run_r()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_run_r.md)
   tool allows LLMs to run R code and to see the output, including of

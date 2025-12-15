@@ -1,18 +1,26 @@
-# Tool: Read a Web Page as Markdown
+# Tool: Run package tests
 
-Tool: Read a Web Page as Markdown
+Run package tests using
+[`devtools::test()`](https://devtools.r-lib.org/reference/test.html).
+Optionally filter tests by name pattern.
 
 ## Usage
 
 ``` r
-btw_tool_web_read_url(url, `_intent` = "")
+btw_tool_pkg_test(pkg = ".", filter = NULL, `_intent` = "")
 ```
 
 ## Arguments
 
-- url:
+- pkg:
 
-  The URL of the web page to read.
+  Path to package directory. Defaults to '.'. Must be within current
+  working directory.
+
+- filter:
+
+  Optional regex to filter test files. Example: 'helper' matches
+  'test-helper.R'.
 
 - \_intent:
 
@@ -22,16 +30,12 @@ btw_tool_web_read_url(url, `_intent` = "")
 
 ## Value
 
-Returns a `BtwWebPageResult` object that inherits from
-[ellmer::ContentToolResult](https://ellmer.tidyverse.org/reference/Content.html)
-containing the markdown content of the web page.
-
-## Details
-
-You can control the maximum time to wait for the page to load by setting
-the `btw.max_wait_for_page_load_s` option globally in your R session.
+The output from
+[`devtools::test()`](https://devtools.r-lib.org/reference/test.html).
 
 ## See also
+
+[`btw_tools()`](https://posit-dev.github.io/btw/dev/reference/btw_tools.md)
 
 Other Tools:
 [`btw_tool_docs_package_news()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_docs_package_news.md),
@@ -45,20 +49,9 @@ Other Tools:
 [`btw_tool_package_docs`](https://posit-dev.github.io/btw/dev/reference/btw_tool_package_docs.md),
 [`btw_tool_pkg_check()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_check.md),
 [`btw_tool_pkg_document()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_document.md),
-[`btw_tool_pkg_test()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_test.md),
 [`btw_tool_run_r()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_run_r.md),
 [`btw_tool_search_packages()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_search_packages.md),
 [`btw_tool_session_package_info()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_session_package_info.md),
 [`btw_tool_session_platform_info()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_session_platform_info.md),
+[`btw_tool_web_read_url()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_web_read_url.md),
 [`btw_tools()`](https://posit-dev.github.io/btw/dev/reference/btw_tools.md)
-
-## Examples
-
-``` r
-if (FALSE) { # rlang::is_installed("chromote") && rlang::is_interactive()
-btw_tool_web_read_url("https://www.r-project.org/")
-btw_tool_web_read_url(
-  "https://posit.co/blog/easy-tool-calls-with-ellmer-and-chatlas/"
-)
-}
-```

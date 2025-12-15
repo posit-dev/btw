@@ -97,6 +97,12 @@ and to avoid name clashes with other tools.
   [`btw_tool_docs_available_vignettes()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_package_docs.md)
   [`btw_tool_docs_vignette()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_package_docs.md)
   : Tool: Describe R package documentation
+- [`btw_tool_pkg_check()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_check.md)
+  : Tool: Run R CMD check on a package
+- [`btw_tool_pkg_document()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_document.md)
+  : Tool: Generate package documentation
+- [`btw_tool_pkg_test()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_test.md)
+  : Tool: Run package tests
 - [`btw_tool_run_r()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_run_r.md)
   **\[experimental\]** : Tool: Run R code
 - [`btw_tool_search_package_info()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_search_package_info.md)

@@ -1,18 +1,22 @@
-# Tool: Read a Web Page as Markdown
+# Tool: Run R CMD check on a package
 
-Tool: Read a Web Page as Markdown
+Run R CMD check on a package using
+[`devtools::check()`](https://devtools.r-lib.org/reference/check.html).
+This performs comprehensive checks on the package structure, code, and
+documentation.
 
 ## Usage
 
 ``` r
-btw_tool_web_read_url(url, `_intent` = "")
+btw_tool_pkg_check(pkg = ".", `_intent` = "")
 ```
 
 ## Arguments
 
-- url:
+- pkg:
 
-  The URL of the web page to read.
+  Path to package directory. Defaults to '.'. Must be within current
+  working directory.
 
 - \_intent:
 
@@ -22,16 +26,18 @@ btw_tool_web_read_url(url, `_intent` = "")
 
 ## Value
 
-Returns a `BtwWebPageResult` object that inherits from
-[ellmer::ContentToolResult](https://ellmer.tidyverse.org/reference/Content.html)
-containing the markdown content of the web page.
+The output from
+[`devtools::check()`](https://devtools.r-lib.org/reference/check.html).
 
 ## Details
 
-You can control the maximum time to wait for the page to load by setting
-the `btw.max_wait_for_page_load_s` option globally in your R session.
+The check runs with `remote = TRUE`, `cran = TRUE`, `manual = FALSE`,
+and `error_on = "never"` to provide comprehensive feedback without
+failing.
 
 ## See also
+
+[`btw_tools()`](https://posit-dev.github.io/btw/dev/reference/btw_tools.md)
 
 Other Tools:
 [`btw_tool_docs_package_news()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_docs_package_news.md),
@@ -43,22 +49,11 @@ Other Tools:
 [`btw_tool_files_write_text_file()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_write_text_file.md),
 [`btw_tool_ide_read_current_editor()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_ide_read_current_editor.md),
 [`btw_tool_package_docs`](https://posit-dev.github.io/btw/dev/reference/btw_tool_package_docs.md),
-[`btw_tool_pkg_check()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_check.md),
 [`btw_tool_pkg_document()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_document.md),
 [`btw_tool_pkg_test()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_test.md),
 [`btw_tool_run_r()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_run_r.md),
 [`btw_tool_search_packages()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_search_packages.md),
 [`btw_tool_session_package_info()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_session_package_info.md),
 [`btw_tool_session_platform_info()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_session_platform_info.md),
+[`btw_tool_web_read_url()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_web_read_url.md),
 [`btw_tools()`](https://posit-dev.github.io/btw/dev/reference/btw_tools.md)
-
-## Examples
-
-``` r
-if (FALSE) { # rlang::is_installed("chromote") && rlang::is_interactive()
-btw_tool_web_read_url("https://www.r-project.org/")
-btw_tool_web_read_url(
-  "https://posit.co/blog/easy-tool-calls-with-ellmer-and-chatlas/"
-)
-}
-```

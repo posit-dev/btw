@@ -99,6 +99,9 @@ Other Tools:
 [`btw_tool_files_write_text_file()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_write_text_file.md),
 [`btw_tool_ide_read_current_editor()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_ide_read_current_editor.md),
 [`btw_tool_package_docs`](https://posit-dev.github.io/btw/dev/reference/btw_tool_package_docs.md),
+[`btw_tool_pkg_check()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_check.md),
+[`btw_tool_pkg_document()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_document.md),
+[`btw_tool_pkg_test()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_test.md),
 [`btw_tool_run_r()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_run_r.md),
 [`btw_tool_search_packages()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_search_packages.md),
 [`btw_tool_session_package_info()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_session_package_info.md),
@@ -120,14 +123,14 @@ withr::with_tempdir({
     show_lines = TRUE
   )
 })
-#> ℹ Indexing files in /tmp/RtmpwauLDp/file20cb6f68512 for code search
-#> ✔ Indexing files in /tmp/RtmpwauLDp/file20cb6f68512 for code search [284ms]
+#> ℹ Indexing files in /tmp/Rtmp0oQunO/file22d144c41ccf for code search
+#> ✔ Indexing files in /tmp/Rtmp0oQunO/file22d144c41ccf for code search [269ms]
 #> 
 #> <btw::BtwToolResult>
 #>  @ value  :'data.frame': 1 obs. of  5 variables:
 #>  .. $ filename     : chr "state_names_1.md"
 #>  .. $ size         : 'fs_bytes' num 219
-#>  .. $ last_modified: POSIXct, format: "2025-12-15 15:58:34"
+#>  .. $ last_modified: POSIXct, format: "2025-12-15 17:40:50"
 #>  .. $ content      : chr "Kentucky"
 #>  .. $ line         : num 17
 #>  @ error  : NULL

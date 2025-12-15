@@ -61,6 +61,15 @@ returned by this function have access to the tools:
 | Name | Description |
 | [`btw_tool_ide_read_current_editor()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_ide_read_current_editor.md) | Read the contents of the editor that is currently open in the user's IDE. |
 
+### Group: pkg
+
+|  |  |
+|----|----|
+| Name | Description |
+| [`btw_tool_pkg_check()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_check.md) | Run comprehensive package checks. |
+| [`btw_tool_pkg_document()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_document.md) | Generate package documentation. |
+| [`btw_tool_pkg_test()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_test.md) | Run testthat tests for an R package. |
+
 ### Group: run
 
 |  |  |
@@ -135,6 +144,9 @@ Other Tools:
 [`btw_tool_files_write_text_file()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_write_text_file.md),
 [`btw_tool_ide_read_current_editor()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_ide_read_current_editor.md),
 [`btw_tool_package_docs`](https://posit-dev.github.io/btw/dev/reference/btw_tool_package_docs.md),
+[`btw_tool_pkg_check()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_check.md),
+[`btw_tool_pkg_document()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_document.md),
+[`btw_tool_pkg_test()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_test.md),
 [`btw_tool_run_r()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_run_r.md),
 [`btw_tool_search_packages()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_search_packages.md),
 [`btw_tool_session_package_info()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_session_package_info.md),
@@ -183,6 +195,9 @@ ch$register_tools(c(ch$get_tools(), btw_tools()))
 #> Replacing existing btw_tool_git_branch_list tool.
 #> Replacing existing btw_tool_git_branch_create tool.
 #> Replacing existing btw_tool_git_branch_checkout tool.
+#> Replacing existing btw_tool_pkg_document tool.
+#> Replacing existing btw_tool_pkg_check tool.
+#> Replacing existing btw_tool_pkg_test tool.
 #> Replacing existing btw_tool_search_packages tool.
 #> Replacing existing btw_tool_search_package_info tool.
 #> Replacing existing btw_tool_session_check_package_installed tool.
@@ -207,6 +222,9 @@ ch$register_tools(c(ch$get_tools(), btw_tools()))
 #> Replacing existing btw_tool_git_branch_list tool.
 #> Replacing existing btw_tool_git_branch_create tool.
 #> Replacing existing btw_tool_git_branch_checkout tool.
+#> Replacing existing btw_tool_pkg_document tool.
+#> Replacing existing btw_tool_pkg_check tool.
+#> Replacing existing btw_tool_pkg_test tool.
 #> Replacing existing btw_tool_search_packages tool.
 #> Replacing existing btw_tool_search_package_info tool.
 #> Replacing existing btw_tool_session_check_package_installed tool.
