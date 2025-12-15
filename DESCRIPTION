@@ -52,6 +52,7 @@ Suggests:
     bslib (>= 0.7.0),
     chromote,
     DBI,
+    devtools,
     duckdb,
     evaluate,
     fansi,
@@ -60,6 +61,7 @@ Suggests:
     htmltools,
     pandoc,
     ragg,
+    roxygen2,
     shiny,
     shinychat (>= 0.2.0),
     testthat (>= 3.0.0),
@@ -95,6 +97,7 @@ Collate:
     'tool-files.R'
     'tool-git.R'
     'tool-github.R'
+    'tool-pkg.R'
     'tool-rstudioapi.R'
     'tool-run.R'
     'tool-search-packages.R'
