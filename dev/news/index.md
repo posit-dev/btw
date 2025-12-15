@@ -2,6 +2,16 @@
 
 ## btw (development version)
 
+- New
+  [`btw_tool_run_r()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_run_r.md)
+  tool allows LLMs to run R code and to see the output, including of
+  plots. Because this tool lets LLMs run R arbitrary R code in the
+  global environment (which can be great but can also have security
+  implications), it is opt-in and disabled by default. See
+  [`?btw_tool_run_r`](https://posit-dev.github.io/btw/dev/reference/btw_tool_run_r.md)
+  for more details
+  ([\#126](https://github.com/posit-dev/btw/issues/126)).
+
 - [`btw_tool_docs_help_page()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_package_docs.md)
   now uses markdown headings and sections for argument descriptions,
   rather than a table. This is considerably more token efficient when

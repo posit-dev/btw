@@ -54,6 +54,7 @@ Other Tools:
 [`btw_tool_files_write_text_file()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_write_text_file.md),
 [`btw_tool_ide_read_current_editor()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_ide_read_current_editor.md),
 [`btw_tool_package_docs`](https://posit-dev.github.io/btw/dev/reference/btw_tool_package_docs.md),
+[`btw_tool_run_r()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_run_r.md),
 [`btw_tool_search_packages()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_search_packages.md),
 [`btw_tool_session_platform_info()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_session_platform_info.md),
 [`btw_tool_web_read_url()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_web_read_url.md),
@@ -64,7 +65,7 @@ Other Tools:
 ``` r
 btw_tool_session_package_info("btw")
 #> <btw::BtwPackageInfoToolResult>
-#>  @ value  : chr "```\n package * version    date (UTC) lib source\n btw     * 1.0.0.9000 2025-12-08 [1] local\n\n [1] /home/runn"| __truncated__
+#>  @ value  : chr "```\n package * version    date (UTC) lib source\n btw     * 1.0.0.9000 2025-12-15 [1] local\n\n [1] /home/runn"| __truncated__
 #>  @ error  : NULL
 #>  @ extra  :List of 2
 #>  .. $ data   :Classes ‘packages_info’ and 'data.frame':  1 obs. of  11 variables:
@@ -75,7 +76,7 @@ btw_tool_session_package_info("btw")
 #>  ..  ..$ loadedpath   : chr "/home/runner/work/_temp/Library/btw"
 #>  ..  ..$ attached     : logi TRUE
 #>  ..  ..$ is_base      : logi FALSE
-#>  ..  ..$ date         : chr "2025-12-08"
+#>  ..  ..$ date         : chr "2025-12-15"
 #>  ..  ..$ source       : chr "local"
 #>  ..  ..$ md5ok        : logi NA
 #>  ..  ..$ library      : Factor w/ 3 levels "/home/runner/work/_temp/Library",..: 1
