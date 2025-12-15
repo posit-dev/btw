@@ -3,18 +3,20 @@ test_that("btw_tool_run_r() returns simple calculations", {
 
   res <- btw_tool_run_r_impl("2 + 2")
   expect_s7_class(res, BtwRunToolResult)
-  expect_type(res@value, "list")
+
   # The actual value is stored in extra$data
   expect_equal(res@extra$data, 4)
-  # The visible output is captured as ContentOutput
-  expect_length(res@value, 1)
-  expect_s7_class(res@value[[1]], ContentOutput)
-  expect_match(res@value[[1]]@text, "4")
-  # The contents in extra should match value (except source blocks)
-  expect_equal(
-    res@value,
-    keep(res@extra$contents, Negate(S7::S7_inherits), ContentSource)
-  )
+
+  # value is now flattened to a string for text-only output
+  expect_type(res@value, "character")
+  expect_equal(res@value, "[1] 4")
+
+  # The full contents in extra should have the structured output
+  contents <- res@extra$contents
+  output_contents <- keep(contents, Negate(S7::S7_inherits), ContentSource)
+  expect_length(output_contents, 1)
+  expect_s7_class(output_contents[[1]], ContentOutput)
+  expect_match(output_contents[[1]]@text, "4")
 })
 
 test_that("btw_tool_run_r() captures messages", {
@@ -22,10 +24,17 @@ test_that("btw_tool_run_r() captures messages", {
 
   res <- btw_tool_run_r_impl('message("hello")')
   expect_s7_class(res, BtwRunToolResult)
-  expect_type(res@value, "list")
-  expect_length(res@value, 1)
-  expect_s7_class(res@value[[1]], ContentMessage)
-  expect_equal(res@value[[1]]@text, "hello")
+
+  # value is flattened to a string for text-only output
+  expect_type(res@value, "character")
+  expect_equal(res@value, "hello")
+
+  # Check the structured content in extra$contents
+  contents <- res@extra$contents
+  output_contents <- keep(contents, Negate(S7::S7_inherits), ContentSource)
+  expect_length(output_contents, 1)
+  expect_s7_class(output_contents[[1]], ContentMessage)
+  expect_equal(output_contents[[1]]@text, "hello")
 })
 
 test_that("btw_tool_run_r() captures warnings", {
@@ -33,10 +42,17 @@ test_that("btw_tool_run_r() captures warnings", {
 
   res <- btw_tool_run_r_impl('warning("beware")')
   expect_s7_class(res, BtwRunToolResult)
-  expect_type(res@value, "list")
-  expect_length(res@value, 1)
-  expect_s7_class(res@value[[1]], ContentWarning)
-  expect_match(res@value[[1]]@text, "beware")
+
+  # value is flattened to a string for text-only output
+  expect_type(res@value, "character")
+  expect_match(res@value, "beware")
+
+  # Check the structured content in extra$contents
+  contents <- res@extra$contents
+  output_contents <- keep(contents, Negate(S7::S7_inherits), ContentSource)
+  expect_length(output_contents, 1)
+  expect_s7_class(output_contents[[1]], ContentWarning)
+  expect_match(output_contents[[1]]@text, "beware")
 })
 
 test_that("btw_tool_run_r() captures errors and stops", {
@@ -44,14 +60,21 @@ test_that("btw_tool_run_r() captures errors and stops", {
 
   res <- btw_tool_run_r_impl('x <- 1; stop("error"); y <- 2')
   expect_s7_class(res, BtwRunToolResult)
-  expect_type(res@value, "list")
-  # Should have the error content
+
+  # value is flattened to a string for text-only output
+  expect_type(res@value, "character")
+  expect_match(res@value, "error")
+
+  # Check the structured content in extra$contents
+  contents <- res@extra$contents
+  output_contents <- keep(contents, Negate(S7::S7_inherits), ContentSource)
   has_error <- any(vapply(
-    res@value,
+    output_contents,
     function(x) S7::S7_inherits(x, ContentError),
     logical(1)
   ))
   expect_true(has_error)
+
   # y should not be assigned (code stopped at error)
   expect_false(exists("y", envir = globalenv()))
   # Error should be set on result
@@ -63,6 +86,8 @@ test_that("btw_tool_run_r() captures plots", {
 
   res <- btw_tool_run_r_impl('plot(1:10)')
   expect_s7_class(res, BtwRunToolResult)
+
+  # value should contain the plot (not text-only)
   expect_type(res@value, "list")
   has_plot <- any(vapply(
     res@value,
@@ -70,6 +95,14 @@ test_that("btw_tool_run_r() captures plots", {
     logical(1)
   ))
   expect_true(has_plot)
+
+  # Also check in extra$contents
+  has_plot_contents <- any(vapply(
+    res@extra$contents,
+    function(x) S7::S7_inherits(x, ellmer::ContentImage),
+    logical(1)
+  ))
+  expect_true(has_plot_contents)
 })
 
 test_that("btw_tool_run_r() handles multiple outputs", {
@@ -83,22 +116,29 @@ test_that("btw_tool_run_r() handles multiple outputs", {
   '
   res <- btw_tool_run_r_impl(code)
   expect_s7_class(res, BtwRunToolResult)
-  expect_type(res@value, "list")
-  expect_gte(length(res@value), 3)
+
+  # value is flattened to a string for text-only output
+  expect_true(is_string(res@value))
+  expect_snapshot(cat(res@value))
+
+  # Check the structured content in extra$contents for specific types
+  contents <- res@extra$contents
+  output_contents <- keep(contents, Negate(S7::S7_inherits), ContentSource)
+  expect_gte(length(output_contents), 3)
 
   # Check we have message, code output, and warning
   has_message <- any(vapply(
-    res@value,
+    output_contents,
     function(x) S7::S7_inherits(x, ContentMessage),
     logical(1)
   ))
   has_code <- any(vapply(
-    res@value,
+    output_contents,
     function(x) S7::S7_inherits(x, ContentOutput),
     logical(1)
   ))
   has_warning <- any(vapply(
-    res@value,
+    output_contents,
     function(x) S7::S7_inherits(x, ContentWarning),
     logical(1)
   ))
@@ -155,21 +195,43 @@ test_that("adjacent content of same type is merged", {
 
   # Multiple messages should be merged
   res <- btw_tool_run_r_impl('message("a"); message("b")')
-  expect_length(res@value, 1)
-  expect_s7_class(res@value[[1]], ContentMessage)
-  expect_match(res@value[[1]]@text, "a\nb")
+
+  # value is flattened to a string
+  expect_type(res@value, "character")
+  expect_equal(res@value, "a\nb")
+
+  # Check the structured content in extra$contents
+  contents <- res@extra$contents
+  output_contents <- keep(contents, Negate(S7::S7_inherits), ContentSource)
+  expect_length(output_contents, 1)
+  expect_s7_class(output_contents[[1]], ContentMessage)
+  expect_match(output_contents[[1]]@text, "a\nb")
 
   # Multiple code outputs should be merged
   res <- btw_tool_run_r_impl('1 + 1; 2 + 2')
-  expect_length(res@value, 1)
-  expect_s7_class(res@value[[1]], ContentOutput)
+
+  # value is flattened to a string
+  expect_type(res@value, "character")
+
+  # Check the structured content in extra$contents
+  contents <- res@extra$contents
+  output_contents <- keep(contents, Negate(S7::S7_inherits), ContentSource)
+  expect_length(output_contents, 1)
+  expect_s7_class(output_contents[[1]], ContentOutput)
 
   # Different types should not be merged
   res <- btw_tool_run_r_impl('message("a"); 1 + 1; warning("b")')
-  expect_length(res@value, 3)
-  expect_s7_class(res@value[[1]], ContentMessage)
-  expect_s7_class(res@value[[2]], ContentOutput)
-  expect_s7_class(res@value[[3]], ContentWarning)
+
+  # value is flattened to a string
+  expect_type(res@value, "character")
+
+  # Check the structured content in extra$contents
+  contents <- res@extra$contents
+  output_contents <- keep(contents, Negate(S7::S7_inherits), ContentSource)
+  expect_length(output_contents, 3)
+  expect_s7_class(output_contents[[1]], ContentMessage)
+  expect_s7_class(output_contents[[2]], ContentOutput)
+  expect_s7_class(output_contents[[3]], ContentWarning)
 })
 
 test_that("intermediate plots are dropped", {
@@ -183,10 +245,12 @@ text(1, 1, 'y')"
   res <- btw_tool_run_r_impl(code)
   expect_s7_class(res, BtwRunToolResult)
 
+  # value should contain the plot
   expect_type(res@value, "list")
   plot_contents <- keep(res@value, S7::S7_inherits, ellmer::ContentImage)
   expect_length(plot_contents, 1)
 
+  # extra$contents should also have exactly one plot
   expect_type(res@extra$contents, "list")
   plot_contents_all <- keep(
     res@extra$contents,
