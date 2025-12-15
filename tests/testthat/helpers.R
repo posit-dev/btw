@@ -90,6 +90,7 @@ local_enable_tools <- function(
   rstudioapi_has_source_editor_context = TRUE,
   btw_can_register_git_tool = TRUE,
   btw_can_register_gh_tool = TRUE,
+  btw_can_register_run_r_tool = TRUE,
   .env = caller_env()
 ) {
   local_mocked_bindings(
@@ -99,6 +100,7 @@ local_enable_tools <- function(
     },
     btw_can_register_git_tool = function() btw_can_register_git_tool,
     btw_can_register_gh_tool = function() btw_can_register_gh_tool,
+    btw_can_register_run_r_tool = function() btw_can_register_run_r_tool,
     .env = .env
   )
 }

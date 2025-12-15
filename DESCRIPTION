@@ -53,10 +53,13 @@ Suggests:
     chromote,
     DBI,
     duckdb,
+    evaluate,
+    fansi,
     gert,
     gh,
     htmltools,
     pandoc,
+    ragg,
     shiny,
     shinychat (>= 0.2.0),
     testthat (>= 3.0.0),
@@ -93,6 +96,7 @@ Collate:
     'tool-git.R'
     'tool-github.R'
     'tool-rstudioapi.R'
+    'tool-run.R'
     'tool-search-packages.R'
     'tool-session-package-installed.R'
     'tool-sessioninfo.R'

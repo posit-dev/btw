@@ -45,8 +45,10 @@ btw_tools <- function(...) {
   check_character(tools, allow_null = TRUE)
 
   if (length(tools) == 0) {
+    withr::local_options(.btw_tools.match_mode = "all")
     tools <- names(.btw_tools)
   } else {
+    withr::local_options(.btw_tools.match_mode = "explicit")
     tool_names <- map_chr(.btw_tools, function(x) x$name)
     tool_groups <- map_chr(.btw_tools, function(x) x$group)
 
@@ -135,6 +137,7 @@ tool_group_icon <- function(group, default = NULL) {
     group,
     "docs" = tool_icon("dictionary"),
     "env" = tool_icon("source-environment"),
+    "eval" = tool_icon("play-circle"),
     "files" = tool_icon("folder-open"),
     "git" = tool_icon("git"),
     "github" = tool_icon("github"),

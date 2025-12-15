@@ -118,6 +118,7 @@ btw_app_from_client <- function(client, messages = list(), ...) {
         class = "btn-close",
         style = "position: fixed; top: 6px; right: 6px;"
       ),
+      class = "bslib-page-dashboard",
       btw_title(FALSE),
       shinychat::chat_mod_ui(
         "chat",
@@ -137,6 +138,13 @@ btw_app_from_client <- function(client, messages = list(), ...) {
         .sidebar-collapsed > .main > main .sidebar-title { display: block; }
         .bslib-sidebar-layout.sidebar-collapsed>.collapse-toggle { top: 1.8rem; }
         .bslib-page-main { gap: 0.5rem; }
+        aside#tools_sidebar {
+            box-shadow: 2px 2px 5px rgba(var(--bs-emphasis-color-rgb), 10%);
+        }
+        shiny-chat-message .message-icon {
+          background-color: var(--bs-white);
+          box-shadow: 2px 2px 5px rgba(var(--bs-emphasis-color-rgb), 10%);
+        }
       "
         )),
       )
@@ -215,13 +223,16 @@ btw_app_from_client <- function(client, messages = list(), ...) {
       if (!length(selected_tools())) {
         client$set_tools(list())
       } else {
-        .btw_tools <- keep(btw_tools(), function(tool) {
+        sel_btw_tools <- btw_tools(
+          intersect(names(.btw_tools), selected_tools())
+        )
+        sel_other_tools <- keep(other_tools, function(tool) {
           tool@name %in% selected_tools()
         })
-        .other_tools <- keep(other_tools, function(tool) {
-          tool@name %in% selected_tools()
-        })
-        client$set_tools(c(.btw_tools, other_tools))
+        sel_tools <- c(sel_btw_tools, sel_other_tools)
+        # tool_names <- map_chr(tools, S7::prop, "name")
+        # cli::cli_inform("Setting {.field client} tools to: {.val {tool_names}}")
+        client$set_tools(sel_tools)
       }
     })
 
@@ -268,6 +279,10 @@ btw_app_from_client <- function(client, messages = list(), ...) {
     load.interface = old_load,
     save.interface = old_save
   ))
+
+  if (identical(Sys.getenv("BTW_IN_TESTING"), "true")) {
+    return(list(ui = ui, server = server))
+  }
 
   app <- shiny::shinyApp(ui, server, ...)
   if (getOption("btw.app.in_addin", FALSE)) {
@@ -597,10 +612,12 @@ app_tool_group_choice_input <- function(
     group,
     "docs" = shiny::span(label_icon, "Documentation"),
     "env" = shiny::span(label_icon, "Environment"),
+    "eval" = shiny::span(label_icon, "Code Evaluation"),
     "files" = shiny::span(label_icon, "Files"),
     "git" = shiny::span(label_icon, "Git"),
     "github" = shiny::span(label_icon, "GitHub"),
     "ide" = shiny::span(label_icon, "IDE"),
+    "run" = shiny::span(label_icon, "Run Code"),
     "search" = shiny::span(label_icon, "Search"),
     "session" = shiny::span(label_icon, "Session Info"),
     "web" = shiny::span(label_icon, "Web Tools"),

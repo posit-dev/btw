@@ -86,6 +86,13 @@ this function have access to the tools:
 
 }
 
+\subsection{Group: run}{\tabular{ll}{
+   Name \tab Description \cr
+   \code{\link[=btw_tool_run_r]{btw_tool_run_r()}} \tab Run R code. \cr
+}
+
+}
+
 \subsection{Group: search}{\tabular{ll}{
    Name \tab Description \cr
    \code{\link[=btw_tool_search_package_info]{btw_tool_search_package_info()}} \tab Describe a CRAN package. \cr
@@ -136,6 +143,7 @@ Other Tools:
 \code{\link{btw_tool_files_write_text_file}()},
 \code{\link{btw_tool_ide_read_current_editor}()},
 \code{\link{btw_tool_package_docs}},
+\code{\link{btw_tool_run_r}()},
 \code{\link{btw_tool_search_packages}()},
 \code{\link{btw_tool_session_package_info}()},
 \code{\link{btw_tool_session_platform_info}()},
