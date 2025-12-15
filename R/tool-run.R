@@ -247,6 +247,12 @@ btw_tool_run_r_impl <- function(code, .envir = global_env()) {
     } else {
       "(The code ran successfully but did not produce any output.)"
     }
+  } else if (every(value, S7::S7_inherits, ellmer::ContentText)) {
+    # Flatten text-only output into a single string
+    value <- paste(
+      map_chr(value, ellmer::contents_text),
+      collapse = "\n"
+    )
   }
 
   BtwRunToolResult(
