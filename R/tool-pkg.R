@@ -95,6 +95,7 @@ btw_tool_pkg_check_impl <- function(pkg = ".") {
   check_string(pkg)
   check_path_within_current_wd(pkg)
 
+  withr::local_envvar(TESTHAT_PROBLEMS = "false")
   code <- sprintf(
     'devtools::check(pkg = "%s", remote = TRUE, cran = TRUE, manual = FALSE, quiet = FALSE, error_on = "never")',
     pkg
@@ -178,6 +179,7 @@ btw_tool_pkg_test_impl <- function(pkg = ".", filter = NULL) {
     filter_arg
   )
 
+  withr::local_envvar(TESTHAT_PROBLEMS = "false")
   btw_tool_run_r_impl(code)
 }
 
