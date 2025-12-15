@@ -617,6 +617,7 @@ app_tool_group_choice_input <- function(
     "git" = shiny::span(label_icon, "Git"),
     "github" = shiny::span(label_icon, "GitHub"),
     "ide" = shiny::span(label_icon, "IDE"),
+    "pkg" = shiny::span(label_icon, "Package Tools"),
     "run" = shiny::span(label_icon, "Run Code"),
     "search" = shiny::span(label_icon, "Search"),
     "session" = shiny::span(label_icon, "Session Info"),

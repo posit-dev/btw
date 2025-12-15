@@ -520,13 +520,17 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
   request_id <- NULL
   tool_title <- NULL
 
+  display <- content@extra$display %||% list()
+  annotations <- list()
+
   if (!is.null(content@request)) {
     request_id <- content@request@id
 
     tool_title <- NULL
     tool <- content@request@tool
+    annotations <- tool@annotations
     if (!is.null(tool)) {
-      tool_title <- tool@annotations$title
+      tool_title <- annotations$title
     }
   }
 
@@ -537,6 +541,7 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
       code = code,
       status = status,
       `tool-title` = tool_title,
+      icon = display$icon %||% annotations$icon,
       htmltools::HTML(output_html),
       btw_run_tool_card_dep()
     )

@@ -46,6 +46,7 @@ class BtwRunRResult extends HTMLElement {
     super()
 
     this.toolTitle = this.getAttribute("tool-title") || "Run R Code"
+    this.icon = this.getAttribute("icon") || ICONS.playCircle
   }
 
   connectedCallback() {
@@ -57,7 +58,6 @@ class BtwRunRResult extends HTMLElement {
       this.titleTemplate = "{title} failed"
     } else {
       this.classStatus = ""
-      this.icon = ICONS.playCircle
       this.titleTemplate = "{title}"
     }
 
