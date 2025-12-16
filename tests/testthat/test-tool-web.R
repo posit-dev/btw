@@ -42,24 +42,6 @@ test_that("ci: prep chromote", {
   })
 })
 
-test_that("has_chromote() detects chromote availability", {
-  # When chromote is installed
-  local_mocked_bindings(
-    check_installed = function(...) TRUE,
-    .package = "rlang"
-  )
-  expect_true(has_chromote())
-
-  # When chromote is not installed (error thrown)
-  local_mocked_bindings(
-    check_installed = function(...) {
-      stop("chromote is not installed")
-    },
-    .package = "rlang"
-  )
-  expect_false(has_chromote())
-})
-
 test_that("BtwWebPageResult is properly defined", {
   expect_true(S7::S7_inherits(BtwWebPageResult))
 
@@ -94,6 +76,10 @@ test_that("btw_tool_web_read_url_impl() handles empty content", {
   local_mocked_bindings(
     read_url_main_content = function(...) ""
   )
+  local_mocked_bindings(
+    check_installed = function(...) NULL,
+    .package = "rlang"
+  )
 
   expect_error(
     btw_tool_web_read_url_impl("https://example.com"),
@@ -105,6 +91,10 @@ test_that("btw_tool_web_read_url_impl() handles NULL content", {
   # Mock read_url_main_content to return NULL
   local_mocked_bindings(
     read_url_main_content = function(...) NULL
+  )
+  local_mocked_bindings(
+    check_installed = function(...) NULL,
+    .package = "rlang"
   )
 
   expect_error(
@@ -223,6 +213,10 @@ test_that("btw_tool_web_read_url_impl() formats output correctly", {
       c("# Test Page", "", "Content")
     }
   )
+  local_mocked_bindings(
+    check_installed = function(...) NULL,
+    .package = "rlang"
+  )
 
   result <- btw_tool_web_read_url_impl("https://example.com/test")
 
@@ -249,6 +243,8 @@ test_that("read_url_main_content() works with real chromote", {
 })
 
 test_that("btw_tool_web_read_url() wrapper exists", {
+  local_enable_tools()
+
   # Test that the exported wrapper function exists
   expect_true(exists("btw_tool_web_read_url"))
   expect_type(btw_tool_web_read_url, "closure")
@@ -258,6 +254,8 @@ test_that("btw_tool_web_read_url() wrapper exists", {
 })
 
 test_that("web tool is registered correctly", {
+  local_enable_tools()
+
   # Check that the tool is registered in the tools registry
   tools <- btw_tools("web")
 
@@ -267,21 +265,18 @@ test_that("web tool is registered correctly", {
 })
 
 test_that("web tool btw_can_register checks for chromote", {
-  tools <- btw_tools("web")
-  tool <- tools[[1]]
-
   # Mock chromote as available
   local_mocked_bindings(
     has_chromote = function() TRUE
   )
-  expect_true(tool@annotations$btw_can_register())
+  expect_true(btw_tool_web_read_url@annotations$btw_can_register())
 
   # Mock chromote as unavailable
   local_mocked_bindings(
     has_chromote = function() FALSE
   )
   expect_warning(
-    result <- tool@annotations$btw_can_register(),
+    result <- btw_tool_web_read_url@annotations$btw_can_register(),
     "chromote.*required"
   )
   expect_false(result)

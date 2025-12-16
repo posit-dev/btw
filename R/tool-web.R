@@ -29,6 +29,7 @@ btw_tool_web_read_url_impl <- function(
   ...,
   max_wait_for_page_load_s = getOption("btw.max_wait_for_page_load_s", 10)
 ) {
+  rlang::check_installed("chromote")
   html <- read_url_main_content(url, timeout = max_wait_for_page_load_s)
 
   if (is.null(html) || !nzchar(html)) {
@@ -49,15 +50,7 @@ BtwWebPageResult <- S7::new_class(
 )
 
 has_chromote <- function() {
-  tryCatch(
-    {
-      rlang::check_installed("chromote")
-      TRUE
-    },
-    error = function(e) {
-      FALSE
-    }
-  )
+  is_installed("chromote")
 }
 
 .btw_add_to_tools(

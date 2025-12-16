@@ -1,6 +1,4 @@
-local_mocked_bindings(
-  btw_can_register_gh_tool = function() FALSE
-)
+local_enable_tools()
 withr::local_options(btw.client.quiet = TRUE)
 
 describe("btw_client() chat client", {

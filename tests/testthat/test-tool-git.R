@@ -244,6 +244,7 @@ test_that("btw_tool_git_branch_checkout()", {
 test_that("git tools are registered only when in a git repo", {
   skip_if_not_installed("gert")
   local_mocked_bindings(
+    has_chromote = function() TRUE,
     btw_can_register_gh_tool = function() FALSE
   )
 
