@@ -192,6 +192,7 @@ env_base_r_limited <- function(
       gsub = base::gsub,
       tolower = base::tolower,
       toupper = base::toupper,
+      rawToChar = base::rawToChar,
 
       # Special values and NA handling
       anyNA = base::anyNA,

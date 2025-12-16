@@ -284,6 +284,7 @@ CODE ENVIRONMENT:
 * `owner` and `repo` variables are pre-defined for the current repository
 * `gh()` function is available to call any GitHub API endpoint
 * `gh_whoami()` is available to get current user information
+* `base64_dec()` from jsonlite is available to decode base64 content (use `rawToChar()` to convert to string)
 * You can provide the endpoint with `owner` or `repo` values filled in to target another repo
 * You CAN print parts of the result to the console for debugging or to show the user who will see the tool results
     * Always assemble the entire string to print and then print it in one expression with `cat()`
@@ -317,6 +318,11 @@ gh(
   owner = owner,
   repo = repo
 )
+
+# Read a repo's README
+readme <- gh("/repos/posit-dev/btw/readme")
+content <- base64_dec(readme$content)
+cat(rawToChar(content))
 
 # Get PR diff files in a specific repo (posit-dev/btw)
 gh("/repos/posit-dev/btw/pulls/6/files")
@@ -380,6 +386,7 @@ btw_github_default_allow_rules <- function() {
     "GET /repos/*/*/commits",
     "GET /repos/*/*/commits/*",
     "GET /repos/*/*/compare/*",
+    "GET /repos/*/*/readme/**",
 
     # Read-only PR/Issue Information
     "GET /repos/*/*/pulls/*/reviews",
