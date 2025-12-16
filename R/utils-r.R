@@ -1,11 +1,24 @@
 eval_limited_r_code <- function(
   code,
   ...,
+  .method = c("evaluate", "eval"),
+  .show_last_value = TRUE,
   .error_extra = NULL,
   .error_eval = "Error evaluating R code.",
   .parent_env = emptyenv()
 ) {
-  env <- env_base_r_limited(..., .parent_env = .parent_env)
+  .method <- arg_match(.method)
+  env <- env_base_r_limited(..., .parent_env = .parent_env, .method = .method)
+
+  if (.method == "evaluate") {
+    return(
+      btw_tool_run_r_impl(
+        code,
+        .envir = env,
+        show_last_value = .show_last_value
+      )
+    )
+  }
 
   tryCatch(
     eval(parse(text = code), envir = env),
@@ -26,12 +39,16 @@ eval_limited_r_code <- function(
   )
 }
 
-env_base_r_limited <- function(..., .parent_env = emptyenv()) {
+env_base_r_limited <- function(
+  ...,
+  .parent_env = emptyenv(),
+  .method = "eval"
+) {
   # Create a new environment with a limited set of base R functions that are
   # considered safe for evaluation. You can expand this list as needed, or
   # remove functions that you deem unsafe by setting them to `NULL` in `...`.
 
-  new_environment(
+  env <- new_environment(
     parent = .parent_env,
     data = list(
       # Assignment and subsetting
@@ -57,6 +74,7 @@ env_base_r_limited <- function(..., .parent_env = emptyenv()) {
       `<=` = base::`<=`,
       `>=` = base::`>=`,
       `%in%` = base::`%in%`,
+      `%||%` = rlang::`%||%`,
 
       # Arithmetic operators
       `+` = base::`+`,
@@ -163,6 +181,7 @@ env_base_r_limited <- function(..., .parent_env = emptyenv()) {
       # String operations
       paste = base::paste,
       paste0 = base::paste0,
+      sprintf = base::sprintf,
       nchar = base::nchar,
       substr = base::substr,
       substring = base::substring,
@@ -191,8 +210,6 @@ env_base_r_limited <- function(..., .parent_env = emptyenv()) {
       `(` = base::`(`,
 
       # Printing and output
-      # print = base::print, # output isn't captured, so error if used
-      # cat = base::cat, # TODO: use {evaluate} to run/capture output
       str = utils::str,
       summary = base::summary,
       format = base::format,
@@ -201,4 +218,12 @@ env_base_r_limited <- function(..., .parent_env = emptyenv()) {
       ...
     )
   )
+
+  if (.method == "eval") {
+    return(env)
+  }
+
+  env$print <- base::print
+  env$cat <- base::cat
+  env
 }
