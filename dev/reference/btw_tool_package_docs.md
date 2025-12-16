@@ -75,6 +75,7 @@ Other Tools:
 [`btw_tool_files_write_text_file()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_write_text_file.md),
 [`btw_tool_ide_read_current_editor()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_ide_read_current_editor.md),
 [`btw_tool_pkg_check()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_check.md),
+[`btw_tool_pkg_coverage()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_coverage.md),
 [`btw_tool_pkg_document()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_document.md),
 [`btw_tool_pkg_test()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_test.md),
 [`btw_tool_run_r()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_run_r.md),
@@ -92,10 +93,10 @@ btw_tool_docs_package_help_topics("btw")
 #>  @ value  : chr [1:3] "```json" ...
 #>  @ error  : NULL
 #>  @ extra  :List of 2
-#>  .. $ data   : tibble [39 × 3] (S3: tbl_df/tbl/data.frame)
-#>  ..  ..$ topic_id: chr [1:39] "btw" "btw-package" "btw_client" "btw_task_create_btw_md" ...
-#>  ..  ..$ title   : chr [1:39] "Plain-text descriptions of R objects" "btw: A Toolkit for Connecting R and Large Language Models" "Create a btw-enhanced ellmer chat client" "Task: Initialize Project Context File" ...
-#>  ..  ..$ aliases :List of 39
+#>  .. $ data   : tibble [40 × 3] (S3: tbl_df/tbl/data.frame)
+#>  ..  ..$ topic_id: chr [1:40] "btw" "btw-package" "btw_client" "btw_task_create_btw_md" ...
+#>  ..  ..$ title   : chr [1:40] "Plain-text descriptions of R objects" "btw: A Toolkit for Connecting R and Large Language Models" "Create a btw-enhanced ellmer chat client" "Task: Initialize Project Context File" ...
+#>  ..  ..$ aliases :List of 40
 #>  ..  .. ..$ : 'AsIs' chr "btw"
 #>  ..  .. ..$ : 'AsIs' chr "btw-package"
 #>  ..  .. ..$ : 'AsIs' chr [1:2] "btw_client" "btw_app"
@@ -123,6 +124,7 @@ btw_tool_docs_package_help_topics("btw")
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_ide_read_current_editor"
 #>  ..  .. ..$ : 'AsIs' chr [1:5] "btw_tool_package_docs" "btw_tool_docs_package_help_topics" "btw_tool_docs_help_page" "btw_tool_docs_available_vignettes" ...
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_pkg_check"
+#>  ..  .. ..$ : 'AsIs' chr "btw_tool_pkg_coverage"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_pkg_document"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_pkg_test"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_run_r"

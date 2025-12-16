@@ -99,6 +99,8 @@ and to avoid name clashes with other tools.
   : Tool: Describe R package documentation
 - [`btw_tool_pkg_check()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_check.md)
   : Tool: Run R CMD check on a package
+- [`btw_tool_pkg_coverage()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_coverage.md)
+  : Tool: Compute package test coverage
 - [`btw_tool_pkg_document()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_document.md)
   : Tool: Generate package documentation
 - [`btw_tool_pkg_test()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_test.md)

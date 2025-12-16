@@ -55,6 +55,7 @@ Other Tools:
 [`btw_tool_ide_read_current_editor()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_ide_read_current_editor.md),
 [`btw_tool_package_docs`](https://posit-dev.github.io/btw/dev/reference/btw_tool_package_docs.md),
 [`btw_tool_pkg_check()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_check.md),
+[`btw_tool_pkg_coverage()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_coverage.md),
 [`btw_tool_pkg_document()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_document.md),
 [`btw_tool_pkg_test()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_test.md),
 [`btw_tool_run_r()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_run_r.md),
@@ -80,7 +81,7 @@ withr::with_tempdir({
 #>  ..  ..$ path             : 'fs_path' chr "mtcars.csv"
 #>  ..  ..$ type             : Factor w/ 8 levels "any","block_device",..: 7
 #>  ..  ..$ size             : 'fs_bytes' num 1.74K
-#>  ..  ..$ modification_time: POSIXct[1:1], format: "2025-12-15 18:33:15"
+#>  ..  ..$ modification_time: POSIXct[1:1], format: "2025-12-16 02:04:37"
 #>  .. $ display:List of 1
 #>  ..  ..$ markdown: chr "| path | type | size | modification_time |\n|------|------|------|-------------------|\n| mtcars.csv | file | 1"| __truncated__
 #>  @ request: NULL

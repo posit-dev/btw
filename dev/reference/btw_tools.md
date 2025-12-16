@@ -67,6 +67,7 @@ returned by this function have access to the tools:
 |----|----|
 | Name | Description |
 | [`btw_tool_pkg_check()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_check.md) | Run comprehensive package checks. |
+| [`btw_tool_pkg_coverage()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_coverage.md) | Compute test coverage for an R package. |
 | [`btw_tool_pkg_document()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_document.md) | Generate package documentation. |
 | [`btw_tool_pkg_test()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_test.md) | Run testthat tests for an R package. |
 
@@ -145,6 +146,7 @@ Other Tools:
 [`btw_tool_ide_read_current_editor()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_ide_read_current_editor.md),
 [`btw_tool_package_docs`](https://posit-dev.github.io/btw/dev/reference/btw_tool_package_docs.md),
 [`btw_tool_pkg_check()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_check.md),
+[`btw_tool_pkg_coverage()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_coverage.md),
 [`btw_tool_pkg_document()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_document.md),
 [`btw_tool_pkg_test()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_test.md),
 [`btw_tool_run_r()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_run_r.md),
@@ -195,6 +197,7 @@ ch$register_tools(c(ch$get_tools(), btw_tools()))
 #> Replacing existing btw_tool_git_branch_list tool.
 #> Replacing existing btw_tool_git_branch_create tool.
 #> Replacing existing btw_tool_git_branch_checkout tool.
+#> Replacing existing btw_tool_pkg_coverage tool.
 #> Replacing existing btw_tool_pkg_document tool.
 #> Replacing existing btw_tool_pkg_check tool.
 #> Replacing existing btw_tool_pkg_test tool.
@@ -222,6 +225,7 @@ ch$register_tools(c(ch$get_tools(), btw_tools()))
 #> Replacing existing btw_tool_git_branch_list tool.
 #> Replacing existing btw_tool_git_branch_create tool.
 #> Replacing existing btw_tool_git_branch_checkout tool.
+#> Replacing existing btw_tool_pkg_coverage tool.
 #> Replacing existing btw_tool_pkg_document tool.
 #> Replacing existing btw_tool_pkg_check tool.
 #> Replacing existing btw_tool_pkg_test tool.
