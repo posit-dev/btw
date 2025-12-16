@@ -21,7 +21,7 @@
 #'     `med_hits`.
 #'
 #' @seealso [btw_tools()]
-#' @family Tools
+#' @family pkg tools
 #' @export
 btw_tool_pkg_coverage <- function(pkg = ".", filename = NULL, `_intent`) {}
 

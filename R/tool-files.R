@@ -22,7 +22,7 @@ NULL
 #'
 #' @return Returns a character table of file information.
 #'
-#' @family Tools
+#' @family files tools
 #' @export
 btw_tool_files_list_files <- function(path, type, regexp, `_intent`) {}
 
@@ -156,7 +156,7 @@ CAUTION: Do not list all files in a project, instead prefer listing files in a s
 #'
 #' @return Returns a character vector of lines from the file.
 #'
-#' @family Tools
+#' @family files tools
 #' @export
 btw_tool_files_read_text_file <- function(
   path,
@@ -408,7 +408,7 @@ is_common_ignorable_files <- function(paths) {
 #'
 #' @return Returns a message confirming the file was written.
 #'
-#' @family Tools
+#' @family files tools
 #' @export
 btw_tool_files_write_text_file <- function(path, content, `_intent`) {}
 

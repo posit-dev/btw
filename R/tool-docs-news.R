@@ -37,7 +37,7 @@ NULL
 #'   package, or the release notes matching the search term.
 #'
 #' @seealso [btw_tools()]
-#' @family Tools
+#' @family docs tools
 #' @export
 #' @rdname btw_tool_docs_package_news
 btw_tool_docs_package_news <- function(package_name, search_term, `_intent`) {}

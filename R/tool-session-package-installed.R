@@ -21,7 +21,7 @@
 #'   its version, or an error indicating that the package is not installed.
 #'
 #' @seealso [btw_tools()]
-#' @family tools
+#' @family session tools
 #' @export
 btw_tool_session_check_package_installed <- function(package_name, `_intent`) {}
 

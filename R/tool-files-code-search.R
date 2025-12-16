@@ -64,7 +64,7 @@
 #' @return Returns a tool result with a data frame of search results, with
 #'   columns for `filename`, `size`, `last_modified`, `content` and `line`.
 #'
-#' @family Tools
+#' @family files tools
 #' @export
 btw_tool_files_code_search <- function(
   term,

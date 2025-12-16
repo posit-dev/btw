@@ -25,7 +25,7 @@ NULL
 #' @returns A listing of packages matching the search term.
 #'
 #' @seealso [btw_tools()]
-#' @family Tools
+#' @family search tools
 #' @name btw_tool_search_packages
 #' @export
 btw_tool_search_packages <- function(query, format, n_results, `_intent`) {}

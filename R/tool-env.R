@@ -41,7 +41,7 @@ btw_this.environment <- function(x, ..., items = NULL) {
 #' @inherit btw_this.environment return
 #'
 #' @seealso [btw_this.environment()], [btw_tools()]
-#' @family Tools
+#' @family env tools
 #' @export
 btw_tool_env_describe_environment <- function(items, `_intent`) {}
 

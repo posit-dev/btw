@@ -27,7 +27,6 @@ test_that("btw_tool_ide_read_current_editor() has informative errors", {
 
 mock_source_editor_full <- function() {
   # Open fixtures/test.R
-  # mock1 <- rstudioapi_get_source_editor_context()
   # constructive::construct(mock1) |> capture.output() |> parse(text = _) |> format()
 
   structure(
@@ -68,7 +67,6 @@ mock_source_editor_full <- function() {
 mock_source_editor_selection <- function() {
   # Open fixtures/test.scss
   # select regions
-  # mock2 <- rstudioapi_get_source_editor_context()
   # constructive::construct(mock2) |> capture.output() |> parse(text = _) |> format()
 
   structure(

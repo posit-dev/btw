@@ -89,7 +89,7 @@ btw_this.tbl <- function(
 #' @inherit btw_this.data.frame return
 #'
 #' @seealso [btw_this.data.frame()], [btw_tools()]
-#' @family Tools
+#' @family env tools
 #' @export
 btw_tool_env_describe_data_frame <- function(
   data_frame,
