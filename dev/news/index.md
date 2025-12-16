@@ -2,6 +2,15 @@
 
 ## btw (development version)
 
+- [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+  now correctly displays input tokens with ellmer v0.4.0. Previously, we
+  were showing the total input tokens sent across all API calls, rather
+  than the current number of input tokens as of the last API call. We
+  now show the size of the input context window (i.e. the number of
+  input tokens that will be used for the conversation history in the
+  next API call). Note that token usage is dependent on the provider and
+  model used and is only an estimate.
+
 - New “pkg” tool group with package development tools:
   [`btw_tool_pkg_document()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_document.md),
   [`btw_tool_pkg_check()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_check.md),

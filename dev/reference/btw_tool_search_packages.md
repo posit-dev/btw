@@ -67,7 +67,7 @@ btw(
 #> ## Context
 #> 
 #> pkgsearch::pkg_search("network visualization", size = 1)
-#> Found 3226 packages matching `network visualization`, showing 1 result.
+#> Found 3227 packages matching `network visualization`, showing 1 result.
 #> 
 #> | package | title | version | date | url | downloads_last_month |
 #> |---------|-------|---------|------|-----|----------------------|
@@ -84,7 +84,7 @@ btw(
 #> ## Context
 #> 
 #> pkgsearch::pkg_search(...)
-#> Found 3226 packages matching `network visualization`, showing 1 result.
+#> Found 3227 packages matching `network visualization`, showing 1 result.
 #> 
 #> ### DiagrammeR (v1.0.11) -- Graph/Network Visualization
 #> 
