@@ -38,6 +38,7 @@ Other Tools:
 \code{\link{btw_tool_ide_read_current_editor}()},
 \code{\link{btw_tool_package_docs}},
 \code{\link{btw_tool_pkg_check}()},
+\code{\link{btw_tool_pkg_coverage}()},
 \code{\link{btw_tool_pkg_document}()},
 \code{\link{btw_tool_run_r}()},
 \code{\link{btw_tool_search_packages}()},

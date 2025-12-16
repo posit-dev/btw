@@ -47,6 +47,7 @@ Other Tools:
 \code{\link{btw_tool_files_write_text_file}()},
 \code{\link{btw_tool_package_docs}},
 \code{\link{btw_tool_pkg_check}()},
+\code{\link{btw_tool_pkg_coverage}()},
 \code{\link{btw_tool_pkg_document}()},
 \code{\link{btw_tool_pkg_test}()},
 \code{\link{btw_tool_run_r}()},
