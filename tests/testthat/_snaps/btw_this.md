@@ -61,3 +61,23 @@
       </body>
       </github-pull-request>
 
+# btw_this.matrix() correctly handles numeric matrices (issue #139)
+
+    Code
+      writeLines(btw_this(m_num))
+    Output
+            [,1] [,2]  [,3]
+      [1,]  0.82 0.10 -0.34
+      [2,]  0.10 0.55  0.22
+      [3,] -0.34 0.22  0.91
+
+# btw_this.matrix() correctly handles character matrices (issue #139)
+
+    Code
+      writeLines(btw_this(m_char))
+    Output
+           [,1]     [,2]     [,3]     
+      [1,] "0.82*"  "0.10"   "-0.34*" 
+      [2,] "0.10"   "0.55**" "0.22"   
+      [3,] "-0.34*" "0.22"   "0.91***"
+

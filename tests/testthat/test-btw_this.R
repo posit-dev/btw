@@ -630,3 +630,39 @@ test_that("btw_this() allows file paths outside working directory for reading fi
   expect_match(result, "line 2", all = FALSE)
   expect_match(result, "line 3", all = FALSE)
 })
+
+# Test matrix handling --------------------------------------------------------
+
+test_that("btw_this.matrix() correctly handles numeric matrices (issue #139)", {
+  m_num <- matrix(
+    # fmt: skip
+    c(0.82, 0.10, -0.34,
+      0.10, 0.55, 0.22,
+     -0.34, 0.22, 0.91),
+    nrow = 3,
+    byrow = TRUE
+  )
+
+  result <- btw_this(m_num)
+
+  expect_true(is.character(result))
+  expect_s3_class(result, "btw_captured")
+  expect_snapshot(writeLines(btw_this(m_num)))
+})
+
+test_that("btw_this.matrix() correctly handles character matrices (issue #139)", {
+  m_char <- matrix(
+    # fmt: skip
+    c("0.82*", "0.10", "-0.34*",
+      "0.10", "0.55**", "0.22",
+      "-0.34*", "0.22", "0.91***"),
+    nrow = 3,
+    byrow = TRUE
+  )
+
+  result <- btw_this(m_char)
+
+  expect_true(is.character(result))
+  expect_s3_class(result, "btw_captured")
+  expect_snapshot(writeLines(btw_this(m_char)))
+})
