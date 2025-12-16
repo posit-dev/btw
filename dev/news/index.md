@@ -2,6 +2,10 @@
 
 ## btw (development version)
 
+- [`btw()`](https://posit-dev.github.io/btw/dev/reference/btw.md) now
+  correctly handles character matrices
+  ([\#139](https://github.com/posit-dev/btw/issues/139)).
+
 - [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
   now correctly displays input tokens with ellmer v0.4.0. Previously, we
   were showing the total input tokens sent across all API calls, rather
