@@ -99,6 +99,7 @@ Collate:
     'tool-files.R'
     'tool-git.R'
     'tool-github.R'
+    'tool-pkg-covr.R'
     'tool-pkg.R'
     'tool-rstudioapi.R'
     'tool-run.R'
