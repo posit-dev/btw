@@ -94,7 +94,7 @@ Collate:
     'tool-result.R'
     'tool-docs-news.R'
     'tool-docs.R'
-    'tool-environment.R'
+    'tool-env.R'
     'tool-files-code-search.R'
     'tool-files.R'
     'tool-git.R'
