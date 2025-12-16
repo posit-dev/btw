@@ -342,12 +342,14 @@ test_that("btw_tool_github() can get an issue", {
     'gh("/repos/{owner}/{repo}/issues/37", owner = owner, repo = repo)'
   )
 
-  expect_s7_class(result, BtwToolResult)
-  expect_type(result@value, "list")
+  expect_s7_class(result, BtwRunToolResult)
 
-  expect_equal(result@value$number, 37)
+  # Access the actual data via @extra$data
+  data <- result@extra$data
+  expect_type(data, "list")
+  expect_equal(data$number, 37)
   expect_equal(
-    result@value$html_url,
+    data$html_url,
     "https://github.com/posit-dev/btw/issues/37"
   )
 })
@@ -362,8 +364,11 @@ test_that("btw_tool_github() can list issues", {
     'gh("/repos/{owner}/{repo}/issues", state = "open", owner = owner, repo = repo)'
   )
 
-  expect_s7_class(result, BtwToolResult)
-  expect_type(result@value, "list")
+  expect_s7_class(result, BtwRunToolResult)
+
+  # Access the actual data via @extra$data
+  data <- result@extra$data
+  expect_type(data, "list")
 })
 
 test_that("btw_tool_github() can create an issue", {
@@ -383,13 +388,16 @@ gh("POST /repos/{owner}/{repo}/issues",
   '
   )
 
-  expect_s7_class(result, BtwToolResult)
-  expect_type(result@value, "list")
-  expect_equal(result@value$endpoint, "POST /repos/{owner}/{repo}/issues")
-  expect_equal(result@value$payload$title, "Test issue")
-  expect_equal(result@value$payload$body, "Test body")
-  expect_equal(result@value$payload$owner, "posit-dev")
-  expect_equal(result@value$payload$repo, "btw")
+  expect_s7_class(result, BtwRunToolResult)
+
+  # Access the actual data via @extra$data
+  data <- result@extra$data
+  expect_type(data, "list")
+  expect_equal(data$endpoint, "POST /repos/{owner}/{repo}/issues")
+  expect_equal(data$payload$title, "Test issue")
+  expect_equal(data$payload$body, "Test body")
+  expect_equal(data$payload$owner, "posit-dev")
+  expect_equal(data$payload$repo, "btw")
 })
 
 test_that("btw_tool_github() can get a pull request", {
@@ -402,11 +410,14 @@ test_that("btw_tool_github() can get a pull request", {
     'gh("/repos/{owner}/{repo}/pulls/456", owner = owner, repo = repo)'
   )
 
-  expect_s7_class(result, BtwToolResult)
-  expect_type(result@value, "list")
-  expect_equal(result@value$endpoint, "/repos/{owner}/{repo}/pulls/456")
-  expect_equal(result@value$payload$owner, "posit-dev")
-  expect_equal(result@value$payload$repo, "btw")
+  expect_s7_class(result, BtwRunToolResult)
+
+  # Access the actual data via @extra$data
+  data <- result@extra$data
+  expect_type(data, "list")
+  expect_equal(data$endpoint, "/repos/{owner}/{repo}/pulls/456")
+  expect_equal(data$payload$owner, "posit-dev")
+  expect_equal(data$payload$repo, "btw")
 })
 
 test_that("btw_tool_github() can get pull request files", {
@@ -419,11 +430,14 @@ test_that("btw_tool_github() can get pull request files", {
     'gh("/repos/{owner}/{repo}/pulls/456/files", owner = owner, repo = repo)'
   )
 
-  expect_s7_class(result, BtwToolResult)
-  expect_type(result@value, "list")
-  expect_equal(result@value$endpoint, "/repos/{owner}/{repo}/pulls/456/files")
-  expect_equal(result@value$payload$owner, "posit-dev")
-  expect_equal(result@value$payload$repo, "btw")
+  expect_s7_class(result, BtwRunToolResult)
+
+  # Access the actual data via @extra$data
+  data <- result@extra$data
+  expect_type(data, "list")
+  expect_equal(data$endpoint, "/repos/{owner}/{repo}/pulls/456/files")
+  expect_equal(data$payload$owner, "posit-dev")
+  expect_equal(data$payload$repo, "btw")
 })
 
 test_that("btw_tool_github() can call gh_whoami", {
@@ -449,12 +463,15 @@ test_that("btw_tool_github() can call gh_whoami", {
 
   result <- btw_tool_github_impl('gh_whoami()')
 
-  expect_s7_class(result, BtwToolResult)
-  expect_type(result@value, "list")
-  expect_equal(result@value$login, "gadenbuie")
+  expect_s7_class(result, BtwRunToolResult)
+
+  # Access the actual data via @extra$data
+  data <- result@extra$data
+  expect_type(data, "list")
+  expect_equal(data$login, "gadenbuie")
 })
 
-test_that("btw_tool_github() throws if using owner or repo that can't be found", {
+test_that("btw_tool_github() returns error status when owner or repo can't be found", {
   skip_if_not_installed("gh")
 
   local_mocked_bindings(
@@ -463,33 +480,31 @@ test_that("btw_tool_github() throws if using owner or repo that can't be found",
   )
   local_mocked_gh()
 
-  expect_error(
-    btw_tool_github_impl(
-      'gh("/repos/{owner}/{repo}/issues/37", owner = owner, repo = repo)'
-    ),
-    "Could not detect GitHub repository"
+  # When owner/repo can't be detected, errors should be captured in the result
+  result1 <- btw_tool_github_impl(
+    'gh("/repos/{owner}/{repo}/issues/37", owner = owner, repo = repo)'
   )
+  expect_equal(result1@extra$status, "error")
+  expect_match(result1@value, "Could not detect GitHub repository")
 
-  expect_error(
-    btw_tool_github_impl(
-      'gh("/repos/{owner}/btw/issues/37", owner = owner)'
-    ),
-    "Could not detect GitHub repository"
+  result2 <- btw_tool_github_impl(
+    'gh("/repos/{owner}/btw/issues/37", owner = owner)'
   )
+  expect_equal(result2@extra$status, "error")
+  expect_match(result2@value, "Could not detect GitHub repository")
 
-  expect_error(
-    btw_tool_github_impl(
-      'gh("/repos/posit-dev/{repo}/issues/37", repo = repo)'
-    ),
-    "Could not detect GitHub repository"
+  result3 <- btw_tool_github_impl(
+    'gh("/repos/posit-dev/{repo}/issues/37", repo = repo)'
   )
+  expect_equal(result3@extra$status, "error")
+  expect_match(result3@value, "Could not detect GitHub repository")
 
-  expect_equal(
-    btw_tool_github_impl(
-      'gh("/repos/posit-dev/btw/issues/37")'
-    )@value$endpoint,
-    "/repos/posit-dev/btw/issues/37"
+  # When owner/repo are provided explicitly, should work fine
+  result4 <- btw_tool_github_impl(
+    'gh("/repos/posit-dev/btw/issues/37")'
   )
+  expect_equal(result4@extra$status, "success")
+  expect_equal(result4@extra$data$endpoint, "/repos/posit-dev/btw/issues/37")
 })
 
 # Tool registration tests ------------------------------------------------------

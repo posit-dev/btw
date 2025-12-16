@@ -118,8 +118,13 @@
 #' @export
 btw_tool_run_r <- function(code, `_intent`) {}
 
-btw_tool_run_r_impl <- function(code, .envir = global_env()) {
+btw_tool_run_r_impl <- function(
+  code,
+  .envir = global_env(),
+  show_last_value = TRUE
+) {
   check_string(code)
+  check_bool(show_last_value)
   check_installed("evaluate", "to run R code.")
 
   last_value <- NULL # Store the last value for potential use
@@ -212,7 +217,7 @@ btw_tool_run_r_impl <- function(code, .envir = global_env()) {
       # Invisible values include assignments and side-effect returns
       last_value <<- value
 
-      if (visible) {
+      if (visible && show_last_value) {
         # Also add as code content
         value_text <- paste(
           utils::capture.output(print(value)),

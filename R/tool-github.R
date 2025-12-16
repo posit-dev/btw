@@ -5,10 +5,18 @@ NULL
 
 btw_gh <- function(endpoint, ...) {
   endpoint <- btw_github_check_endpoint(endpoint)
-  gh::gh(endpoint, ...)
+  if (grepl("actions/jobs/.*/logs$", endpoint)) {
+    # Special case: r-lib/gh#228
+    withr::local_options(gh_cache = FALSE)
+  }
+  invisible(gh::gh(endpoint, ...))
 }
 
-btw_eval_gh_code <- function(code, fields = btw_gh_fields()) {
+btw_eval_gh_code <- function(
+  code,
+  fields = btw_gh_fields(),
+  method = "evaluate"
+) {
   check_installed("gh")
 
   repo_info <- get_github_repo(NULL, NULL)
@@ -17,13 +25,20 @@ btw_eval_gh_code <- function(code, fields = btw_gh_fields()) {
     code,
     gh = btw_gh,
     gh_whoami = gh::gh_whoami,
+    base64_dec = jsonlite::base64_dec,
+    .method = method,
+    .show_last_value = FALSE,
     .parent_env = repo_info,
     .error_extra = "Only unprefixed {.fn gh} and {.fn gh_whoami} from the {.pkg gh} package are allowed.",
     .error_eval = "Error evaluating GitHub code."
   )
 
   if (!is.null(fields)) {
-    res <- btw_gh_filter_fields(res, fields = fields)
+    if (method == "eval") {
+      res <- btw_gh_filter_fields(res, fields = fields)
+    } else {
+      res@extra$data <- btw_gh_filter_fields(res@extra$data, fields = fields)
+    }
   }
 
   res
@@ -233,9 +248,24 @@ btw_tool_github_impl <- function(code, fields = "default") {
     fields <- NULL
   }
 
-  result <- btw_eval_gh_code(code, fields)
+  # result <- btw_eval_gh_code(code, fields, method = "eval")
+  # btw_tool_result(result)
 
-  btw_tool_result(result)
+  res <- btw_eval_gh_code(code, fields, method = "evaluate")
+
+  # Ensure that the final result is shown to the LLM
+  lv <- res@extra$data
+  if (inherits(lv, "gh_response")) {
+    lv <- jsonlite::toJSON(lv, auto_unbox = TRUE, pretty = TRUE)
+    lv <- sprintf("<github_api_result>\n%s\n</github_api_result>", lv)
+    if (is_string(res@value)) {
+      res@value <- paste0(res@value, "\n\n", lv)
+    } else {
+      res@value <- c(res@value, list(ellmer::ContentText(lv)))
+    }
+  }
+
+  res
 }
 
 .btw_add_to_tools(
@@ -258,9 +288,14 @@ CODE ENVIRONMENT:
 * `owner` and `repo` variables are pre-defined for the current repository
 * `gh()` function is available to call any GitHub API endpoint
 * `gh_whoami()` is available to get current user information
+* `base64_dec()` from jsonlite is available to decode base64 content (use `rawToChar()` to convert to string)
 * You can provide the endpoint with `owner` or `repo` values filled in to target another repo
-* The last value of the code block is returned as the result
-* You will not see any output from print statements or other side effects
+* You CAN print parts of the result to the console for debugging or to show the user who will see the tool results
+    * Always assemble the entire string to print and then print it in one expression with `cat()`
+* Always return the result of the `gh()` call that you want to see as the final expression.
+    * This result is shown to only to you and SHOULD NOT be printed explicitly
+    * If the data is a gh_response object, the tool will automatically limit the fields and format it
+    * Otherwise, take care to return only the relevant data and to reduce the size as much as possible
 
 ENDPOINT VALIDATION:
 * Most read operations (GET) are allowed by default
@@ -287,6 +322,11 @@ gh(
   owner = owner,
   repo = repo
 )
+
+# Read a repo's README
+readme <- gh("/repos/posit-dev/btw/readme")
+content <- base64_dec(readme$content)
+cat(rawToChar(content))
 
 # Get PR diff files in a specific repo (posit-dev/btw)
 gh("/repos/posit-dev/btw/pulls/6/files")
@@ -350,6 +390,7 @@ btw_github_default_allow_rules <- function() {
     "GET /repos/*/*/commits",
     "GET /repos/*/*/commits/*",
     "GET /repos/*/*/compare/*",
+    "GET /repos/*/*/readme/**",
 
     # Read-only PR/Issue Information
     "GET /repos/*/*/pulls/*/reviews",
@@ -373,10 +414,12 @@ btw_github_default_allow_rules <- function() {
     # Read-only Workflow Information
     "GET /repos/*/*/actions/workflows",
     "GET /repos/*/*/actions/workflows/*",
+    "GET /repos/*/*/actions/workflows/*/runs",
+    "GET /repos/*/*/actions/workflows/*/logs",
     "GET /repos/*/*/actions/runs",
-    "GET /repos/*/*/actions/runs/*",
-    "GET /repos/*/*/actions/runs/*/jobs",
-    "GET /repos/*/*/actions/runs/*/jobs/*/logs",
+    "GET /repos/*/*/actions/runs/**",
+    "GET /repos/*/*/actions/jobs",
+    "GET /repos/*/*/actions/jobs/**",
 
     # Search GitHub
     "GET /search/*",
@@ -585,7 +628,7 @@ btw_github_check_endpoint <- function(endpoint) {
 
 # Helper: GitHub Fields -------------------------------------------------------
 btw_gh_filter_fields <- function(x, fields = btw_gh_fields()) {
-  if (!any(nzchar(names2(x)))) {
+  if (is.list(x) && is.null(names(x))) {
     return(lapply(x, btw_gh_filter_fields, fields = fields))
   } else {
     x[intersect(fields, names(x))]
