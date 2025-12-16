@@ -71,7 +71,7 @@ btw(
 #> 
 #> | package | title | version | date | url | downloads_last_month |
 #> |---------|-------|---------|------|-----|----------------------|
-#> | DiagrammeR | Graph/Network Visualization | 1.0.11 | 2024-02-02 | https://rich-iannone.github.io/DiagrammeR/, https://github.com/rich-iannone/DiagrammeR | 74,075 |
+#> | DiagrammeR | Graph/Network Visualization | 1.0.11 | 2024-02-02 | https://rich-iannone.github.io/DiagrammeR/, https://github.com/rich-iannone/DiagrammeR | 74,636 |
 btw(
   pkgsearch::pkg_search("network visualization", format = "long", size = 1),
   clipboard = FALSE
@@ -91,7 +91,7 @@ btw(
 #> * Maintainer: Richard Iannone
 #> * Homepage: https://rich-iannone.github.io/DiagrammeR/, https://github.com/rich-iannone/DiagrammeR
 #> * Date: 2024-02-02
-#> * Downloads Last Month: 74,075
+#> * Downloads Last Month: 74,636
 #> 
 #> Build graph/network structures using functions for stepwise
 #> addition and deletion of nodes and edges. Work with data available in
