@@ -628,7 +628,7 @@ btw_github_check_endpoint <- function(endpoint) {
 
 # Helper: GitHub Fields -------------------------------------------------------
 btw_gh_filter_fields <- function(x, fields = btw_gh_fields()) {
-  if (!any(nzchar(names2(x)))) {
+  if (is.list(x) && !any(nzchar(names2(x)))) {
     return(lapply(x, btw_gh_filter_fields, fields = fields))
   } else {
     x[intersect(fields, names(x))]
