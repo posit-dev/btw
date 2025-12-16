@@ -5,7 +5,7 @@ NULL
 
 btw_gh <- function(endpoint, ...) {
   endpoint <- btw_github_check_endpoint(endpoint)
-  if (grepl("actions/jobs", endpoint) && grepl("/logs", endpoint)) {
+  if (grepl("actions/jobs/.*/logs$", endpoint)) {
     # Special case: r-lib/gh#228
     withr::local_options(gh_cache = FALSE)
   }
