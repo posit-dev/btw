@@ -210,8 +210,9 @@ btw_tool_run_r_impl <- function(code, .envir = global_env()) {
     value = function(value, visible) {
       # Store the actual value when it's visible (meaningful output)
       # Invisible values include assignments and side-effect returns
+      last_value <<- value
+
       if (visible) {
-        last_value <<- value
         # Also add as code content
         value_text <- paste(
           utils::capture.output(print(value)),
@@ -535,9 +536,6 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
     tool_title <- NULL
     tool <- content@request@tool
     annotations <- tool@annotations
-    if (!is.null(tool)) {
-      tool_title <- annotations$title
-    }
   }
 
   htmltools::tag(
@@ -546,7 +544,7 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
       `request-id` = request_id,
       code = code,
       status = status,
-      `tool-title` = tool_title,
+      `tool-title` = display$title %||% annotations$title %||% "Run R Code",
       icon = display$icon %||% annotations$icon,
       htmltools::HTML(output_html),
       btw_run_tool_card_dep()

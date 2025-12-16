@@ -9,6 +9,10 @@ has_roxygen2 <- function() {
   is_installed("roxygen2")
 }
 
+btw_can_register_pkg_coverage <- function() {
+  is_installed("covr") && is_installed("testthat")
+}
+
 # btw_tool_pkg_document --------------------------------------------------------
 
 #' Tool: Generate package documentation

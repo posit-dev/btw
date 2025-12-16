@@ -51,6 +51,7 @@ Imports:
 Suggests:
     bslib (>= 0.7.0),
     chromote,
+    covr,
     DBI,
     devtools,
     duckdb,
@@ -60,6 +61,7 @@ Suggests:
     gh,
     htmltools,
     pandoc,
+    pkgload,
     ragg,
     roxygen2,
     shiny,
@@ -97,7 +99,8 @@ Collate:
     'tool-files.R'
     'tool-git.R'
     'tool-github.R'
-    'tool-pkg.R'
+    'tool-pkg-covr.R'
+    'tool-pkg-devtools.R'
     'tool-rstudioapi.R'
     'tool-run.R'
     'tool-search-packages.R'
