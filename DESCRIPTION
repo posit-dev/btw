@@ -100,7 +100,7 @@ Collate:
     'tool-git.R'
     'tool-github.R'
     'tool-pkg-covr.R'
-    'tool-pkg.R'
+    'tool-pkg-devtools.R'
     'tool-rstudioapi.R'
     'tool-run.R'
     'tool-search-packages.R'
