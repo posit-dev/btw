@@ -31,6 +31,10 @@ or an error indicating that the package is not installed.
 
 [`btw_tools()`](https://posit-dev.github.io/btw/dev/reference/btw_tools.md)
 
+Other session tools:
+[`btw_tool_session_package_info()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_session_package_info.md),
+[`btw_tool_session_platform_info()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_session_platform_info.md)
+
 ## Examples
 
 ``` r
