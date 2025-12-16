@@ -5,6 +5,10 @@ NULL
 
 btw_gh <- function(endpoint, ...) {
   endpoint <- btw_github_check_endpoint(endpoint)
+  if (grepl("actions/jobs", endpoint) && grepl("/logs", endpoint)) {
+    # Special case: r-lib/gh#228
+    withr::local_options(gh_cache = FALSE)
+  }
   invisible(gh::gh(endpoint, ...))
 }
 
@@ -410,10 +414,12 @@ btw_github_default_allow_rules <- function() {
     # Read-only Workflow Information
     "GET /repos/*/*/actions/workflows",
     "GET /repos/*/*/actions/workflows/*",
+    "GET /repos/*/*/actions/workflows/*/runs",
+    "GET /repos/*/*/actions/workflows/*/logs",
     "GET /repos/*/*/actions/runs",
-    "GET /repos/*/*/actions/runs/*",
-    "GET /repos/*/*/actions/runs/*/jobs",
-    "GET /repos/*/*/actions/runs/*/jobs/*/logs",
+    "GET /repos/*/*/actions/runs/**",
+    "GET /repos/*/*/actions/jobs",
+    "GET /repos/*/*/actions/jobs/**",
 
     # Search GitHub
     "GET /search/*",
