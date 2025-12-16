@@ -22,6 +22,11 @@ btw_this.default <- function(x, ...) {
   capture_print(x)
 }
 
+#' @export
+btw_this.matrix <- function(x, ...) {
+  capture_print(x)
+}
+
 capture_print <- function(x) {
   # TODO: Replace with {evaluate}
   local_reproducible_output(max.print = 100)
