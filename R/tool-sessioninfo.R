@@ -16,7 +16,7 @@ NULL
 #' @examples
 #' btw_tool_session_platform_info()
 #'
-#' @family Tools
+#' @family session tools
 #' @export
 btw_tool_session_platform_info <- function(`_intent`) {}
 
@@ -114,7 +114,7 @@ platform_info <- function() {
 #' @returns Returns a string describing the selected packages.
 #'
 #' @seealso [btw_tools()], [btw_tool_session_platform_info()]
-#' @family Tools
+#' @family session tools
 #' @export
 btw_tool_session_package_info <- function(packages, dependencies, `_intent`) {}
 

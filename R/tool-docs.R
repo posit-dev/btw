@@ -49,7 +49,7 @@ NULL
 #'   string.
 #'
 #' @seealso [btw_tools()]
-#' @family Tools
+#' @family docs tools
 #' @name btw_tool_package_docs
 #' @export
 btw_tool_docs_package_help_topics <- function(package_name, `_intent`) {}

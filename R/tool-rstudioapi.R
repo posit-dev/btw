@@ -21,7 +21,7 @@ NULL
 #'
 #' @return Returns the contents of the current editor.
 #'
-#' @family Tools
+#' @family ide tools
 #' @export
 btw_tool_ide_read_current_editor <- function(selection, consent, `_intent`) {}
 

@@ -38,7 +38,6 @@
 #' @returns Registers the tools with `chat`, updating the `chat` object in
 #'   place. The `chat` input is returned invisibly.
 #'
-#' @family Tools
 #' @export
 btw_tools <- function(...) {
   tools <- c(...)

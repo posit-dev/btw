@@ -114,7 +114,7 @@
 #' }
 #'
 #' @seealso [btw_tools()]
-#' @family Tools
+#' @family run tools
 #' @export
 btw_tool_run_r <- function(code, `_intent`) {}
 

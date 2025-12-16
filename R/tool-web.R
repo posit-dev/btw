@@ -20,7 +20,7 @@ NULL
 #'   [ellmer::ContentToolResult] containing the markdown content of the web
 #'   page.
 #'
-#' @family Tools
+#' @family web tools
 #' @export
 btw_tool_web_read_url <- function(url, `_intent`) {}
 

@@ -27,7 +27,7 @@ btw_can_register_pkg_coverage <- function() {
 #' @returns The output from [devtools::document()].
 #'
 #' @seealso [btw_tools()]
-#' @family Tools
+#' @family pkg tools
 #' @export
 btw_tool_pkg_document <- function(pkg = ".", `_intent`) {}
 
@@ -91,7 +91,7 @@ Use this after adding or modifying roxygen2 comments in your R code. The tool mo
 #' @returns The output from [devtools::check()].
 #'
 #' @seealso [btw_tools()]
-#' @family Tools
+#' @family pkg tools
 #' @export
 btw_tool_pkg_check <- function(pkg = ".", `_intent`) {}
 
@@ -162,7 +162,7 @@ For iterative development, use the `btw_tool_pkg_test` if available or `devtools
 #' @returns The output from [devtools::test()].
 #'
 #' @seealso [btw_tools()]
-#' @family Tools
+#' @family pkg tools
 #' @export
 btw_tool_pkg_test <- function(pkg = ".", filter = NULL, `_intent`) {}
 

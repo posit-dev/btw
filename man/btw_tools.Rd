@@ -142,25 +142,3 @@ ch$register_tools(btw_tools("docs"))
 ch$register_tools(c(ch$get_tools(), btw_tools()))
 \dontshow{\}) # examplesIf}
 }
-\seealso{
-Other Tools: 
-\code{\link{btw_tool_docs_package_news}()},
-\code{\link{btw_tool_env_describe_data_frame}()},
-\code{\link{btw_tool_env_describe_environment}()},
-\code{\link{btw_tool_files_code_search}()},
-\code{\link{btw_tool_files_list_files}()},
-\code{\link{btw_tool_files_read_text_file}()},
-\code{\link{btw_tool_files_write_text_file}()},
-\code{\link{btw_tool_ide_read_current_editor}()},
-\code{\link{btw_tool_package_docs}},
-\code{\link{btw_tool_pkg_check}()},
-\code{\link{btw_tool_pkg_coverage}()},
-\code{\link{btw_tool_pkg_document}()},
-\code{\link{btw_tool_pkg_test}()},
-\code{\link{btw_tool_run_r}()},
-\code{\link{btw_tool_search_packages}()},
-\code{\link{btw_tool_session_package_info}()},
-\code{\link{btw_tool_session_platform_info}()},
-\code{\link{btw_tool_web_read_url}()}
-}
-\concept{Tools}
