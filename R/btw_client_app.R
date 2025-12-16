@@ -389,14 +389,21 @@ btw_status_bar_server <- function(id, chat) {
               output_tokens <- as.integer(sum(tokens_assistant$tokens))
             }
           } else {
-            if ("input" %in% colnames(tokens)) {
-              input_tokens <- sum(tokens$input)
-            }
+            # output tokens this far are the sum of all output tokens
             if ("output" %in% colnames(tokens)) {
               output_tokens <- sum(tokens$output)
             }
+            # input and cached tokens are accumulated in the last API call
+            if ("input" %in% colnames(tokens)) {
+              input_tokens <-
+                tokens$input[[length(tokens$input)]] +
+                # include output tokens that will be part of next API call
+                tokens$output[[length(tokens$output)]]
+            }
             if ("cached_input" %in% colnames(tokens)) {
-              cached_tokens <- sum(tokens$cached_input)
+              cached_tokens <- tokens$cached_input[[
+                length(tokens$cached_input)
+              ]]
             }
           }
         }
