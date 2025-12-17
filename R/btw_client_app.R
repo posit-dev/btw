@@ -257,6 +257,14 @@ btw_app_from_client <- function(client, messages = list(), ...) {
       app_tool_group_choice_input("other", other_tools_df)
     })
 
+    if (rstudioapi::hasFun("navigateToFile")) {
+      shiny::observeEvent(input[["__btw_ide_open_file"]], {
+        path <- input[["__btw_ide_open_file"]]
+        cli::cli_alert("Opening file in IDE: {.path {path}}")
+        rstudioapi::navigateToFile(path)
+      })
+    }
+
     shiny::observeEvent(input$close_btn, {
       shiny::stopApp()
     })

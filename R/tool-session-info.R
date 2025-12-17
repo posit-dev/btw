@@ -71,13 +71,12 @@ platform_info <- function() {
   platform$pandoc <- NULL
   platform$quarto <- NULL
 
-  if (identical(Sys.getenv("POSITRON"), "1")) {
-    platform$ui <- "Positron (a VS Code equivalent)"
-  } else if (identical(Sys.getenv("RSTUDIO"), "1")) {
-    platform$ui <- "RStudio"
-  } else if (identical(Sys.getenv("TERM_PROGRAM"), "vscode")) {
-    platform$ui <- "VS Code"
-  }
+  platform$ui <- switch(
+    which_ide() %||% "",
+    positron = "Positron (a VS Code equivalent)",
+    rstudio = "RStudio",
+    vs_code = "VS Code"
+  )
 
   recode <- c(
     "version" = "r_version",
