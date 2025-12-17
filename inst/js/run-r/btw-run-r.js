@@ -99,7 +99,33 @@ class BtwRunRResult extends HTMLElement {
   toggleCollapse(e) {
     e.preventDefault()
     this.expanded = !this.expanded
-    this.render()
+    this.updateCollapseState()
+  }
+
+  /**
+   * Update the collapse state without re-rendering content
+   */
+  updateCollapseState() {
+    const collapseBtn = this.querySelector(".collapse-toggle-btn")
+    const cardBody = this.querySelector(".card-body")
+
+    if (collapseBtn) {
+      collapseBtn.setAttribute("aria-expanded", this.expanded.toString())
+      collapseBtn.setAttribute(
+        "aria-label",
+        `${this.expanded ? "Collapse" : "Expand"} tool output`
+      )
+    }
+
+    if (cardBody) {
+      if (this.expanded) {
+        cardBody.classList.remove("collapsed")
+        cardBody.removeAttribute("inert")
+      } else {
+        cardBody.classList.add("collapsed")
+        cardBody.setAttribute("inert", "")
+      }
+    }
   }
 
   /**
