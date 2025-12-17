@@ -15,6 +15,9 @@
 - **Google**. Copyright holder.  
   Material Design Icons
 
+- **Microsoft**. Copyright holder.  
+  @vscode/codicons
+
 - **Jamie Perkins**. Copyright holder.  
   countUp.js author
 

@@ -38,4 +38,6 @@ Other contributors:
 
 - Google (Material Design Icons) \[copyright holder\]
 
+- Microsoft (@vscode/codicons) \[copyright holder\]
+
 - Jamie Perkins (countUp.js author) \[copyright holder\]

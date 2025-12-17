@@ -38,13 +38,12 @@ Other session tools:
 ``` r
 btw_tool_session_platform_info()
 #> <btw::BtwSessionInfoToolResult>
-#>  @ value  : chr "<system_info>\nR_VERSION: R version 4.5.2 (2025-10-31)\nOS: Ubuntu 24.04.3 LTS\nSYSTEM: x86_64, linux-gnu\nUI: "| __truncated__
+#>  @ value  : chr "<system_info>\nR_VERSION: R version 4.5.2 (2025-10-31)\nOS: Ubuntu 24.04.3 LTS\nSYSTEM: x86_64, linux-gnu\nLANG"| __truncated__
 #>  @ error  : NULL
-#>  @ extra  :List of 9
+#>  @ extra  :List of 8
 #>  .. $ r_version:: chr "R version 4.5.2 (2025-10-31)"
 #>  .. $ os:       : chr "Ubuntu 24.04.3 LTS"
 #>  .. $ system:   : chr "x86_64, linux-gnu"
-#>  .. $ ui:       : chr "X11"
 #>  .. $ language: : chr "en"
 #>  .. $ locale:   : chr "C"
 #>  .. $ encoding: : chr "C.UTF-8"

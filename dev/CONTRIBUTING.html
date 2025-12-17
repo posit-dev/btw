@@ -39,32 +39,63 @@
 
 <div id="contributing-to-btw" class="section level1">
 
-<p>This outlines how to propose a change to btw. For a detailed discussion on contributing to this and other tidyverse packages, please see the <a href="https://rstd.io/tidy-contrib" class="external-link">development contributing guide</a> and our <a href="https://code-review.tidyverse.org/" class="external-link">code review principles</a>.</p>
-<div class="section level2">
-<h2 id="fixing-typos">Fixing typos<a class="anchor" aria-label="anchor" href="#fixing-typos"></a></h2>
-<p>You can fix typos, spelling mistakes, or grammatical errors in the documentation directly using the GitHub web interface, as long as the changes are made in the <em>source</em> file. This generally means you’ll need to edit <a href="https://roxygen2.r-lib.org/articles/roxygen2.html" class="external-link">roxygen2 comments</a> in an <code>.R</code>, not a <code>.Rd</code> file. You can find the <code>.R</code> file that generates the <code>.Rd</code> by reading the comment in the first line.</p>
-</div>
-<div class="section level2">
-<h2 id="bigger-changes">Bigger changes<a class="anchor" aria-label="anchor" href="#bigger-changes"></a></h2>
-<p>If you want to make a bigger change, it’s a good idea to first file an issue and make sure someone from the team agrees that it’s needed. If you’ve found a bug, please file an issue that illustrates the bug with a minimal <a href="https://www.tidyverse.org/help/#reprex" class="external-link">reprex</a> (this will also help you write a unit test, if needed). See our guide on <a href="https://code-review.tidyverse.org/issues/" class="external-link">how to create a great issue</a> for more advice.</p>
-<div class="section level3">
-<h3 id="pull-request-process">Pull request process<a class="anchor" aria-label="anchor" href="#pull-request-process"></a></h3>
-<ul><li><p>Fork the package and clone onto your computer. If you haven’t done this before, we recommend using <code>usethis::create_from_github("posit-dev/btw", fork = TRUE)</code>.</p></li>
-<li><p>Install all development dependencies with <code><a href="https://devtools.r-lib.org/reference/install_deps.html" class="external-link">devtools::install_dev_deps()</a></code>, and then make sure the package passes R CMD check by running <code><a href="https://devtools.r-lib.org/reference/check.html" class="external-link">devtools::check()</a></code>. If R CMD check doesn’t pass cleanly, it’s a good idea to ask for help before continuing.</p></li>
-<li><p>Create a Git branch for your pull request (PR). We recommend using <code>usethis::pr_init("brief-description-of-change")</code>.</p></li>
-<li><p>Make your changes, commit to git, and then create a PR by running <code><a href="https://usethis.r-lib.org/reference/pull-requests.html" class="external-link">usethis::pr_push()</a></code>, and following the prompts in your browser. The title of your PR should briefly describe the change. The body of your PR should contain <code>Fixes #issue-number</code>.</p></li>
-<li><p>For user-facing changes, add a bullet to the top of <code>NEWS.md</code> (i.e. just below the first header). Follow the style described in <a href="https://style.tidyverse.org/news.html" class="external-link uri">https://style.tidyverse.org/news.html</a>.</p></li>
-</ul></div>
-<div class="section level3">
-<h3 id="code-style">Code style<a class="anchor" aria-label="anchor" href="#code-style"></a></h3>
-<ul><li><p>New code should follow the tidyverse <a href="https://style.tidyverse.org" class="external-link">style guide</a>. You can use the <a href="https://CRAN.R-project.org/package=styler" class="external-link">styler</a> package to apply these styles, but please don’t restyle code that has nothing to do with your PR.</p></li>
-<li><p>We use <a href="https://cran.r-project.org/package=roxygen2" class="external-link">roxygen2</a>, with <a href="https://cran.r-project.org/web/packages/roxygen2/vignettes/rd-formatting.html" class="external-link">Markdown syntax</a>, for documentation.</p></li>
-<li><p>We use <a href="https://cran.r-project.org/package=testthat" class="external-link">testthat</a> for unit tests. Contributions with test cases included are easier to accept.</p></li>
-</ul></div>
-</div>
+<p>We welcome contributions to <strong>btw</strong>! This guide explains how to propose a change.</p>
 <div class="section level2">
 <h2 id="code-of-conduct">Code of Conduct<a class="anchor" aria-label="anchor" href="#code-of-conduct"></a></h2>
-<p>Please note that the btw project is released with a <a href="CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project you agree to abide by its terms.</p>
+<p>Please note that this project is released with a <a href="CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By participating in this project you agree to abide by its terms.</p>
+</div>
+<div class="section level2">
+<h2 id="before-you-start">Before you start<a class="anchor" aria-label="anchor" href="#before-you-start"></a></h2>
+<p><strong>Always file an issue first.</strong> Before making any pull request, open an issue to discuss your proposed change. This helps ensure:</p>
+<ul><li>Your work aligns with the project’s goals</li>
+<li>You’re not duplicating effort</li>
+<li>Maintainers can provide early feedback</li>
+</ul><p>You do not need to open an issue first for small and simple changes, like fixing typos.</p>
+</div>
+<div class="section level2">
+<h2 id="filing-issues">Filing issues<a class="anchor" aria-label="anchor" href="#filing-issues"></a></h2>
+<p>When reporting a bug or suggesting a feature:</p>
+<ul><li>Provide a clear description</li>
+<li>Include a minimal reproducible example for bugs – the <a href="https://reprex.tidyverse.org/" class="external-link">reprex</a> package is a great tool for this!</li>
+<li>Describe your environment (R version, OS, etc.)</li>
+<li>Be sure to provide as much detail as possible about which AI provider and model you are using</li>
+</ul><p>See our guide on <a href="https://code-review.tidyverse.org/issues/" class="external-link">how to create a great issue</a> for more advice.</p>
+</div>
+<div class="section level2">
+<h2 id="making-changes">Making changes<a class="anchor" aria-label="anchor" href="#making-changes"></a></h2>
+<ol style="list-style-type: decimal"><li>
+<a href="https://github.com/posit-dev/btw/fork" class="external-link">Fork</a> the repository</li>
+<li>Create a branch off of <code>main</code> for your work (don’t use <code>main</code> directly!)</li>
+<li>Make your changes following the <a href="https://style.tidyverse.org/" class="external-link">tidyverse style guide</a>
+</li>
+<li>Style your code with <a href="https://posit-dev.github.io/air/" class="external-link">air</a>
+</li>
+</ol><div class="section level3">
+<h3 id="before-submitting-a-pull-request">Before submitting a pull request<a class="anchor" aria-label="anchor" href="#before-submitting-a-pull-request"></a></h3>
+<ul><li>
+<strong>Add tests</strong> for new functionality using testthat</li>
+<li>
+<strong>Update documentation</strong> with roxygen2 for user-facing changes</li>
+<li>
+<strong>Add a NEWS.md entry</strong> describing your change</li>
+<li>
+<strong>Run <code><a href="https://devtools.r-lib.org/reference/check.html" class="external-link">devtools::check()</a></code></strong> to ensure no errors, warnings, or notes</li>
+<li>
+<strong>Keep commits clean</strong> with clear, descriptive messages</li>
+</ul></div>
+</div>
+<div class="section level2">
+<h2 id="submitting-a-pull-request">Submitting a pull request<a class="anchor" aria-label="anchor" href="#submitting-a-pull-request"></a></h2>
+<ol style="list-style-type: decimal"><li>Push your branch to your fork</li>
+<li>Open a pull request linking to the related issue
+<ul><li>Use <code>Fixes #123</code> to auto-close the parent issue</li>
+</ul></li>
+<li>Provide a clear description of what you changed and why</li>
+<li>Be responsive to feedback from maintainers</li>
+</ol></div>
+<div class="section level2">
+<h2 id="questions">Questions?<a class="anchor" aria-label="anchor" href="#questions"></a></h2>
+<p>Open an issue if you have questions—we’re happy to help!</p>
 </div>
 </div>
 
