@@ -49,7 +49,7 @@ btw_tool_session_platform_info()
 #>  .. $ locale:   : chr "C"
 #>  .. $ encoding: : chr "C.UTF-8"
 #>  .. $ timezone: : chr "UTC"
-#>  .. $ date:     : chr "Tuesday, December 16, 2025 (2025-12-16)"
+#>  .. $ date:     : chr "Wednesday, December 17, 2025 (2025-12-17)"
 #>  .. - attr(*, "class")= chr [1:2] "platform_info" "list"
 #>  @ request: NULL
 ```
