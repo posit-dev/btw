@@ -64,6 +64,18 @@ pre:has(.code-action-wrapper) {
   margin-top: 5px;
   margin-right: 5px;
   z-index: 2;
+  opacity: 0.33;
+  transition: opacity 0.2s ease-in-out;
+}
+
+*:hover > .code-action-wrapper,
+*:focus-within > .code-action-wrapper {
+  opacity: 0.75;
+}
+
+.code-action-wrapper:hover,
+.code-action-wrapper:focus-within {
+  opacity: 1;
 }
 
 .code-action-wrapper button {
