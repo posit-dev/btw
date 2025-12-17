@@ -119,6 +119,11 @@ btw_app_from_client <- function(client, messages = list(), ...) {
         style = "position: fixed; top: 6px; right: 6px;"
       ),
       class = "bslib-page-dashboard",
+      htmltools::tags$div(
+        "aria-label" = "Show keyboard shortcuts",
+        "aria-keyshortcuts" = "?",
+        class = "visually-hidden"
+      ),
       btw_title(FALSE),
       shinychat::chat_mod_ui(
         "chat",
@@ -255,6 +260,21 @@ btw_app_from_client <- function(client, messages = list(), ...) {
       )
 
       app_tool_group_choice_input("other", other_tools_df)
+    })
+
+    shiny::observeEvent(input[["__btw_show_shortcuts"]], {
+      shortcut_data <- input[["__btw_show_shortcuts"]]
+
+      shiny::showModal(
+        shiny::modalDialog(
+          id = "btw_keyboard_shortcuts_modal",
+          title = sprintf("Keyboard Shortcuts (%s)", shortcut_data$platform),
+          size = "m",
+          easyClose = TRUE,
+          footer = NULL,
+          btw_keyboard_shortcuts(shortcut_data$shortcuts)
+        )
+      )
     })
 
     shiny::observeEvent(input$close_btn, {
@@ -697,6 +717,21 @@ app_tool_group_choices_labels <- function(
       )
     }
   )
+}
+
+# Keyboard Shortcuts ----
+btw_keyboard_shortcuts <- function(shortcuts) {
+  items_html <- lapply(shortcuts, function(s) {
+    keys <- strsplit(s$keys, "+", fixed = TRUE)[[1]]
+
+    htmltools::tags$div(
+      style = "margin-bottom: 8px;",
+      lapply(keys, htmltools::tags$kbd),
+      htmltools::tags$span(style = "margin-left: 6px;", s$action)
+    )
+  })
+
+  items_html
 }
 
 # App bookmarking ----
