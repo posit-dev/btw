@@ -268,6 +268,39 @@ btw_app_from_client <- function(client, messages = list(), ...) {
       })
     }
 
+    if (rstudioapi::hasFun("insertText")) {
+      shiny::observeEvent(input[["__btw_ide_insert_code"]], {
+        code <- input[["__btw_ide_insert_code"]]
+        tryCatch(
+          switch(
+            code$location,
+            new_file = ide_insert_new_file(code$code, code$language %||% "r"),
+            cursor = ide_insert_cursor(code$code),
+            console = ide_run_in_console(code$code),
+            cli::cli_abort(
+              "Unknown code insertion location: {.val {code$location}}"
+            )
+          ),
+          error = function(err) {
+            if (nchar(code$code) > 50) {
+              code_preview <- paste0(
+                substr(code$code, 1, 47),
+                "..."
+              )
+            } else {
+              code_preview <- code$code
+            }
+
+            cli::cli_warn(c(
+              "Failed to insert code into IDE: {.msg {err$message}}",
+              "i" = "Location: {.val {code$location}}",
+              "i" = "Code: {.val {code_preview}}"
+            ))
+          }
+        )
+      })
+    }
+
     shiny::observeEvent(input$close_btn, {
       shiny::stopApp()
     })

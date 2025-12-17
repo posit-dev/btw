@@ -3,22 +3,34 @@
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .btw-status-unknown {
   text-decoration: line-through;
 }
 
-.status-footer a { color: inherit; }
-.status-footer svg { height: 1em; width: 1em; }
+.status-footer a {
+  color: inherit;
+}
+.status-footer svg {
+  height: 1em;
+  width: 1em;
+}
 .status-provider-model {
   text-overflow: ellipsis;
   text-wrap-mode: nowrap;
   overflow: hidden;
 }
-.modal { --bs-modal-margin: min(2rem, 10%); }
+.modal {
+  --bs-modal-margin: min(2rem, 10%);
+}
 
 .btw-in-ide .btw-open-file.btn {
   --_icon-size: var(--shiny-tool-card-icon-size, 16px);
@@ -40,3 +52,64 @@
   padding: 0;
 }
 
+pre:has(.code-action-wrapper) {
+  position: relative;
+}
+
+.code-action-wrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  margin-top: 5px;
+  margin-right: 5px;
+  z-index: 2;
+}
+
+.code-action-wrapper button {
+  border: 0;
+  background-color: transparent;
+  padding: 0.15rem 0.2rem;
+  color: var(--bs-body-color, #222);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+}
+
+.code-action-wrapper .code-copy-button {
+  position: static;
+  top: auto;
+  right: auto;
+  margin-top: 0;
+  margin-right: 0;
+}
+
+.insert-at-cursor-button > .bi::after {
+  content: "";
+  display: block;
+  height: 1rem;
+  width: 1rem;
+  background-color: var(--bs-body-color, #222);
+  mask-image: url('data:image/svg+xml,<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M11 6H14C14.551 6 15 5.551 15 5V2C15 1.449 14.551 1 14 1H11C10.449 1 10 1.449 10 2V5C10 5.551 10.449 6 11 6ZM11 5V2H14V5H11Z"/><path fill-rule="evenodd" clip-rule="evenodd" d="M11 14H14C14.551 14 15 13.551 15 13V10C15 9.449 14.551 9 14 9H11C10.449 9 10 9.449 10 10V13C10 13.551 10.449 14 11 14ZM11 13V10H14V13H11Z"/><path d="M7.854 5.14602L9.854 7.14602L9.855 7.14502C10.05 7.34002 10.05 7.65702 9.855 7.85202L7.855 9.85202C7.757 9.94902 7.629 9.99802 7.501 9.99802C7.373 9.99802 7.245 9.95002 7.147 9.85202C6.952 9.65702 6.952 9.34002 7.147 9.14502L8.293 7.99902H4V8.99902C4 9.55002 3.551 9.99902 3 9.99902H1C0.724 9.99902 0.5 9.77502 0.5 9.49902C0.5 9.22302 0.724 8.99902 1 8.99902H3V5.99902H1C0.724 5.99902 0.5 5.77502 0.5 5.49902C0.5 5.22302 0.724 4.99902 1 4.99902H3C3.551 4.99902 4 5.44802 4 5.99902V6.99902H8.293L7.147 5.85302C6.952 5.65802 6.952 5.34102 7.147 5.14602C7.342 4.95102 7.659 4.95102 7.854 5.14602Z"/></svg>');
+}
+
+.insert-new-file-button > .bi::after {
+  content: "";
+  display: block;
+  height: 1rem;
+  width: 1rem;
+  background-color: var(--bs-body-color, #222);
+  mask-image: url('data:image/svg+xml,<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M5 14C4.448 14 4 13.552 4 13V3C4 2.448 4.448 2 5 2H8V4.5C8 5.328 8.672 6 9.5 6H12V6.025C12.344 6.056 12.677 6.121 13 6.213V5.414C13 5.016 12.842 4.635 12.561 4.353L9.647 1.439C9.366 1.158 8.984 1 8.586 1H5C3.895 1 3 1.895 3 3V13C3 14.105 3.895 15 5 15H7.261C7.008 14.693 6.791 14.357 6.607 14H5ZM9 2.207L11.793 5H9.5C9.224 5 9 4.776 9 4.5V2.207ZM11.5 7C9.015 7 7 9.015 7 11.5C7 13.985 9.015 16 11.5 16C13.985 16 16 13.985 16 11.5C16 9.015 13.985 7 11.5 7ZM14 12H12V14C12 14.276 11.776 14.5 11.5 14.5C11.224 14.5 11 14.276 11 14V12H9C8.724 12 8.5 11.776 8.5 11.5C8.5 11.224 8.724 11 9 11H11V9C11 8.724 11.224 8.5 11.5 8.5C11.776 8.5 12 8.724 12 9V11H14C14.276 11 14.5 11.224 14.5 11.5C14.5 11.776 14.276 12 14 12Z"/></svg>');
+}
+
+.insert-console-button > .bi::after {
+  content: "";
+  display: block;
+  height: 1rem;
+  width: 1rem;
+  background-color: var(--bs-body-color, #222);
+  mask-image: url('data:image/svg+xml,<svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M18.75 1.5H5.25C3.1815 1.5 1.5 3.183 1.5 5.25V18.75C1.5 20.8185 3.1815 22.5 5.25 22.5H18.75C20.8185 22.5 22.5 20.8185 22.5 18.75V5.25C22.5 3.183 20.8185 1.5 18.75 1.5ZM21 18.75C21 19.9905 19.9905 21 18.75 21H5.25C4.0095 21 3 19.9905 3 18.75V5.25C3 4.0095 4.0095 3 5.25 3H18.75C19.9905 3 21 4.0095 21 5.25V18.75ZM10.281 13.281L5.781 17.781C5.634 17.928 5.442 18 5.25 18C5.058 18 4.866 17.9265 4.719 17.781C4.4265 17.4885 4.4265 17.013 4.719 16.7205L8.688 12.7515L4.719 8.7825C4.4265 8.49 4.4265 8.0145 4.719 7.722C5.0115 7.4295 5.487 7.4295 5.7795 7.722L10.2795 12.222C10.572 12.5145 10.572 12.99 10.2795 13.2825L10.281 13.281ZM19.5 17.25C19.5 17.664 19.164 18 18.75 18H11.25C10.836 18 10.5 17.664 10.5 17.25C10.5 16.836 10.836 16.5 11.25 16.5H18.75C19.164 16.5 19.5 16.836 19.5 17.25Z"/></svg>');
+}
