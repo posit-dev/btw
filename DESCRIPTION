@@ -110,6 +110,7 @@ Collate:
     'tools.R'
     'utils-ellmer.R'
     'utils-gitignore.R'
+    'utils-ide.R'
     'utils-md.R'
     'utils-r.R'
     'utils.R'
