@@ -94,7 +94,11 @@ if (inIframe && inIDE) {
   }
 
   function canEnhance(el) {
-    return el.closest("[tool-name][request-id]") ? false : true
+    return el.closest("[tool-name][request-id], [tool-title][request-id]")
+      ? el.closest(".btw-output-source")
+        ? true
+        : false
+      : true
   }
 
   function observeShinyMarkdownStream(callback, delay = 200) {
