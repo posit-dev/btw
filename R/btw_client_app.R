@@ -15,7 +15,7 @@ btw_app <- function(
   rlang::check_installed("shiny")
   rlang::check_installed("bslib")
   rlang::check_installed("htmltools")
-  rlang::check_installed("shinychat", version = "0.2.0")
+  rlang::check_installed("shinychat", version = "0.3.0")
 
   if (getOption("btw.app.close_on_session_end", FALSE)) {
     cli::cli_alert("Starting up {.fn btw::btw_app} ...")

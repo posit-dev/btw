@@ -67,7 +67,7 @@ Suggests:
     ragg,
     roxygen2,
     shiny,
-    shinychat (>= 0.2.0),
+    shinychat (>= 0.3.0),
     testthat (>= 3.0.0),
     usethis
 Config/Needs/website: tidyverse/tidytemplate
