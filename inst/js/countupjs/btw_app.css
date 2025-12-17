@@ -85,6 +85,7 @@ pre:has(.code-action-wrapper) {
   margin-right: 0;
 }
 
+/* @vscode/codicons: insert-at-cursor, new-file, terminal (MIT) */
 .insert-at-cursor-button > .bi::after {
   content: "";
   display: block;

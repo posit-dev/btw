@@ -10,6 +10,8 @@ Authors@R: c(
     person("Posit Software, PBC", role = c("cph", "fnd")),
     person("Google", role = "cph",
            comment = "Material Design Icons"),
+    person("Microsoft", role = "cph",
+           comment = "@vscode/codicons"),
     person("Jamie Perkins", role = "cph",
            comment = "countUp.js author")
   )

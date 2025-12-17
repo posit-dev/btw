@@ -209,7 +209,7 @@ btw_tool_files_read_text_file_impl <- function(
 title_with_open_file_button <- function(verb, path) {
   path_file <- fs::path_file(path)
 
-  icon <- tool_icon("go-to-file")
+  icon <- tool_icon("codicons/go-to-file")
 
   if (rstudioapi::hasFun("navigateToFile")) {
     res <- glue_(
