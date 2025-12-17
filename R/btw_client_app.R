@@ -280,13 +280,17 @@ btw_app_from_client <- function(client, messages = list(), ...) {
       )
     })
 
-    if (rstudioapi::hasFun("navigateToFile")) {
-      shiny::observeEvent(input[["__btw_ide_open_file"]], {
-        path <- input[["__btw_ide_open_file"]]
-        cli::cli_alert("Opening file in IDE: {.path {path}}")
+    shiny::observeEvent(input[["__btw_ide_open_file"]], {
+      path <- input[["__btw_ide_open_file"]]
+      if (rstudioapi::hasFun("navigateToFile")) {
         rstudioapi::navigateToFile(path)
-      })
-    }
+      } else {
+        cli::cli_alert(c(
+          "Your IDE does not support opening files with {.pkg rstudioapi}.",
+          "i" = "{.path {path}}"
+        ))
+      }
+    })
 
     if (rstudioapi::hasFun("insertText")) {
       shiny::observeEvent(input[["__btw_ide_insert_code"]], {

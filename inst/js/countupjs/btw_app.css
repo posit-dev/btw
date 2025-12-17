@@ -33,6 +33,7 @@
 }
 
 .btw-in-ide .btw-open-file.btn {
+  --bs-btn-hover-color: var(--bs-emphasis-color);
   --_icon-size: var(--shiny-tool-card-icon-size, 16px);
   --_padding: 3px;
   --_display: inline-flex;
@@ -41,9 +42,6 @@
   align-items: center;
   flex: none;
   padding: var(--_padding);
-  position: absolute;
-  margin-top: -0.125em;
-  margin-left: 0.25em;
 }
 
 .btw-in-ide .btw-open-file.btn svg {

@@ -209,8 +209,7 @@ btw_tool_files_read_text_file_impl <- function(
 title_with_open_file_button <- function(verb, path) {
   path_file <- fs::path_file(path)
 
-  icon <- tool_icon("open-in-browser")
-  ide <- which_ide_title()
+  icon <- tool_icon("go-to-file")
 
   if (rstudioapi::hasFun("navigateToFile")) {
     res <- glue_(
@@ -218,10 +217,10 @@ title_with_open_file_button <- function(verb, path) {
       {{verb}}
       <code>{{path_file}}</code>
       <bslib-tooltip placement="top">
-        <template>Open in {{ ide }}</template>
-        <button class="btw-open-file btn btn-sm btn-outline-default border-0"
+        <template>Go to file</template>
+        <button class="btw-open-file btn btn-sm border-0"
          data-path="{{path}}"
-         aria-label="Open {{path_file}} in {{ ide }}"
+         aria-label="Go to {{path_file}} in your IDE"
          style="display: var(--_display, none);"
         >{{ icon }}</button>
       </bslib-tooltip>
