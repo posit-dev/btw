@@ -64,7 +64,7 @@ if (typeof Shiny !== "undefined") {
 }
 
 document.addEventListener("click", function (e) {
-  const btn = e.target.closest(".btw-open-file-btn")
+  const btn = e.target.closest(".btw-open-file")
   if (!btn) return
 
   const path = btn.getAttribute("data-path")

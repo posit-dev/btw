@@ -20,12 +20,12 @@
 }
 .modal { --bs-modal-margin: min(2rem, 10%); }
 
-.btw-open-file.btn {
+.btw-in-ide .btw-open-file.btn {
   --_icon-size: var(--shiny-tool-card-icon-size, 16px);
   --_padding: 3px;
+  --_display: inline-flex;
   width: calc(var(--_icon-size) + var(--_padding));
   height: calc(var(--_icon-size) + var(--_padding));
-  display: inline-flex;
   align-items: center;
   flex: none;
   padding: var(--_padding);
@@ -34,7 +34,7 @@
   margin-left: 0.25em;
 }
 
-.btw-open-file.btn svg {
+.btw-in-ide .btw-open-file.btn svg {
   height: 100%;
   margin: 0;
   padding: 0;

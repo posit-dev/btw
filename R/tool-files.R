@@ -222,6 +222,7 @@ title_with_open_file_button <- function(verb, path) {
         <button class="btw-open-file btn btn-sm btn-outline-default border-0"
          data-path="{{path}}"
          aria-label="Open {{path_file}} in {{ ide }}"
+         style="display: var(--_display, none);"
         >{{ icon }}</button>
       </bslib-tooltip>
       )"

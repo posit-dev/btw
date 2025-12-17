@@ -119,6 +119,9 @@ btw_app_from_client <- function(client, messages = list(), ...) {
         style = "position: fixed; top: 6px; right: 6px;"
       ),
       class = "bslib-page-dashboard",
+      class = if (nzchar(which_ide())) {
+        c("btw-in-ide", sprintf("btw-in-%s", which_ide()))
+      },
       btw_title(FALSE),
       shinychat::chat_mod_ui(
         "chat",
