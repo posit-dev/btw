@@ -1,47 +1,56 @@
 # Contributing to btw
 
-This outlines how to propose a change to btw.
-For a detailed discussion on contributing to this and other tidyverse packages, please see the [development contributing guide](https://rstd.io/tidy-contrib) and our [code review principles](https://code-review.tidyverse.org/).
-
-## Fixing typos
-
-You can fix typos, spelling mistakes, or grammatical errors in the documentation directly using the GitHub web interface, as long as the changes are made in the _source_ file. 
-This generally means you'll need to edit [roxygen2 comments](https://roxygen2.r-lib.org/articles/roxygen2.html) in an `.R`, not a `.Rd` file. 
-You can find the `.R` file that generates the `.Rd` by reading the comment in the first line.
-
-## Bigger changes
-
-If you want to make a bigger change, it's a good idea to first file an issue and make sure someone from the team agrees that it’s needed. 
-If you’ve found a bug, please file an issue that illustrates the bug with a minimal 
-[reprex](https://www.tidyverse.org/help/#reprex) (this will also help you write a unit test, if needed).
-See our guide on [how to create a great issue](https://code-review.tidyverse.org/issues/) for more advice.
-
-### Pull request process
-
-*   Fork the package and clone onto your computer. If you haven't done this before, we recommend using `usethis::create_from_github("posit-dev/btw", fork = TRUE)`.
-
-*   Install all development dependencies with `devtools::install_dev_deps()`, and then make sure the package passes R CMD check by running `devtools::check()`. 
-    If R CMD check doesn't pass cleanly, it's a good idea to ask for help before continuing. 
-*   Create a Git branch for your pull request (PR). We recommend using `usethis::pr_init("brief-description-of-change")`.
-
-*   Make your changes, commit to git, and then create a PR by running `usethis::pr_push()`, and following the prompts in your browser.
-    The title of your PR should briefly describe the change.
-    The body of your PR should contain `Fixes #issue-number`.
-
-*  For user-facing changes, add a bullet to the top of `NEWS.md` (i.e. just below the first header). Follow the style described in <https://style.tidyverse.org/news.html>.
-
-### Code style
-
-*   New code should follow the tidyverse [style guide](https://style.tidyverse.org). 
-    You can use the [styler](https://CRAN.R-project.org/package=styler) package to apply these styles, but please don't restyle code that has nothing to do with your PR.  
-
-*  We use [roxygen2](https://cran.r-project.org/package=roxygen2), with [Markdown syntax](https://cran.r-project.org/web/packages/roxygen2/vignettes/rd-formatting.html), for documentation.  
-
-*  We use [testthat](https://cran.r-project.org/package=testthat) for unit tests. 
-   Contributions with test cases included are easier to accept.  
+We welcome contributions to **btw**! This guide explains how to propose a change.
 
 ## Code of Conduct
 
-Please note that the btw project is released with a
-[Contributor Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this
-project you agree to abide by its terms.
+Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
+
+## Before you start
+
+**Always file an issue first.** Before making any pull request, open an issue to discuss your proposed change. This helps ensure:
+
+* Your work aligns with the project's goals
+* You're not duplicating effort
+* Maintainers can provide early feedback
+
+You do not need to open an issue first for small and simple changes, like fixing typos.
+
+## Filing issues
+
+When reporting a bug or suggesting a feature:
+
+* Provide a clear description
+* Include a minimal reproducible example for bugs -- the [reprex](https://reprex.tidyverse.org/) package is a great tool for this!
+* Describe your environment (R version, OS, etc.)
+* Be sure to provide as much detail as possible about which AI provider and model you are using
+
+See our guide on [how to create a great issue](https://code-review.tidyverse.org/issues/) for more advice.
+
+## Making changes
+
+1. [Fork](https://github.com/posit-dev/btw/fork) the repository
+2. Create a branch off of `main` for your work (don't use `main` directly!)
+3. Make your changes following the [tidyverse style guide](https://style.tidyverse.org/)
+4. Style your code with [air](https://posit-dev.github.io/air/)
+
+### Before submitting a pull request
+
+* **Add tests** for new functionality using testthat
+* **Update documentation** with roxygen2 for user-facing changes
+* **Add a NEWS.md entry** describing your change
+* **Run `devtools::check()`** to ensure no errors, warnings, or notes
+* **Keep commits clean** with clear, descriptive messages
+
+## Submitting a pull request
+
+1. Push your branch to your fork
+2. Open a pull request linking to the related issue
+    * Use `Fixes #123` to auto-close the parent issue
+3. Provide a clear description of what you changed and why
+4. Be responsive to feedback from maintainers
+
+## Questions?
+
+Open an issue if you have questions—we're happy to help!
+

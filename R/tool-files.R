@@ -200,13 +200,36 @@ btw_tool_files_read_text_file_impl <- function(
       path = fs::path_rel(path),
       display = list(
         markdown = value,
-        title = HTML(sprintf(
-          "Read <code>%s</code>",
-          fs::path_file(path)
-        ))
+        title = HTML(title_with_open_file_button("Read", path))
       )
     )
   )
+}
+
+title_with_open_file_button <- function(verb, path) {
+  path_file <- fs::path_file(path)
+
+  icon <- tool_icon("codicons/go-to-file")
+
+  if (rstudioapi::hasFun("navigateToFile")) {
+    res <- glue_(
+      r"(
+      {{verb}}
+      <code>{{path_file}}</code>
+      <bslib-tooltip placement="top">
+        <template>Go to file</template>
+        <button class="btw-open-file btn btn-sm border-0"
+         data-path="{{path}}"
+         aria-label="Go to {{path_file}} in your IDE"
+         style="display: var(--_display, none);"
+        >{{ icon }}</button>
+      </bslib-tooltip>
+      )"
+    )
+  } else {
+    res <- glue_('{{verb}} <code>{{path_file}}</code>')
+  }
+  HTML(res)
 }
 
 BtwTextFileToolResult <- S7::new_class(
@@ -443,7 +466,7 @@ btw_tool_files_write_text_file_impl <- function(path, content) {
       previous_content = previous_content,
       display = list(
         markdown = md_code_block(fs::path_ext(path), content),
-        title = HTML(sprintf("Write <code>%s</code>", path)),
+        title = HTML(title_with_open_file_button("Write", path)),
         show_request = FALSE,
         icon = tool_icon("file-save")
       )

@@ -40,7 +40,7 @@ btw-run-r-result .card-body {
   background-color: var(--bs-black);
 }
 
-.btw-run-output .code-copy-button {
+.btw-run-output > :not(.btw-output-source) .code-copy-button {
   /* TODO: Figure out how to disable markdown-stream code copy button */
   display: none;
 }

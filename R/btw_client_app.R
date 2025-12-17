@@ -119,6 +119,9 @@ btw_app_from_client <- function(client, messages = list(), ...) {
         style = "position: fixed; top: 6px; right: 6px;"
       ),
       class = "bslib-page-dashboard",
+      class = if (nzchar(which_ide())) {
+        c("btw-in-ide", sprintf("btw-in-%s", which_ide()))
+      },
       htmltools::tags$div(
         "aria-label" = "Show keyboard shortcuts",
         "aria-keyshortcuts" = "?",
@@ -276,6 +279,51 @@ btw_app_from_client <- function(client, messages = list(), ...) {
         )
       )
     })
+
+    shiny::observeEvent(input[["__btw_ide_open_file"]], {
+      path <- input[["__btw_ide_open_file"]]
+      if (rstudioapi::hasFun("navigateToFile")) {
+        rstudioapi::navigateToFile(path)
+      } else {
+        cli::cli_alert(c(
+          "Your IDE does not support opening files with {.pkg rstudioapi}.",
+          "i" = "{.path {path}}"
+        ))
+      }
+    })
+
+    if (rstudioapi::hasFun("insertText")) {
+      shiny::observeEvent(input[["__btw_ide_insert_code"]], {
+        code <- input[["__btw_ide_insert_code"]]
+        tryCatch(
+          switch(
+            code$location,
+            new_file = ide_insert_new_file(code$code, code$language %||% "r"),
+            cursor = ide_insert_cursor(code$code),
+            console = ide_run_in_console(code$code),
+            cli::cli_abort(
+              "Unknown code insertion location: {.val {code$location}}"
+            )
+          ),
+          error = function(err) {
+            if (nchar(code$code) > 50) {
+              code_preview <- paste0(
+                substr(code$code, 1, 47),
+                "..."
+              )
+            } else {
+              code_preview <- code$code
+            }
+
+            cli::cli_warn(c(
+              "Failed to insert code into IDE: {.msg {err$message}}",
+              "i" = "Location: {.val {code$location}}",
+              "i" = "Code: {.val {code_preview}}"
+            ))
+          }
+        )
+      })
+    }
 
     shiny::observeEvent(input$close_btn, {
       shiny::stopApp()
