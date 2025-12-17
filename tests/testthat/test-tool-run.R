@@ -302,6 +302,7 @@ describe("btw_tool_run_r() in btw_tools()", {
   local_mocked_bindings(is_installed = function(...) TRUE)
 
   it("can be enabled via option", {
+    local_mocked_bindings(btw_can_register_gh_tool = function() TRUE)
     withr::local_options(btw.run_r.enabled = TRUE)
     tools <- btw_tools()
     tool_names <- map_chr(tools, function(x) x@name)
