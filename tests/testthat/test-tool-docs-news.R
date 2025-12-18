@@ -1,5 +1,5 @@
 test_that("btw_tool_docs_package_news()", {
-  local_skip_pandoc_convert()
+  local_skip_pandoc_convert_text()
 
   expect_equal(
     ellmer::contents_text(btw(news(package = "dplyr"))),
@@ -15,7 +15,7 @@ test_that("btw_tool_docs_package_news()", {
 })
 
 test_that("btw_tool_docs_package_news() with search term", {
-  local_skip_pandoc_convert()
+  local_skip_pandoc_convert_text()
 
   expect_equal(
     I(btw_tool_docs_package_news("dplyr", "filter")@value),
@@ -37,7 +37,7 @@ test_that("btw_tool_docs_package_news() with non-existent package", {
 
 test_that("btw_tool_docs_package_news() with R package", {
   skip_if_not(nrow(news(package = "R")) > 0, "R news is not available")
-  local_skip_pandoc_convert()
+  local_skip_pandoc_convert_text()
 
   .package_news <- package_news
   .btw_this_news <- btw_this_news
@@ -80,7 +80,7 @@ test_that("btw_tool_docs_package_news() with R package", {
 })
 
 test_that("btw_tool_docs_package_news() when no news is found", {
-  local_skip_pandoc_convert()
+  local_skip_pandoc_convert_text()
   local_mocked_bindings(
     package_news = function(...) {
       structure(
@@ -113,7 +113,7 @@ test_that("btw_tool_docs_package_news() when no news is found", {
 })
 
 test_that("btw_tool_docs_package_news() with unmatched search term or version", {
-  local_skip_pandoc_convert()
+  local_skip_pandoc_convert_text()
   if (package_version("dplyr") != "1.1.1") {
     with_mocked_bindings(
       package_news = function(package_name) {

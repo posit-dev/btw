@@ -6,9 +6,7 @@ test_that("btw_this.function()", {
 })
 
 test_that("btw_this('{pkg}')", {
-  local_mocked_bindings(
-    pandoc_convert = function(path, ...) readLines(path)
-  )
+  local_skip_pandoc_convert()
 
   # Gets the intro vignette if one is available
   expect_equal(
@@ -76,9 +74,7 @@ test_that('btw_this("@last_value")', {
 # Test @pkg command -----------------------------------------------------------
 
 test_that("@pkg command works like {pkg} syntax", {
-  local_mocked_bindings(
-    pandoc_convert = function(path, ...) readLines(path)
-  )
+  local_skip_pandoc_convert()
 
   # Both syntaxes should produce identical results
   expect_equal(
@@ -453,9 +449,7 @@ test_that("format_github_item handles empty body", {
 # Test backward compatibility -------------------------------------------------
 
 test_that("legacy {pkg} syntax still works", {
-  local_mocked_bindings(
-    pandoc_convert = function(path, ...) readLines(path)
-  )
+  local_skip_pandoc_convert()
 
   expect_equal(
     btw_this("{dplyr}"),
@@ -468,9 +462,7 @@ test_that("legacy {pkg} syntax still works", {
 })
 
 test_that("legacy ?topic syntax still works", {
-  local_mocked_bindings(
-    pandoc_convert = function(path, ...) readLines(path)
-  )
+  local_skip_pandoc_convert()
 
   expect_equal(
     btw_this(?dplyr::mutate),
@@ -515,9 +507,7 @@ test_that("@unknown_with_args returns user prompt", {
 # Test @ command edge cases ---------------------------------------------------
 
 test_that("@ commands handle extra whitespace", {
-  local_mocked_bindings(
-    pandoc_convert = function(path, ...) readLines(path)
-  )
+  local_skip_pandoc_convert()
 
   expect_equal(
     btw_this("@pkg  dplyr"), # Extra space
