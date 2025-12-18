@@ -1,7 +1,3 @@
-# countUp.js License
-
-Source: https://github.com/inorganik/countUp.js/blob/master/dist/countUp.min.js
-
 The MIT License (MIT)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
