@@ -253,6 +253,7 @@ btw_tool_run_r_impl <- function(
     } else {
       "(The code ran successfully but did not produce any output.)"
     }
+    value <- structure(value, class = c("btw_run_r_no_output", "character"))
   } else if (every(value, S7::S7_inherits, ellmer::ContentText)) {
     # Flatten text-only output into a single string
     value <- paste(
