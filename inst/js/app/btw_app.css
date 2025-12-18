@@ -1,3 +1,7 @@
+:root {
+  --bslib-sidebar-width: max(30vw, 275px);
+}
+
 .opacity-100-hover:hover {
   opacity: 1 !important;
 }
