@@ -110,11 +110,15 @@ btw_client <- function(
   llms_txt <- read_llms_txt(path_llms_txt)
   project_context <- c(llms_txt, config$btw_system_prompt)
   project_context <- paste(project_context, collapse = "\n\n")
+  skills_prompt <- btw_skills_system_prompt()
 
   sys_prompt <- c(
     btw_prompt("btw-system_session.md"),
     if (!skip_tools) {
       btw_prompt("btw-system_tools.md")
+    },
+    if (nzchar(skills_prompt)) {
+      skills_prompt
     },
     if (nzchar(project_context)) {
       btw_prompt("btw-system_project.md")

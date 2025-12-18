@@ -120,6 +120,13 @@ this function have access to the tools:
 
 }
 
+\subsection{Group: skills}{\tabular{ll}{
+   Name \tab Description \cr
+   \code{\link[=btw_tool_fetch_skill]{btw_tool_fetch_skill()}} \tab Fetch a skill's instructions and list its bundled resources. \cr
+}
+
+}
+
 \subsection{Group: web}{\tabular{ll}{
    Name \tab Description \cr
    \code{\link[=btw_tool_web_read_url]{btw_tool_web_read_url()}} \tab Read a web page and convert it to Markdown format. \cr
