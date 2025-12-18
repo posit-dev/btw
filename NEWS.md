@@ -1,5 +1,7 @@
 # btw (development version)
 
+* `btw_app()` now shows a rich diff view in the `btw_tool_files_write_text_file()` tool, if the `{diffviewer}` package is installed (#144).
+
 * `btw()` now correctly handles character matrices (#139).
 
 * `btw_app()` now correctly displays input tokens with ellmer v0.4.0. Previously, we were showing the total input tokens sent across all API calls, rather than the current number of input tokens as of the last API call. We now show the size of the input context window (i.e. the number of input tokens that will be used for the conversation history in the next API call). Note that token usage is dependent on the provider and model used and is only an estimate.
