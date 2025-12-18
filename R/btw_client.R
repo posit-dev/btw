@@ -201,8 +201,12 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
     return(config)
   }
 
-  config$client <- ellmer::chat_anthropic(echo = "output")
+  config$client <- btw_default_chat_client()
   config
+}
+
+btw_default_chat_client <- function() {
+  ellmer::chat_anthropic(echo = "output")
 }
 
 as_ellmer_client <- function(client) {

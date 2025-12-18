@@ -161,6 +161,56 @@ describe("btw_client() with context files", {
     expect_equal(chat_agents, chat_btw)
   })
 
+  it("uses CLAUDE.md but ignores its YAML frontmatter", {
+    # Move btw.md out of the way so CLAUDE.md is found
+    fs::file_move(fs::path(wd, "../btw.md"), fs::path(wd, "../btw-backup.md"))
+    withr::defer(
+      fs::file_move(fs::path(wd, "../btw-backup.md"), fs::path(wd, "../btw.md"))
+    )
+
+    # Create CLAUDE.md with YAML frontmatter that has client config
+    writeLines(
+      con = file.path(wd, "..", "CLAUDE.md"),
+      c(
+        "---",
+        "client:",
+        "  provider: openai",
+        "  model: gpt-5",
+        "tools: btw_tool_docs_vignette",
+        "---",
+        "",
+        "* Use CLAUDE.md style guidelines",
+        "* YAML config should be ignored"
+      )
+    )
+    withr::defer(unlink(file.path(wd, "..", "CLAUDE.md")))
+
+    with_mocked_platform(ide = "rstudio", {
+      chat_claude <- btw_client()
+    })
+
+    # Body content should be in system prompt
+    expect_match(
+      chat_claude$get_system_prompt(),
+      "Use CLAUDE.md style guidelines",
+      fixed = TRUE
+    )
+    expect_match(
+      chat_claude$get_system_prompt(),
+      "YAML config should be ignored",
+      fixed = TRUE
+    )
+
+    # YAML config should be ignored
+    client_default <- btw_default_chat_client()
+    expect_equal(chat_claude$get_model(), client_default$get_model())
+    expect_equal(
+      chat_claude$get_provider()@name,
+      client_default$get_provider()@name
+    )
+    expect_gt(length(chat_claude$get_tools()), 1)
+  })
+
   it("includes llms.txt content in system prompt", {
     writeLines(
       con = file.path(wd, "llms.txt"),
