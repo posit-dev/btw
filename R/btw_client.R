@@ -10,10 +10,11 @@
 #' ## Project Context
 #'
 #' You can keep track of project-specific rules, guidance and context by adding
-#' a `btw.md` file or [`AGENTS.md`](https://agents.md/) in your project
-#' directory. See [use_btw_md()] for help creating a `btw.md` file in your
-#' project, or use `path_btw` to tell `btw_client()` to use a specific context
-#' file.
+#' a `btw.md` file, [`AGENTS.md`](https://agents.md/), or `CLAUDE.md` in your
+#' project directory. See [use_btw_md()] for help creating a `btw.md` file in
+#' your project, or use `path_btw` to tell `btw_client()` to use a specific
+#' context file. Note that `CLAUDE.md` files will have their YAML frontmatter
+#' stripped but not used for configuration.
 #'
 #' `btw_client()` will also include context from an `llms.txt` file in the
 #' system prompt, if one is found in your project directory or as specified by
@@ -72,11 +73,12 @@
 #'   alternatively in the shorter form `tools = "docs_help_page"`. Finally,
 #'   set `tools = FALSE` to skip registering \pkg{btw} tools with the chat
 #'   client.
-#' @param path_btw A path to a `btw.md` or `AGENTS.md` project context file. If
-#'   `NULL`, btw will find a project-specific `btw.md` or `AGENTS.md` file in
-#'   the parents of the current working directory, with fallback to user-level
-#'   `btw.md` if no project file is found. Set `path_btw = FALSE` to
-#'   create a chat client without using a `btw.md` file.
+#' @param path_btw A path to a `btw.md`, `AGENTS.md`, or `CLAUDE.md` project
+#'   context file. If `NULL`, btw will find a project-specific `btw.md`,
+#'   `AGENTS.md`, or `CLAUDE.md` file in the parents of the current working
+#'   directory, with fallback to user-level `btw.md` if no project file is
+#'   found. Set `path_btw = FALSE` to create a chat client without using a
+#'   `btw.md` file.
 #' @param path_llms_txt A path to an `llms.txt` file containing context about
 #'   the current project. By default, btw will look for an `llms.txt` file in
 #'   the your current working directory or its parents. Set `path_llms_txt =
@@ -199,8 +201,12 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
     return(config)
   }
 
-  config$client <- ellmer::chat_anthropic(echo = "output")
+  config$client <- btw_default_chat_client()
   config
+}
+
+btw_default_chat_client <- function() {
+  ellmer::chat_anthropic(echo = "output")
 }
 
 as_ellmer_client <- function(client) {
@@ -325,7 +331,12 @@ find_btw_context_file <- function(path = NULL, search_user = TRUE) {
     path <- maybe_find_in_project(NULL, "AGENTS.md", "path_btw")
   }
 
-  # 3. User btw.md file
+  # 3. Local closest CLAUDE.md file
+  if (is.null(path)) {
+    path <- maybe_find_in_project(NULL, "CLAUDE.md", "path_btw")
+  }
+
+  # 4. User btw.md file
   if (search_user && is.null(path)) {
     path <- path_find_user("btw.md")
   }
@@ -339,7 +350,10 @@ read_single_btw_file <- function(path) {
     return(list())
   }
 
-  config <- rmarkdown::yaml_front_matter(path)
+  # For CLAUDE.md files, ignore YAML frontmatter for config
+  is_claude_md <- basename(path) == "CLAUDE.md"
+
+  config <- if (!is_claude_md) rmarkdown::yaml_front_matter(path) else list()
 
   read_without_yaml <- function(path) {
     pyfm <- asNamespace("rmarkdown")[["partition_yaml_front_matter"]]
@@ -362,12 +376,7 @@ read_btw_file <- function(path = NULL) {
     return(list())
   }
 
-  # Find project-level and user-level files
-  project_path <- maybe_find_in_project(path, "btw.md", "path_btw")
-  if (is.null(project_path)) {
-    project_path <- maybe_find_in_project(NULL, "AGENTS.md", "path_btw")
-  }
-
+  project_path <- find_btw_context_file(path, search_user = FALSE)
   user_path <- path_find_user("btw.md")
 
   # If no files found, return empty config

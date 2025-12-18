@@ -108,7 +108,7 @@ test_that("use_btw_md() adds to .Rbuildignore in R package", {
   withr::local_dir(wd)
 
   # Create a package structure
-  write_file("Package: testpkg", "DESCRIPTION")
+  writeLines("Package: testpkg", "DESCRIPTION")
   usethis::ui_silence({
     usethis::with_project(wd, {
       suppressMessages(path <- use_btw_md("project"))
