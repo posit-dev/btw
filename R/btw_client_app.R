@@ -32,6 +32,20 @@ btw_app <- function(
   btw_app_from_client(client, messages = messages, ...)
 }
 
+btw_app_html_dep <- function() {
+  htmltools::htmlDependency(
+    name = "btw",
+    version = utils::packageVersion("btw"),
+    package = "btw",
+    src = "js/app",
+    script = list(
+      list(src = "btw_app.js", type = "module")
+    ),
+    stylesheet = "btw_app.css",
+    all_files = TRUE
+  )
+}
+
 btw_app_from_client <- function(client, messages = list(), ...) {
   path_figures_installed <- system.file("help", "figures", package = "btw")
   path_figures_dev <- system.file("man", "figures", package = "btw")
@@ -136,26 +150,7 @@ btw_app_from_client <- function(client, messages = list(), ...) {
       if (utils::packageVersion("shinychat") >= "0.2.0.9000") {
         btw_status_bar_ui("status_bar", provider_model)
       },
-      shiny::tags$head(
-        shiny::tags$style(shiny::HTML(
-          "
-        :root { --bslib-sidebar-width: max(30vw, 275px); }
-        .opacity-100-hover:hover { opacity: 1 !important; }
-        :hover > .opacity-100-hover-parent, .opacity-100-hover-parent:hover { opacity: 1 !important; }
-        .bslib-sidebar-layout > .main > main .sidebar-title { display: none; }
-        .sidebar-collapsed > .main > main .sidebar-title { display: block; }
-        .bslib-sidebar-layout.sidebar-collapsed>.collapse-toggle { top: 1.8rem; }
-        .bslib-page-main { gap: 0.5rem; }
-        aside#tools_sidebar {
-            box-shadow: 2px 2px 5px rgba(var(--bs-emphasis-color-rgb), 10%);
-        }
-        shiny-chat-message .message-icon {
-          background-color: var(--bs-white);
-          box-shadow: 2px 2px 5px rgba(var(--bs-emphasis-color-rgb), 10%);
-        }
-      "
-        )),
-      )
+      btw_app_html_dep(),
     )
   }
 
@@ -410,20 +405,6 @@ btw_status_bar_ui <- function(id, provider_model) {
           ),
           "Estimated cost"
         )
-      ),
-      htmltools::htmlDependency(
-        name = "countup.js",
-        version = readLines(
-          system.file("js/countupjs/VERSION", package = "btw")
-        ),
-        package = "btw",
-        src = "js/countupjs",
-        script = list(
-          list(src = "countUp.min.js", type = "module"),
-          list(src = "btw_app.js", type = "module")
-        ),
-        stylesheet = "btw_app.css",
-        all_files = FALSE
       )
     )
   )

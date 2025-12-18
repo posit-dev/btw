@@ -1,4 +1,4 @@
-import { CountUp } from "./countUp.min.js"
+import { CountUp } from "./countUp/countUp.min.js"
 
 const statusCounters = new WeakMap()
 

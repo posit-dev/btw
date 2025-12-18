@@ -1,3 +1,5 @@
 Icons used in this package in `inst/icons` are licensed under the Apache License 2.0 by https://github.com/google/material-design-icons.
 
 The icons in `inst/icons/codicons` are licensed under the MIT license, from https://github.com/microsoft/vscode-codicons/.
+
+The status bar in `btw_app()` uses `countUp.js`, licensed under the MIT license, from https://inorganik.github.io/countUp.js/.
