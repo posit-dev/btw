@@ -116,3 +116,13 @@ local_sessioninfo_quarto_version <- function(.env = caller_env()) {
     .env = .env
   )
 }
+
+local_skip_pandoc_convert <- function(.env = caller_env()) {
+  local_mocked_bindings(
+    pandoc_convert_text = function(text, ...) {
+      # Skip actual pandoc conversion for speed
+      text
+    },
+    .env = .env
+  )
+}
