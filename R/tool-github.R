@@ -14,12 +14,12 @@ btw_gh <- function(endpoint, ...) {
 
 btw_eval_gh_code <- function(
   code,
-  fields = btw_gh_fields(),
-  method = "evaluate"
+  method = "evaluate",
+  show_last_value = TRUE
 ) {
   check_installed("gh")
 
-  repo_info <- get_github_repo(NULL, NULL)
+  wd_repo_info <- get_github_repo(NULL, NULL)
 
   res <- eval_limited_r_code(
     code,
@@ -27,19 +27,11 @@ btw_eval_gh_code <- function(
     gh_whoami = gh::gh_whoami,
     base64_dec = jsonlite::base64_dec,
     .method = method,
-    .show_last_value = FALSE,
-    .parent_env = repo_info,
+    .show_last_value = show_last_value,
+    .parent_env = wd_repo_info,
     .error_extra = "Only unprefixed {.fn gh} and {.fn gh_whoami} from the {.pkg gh} package are allowed.",
     .error_eval = "Error evaluating GitHub code."
   )
-
-  if (!is.null(fields)) {
-    if (method == "eval") {
-      res <- btw_gh_filter_fields(res, fields = fields)
-    } else {
-      res@extra$data <- btw_gh_filter_fields(res@extra$data, fields = fields)
-    }
-  }
 
   res
 }
@@ -74,7 +66,7 @@ btw_can_register_gh_tool <- local({
     )
 
     if (!gh_auth_result) {
-      warn(
+      cli::cli_warn(
         c(
           "GitHub tools are not available because you are not authenticated with the gh package.",
           i = "Run `gh::gh_whoami()` to check your authentication status.",
@@ -239,6 +231,7 @@ get_github_repo <- function(owner = NULL, repo = NULL) {
 btw_tool_github <- function(code, fields, `_intent`) {}
 
 btw_tool_github_impl <- function(code, fields = "default") {
+  check_installed("gh")
   check_string(code)
   check_character(fields, allow_null = TRUE)
 
@@ -248,21 +241,23 @@ btw_tool_github_impl <- function(code, fields = "default") {
     fields <- NULL
   }
 
-  # result <- btw_eval_gh_code(code, fields, method = "eval")
-  # btw_tool_result(result)
+  res <- btw_eval_gh_code(code, method = "evaluate")
 
-  res <- btw_eval_gh_code(code, fields, method = "evaluate")
-
-  # Ensure that the final result is shown to the LLM
+  # Clean up the final result that is shown to the LLM
   lv <- res@extra$data
   if (inherits(lv, "gh_response")) {
     lv <- jsonlite::toJSON(lv, auto_unbox = TRUE, pretty = TRUE)
     lv <- sprintf("<github_api_result>\n%s\n</github_api_result>", lv)
-    if (is_string(res@value)) {
-      res@value <- paste0(res@value, "\n\n", lv)
+  }
+  if (is_string(res@value)) {
+    if (inherits(res@value, "btw_run_r_no_output")) {
+      # make sure the last value is shown to the LLM if not to the user
+      res@value <- lv
     } else {
-      res@value <- c(res@value, list(ellmer::ContentText(lv)))
+      res@value <- paste0(res@value, "\n\n", lv)
     }
+  } else {
+    res@value <- c(res@value, list(ellmer::ContentText(lv)))
   }
 
   res@extra$display$open <- FALSE
@@ -295,7 +290,7 @@ CODE ENVIRONMENT:
 * You CAN print parts of the result to the console for debugging or to show the user who will see the tool results
     * Always assemble the entire string to print and then print it in one expression with `cat()`
 * Always return the result of the `gh()` call that you want to see as the final expression.
-    * This result is shown to only to you and SHOULD NOT be printed explicitly
+    * This result is shown automatically and SHOULD NOT be printed explicitly
     * If the data is a gh_response object, the tool will automatically limit the fields and format it
     * Otherwise, take care to return only the relevant data and to reduce the size as much as possible
 
