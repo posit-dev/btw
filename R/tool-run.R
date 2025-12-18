@@ -510,12 +510,6 @@ S7::method(contents_html, ContentError) <- function(content, ...) {
   btw_pre_output(content@text, pre_class = "error")
 }
 
-contents_shinychat <- S7::new_external_generic(
-  package = "shinychat",
-  name = "contents_shinychat",
-  dispatch_args = "content"
-)
-
 S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
   code <- content@extra$code
 
