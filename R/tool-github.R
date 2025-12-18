@@ -265,6 +265,8 @@ btw_tool_github_impl <- function(code, fields = "default") {
     }
   }
 
+  res@extra$display$open <- FALSE
+  res@extra$display$copy_code <- FALSE
   res
 }
 

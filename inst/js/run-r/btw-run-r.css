@@ -6,6 +6,7 @@ btw-run-r-result {
   --shiny-tool-card-max-height: auto;
   display: block;
   margin-bottom: var(--bslib-spacer, 1em);
+  font-size: 0.8em;
 }
 
 /* Make header clickable for collapsing */

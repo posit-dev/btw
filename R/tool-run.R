@@ -269,7 +269,8 @@ btw_tool_run_r_impl <- function(
       contents = contents,
       # We always return contents up to the error as `value` because `error`
       # cannot handle rich output. We'll show status separately in the UI.
-      status = if (had_error) "error" else "success"
+      status = if (had_error) "error" else "success",
+      display = list(open = TRUE, copy_code = TRUE)
     )
   )
 }
@@ -528,6 +529,7 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
 
   display <- content@extra$display %||% list()
   annotations <- list()
+  intent <- ""
 
   if (!is.null(content@request)) {
     request_id <- content@request@id
@@ -535,6 +537,9 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
     tool_title <- NULL
     tool <- content@request@tool
     annotations <- tool@annotations
+    if (!is.null(content@request@arguments$`_intent`)) {
+      intent <- content@request@arguments$`_intent`
+    }
   }
 
   htmltools::tag(
@@ -543,8 +548,11 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
       `request-id` = request_id,
       code = code,
       status = status,
+      intent = intent,
       `tool-title` = display$title %||% annotations$title %||% "Run R Code",
       icon = display$icon %||% annotations$icon,
+      expanded = if (isTRUE(display$open)) NA,
+      `copy-code` = if (isTRUE(display$copy_code)) NA,
       htmltools::HTML(output_html),
       btw_run_tool_card_dep()
     )

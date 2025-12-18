@@ -28,6 +28,10 @@ function markdownCodeBlock(content, language = "r") {
  * @attr {string} request-id - Unique identifier linking to the tool request
  * @attr {string} code - The R code that was executed
  * @attr {string} status - Execution status: "success" or "error"
+ * @attr {string} tool-title - (Optional) Title of the tool to display
+ * @attr {string} icon - (Optional) SVG icon HTML to display in the header
+ * @attr {string} intent - (Optional) Intent associated with the tool
+ * @attr {boolean} expanded - (Optional) Whether the output is expanded by default
  *
  * @example
  * <btw-run-r-result
@@ -47,6 +51,9 @@ class BtwRunRResult extends HTMLElement {
 
     this.toolTitle = this.getAttribute("tool-title") || "Run R Code"
     this.icon = this.getAttribute("icon") || ICONS.playCircle
+    this.intent = this.getAttribute("intent") || ""
+    this.expanded = this.hasAttribute("expanded")
+    this.copyCode = this.hasAttribute("copy-code")
   }
 
   connectedCallback() {
@@ -113,7 +120,7 @@ class BtwRunRResult extends HTMLElement {
       collapseBtn.setAttribute("aria-expanded", this.expanded.toString())
       collapseBtn.setAttribute(
         "aria-label",
-        `${this.expanded ? "Collapse" : "Expand"} tool output`
+        `${this.expanded ? "Collapse" : "Expand"} tool output`,
       )
     }
 
@@ -209,7 +216,10 @@ class BtwRunRResult extends HTMLElement {
 
         setTimeout(() => {
           copyBtn.innerHTML = originalHtml
-          copyBtn.setAttribute("data-bs-original-title", originalTitle || "Copy source code")
+          copyBtn.setAttribute(
+            "data-bs-original-title",
+            originalTitle || "Copy source code",
+          )
           tooltip.setContent({
             ".tooltip-inner": originalTitle || "Copy source code",
           })
@@ -269,15 +279,21 @@ class BtwRunRResult extends HTMLElement {
             this.classStatus
           }">${this.formatTitle()}</div>
           <div class="tool-spacer"></div>
-          <button
+          ${this.intent ? `<div class="tool-intent">${this.intent}</div>` : ""}
+          ${
+            this.copyCode
+              ? `
+            <button
             class="copy-code-btn"
             aria-label="Copy code to clipboard"
             data-bs-toggle="tooltip"
             data-bs-placement="top"
             data-bs-title="Copy source code"
-          >
+            >
             ${ICONS.copy}
-          </button>
+            </button>`
+              : ""
+          }
           <button
             class="collapse-toggle-btn"
             aria-expanded="${this.expanded}"
@@ -321,7 +337,10 @@ class BtwRunRResult extends HTMLElement {
     if (header) {
       header.addEventListener("click", (e) => {
         // Don't toggle if clicking on a button
-        if (e.target.closest(".copy-code-btn") || e.target.closest(".collapse-toggle-btn")) {
+        if (
+          e.target.closest(".copy-code-btn") ||
+          e.target.closest(".collapse-toggle-btn")
+        ) {
           return
         }
         this.toggleCollapse(e)
@@ -385,8 +404,9 @@ function fallbackCopy(text) {
         new CustomEvent("shiny:client-message", {
           detail: {
             headline: "Could not copy text",
-            message: "Unfortunately, this browser does not support copying to the clipboard automatically. Please copy the text manually.",
-            status: "warning"
+            message:
+              "Unfortunately, this browser does not support copying to the clipboard automatically. Please copy the text manually.",
+            status: "warning",
           },
         }),
       )
