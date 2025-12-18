@@ -1,4 +1,5 @@
 local_enable_tools()
+local_sessioninfo_quarto_version()
 withr::local_options(btw.client.quiet = TRUE)
 
 describe("btw_client() chat client", {

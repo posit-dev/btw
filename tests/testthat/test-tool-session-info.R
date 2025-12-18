@@ -1,3 +1,5 @@
+local_sessioninfo_quarto_version()
+
 test_that("btw_tool_session_platform_info() works", {
   with_mocked_platform({
     platform_data <- platform_info()

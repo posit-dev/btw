@@ -108,3 +108,11 @@ local_enable_tools <- function(
     .env = .env
   )
 }
+
+local_sessioninfo_quarto_version <- function(.env = caller_env()) {
+  local_mocked_bindings(
+    get_quarto_version = function() "99.9.9 @ /Applications/quarto/bin/quarto",
+    .package = "sessioninfo",
+    .env = .env
+  )
+}
