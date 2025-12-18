@@ -2,6 +2,12 @@
 
 ## btw (development version)
 
+- [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+  now shows a rich diff view in the
+  [`btw_tool_files_write_text_file()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_write_text_file.md)
+  tool, if the [diffviewer](https://diffviewer.r-lib.org) package is
+  installed ([\#144](https://github.com/posit-dev/btw/issues/144)).
+
 - [`btw()`](https://posit-dev.github.io/btw/dev/reference/btw.md) now
   correctly handles character matrices
   ([\#139](https://github.com/posit-dev/btw/issues/139)).
