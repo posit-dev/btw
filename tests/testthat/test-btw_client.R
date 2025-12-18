@@ -1,4 +1,5 @@
 local_enable_tools()
+local_mocked_bindings(btw_skills_system_prompt = function(...) "")
 withr::local_options(btw.client.quiet = TRUE)
 
 describe("btw_client() chat client", {
