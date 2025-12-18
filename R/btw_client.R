@@ -372,15 +372,7 @@ read_btw_file <- function(path = NULL) {
     return(list())
   }
 
-  # Find project-level and user-level files
-  project_path <- maybe_find_in_project(path, "btw.md", "path_btw")
-  if (is.null(project_path)) {
-    project_path <- maybe_find_in_project(NULL, "AGENTS.md", "path_btw")
-  }
-  if (is.null(project_path)) {
-    project_path <- maybe_find_in_project(NULL, "CLAUDE.md", "path_btw")
-  }
-
+  project_path <- find_btw_context_file(path, search_user = FALSE)
   user_path <- path_find_user("btw.md")
 
   # If no files found, return empty config
