@@ -2,6 +2,13 @@
 
 ## btw (development version)
 
+- [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+  now supports reading `CLAUDE.md` files as project context files.
+  `CLAUDE.md` files are searched after `AGENTS.md` but before user-level
+  `btw.md`. YAML frontmatter in `CLAUDE.md` files is stripped but not
+  used for configuration
+  ([\#146](https://github.com/posit-dev/btw/issues/146)).
+
 - [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
   now shows a rich diff view in the
   [`btw_tool_files_write_text_file()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_write_text_file.md)
