@@ -142,9 +142,11 @@ ch <- ellmer::chat_anthropic()
 
 # register all of the available tools
 ch$register_tools(btw_tools())
-#> Warning: GitHub tools are not available because you are not authenticated with the gh package.
+#> Warning: GitHub tools are not available because you are not authenticated with the gh
+#> package.
 #> ℹ Run `gh::gh_whoami()` to check your authentication status.
-#> ℹ Run `gitcreds::gitcreds_set()` or set the GITHUB_PAT environment variable to authenticate.
+#> ℹ Run `gitcreds::gitcreds_set()` or set the GITHUB_PAT environment variable to
+#>   authenticate.
 #> This warning is displayed once per session.
 
 # or register only the tools related to fetching documentation

@@ -44,5 +44,6 @@ withr::with_tempdir({
   btw_tool_files_write_text_file("example.txt", "Hello\nWorld!")
   readLines("example.txt")
 })
+#> Warning: incomplete final line found on 'example.txt'
 #> [1] "Hello"  "World!"
 ```
