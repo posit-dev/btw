@@ -58,10 +58,7 @@ btw_task_create_btw_md <- function(
 
   if (mode == "tool") {
     # Don't interpolate the prompt yet, we'll do that inside the tool
-    sys_prompt <- paste(
-      readLines(system.file("prompts/btw-init.md", package = "btw")),
-      collapse = "\n"
-    )
+    sys_prompt <- read_file(system.file("prompts/btw-init.md", package = "btw"))
   } else {
     sys_prompt <- btw_prompt("btw-init.md", path_summary_file = path)
   }

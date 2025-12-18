@@ -127,11 +127,11 @@ local_skip_pandoc_convert_text <- function(.env = caller_env()) {
   )
 }
 
-loca_skip_pandoc_convert <- function(.env = caller_env()) {
+local_skip_pandoc_convert <- function(.env = caller_env()) {
   local_mocked_bindings(
     pandoc_convert = function(path, ...) {
       # Skip actual pandoc conversion for speed
-      readLines(path)
+      read_file(path)
     },
     .env = .env
   )

@@ -189,10 +189,7 @@ tool_use_readme <- function() {
       success <- FALSE
 
       if (fs::file_exists(readme_path)) {
-        old_content <- paste(
-          readLines(readme_path, warn = FALSE),
-          collapse = "\n"
-        )
+        old_content <- read_file(readme_path)
         temp_path <- basename(tempfile(
           pattern = "README-",
           fileext = switch(type, md = ".md", rmd = ".Rmd")
@@ -241,10 +238,7 @@ tool_use_readme <- function() {
       use_readme_result <- cli::ansi_strip(use_readme_result)
 
       # Read the template
-      template_content <- paste(
-        readLines(readme_path, warn = FALSE),
-        collapse = "\n"
-      )
+      template_content <- read_file(readme_path)
 
       # Build the result message
       result_parts <- c(

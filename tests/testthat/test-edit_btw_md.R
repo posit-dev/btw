@@ -18,7 +18,7 @@ test_that("use_btw_md() creates btw.md in project scope", {
   expect_true(fs::file_exists(path))
 
   # Check content has YAML frontmatter
-  content <- readLines("btw.md")
+  content <- read_lines("btw.md")
   expect_match(content[1], "^---$")
   expect_match(content[2], "^client:")
   expect_match(content[3], "^tools:")
@@ -77,7 +77,7 @@ test_that("use_btw_md() creates AGENTS.md with correct template", {
   expect_equal(basename(path), "AGENTS.md")
 
   # Check content does NOT have YAML frontmatter
-  content <- readLines("AGENTS.md")
+  content <- read_lines("AGENTS.md")
   expect_false(any(grepl("^---$", content)))
   expect_false(any(grepl("client:", content)))
   expect_true(any(grepl("tidyverse", content)))
@@ -91,13 +91,13 @@ test_that("use_btw_md() does not overwrite existing file", {
     use_build_ignore_btw_md = function(...) invisible()
   )
 
-  writeLines("existing content", "btw.md")
+  write_file("existing content", "btw.md")
 
   expect_snapshot(
     path <- use_btw_md("btw.md")
   )
 
-  content <- readLines("btw.md")
+  content <- read_file("btw.md")
   expect_equal(content, "existing content")
 })
 
@@ -108,14 +108,14 @@ test_that("use_btw_md() adds to .Rbuildignore in R package", {
   withr::local_dir(wd)
 
   # Create a package structure
-  writeLines("Package: testpkg", "DESCRIPTION")
+  write_file("Package: testpkg", "DESCRIPTION")
   usethis::ui_silence({
     usethis::with_project(wd, {
       suppressMessages(path <- use_btw_md("project"))
 
       # Check .Rbuildignore was created and contains btw.md
       if (fs::file_exists(".Rbuildignore")) {
-        buildignore <- readLines(".Rbuildignore")
+        buildignore <- read_file(".Rbuildignore")
         expect_match(buildignore, "btw\\.md", fixed = TRUE)
       }
     })
@@ -140,7 +140,7 @@ test_that("use_btw_md() handles .Rbuildignore even when file exists", {
       suppressMessages(use_btw_md("project"))
 
       if (fs::file_exists(".Rbuildignore")) {
-        buildignore <- readLines(".Rbuildignore")
+        buildignore <- read_file(".Rbuildignore")
         expect_match(buildignore, "btw\\.md", fixed = TRUE)
       }
     })

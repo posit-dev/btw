@@ -172,14 +172,14 @@ test_that("btw_tool_files_write_text_file() works", {
   expect_null(res_write_data@extra$previous_content, NULL)
 
   expect_equal(
-    readLines("test.txt"),
+    read_lines("test.txt"),
     c("Hello", "World!")
   )
 
   # Test overwriting
   res_write_data2 <- btw_tool_files_write_text_file("test.txt", "New content")
   expect_equal(
-    readLines("test.txt"),
+    read_file("test.txt"),
     "New content"
   )
 

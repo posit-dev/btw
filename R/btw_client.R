@@ -343,7 +343,7 @@ read_single_btw_file <- function(path) {
 
   read_without_yaml <- function(path) {
     pyfm <- asNamespace("rmarkdown")[["partition_yaml_front_matter"]]
-    pyfm(readLines(path, warn = FALSE))$body
+    pyfm(read_lines(path))$body
   }
 
   btw_system_prompt <- read_without_yaml(path)
@@ -416,8 +416,7 @@ read_llms_txt <- function(path = NULL) {
     return(NULL)
   }
 
-  llms_txt <- readLines(path, warn = FALSE)
-  llms_txt <- paste(llms_txt, collapse = "\n")
+  llms_txt <- read_file(path)
   llms_txt <- trimws(llms_txt)
 
   if (nzchar(llms_txt)) llms_txt else NULL

@@ -188,7 +188,7 @@ btw_tool_files_read_text_file_impl <- function(
     )
   }
 
-  contents <- readLines(path, warn = FALSE, n = line_end)
+  contents <- read_lines(path, n = line_end)
   contents <- contents[seq(max(line_start, 1), min(line_end, length(contents)))]
 
   value <- md_code_block(fs::path_ext(path), contents)
@@ -452,11 +452,9 @@ btw_tool_files_write_text_file_impl <- function(path, content) {
     fs::dir_create(dir_path, recurse = TRUE)
   }
 
-  previous_content <- if (fs::file_exists(path)) {
-    paste(readLines(path, warn = FALSE), collapse = "\n")
-  }
+  previous_content <- if (fs::file_exists(path)) read_file(path)
 
-  writeLines(content, path)
+  write_file(content, path)
 
   BtwWriteFileToolResult(
     "Success",
@@ -504,8 +502,8 @@ S7::method(contents_shinychat, BtwWriteFileToolResult) <- function(content) {
   path_old <- fs::path(dir, sprintf("%s", path_file), ext = path_ext)
   path_new <- fs::path(dir, sprintf("%s.new", path_file), ext = path_ext)
 
-  writeLines(old %||% "", path_old)
-  writeLines(new %||% "", path_new)
+  write_file(old %||% "", path_old)
+  write_file(new %||% "", path_new)
 
   res$value <- diffviewer::visual_diff(path_old, path_new)
   res$value_type <- "html"

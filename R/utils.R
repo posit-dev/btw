@@ -9,13 +9,13 @@ pandoc_convert <- function(path, ..., from = "html", to = "markdown") {
     ...
   )
 
-  readLines(tmp_file)
+  read_lines(tmp_file)
 }
 
 pandoc_convert_text <- function(text, ..., from = "html", to = "markdown") {
   map_chr(text, function(x) {
     tmp_input <- withr::local_tempfile()
-    writeLines(x, tmp_input)
+    write_file(x, tmp_input)
     paste(pandoc_convert(tmp_input, from = from, to = to, ...), collapse = "\n")
   })
 }
@@ -33,7 +33,7 @@ pandoc_html_simplify <- function(
   html <- remove_base64_images(html)
 
   tmp_input <- withr::local_tempfile()
-  writeLines(html, tmp_input)
+  write_lines(html, tmp_input)
   pandoc_convert(tmp_input, from = "html", to = to, ...)
 }
 

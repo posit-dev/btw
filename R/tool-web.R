@@ -101,10 +101,11 @@ read_url_main_content <- function(url, timeout = 10) {
 
   wait_for_network_idle(b, timeout = timeout)
 
-  conversion_script <- paste(
-    readLines(system.file("js", "clean-url.js", package = "btw")),
-    collapse = "\n"
-  )
+  conversion_script <- read_file(system.file(
+    "js",
+    "clean-url.js",
+    package = "btw"
+  ))
 
   result <- b$Runtime$evaluate(conversion_script, returnByValue = TRUE)
 
