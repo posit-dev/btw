@@ -26,14 +26,18 @@ test_that("btw() works with vars that return characters of the same name", {
 })
 
 test_that("btw() allows injection", {
+  local_mocked_bindings(
+    btw_this_package_braces = function(x) x
+  )
+
   expect_equal(
-    format(btw(!!sprintf("{%s}", "tibble"))),
-    format(btw("{tibble}"))
+    btw(!!sprintf("{%s}", "tibble")),
+    btw("{tibble}")
   )
 
   x <- "{tibble}"
   expect_equal(
-    format(btw({{ x }})),
-    format(btw("{tibble}"))
+    btw({{ x }}),
+    btw("{tibble}")
   )
 })
