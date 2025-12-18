@@ -309,11 +309,14 @@ btw_coverage_file <- function(path = ".", filename) {
     if (length(result_list[[func]]) > MAX_DISPLAY) {
       n_remaining <- length(result_list[[func]]) - MAX_DISPLAY
       ranges_str <- paste0(
-        paste(head(result_list[[func]], MAX_DISPLAY - 5), collapse = ", "),
+        paste(
+          utils::head(result_list[[func]], MAX_DISPLAY - 5),
+          collapse = ", "
+        ),
         ", [... ",
         n_remaining,
         " more ...], ",
-        paste(tail(result_list[[func]], 5), collapse = ", ")
+        paste(utils::tail(result_list[[func]], 5), collapse = ", ")
       )
     } else {
       ranges_str <- paste(result_list[[func]], collapse = ", ")
