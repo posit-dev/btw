@@ -32,6 +32,10 @@
   --bs-modal-margin: min(2rem, 10%);
 }
 
+.btw-tool-result-write-file > .card > .card-body {
+  padding: 0;
+}
+
 .btw-in-ide .btw-open-file.btn {
   --bs-btn-hover-color: var(--bs-emphasis-color);
   --_icon-size: var(--shiny-tool-card-icon-size, 16px);

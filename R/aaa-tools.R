@@ -21,3 +21,9 @@
 
   invisible(tool)
 }
+
+contents_shinychat <- S7::new_external_generic(
+  package = "shinychat",
+  name = "contents_shinychat",
+  dispatch_args = "content"
+)

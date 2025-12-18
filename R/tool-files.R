@@ -479,6 +479,40 @@ BtwWriteFileToolResult <- S7::new_class(
   parent = BtwToolResult
 )
 
+S7::method(contents_shinychat, BtwWriteFileToolResult) <- function(content) {
+  res <- shinychat::contents_shinychat(
+    S7::super(content, ellmer::ContentToolResult)
+  )
+
+  if (!is_installed("diffviewer")) {
+    cli::cli_warn(
+      "Install the {.pkg diffviewer} package for rich file diffs in {.fn btw::btw_app}: {.run install.packages('diffviewer')}",
+      call = quote(btw_tool_files_write_text_file),
+      .frequency = "once",
+      .frequency_id = "btw-tool-files-write-text-file-diffviewer"
+    )
+    return(res)
+  }
+
+  new <- content@extra$content
+  old <- content@extra$previous_content
+
+  dir <- withr::local_tempdir()
+  path_ext <- fs::path_ext(content@extra$path)
+  path_file <- fs::path_ext_remove(fs::path_file(content@extra$path))
+
+  path_old <- fs::path(dir, sprintf("%s", path_file), ext = path_ext)
+  path_new <- fs::path(dir, sprintf("%s.new", path_file), ext = path_ext)
+
+  writeLines(old %||% "", path_old)
+  writeLines(new %||% "", path_new)
+
+  res$value <- diffviewer::visual_diff(path_old, path_new)
+  res$value_type <- "html"
+  res$class <- "btw-tool-result-write-file"
+  res
+}
+
 .btw_add_to_tools(
   name = "btw_tool_files_write_text_file",
   group = "files",
