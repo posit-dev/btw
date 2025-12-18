@@ -110,15 +110,16 @@ test_that("use_btw_md() adds to .Rbuildignore in R package", {
   # Create a package structure
   writeLines("Package: testpkg", "DESCRIPTION")
   usethis::ui_silence({
-    usethis::local_project(wd)
-    suppressMessages(path <- use_btw_md("project"))
-  })
+    usethis::with_project(wd, {
+      suppressMessages(path <- use_btw_md("project"))
 
-  # Check .Rbuildignore was created and contains btw.md
-  if (fs::file_exists(".Rbuildignore")) {
-    buildignore <- readLines(".Rbuildignore")
-    expect_match(buildignore, "btw\\.md", fixed = TRUE)
-  }
+      # Check .Rbuildignore was created and contains btw.md
+      if (fs::file_exists(".Rbuildignore")) {
+        buildignore <- readLines(".Rbuildignore")
+        expect_match(buildignore, "btw\\.md", fixed = TRUE)
+      }
+    })
+  })
 })
 
 test_that("use_btw_md() handles .Rbuildignore even when file exists", {
@@ -135,14 +136,15 @@ test_that("use_btw_md() handles .Rbuildignore even when file exists", {
 
   # Should still add to .Rbuildignore
   usethis::ui_silence({
-    usethis::local_project(wd)
-    suppressMessages(use_btw_md("project"))
-  })
+    usethis::with_project(wd, {
+      suppressMessages(use_btw_md("project"))
 
-  if (fs::file_exists(".Rbuildignore")) {
-    buildignore <- readLines(".Rbuildignore")
-    expect_match(buildignore, "btw\\.md", fixed = TRUE)
-  }
+      if (fs::file_exists(".Rbuildignore")) {
+        buildignore <- readLines(".Rbuildignore")
+        expect_match(buildignore, "btw\\.md", fixed = TRUE)
+      }
+    })
+  })
 })
 
 test_that("edit_btw_md() errors if file doesn't exist", {
