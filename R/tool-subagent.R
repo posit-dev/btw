@@ -187,17 +187,9 @@ btw_tool_subagent_impl <- function(
 
   last_turn <- chat$last_turn()
   message_text <- if (is.null(last_turn) || length(last_turn@contents) == 0) {
-    ""
+    "(The subagent completed successfully but returned no message.)"
   } else {
-    text_contents <- keep(
-      last_turn@contents,
-      function(x) S7::S7_inherits(x, ellmer::ContentText)
-    )
-    if (length(text_contents) > 0) {
-      paste(map_chr(text_contents, function(x) x@text), collapse = "\n\n")
-    } else {
-      ""
-    }
+    ellmer::contents_markdown(last_turn)
   }
 
   # We could update session metadata here, but `chat` is stateful
