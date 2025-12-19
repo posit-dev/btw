@@ -195,20 +195,20 @@ test_that("btw_subagent_client_config() uses default tools", {
     btw.tools = NULL
   )
 
-  config <- btw_subagent_client_config()
+  chat <- btw_subagent_client_config()
 
-  expect_type(config$tools, "list")
-  expect_true(length(config$tools) > 0)
-  expect_true(inherits(config$client, "Chat"))
+  expect_true(inherits(chat, "Chat"))
+  # Chat should have tools configured
+  expect_true(length(chat$get_tools()) > 0)
 })
 
 test_that("btw_subagent_client_config() respects tool filtering", {
   # Test with character vector
-  config <- btw_subagent_client_config(tools = c("docs"))
+  chat <- btw_subagent_client_config(tools = c("docs"))
 
-  expect_type(config$tools, "list")
+  expect_true(inherits(chat, "Chat"))
   # Should have some docs tools
-  expect_true(length(config$tools) > 0)
+  expect_true(length(chat$get_tools()) > 0)
 })
 
 test_that("btw_subagent_client_config() follows client precedence", {
@@ -220,13 +220,13 @@ test_that("btw_subagent_client_config() follows client precedence", {
     btw.client = "anthropic/claude-opus-4-20241120"
   )
 
-  config <- btw_subagent_client_config()
-  expect_true(inherits(config$client, "Chat"))
+  chat <- btw_subagent_client_config()
+  expect_true(inherits(chat, "Chat"))
 
   # Test argument precedence
   chat_obj <- ellmer::chat_anthropic()
-  config2 <- btw_subagent_client_config(client = chat_obj)
-  expect_identical(config2$client, chat_obj)
+  chat2 <- btw_subagent_client_config(client = chat_obj)
+  expect_identical(chat2, chat_obj)
 })
 
 test_that("btw_subagent_client_config() clones clients from options", {
@@ -236,12 +236,12 @@ test_that("btw_subagent_client_config() clones clients from options", {
 
   withr::local_options(btw.subagent.client = chat_obj)
 
-  config1 <- btw_subagent_client_config()
-  config2 <- btw_subagent_client_config()
+  chat1 <- btw_subagent_client_config()
+  chat2 <- btw_subagent_client_config()
 
   # Should be different objects (cloned)
-  expect_false(identical(config1$client, config2$client))
-  expect_false(identical(config1$client, chat_obj))
+  expect_false(identical(chat1, chat2))
+  expect_false(identical(chat1, chat_obj))
 })
 
 # ---- Tool Description ----
@@ -250,7 +250,7 @@ test_that("build_subagent_description() includes tool groups", {
   desc <- build_subagent_description()
 
   expect_type(desc, "character")
-  expect_match(desc, "Delegate a complex task")
+  expect_match(desc, "Delegate a task")
   expect_match(desc, "Available tool groups")
 
   # Should mention at least one tool group (e.g., docs, env, etc.)
@@ -263,7 +263,7 @@ test_that("build_subagent_description() includes basic text", {
   desc <- build_subagent_description()
 
   expect_type(desc, "character")
-  expect_match(desc, "Delegate a complex task")
+  expect_match(desc, "Delegate a task")
   expect_match(desc, "subagent")
 })
 
@@ -281,7 +281,7 @@ test_that("btw_tool_subagent is registered in btw_tools", {
   # Check properties
   expect_equal(subagent_tool@name, "btw_tool_subagent")
   expect_type(subagent_tool@description, "character")
-  expect_match(subagent_tool@description, "Delegate a complex task")
+  expect_match(subagent_tool@description, "Delegate a task")
 
   # Check it has arguments
   expect_true(length(subagent_tool@arguments) > 0)

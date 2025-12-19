@@ -67,19 +67,8 @@ btw_tool_subagent_impl <- function(
       ))
     }
   } else {
-    # Create new session
     session_id <- generate_session_id()
-
-    # Configure client
-    config <- btw_subagent_client_config(client = NULL, tools = tools)
-    chat <- config$client
-
-    # Set system prompt
-    system_prompt <- btw_prompt("btw-subagent.md")
-    chat$set_system_prompt(system_prompt)
-
-    # Set tools
-    chat$set_tools(config$tools)
+    chat <- btw_subagent_client_config(client = NULL, tools = tools)
 
     # Store new session
     store_session(session_id, chat)
@@ -122,48 +111,43 @@ btw_tool_subagent_impl <- function(
 
 #' Configure subagent client
 #'
-#' Creates and configures an ellmer Chat client for a subagent session. Follows
-#' the precedence: argument > btw.subagent.* option > btw.* option > default
+#' Creates and configures an ellmer Chat client for a subagent session. The
+#' returned chat object has the system prompt and tools already attached.
+#' Follows the precedence: argument > btw.subagent.* option > btw.* option > default
 #'
 #' @param client Optional Chat object or provider/model string
 #' @param tools Optional character vector or list of tool definitions
-#' @return A list with `client` and `tools` elements
+#' @return A configured Chat object with system prompt and tools attached
 #'
 #' @noRd
 btw_subagent_client_config <- function(client = NULL, tools = NULL) {
-  config <- list()
-
   # Configure tools
-  config$tools <-
+  configured_tools <-
     tools %||%
     getOption("btw.subagent.tools") %||%
     getOption("btw.tools") %||%
     btw_tools()
 
-  config$tools <- flatten_and_check_tools(config$tools)
+  configured_tools <- flatten_and_check_tools(configured_tools)
 
   # Configure client
   # Priority: argument > btw.subagent.client > btw.client > default
-  if (!is.null(client)) {
-    config$client <- as_ellmer_client(client)$clone()
-    return(config)
+  chat <- if (!is.null(client)) {
+    as_ellmer_client(client)$clone()
+  } else if (!is.null(subagent_client <- getOption("btw.subagent.client"))) {
+    as_ellmer_client(subagent_client)$clone()
+  } else if (!is.null(default_client <- getOption("btw.client"))) {
+    as_ellmer_client(default_client)$clone()
+  } else {
+    btw_default_chat_client()
   }
 
-  subagent_client <- getOption("btw.subagent.client")
-  if (!is.null(subagent_client)) {
-    config$client <- as_ellmer_client(subagent_client)$clone()
-    return(config)
-  }
+  # Set system prompt and tools
+  system_prompt <- btw_prompt("btw-subagent.md")
+  chat$set_system_prompt(system_prompt)
+  chat$set_tools(configured_tools)
 
-  default_client <- getOption("btw.client")
-  if (!is.null(default_client)) {
-    config$client <- as_ellmer_client(default_client)$clone()
-    return(config)
-  }
-
-  # Fall back to default Anthropic client
-  config$client <- btw_default_chat_client()
-  config
+  chat
 }
 
 #' Build dynamic tool description for btw_tool_subagent
@@ -181,28 +165,34 @@ build_subagent_description <- function() {
   # Build tool groups summary
   if (length(tool_groups) > 0) {
     tool_summary <- paste(
-      "Available tool groups:",
+      "\n\nAvailable tool groups:",
       paste(tool_groups, collapse = ", ")
     )
   } else {
-    tool_summary <- "No tool groups currently registered."
+    tool_summary <- "\n\nNo tool groups currently registered."
   }
 
-  base_desc <- "Delegate a complex task to a specialized subagent with its own LLM chat session.
+  base_desc <- "Delegate a task to a specialized assistant that can work independently with its own conversation thread.
 
-Use this tool when you need to:
-- Break down a complex task into a focused subtask
-- Maintain a separate conversation context for a specific problem
-- Resume a previous subagent session to continue work
+WHEN TO USE:
+- For complex, multi-step tasks that would benefit from focused attention
+- When you need to isolate work on a specific subtask
+- To resume previous work by providing the session_id from an earlier call
+- When you can handle the task yourself with available tools, do so directly instead
 
-The subagent has access to tools (unless you restrict them with the 'tools' parameter).
+CRITICAL - TOOL SELECTION:
+You MUST specify which tools the subagent needs using the 'tools' parameter. Choosing the right tools is essential for success:
+- Analyze the task requirements carefully
+- Select only the specific tools needed (e.g., ['btw_tool_files_read_text_file', 'btw_tool_files_write_text_file'] for file tasks)
+- If uncertain which tools are needed, include relevant tool groups
+- The subagent can ONLY use the tools you provide - wrong tools = task failure
 
-IMPORTANT:
-- The subagent's final response will be returned as plain text
-- Store the session_id if you need to continue the conversation later
-- Each subagent session is independent and maintains its own context
-
-"
+BEST PRACTICES:
+- Write clear, complete task descriptions in the prompt
+- Specify expected output format if important
+- Store the returned session_id if you need to continue the work later
+- The subagent returns its final answer as plain text
+- Each subagent session is independent with its own context"
 
   paste0(base_desc, tool_summary)
 }
@@ -230,15 +220,15 @@ IMPORTANT:
       ),
       arguments = list(
         prompt = ellmer::type_string(
-          "The task or question to send to the subagent. Be specific and clear about what you need."
+          "The complete task description for the subagent. Be specific and clear about requirements and expected output."
         ),
         tools = ellmer::type_array(
-          "Optional: specific tool names to make available to the subagent. If omitted, default tools are provided. Use this to limit the subagent's scope.",
+          "REQUIRED (in practice): Array of specific tool names to provide to the subagent (e.g., ['btw_tool_files_read_text_file', 'btw_tool_code_search']). Choose tools that match the task requirements. The subagent can ONLY use these tools.",
           items = ellmer::type_string(),
           required = FALSE
         ),
         session_id = ellmer::type_string(
-          "Optional: A session ID from a previous subagent call to continue that conversation. Omit to start a new session.",
+          "Optional: session_id from a previous call to continue that conversation. Omit to start a new session.",
           required = FALSE
         )
       )
