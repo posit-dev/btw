@@ -134,6 +134,7 @@ wrap_with_intent <- function(tool) {
 tool_group_icon <- function(group, default = NULL) {
   switch(
     group,
+    "agent" = tool_icon("robot"),
     "docs" = tool_icon("dictionary"),
     "env" = tool_icon("source-environment"),
     "eval" = tool_icon("play-circle"),

@@ -40,11 +40,12 @@ alternatively in the shorter form \code{tools = "docs_help_page"}. Finally,
 set \code{tools = FALSE} to skip registering \pkg{btw} tools with the chat
 client.}
 
-\item{path_btw}{A path to a \code{btw.md} or \code{AGENTS.md} project context file. If
-\code{NULL}, btw will find a project-specific \code{btw.md} or \code{AGENTS.md} file in
-the parents of the current working directory, with fallback to user-level
-\code{btw.md} if no project file is found. Set \code{path_btw = FALSE} to
-create a chat client without using a \code{btw.md} file.}
+\item{path_btw}{A path to a \code{btw.md}, \code{AGENTS.md}, or \code{CLAUDE.md} project
+context file. If \code{NULL}, btw will find a project-specific \code{btw.md},
+\code{AGENTS.md}, or \code{CLAUDE.md} file in the parents of the current working
+directory, with fallback to user-level \code{btw.md} if no project file is
+found. Set \code{path_btw = FALSE} to create a chat client without using a
+\code{btw.md} file.}
 
 \item{path_llms_txt}{A path to an \code{llms.txt} file containing context about
 the current project. By default, btw will look for an \code{llms.txt} file in
@@ -67,10 +68,11 @@ local workspace.
 \subsection{Project Context}{
 
 You can keep track of project-specific rules, guidance and context by adding
-a \code{btw.md} file or \href{https://agents.md/}{\code{AGENTS.md}} in your project
-directory. See \code{\link[=use_btw_md]{use_btw_md()}} for help creating a \code{btw.md} file in your
-project, or use \code{path_btw} to tell \code{btw_client()} to use a specific context
-file.
+a \code{btw.md} file, \href{https://agents.md/}{\code{AGENTS.md}}, or \code{CLAUDE.md} in your
+project directory. See \code{\link[=use_btw_md]{use_btw_md()}} for help creating a \code{btw.md} file in
+your project, or use \code{path_btw} to tell \code{btw_client()} to use a specific
+context file. Note that \code{CLAUDE.md} files will have their YAML frontmatter
+stripped but not used for configuration.
 
 \code{btw_client()} will also include context from an \code{llms.txt} file in the
 system prompt, if one is found in your project directory or as specified by

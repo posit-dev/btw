@@ -111,6 +111,7 @@ Collate:
     'tool-search-packages.R'
     'tool-session-info.R'
     'tool-session-package-installed.R'
+    'tool-subagent.R'
     'tool-web.R'
     'tools.R'
     'utils-ellmer.R'

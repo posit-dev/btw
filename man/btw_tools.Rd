@@ -30,6 +30,13 @@ The \code{btw_tools()} function provides a list of tools that can be registered
 with an ellmer chat via \code{chat$register_tools()} that allow the chat to
 interface with your computational environment. Chats returned by
 this function have access to the tools:
+\subsection{Group: agent}{\tabular{ll}{
+   Name \tab Description \cr
+   \code{\link[=btw_tool_subagent]{btw_tool_subagent()}} \tab Delegate a complex task to a specialized subagent with its own LLM chat session. \cr
+}
+
+}
+
 \subsection{Group: docs}{\tabular{ll}{
    Name \tab Description \cr
    \code{\link[=btw_tool_docs_available_vignettes]{btw_tool_docs_available_vignettes()}} \tab List available vignettes for an R package. \cr

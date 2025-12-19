@@ -666,6 +666,7 @@ app_tool_group_choice_input <- function(
 
   label_text <- switch(
     group,
+    "agent" = shiny::span(label_icon, "Agents"),
     "docs" = shiny::span(label_icon, "Documentation"),
     "env" = shiny::span(label_icon, "Environment"),
     "eval" = shiny::span(label_icon, "Code Evaluation"),
