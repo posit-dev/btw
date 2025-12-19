@@ -253,8 +253,13 @@ btw_subagent_client_config <- function(client = NULL, tools = NULL) {
   configured_tools <-
     tools %||%
     getOption("btw.subagent.tools_default") %||%
-    getOption("btw.tools") %||%
-    btw_tools()
+    getOption("btw.tools")
+
+  if (is.null(configured_tools)) {
+    configured_tools <- keep(btw_tools(), function(t) {
+      t@name != "btw_tool_subagent"
+    })
+  }
 
   configured_tools <- flatten_and_check_tools(configured_tools)
 
@@ -287,6 +292,19 @@ btw_subagent_client_config <- function(client = NULL, tools = NULL) {
     })
   }
 
+  # Never allow subagents to create subagents (prevents infinite recursion)
+  # This filtering happens after all tool resolution and allowed-list filtering
+  # to ensure the subagent tool is always removed, regardless of how tools were specified
+  configured_tools <- keep(configured_tools, function(tool) {
+    if (tool@name != "btw_tool_subagent") {
+      return(TRUE)
+    }
+    cli::cli_warn(
+      "Removing {.code btw_tool_subagent} from subagent toolset to prevent recursion."
+    )
+    FALSE
+  })
+
   chat <- if (!is.null(client)) {
     as_ellmer_client(client)$clone()
   } else if (!is.null(subagent_client <- getOption("btw.subagent.client"))) {
@@ -313,7 +331,7 @@ btw_subagent_client_config <- function(client = NULL, tools = NULL) {
 #' @noRd
 build_subagent_description <- function() {
   # Get unique tool groups from registered tools
-  tool_groups <- unique(map_chr(.btw_tools, function(x) x$group))
+  tool_groups <- unique(map_chr(btw_tools(), function(x) x$group))
   tool_groups <- sort(tool_groups)
 
   # Build tool groups summary
