@@ -35,13 +35,13 @@ A \code{BtwSubagentResult} object (inherits from \code{BtwToolResult}) with:
 }
 \description{
 \code{btw_tool_subagent()} is a btw tool that enables hierarchical agent
-workflows. When used by an LLM assistant (like Claude), this tool allows the
-orchestrating agent to delegate complex tasks to specialized subagents, each
-with their own isolated conversation thread and tool access.
+workflows. When used by an LLM assistant (like \code{\link[=btw_app]{btw_app()}}, \code{\link[=btw_client]{btw_client()}},
+or third-party tools like Claude Code), this tool allows the orchestrating
+agent to delegate complex tasks to specialized subagents, each with their own
+isolated conversation thread and tool access.
 
 This function is primarily intended to be called by LLM assistants via tool
-use, not directly by end users. However, it can be useful for testing and
-debugging hierarchical workflows in R.
+use, not directly by end users.
 \subsection{How Subagents Work}{
 
 When an LLM calls this tool:

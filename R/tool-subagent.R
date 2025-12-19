@@ -10,13 +10,13 @@ BtwSubagentResult <- S7::new_class(
 #'
 #' @description
 #' `btw_tool_subagent()` is a btw tool that enables hierarchical agent
-#' workflows. When used by an LLM assistant (like Claude), this tool allows the
-#' orchestrating agent to delegate complex tasks to specialized subagents, each
-#' with their own isolated conversation thread and tool access.
+#' workflows. When used by an LLM assistant (like [btw_app()], [btw_client()],
+#' or third-party tools like Claude Code), this tool allows the orchestrating
+#' agent to delegate complex tasks to specialized subagents, each with their own
+#' isolated conversation thread and tool access.
 #'
 #' This function is primarily intended to be called by LLM assistants via tool
-#' use, not directly by end users. However, it can be useful for testing and
-#' debugging hierarchical workflows in R.
+#' use, not directly by end users.
 #'
 #' ## How Subagents Work
 #'
