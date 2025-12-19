@@ -38,12 +38,10 @@ btw_tool_subagent <- function(
 btw_tool_subagent_impl <- function(
   prompt,
   tools = NULL,
-  session_id = NULL,
-  max_turns = getOption("btw.subagent.max_turns", 10)
+  session_id = NULL
 ) {
   check_string(prompt)
   check_string(session_id, allow_null = TRUE)
-  check_number_whole(max_turns, min = 1, allow_infinite = FALSE)
 
   # Resume existing session or create new one
   if (!is.null(session_id)) {
@@ -59,13 +57,8 @@ btw_tool_subagent_impl <- function(
 
     chat <- session$chat
 
-    # Warn if approaching max turns
-    if (session$turns >= max_turns) {
-      cli::cli_warn(c(
-        "Session {.val {session_id}} has reached {session$turns} turns (threshold: {max_turns}).",
-        "i" = "Consider starting a new session or increasing {.code btw.subagent.max_turns}."
-      ))
-    }
+    # TODO: Add turn limit tracking. Currently we can't limit turns within a subagent
+    # because the chat$chat() method doesn't expose turn count control.
   } else {
     session_id <- generate_session_id()
     chat <- btw_subagent_client_config(client = NULL, tools = tools)
@@ -102,8 +95,7 @@ btw_tool_subagent_impl <- function(
     session_id = session_id,
     extra = list(
       data = list(
-        chat = chat,
-        turns = retrieve_session(session_id)$turns
+        chat = chat
       )
     )
   )
@@ -343,7 +335,7 @@ retrieve_session <- function(session_id) {
 #' Returns a list with information about all currently active subagent
 #' sessions. Useful for debugging and monitoring.
 #'
-#' @return A list of sessions with: id, chat, created, last_used, turns
+#' @return A list of sessions with: id, chat, created
 #'
 #' @noRd
 list_subagent_sessions <- function() {

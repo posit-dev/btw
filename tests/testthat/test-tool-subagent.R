@@ -64,10 +64,9 @@ test_that("store_session() and retrieve_session() work", {
   expect_equal(session$id, session_id)
   expect_equal(session$chat, chat)
   expect_s3_class(session$created, "POSIXct")
-  
-  # Initial session should NOT have last_used or turns fields
+
+  # Initial session should NOT have last_used field
   expect_null(session$last_used)
-  expect_null(session$turns)
 
   # Clean up
   clear_all_subagent_sessions()
