@@ -331,7 +331,7 @@ btw_subagent_client_config <- function(client = NULL, tools = NULL) {
 #' @noRd
 build_subagent_description <- function() {
   # Get unique tool groups from registered tools
-  tool_groups <- unique(map_chr(btw_tools(), function(x) x$group))
+  tool_groups <- unique(map_chr(.btw_tools, function(x) x$group))
   tool_groups <- sort(tool_groups)
 
   # Build tool groups summary
@@ -495,7 +495,7 @@ BEST PRACTICES:
 #' currently active sessions.
 #'
 #' @return A character string containing the generated session ID
-#' @keywords internal
+#' @noRd
 generate_session_id <- function() {
   # Try up to 100 times to generate a unique ID
   for (i in seq_len(100)) {
@@ -554,7 +554,7 @@ store_session <- function(session_id, chat, metadata = list()) {
 #' @param session_id Character string with the session identifier
 #' @return A list containing the session data, or NULL if not found
 #'
-#' @keywords noRd
+#' @noRd
 retrieve_session <- function(session_id) {
   check_string(session_id)
 
