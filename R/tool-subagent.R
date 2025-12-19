@@ -1,10 +1,3 @@
-# Subagent Tool Implementation
-#
-# This file implements the btw_tool_subagent() tool that enables hierarchical
-# agent workflows by allowing an orchestrating LLM agent to delegate tasks to
-# specialized subagents with their own LLM chat sessions.
-
-# Result class for subagent tool
 BtwSubagentResult <- S7::new_class(
   "BtwSubagentResult",
   parent = BtwToolResult,
@@ -13,19 +6,112 @@ BtwSubagentResult <- S7::new_class(
   )
 )
 
-#' User-facing subagent tool function
+#' Tool: Subagent
 #'
-#' This is a stub function for documentation purposes. The actual implementation
-#' is in btw_tool_subagent_impl().
+#' @description
+#' `btw_tool_subagent()` is a btw tool that enables hierarchical agent
+#' workflows. When used by an LLM assistant (like Claude), this tool allows the
+#' orchestrating agent to delegate complex tasks to specialized subagents, each
+#' with their own isolated conversation thread and tool access.
 #'
-#' @param prompt Character string with the task or question for the subagent
-#' @param tools Optional character vector of tool names to make available to
-#'   the subagent
-#' @param session_id Optional session ID from a previous call to resume that
-#'   conversation
-#' @param _intent Intent parameter added by ellmer framework
-#' @return A BtwSubagentResult object
+#' This function is primarily intended to be called by LLM assistants via tool
+#' use, not directly by end users. However, it can be useful for testing and
+#' debugging hierarchical workflows in R.
 #'
+#' ## How Subagents Work
+#'
+#' When an LLM calls this tool:
+#'
+#' 1. A new chat session is created (or an existing one is resumed)
+#' 2. The subagent receives the `prompt` and begins working with only the tools
+#'    specified in the `tools` parameter
+#' 3. The subagent works independently, making tool calls until it completes
+#'    the task
+#' 4. The function returns the subagent's final message text and a `session_id`
+#' 5. The orchestrating agent can resume the session later by providing the
+#'    `session_id`
+#'
+#' Each subagent maintains its own conversation context, separate from the
+#' orchestrating agent's context. Subagent sessions persist for the duration of
+#' the R session.
+#'
+#' ## Tool Access
+#'
+#' The orchestrating agent must specify which tools the subagent can use via
+#' the `tools` parameter. The subagent is restricted to only these tools - it
+#' cannot access tools from the parent session. Tools can be specified by:
+#'
+#' * **Specific tool names**: `c("btw_tool_files_read_text_file",
+#'   "btw_tool_files_write_text_file")`
+#' * **Tool groups**: `"files"` includes all file-related tools
+#' * **NULL** (default): Uses the default tool set from options or
+#'   `btw_tools()`
+#'
+#' ## Configuration Options
+#'
+#' Subagent behavior can be configured via R options:
+#'
+#' * `btw.subagent.client`: The ellmer::Chat client or `provider/model` string
+#'   to use for subagents. If not set, falls back to `btw.client`, then to the
+#'   default Anthropic client.
+#'
+#' * `btw.subagent.tools`: Default tools to make available to subagents. If not
+#'   set, falls back to `btw.tools`, then to all btw tools from `btw_tools()`.
+#'
+#' These options follow the precedence: function argument > `btw.subagent.*`
+#' option > `btw.*` option > default value.
+#'
+#' @examples
+#' \dontrun{
+#' # Typically used by LLMs via tool use, but can be called directly for testing
+#' result <- btw_tool_subagent(
+#'   prompt = "List all R files in the current directory",
+#'   tools = c("btw_tool_files_list_files")
+#' )
+#'
+#' # Access the subagent's response and session ID
+#' cat(result@value)
+#' session_id <- result@session_id
+#'
+#' # Resume the same session with a follow-up
+#' result2 <- btw_tool_subagent(
+#'   prompt = "Now read the first file you found",
+#'   tools = c("btw_tool_files_read_text_file"),
+#'   session_id = session_id
+#' )
+#'
+#' # Configure the subagent client via options
+#' withr::local_options(list(
+#'   btw.subagent.client = "anthropic/claude-sonnet-4-20250514",
+#'   btw.subagent.tools = "files"  # Default to file tools only
+#' ))
+#'
+#' result3 <- btw_tool_subagent(
+#'   prompt = "Find all TODO comments in R files"
+#' )
+#' }
+#'
+#' @param prompt Character string with the task description for the subagent.
+#'   The subagent will work on this task using only the tools specified in
+#'   `tools`. The subagent does not have access to the orchestrating agent's
+#'   conversation history.
+#' @param tools Optional character vector of tool names or tool groups that the
+#'   subagent is allowed to use. Can be specific tool names (e.g.,
+#'   `"btw_tool_files_read_text_file"`), tool group names (e.g., `"files"`), or
+#'   `NULL` to use the default tools from `btw.subagent.tools` or `btw_tools()`.
+#' @param session_id Optional character string with a session ID from a
+#'   previous call. When provided, resumes the existing subagent conversation
+#'   instead of starting a new one. Session IDs are returned in the result and
+#'   have the format "adjective_noun" (e.g., "swift_falcon").
+#' @param _intent Optional string describing the intent of the tool call. Added
+#'   automatically by the ellmer framework when tools are called by LLMs.
+#'
+#' @return A `BtwSubagentResult` object (inherits from `BtwToolResult`) with:
+#' * `value`: The final message text from the subagent
+#' * `session_id`: The session identifier for resuming this conversation
+#'
+#' @seealso [btw_tools()] for available tools and tool groups
+#' @family agent tools
 #' @export
 btw_tool_subagent <- function(
   prompt,
@@ -43,7 +129,6 @@ btw_tool_subagent_impl <- function(
   check_string(prompt)
   check_string(session_id, allow_null = TRUE)
 
-  # Resume existing session or create new one
   if (!is.null(session_id)) {
     session <- retrieve_session(session_id)
 
@@ -62,20 +147,15 @@ btw_tool_subagent_impl <- function(
   } else {
     session_id <- generate_session_id()
     chat <- btw_subagent_client_config(client = NULL, tools = tools)
-
-    # Store new session
     store_session(session_id, chat)
   }
 
-  # Send prompt to subagent
   response <- chat$chat(prompt)
 
-  # Extract final message text
   last_turn <- chat$last_turn()
   message_text <- if (is.null(last_turn) || length(last_turn@contents) == 0) {
     ""
   } else {
-    # Get text content from the last assistant message
     text_contents <- keep(
       last_turn@contents,
       function(x) S7::S7_inherits(x, ellmer::ContentText)
@@ -89,7 +169,6 @@ btw_tool_subagent_impl <- function(
 
   # We could update session metadata here, but `chat` is stateful
 
-  # Return result
   BtwSubagentResult(
     value = message_text,
     session_id = session_id,
@@ -113,7 +192,6 @@ btw_tool_subagent_impl <- function(
 #'
 #' @noRd
 btw_subagent_client_config <- function(client = NULL, tools = NULL) {
-  # Configure tools
   configured_tools <-
     tools %||%
     getOption("btw.subagent.tools") %||%
@@ -122,8 +200,6 @@ btw_subagent_client_config <- function(client = NULL, tools = NULL) {
 
   configured_tools <- flatten_and_check_tools(configured_tools)
 
-  # Configure client
-  # Priority: argument > btw.subagent.client > btw.client > default
   chat <- if (!is.null(client)) {
     as_ellmer_client(client)$clone()
   } else if (!is.null(subagent_client <- getOption("btw.subagent.client"))) {
@@ -134,7 +210,6 @@ btw_subagent_client_config <- function(client = NULL, tools = NULL) {
     btw_default_chat_client()
   }
 
-  # Set system prompt and tools
   system_prompt <- btw_prompt("btw-subagent.md")
   chat$set_system_prompt(system_prompt)
   chat$set_tools(configured_tools)
@@ -228,33 +303,84 @@ BEST PRACTICES:
   }
 )
 
-# ----- Subagent session management -----
-# Subagent Session Management
-#
-# This file implements session storage and word-based ID generation for
-# hierarchical agent workflows. Subagent sessions persist for the duration
-# of the R session and are automatically cleaned up when the session ends.
-
-# Module-level environment for storing subagent chat sessions
 .btw_subagent_sessions <- new.env(parent = emptyenv())
 
-# Word lists for generating human-readable session IDs
-# fmt: skip
 .btw_adjectives <- c(
-  "agile", "bold", "bright", "calm", "clever", "daring", "eager", "elegant",
-  "fair", "fierce", "gentle", "happy", "jolly", "keen", "lively", "merry",
-  "nimble", "noble", "placid", "quick", "quiet", "rapid", "serene", "shy",
-  "silent", "smooth", "stable", "steady", "swift", "tranquil", "valiant",
-  "vibrant", "vigilant", "vivid", "warm", "wise", "witty", "zealous"
+  "agile",
+  "bold",
+  "bright",
+  "calm",
+  "clever",
+  "daring",
+  "eager",
+  "elegant",
+  "fair",
+  "fierce",
+  "gentle",
+  "happy",
+  "jolly",
+  "keen",
+  "lively",
+  "merry",
+  "nimble",
+  "noble",
+  "placid",
+  "quick",
+  "quiet",
+  "rapid",
+  "serene",
+  "shy",
+  "silent",
+  "smooth",
+  "stable",
+  "steady",
+  "swift",
+  "tranquil",
+  "valiant",
+  "vibrant",
+  "vigilant",
+  "vivid",
+  "warm",
+  "wise",
+  "witty",
+  "zealous"
 )
 
-# fmt: skip
 .btw_nouns <- c(
-  "aardvark", "badger", "beaver", "cheetah", "dolphin", "eagle", "falcon",
-  "gazelle", "hawk", "jaguar", "kangaroo", "leopard", "lynx", "meerkat",
-  "otter", "panther", "penguin", "puffin", "rabbit", "raven", "salmon",
-  "sparrow", "squirrel", "starling", "swift", "tiger", "turtle", "viper",
-  "walrus", "weasel", "whale", "wolf", "wombat", "zebra"
+  "aardvark",
+  "badger",
+  "beaver",
+  "cheetah",
+  "dolphin",
+  "eagle",
+  "falcon",
+  "gazelle",
+  "hawk",
+  "jaguar",
+  "kangaroo",
+  "leopard",
+  "lynx",
+  "meerkat",
+  "otter",
+  "panther",
+  "penguin",
+  "puffin",
+  "rabbit",
+  "raven",
+  "salmon",
+  "sparrow",
+  "squirrel",
+  "starling",
+  "swift",
+  "tiger",
+  "turtle",
+  "viper",
+  "walrus",
+  "weasel",
+  "whale",
+  "wolf",
+  "wombat",
+  "zebra"
 )
 
 #' Generate a word-based session ID
