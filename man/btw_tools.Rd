@@ -32,7 +32,7 @@ interface with your computational environment. Chats returned by
 this function have access to the tools:
 \subsection{Group: agent}{\tabular{ll}{
    Name \tab Description \cr
-   \code{\link[=btw_tool_subagent]{btw_tool_subagent()}} \tab Delegate a complex task to a specialized subagent with its own LLM chat session. \cr
+   \code{\link[=btw_tool_subagent]{btw_tool_subagent()}} \tab Delegate a task to a specialized assistant that can work independently with its own conversation thread. \cr
 }
 
 }

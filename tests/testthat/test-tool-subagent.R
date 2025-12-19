@@ -154,7 +154,7 @@ test_that("clear_all_subagent_sessions() returns 0 when no sessions", {
 
 test_that("btw_subagent_client_config() uses default tools", {
   withr::local_options(
-    btw.subagent.tools = NULL,
+    btw.subagent.tools_default = NULL,
     btw.tools = NULL
   )
 
@@ -243,4 +243,186 @@ test_that("BtwSubagentResult inherits from BtwToolResult", {
   expect_true(S7::S7_inherits(result, BtwToolResult))
   expect_equal(result@value, "test response")
   expect_equal(result@session_id, "test_id")
+})
+
+# Tests for new btw.subagent.tools_default and btw.subagent.tools_allowed options
+
+test_that("btw_subagent_client_config() uses tools_default when tools is NULL", {
+  withr::local_options(
+    btw.subagent.tools_default = c("docs"),
+    btw.tools = NULL
+  )
+
+  chat <- btw_subagent_client_config(tools = NULL)
+
+  expect_true(inherits(chat, "Chat"))
+  tool_names <- sapply(chat$get_tools(), function(t) t@name)
+  expect_true(all(grepl("^btw_tool_docs_", tool_names)))
+})
+
+test_that("btw_subagent_client_config() falls back through precedence chain", {
+  # Test fallback: tools_default -> btw.tools -> btw_tools()
+
+  # Test fallback to btw.tools
+  withr::local_options(
+    btw.subagent.tools_default = NULL,
+    btw.tools = c("search")
+  )
+
+  chat <- btw_subagent_client_config(tools = NULL)
+
+  tool_names <- sapply(chat$get_tools(), function(t) t@name)
+  expect_true(all(grepl("^btw_tool_search_", tool_names)))
+
+  # Test fallback to btw_tools()
+  withr::local_options(
+    btw.subagent.tools_default = NULL,
+    btw.tools = NULL
+  )
+
+  chat2 <- btw_subagent_client_config(tools = NULL)
+
+  tool_names2 <- sapply(chat2$get_tools(), function(t) t@name)
+  expect_true(length(tool_names2) > 0)  # Should get all btw_tools()
+})
+
+test_that("btw_subagent_client_config() filters tools with tools_allowed", {
+  withr::local_options(
+    btw.subagent.tools_allowed = c("docs"),
+    btw.subagent.tools_default = c("docs", "files")
+  )
+
+  chat <- btw_subagent_client_config(tools = NULL)
+
+  tool_names <- sapply(chat$get_tools(), function(t) t@name)
+  expect_true(all(grepl("^btw_tool_docs_", tool_names)))
+  expect_false(any(grepl("^btw_tool_files_", tool_names)))
+})
+
+test_that("btw_subagent_client_config() errors on disallowed tools", {
+  withr::local_options(
+    btw.subagent.tools_allowed = c("docs")
+  )
+
+  expect_error(
+    btw_subagent_client_config(tools = c("files")),
+    "Subagent requested disallowed tools"
+  )
+
+  expect_error(
+    btw_subagent_client_config(tools = c("files")),
+    "btw.subagent.tools_allowed"
+  )
+})
+
+test_that("btw_subagent_client_config() allows tools within whitelist", {
+  withr::local_options(
+    btw.subagent.tools_allowed = c("docs", "files")
+  )
+
+  # Should not error
+  chat <- btw_subagent_client_config(tools = c("docs"))
+
+  tool_names <- sapply(chat$get_tools(), function(t) t@name)
+  expect_true(all(grepl("^btw_tool_docs_", tool_names)))
+})
+
+test_that("btw_subagent_client_config() filters explicit tools against tools_allowed", {
+  withr::local_options(
+    btw.subagent.tools_allowed = c("docs", "search")
+  )
+
+  # Requesting tools partially in whitelist should error
+  expect_error(
+    btw_subagent_client_config(tools = c("docs", "files")),
+    "disallowed tools"
+  )
+
+  # Requesting only allowed tools should work
+  chat <- btw_subagent_client_config(tools = c("docs", "search"))
+
+  tool_names <- sapply(chat$get_tools(), function(t) t@name)
+  expect_true(any(grepl("^btw_tool_docs_", tool_names)))
+  expect_true(any(grepl("^btw_tool_search_", tool_names)))
+})
+
+test_that("btw_subagent_client_config() works without tools_allowed set", {
+  withr::local_options(
+    btw.subagent.tools_allowed = NULL,
+    btw.subagent.tools_default = c("files")
+  )
+
+  # Should work with any tools when tools_allowed is NULL
+  chat <- btw_subagent_client_config(tools = c("docs"))
+
+  tool_names <- sapply(chat$get_tools(), function(t) t@name)
+  expect_true(all(grepl("^btw_tool_docs_", tool_names)))
+})
+
+test_that("btw_subagent_client_config() precedence: explicit tools > tools_default", {
+  withr::local_options(
+    btw.subagent.tools_default = c("docs"),
+    btw.subagent.tools_allowed = c("docs", "files")
+  )
+
+  # Explicit tools argument should override tools_default
+  chat <- btw_subagent_client_config(tools = c("files"))
+
+  tool_names <- sapply(chat$get_tools(), function(t) t@name)
+  expect_true(all(grepl("^btw_tool_files_", tool_names)))
+  expect_false(any(grepl("^btw_tool_docs_", tool_names)))
+})
+
+test_that("btw_subagent_client_config() tools_allowed filters defaults", {
+  withr::local_options(
+    btw.subagent.tools_allowed = c("docs"),
+    btw.subagent.tools_default = c("docs", "files", "search")
+  )
+
+  chat <- btw_subagent_client_config(tools = NULL)
+
+  tool_names <- sapply(chat$get_tools(), function(t) t@name)
+  expect_true(all(grepl("^btw_tool_docs_", tool_names)))
+  expect_false(any(grepl("^btw_tool_files_", tool_names)))
+  expect_false(any(grepl("^btw_tool_search_", tool_names)))
+})
+
+test_that("btw_subagent_client_config() error message is helpful", {
+  withr::local_options(
+    btw.subagent.tools_allowed = c("docs")
+  )
+
+  expect_error(
+    btw_subagent_client_config(tools = c("files", "github")),
+    "btw_tool_files_"
+  )
+
+  expect_error(
+    btw_subagent_client_config(tools = c("files", "github")),
+    "btw_tool_github"
+  )
+
+  expect_error(
+    btw_subagent_client_config(tools = c("files")),
+    "Set.*btw.subagent.tools_allowed = NULL"
+  )
+})
+
+test_that("btw_subagent_client_config() tools_allowed works with specific tool names", {
+  withr::local_options(
+    btw.subagent.tools_allowed = c("btw_tool_docs_help_page", "btw_tool_files_read_text_file")
+  )
+
+  # Should work with specific allowed tools
+  chat <- btw_subagent_client_config(tools = c("btw_tool_docs_help_page"))
+
+  tool_names <- sapply(chat$get_tools(), function(t) t@name)
+  expect_true("btw_tool_docs_help_page" %in% tool_names)
+  expect_equal(length(tool_names), 1)
+
+  # Should error with disallowed specific tool
+  expect_error(
+    btw_subagent_client_config(tools = c("search_packages")),
+    "disallowed tools"
+  )
 })

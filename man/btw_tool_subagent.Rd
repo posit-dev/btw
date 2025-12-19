@@ -2,25 +2,156 @@
 % Please edit documentation in R/tool-subagent.R
 \name{btw_tool_subagent}
 \alias{btw_tool_subagent}
-\title{User-facing subagent tool function}
+\title{Tool: Subagent}
 \usage{
 btw_tool_subagent(prompt, tools = NULL, session_id = NULL, `_intent` = "")
 }
 \arguments{
-\item{prompt}{Character string with the task or question for the subagent}
+\item{prompt}{Character string with the task description for the subagent.
+The subagent will work on this task using only the tools specified in
+\code{tools}. The subagent does not have access to the orchestrating agent's
+conversation history.}
 
-\item{tools}{Optional character vector of tool names to make available to
-the subagent}
+\item{tools}{Optional character vector of tool names or tool groups that the
+subagent is allowed to use. Can be specific tool names (e.g.,
+\code{"btw_tool_files_read_text_file"}), tool group names (e.g., \code{"files"}), or
+\code{NULL} to use the default tools from \code{btw.subagent.tools_default},
+\code{btw.tools}, or \code{btw_tools()}.}
 
-\item{session_id}{Optional session ID from a previous call to resume that
-conversation}
+\item{session_id}{Optional character string with a session ID from a
+previous call. When provided, resumes the existing subagent conversation
+instead of starting a new one. Session IDs are returned in the result and
+have the format "adjective_noun" (e.g., "swift_falcon").}
 
-\item{_intent}{Intent parameter added by ellmer framework}
+\item{_intent}{Optional string describing the intent of the tool call. Added
+automatically by the ellmer framework when tools are called by LLMs.}
 }
 \value{
-A BtwSubagentResult object
+A \code{BtwSubagentResult} object (inherits from \code{BtwToolResult}) with:
+\itemize{
+\item \code{value}: The final message text from the subagent
+\item \code{session_id}: The session identifier for resuming this conversation
+}
 }
 \description{
-This is a stub function for documentation purposes. The actual implementation
-is in btw_tool_subagent_impl().
+\code{btw_tool_subagent()} is a btw tool that enables hierarchical agent
+workflows. When used by an LLM assistant (like Claude), this tool allows the
+orchestrating agent to delegate complex tasks to specialized subagents, each
+with their own isolated conversation thread and tool access.
+
+This function is primarily intended to be called by LLM assistants via tool
+use, not directly by end users. However, it can be useful for testing and
+debugging hierarchical workflows in R.
+\subsection{How Subagents Work}{
+
+When an LLM calls this tool:
+\enumerate{
+\item A new chat session is created (or an existing one is resumed)
+\item The subagent receives the \code{prompt} and begins working with only the tools
+specified in the \code{tools} parameter
+\item The subagent works independently, making tool calls until it completes
+the task
+\item The function returns the subagent's final message text and a \code{session_id}
+\item The orchestrating agent can resume the session later by providing the
+\code{session_id}
 }
+
+Each subagent maintains its own conversation context, separate from the
+orchestrating agent's context. Subagent sessions persist for the duration of
+the R session.
+}
+
+\subsection{Tool Access}{
+
+The orchestrating agent must specify which tools the subagent can use via
+the \code{tools} parameter. The subagent is restricted to only these tools - it
+cannot access tools from the parent session. Tools can be specified by:
+\itemize{
+\item \strong{Specific tool names}: \code{c("btw_tool_files_read_text_file", "btw_tool_files_write_text_file")}
+\item \strong{Tool groups}: \code{"files"} includes all file-related tools
+\item \strong{NULL} (default): Uses the default tool set from options or
+\code{btw_tools()}
+}
+}
+
+\subsection{Configuration Options}{
+
+Subagent behavior can be configured via R options:
+\itemize{
+\item \code{btw.subagent.client}: The ellmer::Chat client or \code{provider/model} string
+to use for subagents. If not set, falls back to \code{btw.client}, then to the
+default Anthropic client.
+\item \code{btw.subagent.tools_default}: Default tools to provide to subagents when
+the orchestrating agent doesn't specify tools via the \code{tools} parameter.
+If not set, falls back to \code{btw.tools}, then all btw tools from
+\code{btw_tools()}. This is a convenience option for setting reasonable
+defaults.
+\item \code{btw.subagent.tools_allowed}: An allowlist of tools that subagents are
+allowed to use at all. When set, any tools requested (either explicitly via
+the \code{tools} parameter or from defaults) will be filtered against this list.
+If disallowed tools are requested, an error is thrown. This provides a
+security boundary to restrict subagent capabilities. If not set, all
+\code{\link[=btw_tools]{btw_tools()}} are allowed.
+}
+
+These options follow the precedence: function argument > \verb{btw.subagent.*}
+option > \verb{btw.*} option > default value. The \code{tools_allowed} option acts as a
+filter on top of the resolved tools, regardless of their source.
+}
+}
+\examples{
+\dontrun{
+# Typically used by LLMs via tool use, but can be called directly for testing
+result <- btw_tool_subagent(
+  prompt = "List all R files in the current directory",
+  tools = c("btw_tool_files_list_files")
+)
+
+# Access the subagent's response and session ID
+cat(result@value)
+session_id <- result@session_id
+
+# Resume the same session with a follow-up
+result2 <- btw_tool_subagent(
+  prompt = "Now read the first file you found",
+  tools = c("btw_tool_files_read_text_file"),
+  session_id = session_id
+)
+
+# Configure default tools for subagents
+withr::local_options(list(
+  btw.subagent.client = "anthropic/claude-sonnet-4-20250514",
+  btw.subagent.tools_default = "files"  # Default to file tools only
+))
+
+result3 <- btw_tool_subagent(
+  prompt = "Find all TODO comments in R files"
+)
+
+# Restrict subagents to a whitelist of allowed tools
+withr::local_options(list(
+  btw.subagent.tools_allowed = c("files", "search"),
+  btw.subagent.tools_default = "files"
+))
+
+# This works - files tools are allowed
+result4 <- btw_tool_subagent(
+  prompt = "List R files",
+  tools = "files"
+)
+
+# This would error - github tools are not in the allowed list
+tryCatch(
+  btw_tool_subagent(
+    prompt = "Create a GitHub issue",
+    tools = "github"
+  ),
+  error = function(e) message("Error: ", e$message)
+)
+}
+
+}
+\seealso{
+\code{\link[=btw_tools]{btw_tools()}} for available tools and tool groups
+}
+\concept{agent tools}

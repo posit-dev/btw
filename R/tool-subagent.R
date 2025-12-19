@@ -55,11 +55,22 @@ BtwSubagentResult <- S7::new_class(
 #'   to use for subagents. If not set, falls back to `btw.client`, then to the
 #'   default Anthropic client.
 #'
-#' * `btw.subagent.tools`: Default tools to make available to subagents. If not
-#'   set, falls back to `btw.tools`, then to all btw tools from `btw_tools()`.
+#' * `btw.subagent.tools_default`: Default tools to provide to subagents when
+#'   the orchestrating agent doesn't specify tools via the `tools` parameter.
+#'   If not set, falls back to `btw.tools`, then all btw tools from
+#'   `btw_tools()`. This is a convenience option for setting reasonable
+#'   defaults.
+#'
+#' * `btw.subagent.tools_allowed`: An allowlist of tools that subagents are
+#'   allowed to use at all. When set, any tools requested (either explicitly via
+#'   the `tools` parameter or from defaults) will be filtered against this list.
+#'   If disallowed tools are requested, an error is thrown. This provides a
+#'   security boundary to restrict subagent capabilities. If not set, all
+#'   [btw_tools()] are allowed.
 #'
 #' These options follow the precedence: function argument > `btw.subagent.*`
-#' option > `btw.*` option > default value.
+#' option > `btw.*` option > default value. The `tools_allowed` option acts as a
+#' filter on top of the resolved tools, regardless of their source.
 #'
 #' @examples
 #' \dontrun{
@@ -80,14 +91,35 @@ BtwSubagentResult <- S7::new_class(
 #'   session_id = session_id
 #' )
 #'
-#' # Configure the subagent client via options
+#' # Configure default tools for subagents
 #' withr::local_options(list(
 #'   btw.subagent.client = "anthropic/claude-sonnet-4-20250514",
-#'   btw.subagent.tools = "files"  # Default to file tools only
+#'   btw.subagent.tools_default = "files"  # Default to file tools only
 #' ))
 #'
 #' result3 <- btw_tool_subagent(
 #'   prompt = "Find all TODO comments in R files"
+#' )
+#'
+#' # Restrict subagents to a whitelist of allowed tools
+#' withr::local_options(list(
+#'   btw.subagent.tools_allowed = c("files", "search"),
+#'   btw.subagent.tools_default = "files"
+#' ))
+#'
+#' # This works - files tools are allowed
+#' result4 <- btw_tool_subagent(
+#'   prompt = "List R files",
+#'   tools = "files"
+#' )
+#'
+#' # This would error - github tools are not in the allowed list
+#' tryCatch(
+#'   btw_tool_subagent(
+#'     prompt = "Create a GitHub issue",
+#'     tools = "github"
+#'   ),
+#'   error = function(e) message("Error: ", e$message)
 #' )
 #' }
 #'
@@ -98,7 +130,8 @@ BtwSubagentResult <- S7::new_class(
 #' @param tools Optional character vector of tool names or tool groups that the
 #'   subagent is allowed to use. Can be specific tool names (e.g.,
 #'   `"btw_tool_files_read_text_file"`), tool group names (e.g., `"files"`), or
-#'   `NULL` to use the default tools from `btw.subagent.tools` or `btw_tools()`.
+#'   `NULL` to use the default tools from `btw.subagent.tools_default`,
+#'   `btw.tools`, or `btw_tools()`.
 #' @param session_id Optional character string with a session ID from a
 #'   previous call. When provided, resumes the existing subagent conversation
 #'   instead of starting a new one. Session IDs are returned in the result and
@@ -192,13 +225,46 @@ btw_tool_subagent_impl <- function(
 #'
 #' @noRd
 btw_subagent_client_config <- function(client = NULL, tools = NULL) {
+  # Track whether tools were explicitly provided
+  tools_explicit <- !is.null(tools)
+
+  # Determine the tools to use (applying defaults)
   configured_tools <-
     tools %||%
-    getOption("btw.subagent.tools") %||%
+    getOption("btw.subagent.tools_default") %||%
     getOption("btw.tools") %||%
     btw_tools()
 
   configured_tools <- flatten_and_check_tools(configured_tools)
+
+  # Apply tools_allowed whitelist if set
+  tools_allowed <- getOption("btw.subagent.tools_allowed")
+  if (!is.null(tools_allowed)) {
+    # Convert tools_allowed to a flat list of tool names
+    allowed_tools <- flatten_and_check_tools(tools_allowed)
+    allowed_names <- map_chr(allowed_tools, function(t) t@name)
+
+    # Get names of configured tools
+    configured_names <- map_chr(configured_tools, function(t) t@name)
+
+    # Check if any requested tools are not allowed
+    disallowed <- setdiff(configured_names, allowed_names)
+
+    # Only error if tools were explicitly provided and include disallowed tools
+    if (length(disallowed) > 0 && tools_explicit) {
+      cli::cli_abort(c(
+        "Subagent requested disallowed tools.",
+        "x" = "The following tools are not in {.code btw.subagent.tools_allowed}: {.val {disallowed}}",
+        "i" = "Allowed tools: {.val {allowed_names}}",
+        "i" = "Set {.code options(btw.subagent.tools_allowed = NULL)} to remove restrictions."
+      ))
+    }
+
+    # Filter to only allowed tools
+    configured_tools <- keep(configured_tools, function(t) {
+      t@name %in% allowed_names
+    })
+  }
 
   chat <- if (!is.null(client)) {
     as_ellmer_client(client)$clone()
