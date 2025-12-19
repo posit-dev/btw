@@ -191,15 +191,44 @@ btw_tool_subagent_impl <- function(
   } else {
     ellmer::contents_markdown(last_turn)
   }
+  message_text <- sprintf(
+    '<subagent-response session_id="%s">\n%s\n</subagent-response>',
+    session_id,
+    message_text
+  )
 
   # We could update session metadata here, but `chat` is stateful
+
+  tokens <- md_table(chat$get_tokens())
+
+  display_md <- glue_(
+    r"(
+  #### Prompt
+
+  **Session ID:** {{ session_id }}<br>
+  **Tools:** {{ paste(names(chat$get_tools()), collapse = ', ') }}
+
+  {{ prompt }}
+
+  #### Tokens
+
+  {{ tokens }}
+
+  #### Response
+
+  {{ message_text }}
+  )"
+  )
 
   BtwSubagentResult(
     value = message_text,
     session_id = session_id,
     extra = list(
-      data = list(
-        chat = chat
+      prompt = prompt,
+      tokens = chat$get_tokens(),
+      display = list(
+        markdown = display_md,
+        show_request = FALSE
       )
     )
   )
