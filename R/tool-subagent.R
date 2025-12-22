@@ -157,7 +157,8 @@ btw_tool_subagent <- function(
 btw_tool_subagent_impl <- function(
   prompt,
   tools = NULL,
-  session_id = NULL
+  session_id = NULL,
+  config = NULL
 ) {
   check_string(prompt)
   check_string(session_id, allow_null = TRUE)
@@ -179,7 +180,12 @@ btw_tool_subagent_impl <- function(
     # because the chat$chat() method doesn't expose turn count control.
   } else {
     session_id <- generate_session_id()
-    chat <- btw_subagent_client_config(client = NULL, tools = tools)
+    chat <- btw_subagent_client_config(
+      client = config$client,
+      tools = tools,
+      tools_default = config$tools_default,
+      tools_allowed = config$tools_allowed
+    )
     store_session(session_id, chat)
   }
 
@@ -207,7 +213,7 @@ btw_tool_subagent_impl <- function(
   if (idx_prompt > 1) {
     chat2$set_turns(chat2$get_turns()[-seq_len(idx_prompt - 1)])
   }
-  tokens <- md_table(chat2$get_tokens())
+  tokens <- chat2$get_tokens()
   for (i in seq_len(ncol(tokens))) {
     if (is.numeric(tokens[[i]])) {
       tokens[[i]] <- format(tokens[[i]], big.mark = ",")
@@ -218,12 +224,21 @@ btw_tool_subagent_impl <- function(
     keep(turn@contents, S7::S7_inherits, ellmer::ContentToolRequest)
   })
 
+  provider <- chat$get_provider()@name
+  model <- chat$get_model()
+  tool_names <- paste(
+    sprintf("`%s`", names(chat$get_tools())),
+    collapse = ", "
+  )
+
   display_md <- glue_(
     r"(
   #### Prompt
 
   **Session ID:** {{ session_id }}<br>
-  **Tools:** {{ paste(names(chat$get_tools()), collapse = ', ') }}
+  **Provider:** {{ provider }}<br>
+  **Model:** `{{ model }}`<br>
+  **Tools:** {{ tool_names }}
 
   {{ prompt }}
 
@@ -231,7 +246,7 @@ btw_tool_subagent_impl <- function(
 
   **Tool Calls:** {{ length(unlist(tool_calls)) }}
 
-  {{ tokens }}
+  {{ md_table(tokens) }}
 
   #### Response
 
@@ -244,7 +259,9 @@ btw_tool_subagent_impl <- function(
     session_id = session_id,
     extra = list(
       prompt = prompt,
-      tokens = chat$get_tokens(),
+      provider = provider,
+      model = model,
+      tokens = tokens,
       display = list(
         markdown = display_md,
         show_request = FALSE
@@ -252,6 +269,23 @@ btw_tool_subagent_impl <- function(
     )
   )
 }
+
+#' Capture subagent configuration from current R options
+#'
+#' Reads the relevant btw.subagent.* and btw.* options and returns them as a
+#' named list for later use by btw_tool_subagent_impl().
+#'
+#' @return A list with captured configuration
+#' @noRd
+capture_subagent_config <- function() {
+  list(
+    client = getOption("btw.subagent.client") %||% getOption("btw.client"),
+    tools_default = getOption("btw.subagent.tools_default") %||%
+      getOption("btw.tools"),
+    tools_allowed = getOption("btw.subagent.tools_allowed")
+  )
+}
+
 
 #' Configure subagent client
 #'
@@ -261,29 +295,42 @@ btw_tool_subagent_impl <- function(
 #'
 #' @param client Optional Chat object or provider/model string
 #' @param tools Optional character vector or list of tool definitions
+#' @param tools_default Optional default tools from captured config
+#' @param tools_allowed Optional allowed tools whitelist from captured config
 #' @return A configured Chat object with system prompt and tools attached
 #'
 #' @noRd
-btw_subagent_client_config <- function(client = NULL, tools = NULL) {
+btw_subagent_client_config <- function(
+  client = NULL,
+  tools = NULL,
+  tools_default = NULL,
+  tools_allowed = NULL
+) {
   # Track whether tools were explicitly provided
   tools_explicit <- !is.null(tools)
 
-  # Determine the tools to use (applying defaults)
-  configured_tools <-
-    tools %||%
+  subagent_client <-
+    client %||%
+    getOption("btw.subagent.client") %||%
+    getOption("btw.client")
+
+  tools_default <-
+    tools_default %||%
     getOption("btw.subagent.tools_default") %||%
     getOption("btw.tools")
 
-  if (is.null(configured_tools)) {
-    configured_tools <- keep(btw_tools(), function(t) {
-      t@name != "btw_tool_subagent"
-    })
-  }
+  tools_allowed <-
+    tools_allowed %||%
+    getOption("btw.subagent.tools_allowed")
+
+  configured_tools <-
+    tools %||%
+    tools_default %||%
+    keep(btw_tools(), function(t) t@name != "btw_tool_subagent")
 
   configured_tools <- flatten_and_check_tools(configured_tools)
 
   # Apply tools_allowed whitelist if set
-  tools_allowed <- getOption("btw.subagent.tools_allowed")
   if (!is.null(tools_allowed)) {
     # Convert tools_allowed to a flat list of tool names
     allowed_tools <- flatten_and_check_tools(tools_allowed)
@@ -324,12 +371,8 @@ btw_subagent_client_config <- function(client = NULL, tools = NULL) {
     FALSE
   })
 
-  chat <- if (!is.null(client)) {
-    as_ellmer_client(client)$clone()
-  } else if (!is.null(subagent_client <- getOption("btw.subagent.client"))) {
+  chat <- if (!is.null(subagent_client)) {
     as_ellmer_client(subagent_client)$clone()
-  } else if (!is.null(default_client <- getOption("btw.client"))) {
-    as_ellmer_client(default_client)$clone()
   } else {
     btw_default_chat_client()
   }
@@ -388,19 +431,28 @@ BEST PRACTICES:
   paste0(base_desc, tool_summary)
 }
 
+btw_tool_subagent_config <- function(config) {
+  force(config)
+
+  function(prompt, tools = NULL, session_id = NULL) {
+    btw_tool_subagent_impl(
+      prompt = prompt,
+      tools = tools,
+      session_id = session_id,
+      config = config
+    )
+  }
+}
+
 # Register the tool
 .btw_add_to_tools(
   name = "btw_tool_subagent",
   group = "agent",
   tool = function() {
+    config <- capture_subagent_config()
+
     ellmer::tool(
-      function(prompt, tools = NULL, session_id = NULL) {
-        btw_tool_subagent_impl(
-          prompt = prompt,
-          tools = tools,
-          session_id = session_id
-        )
-      },
+      btw_tool_subagent_config(config),
       name = "btw_tool_subagent",
       description = build_subagent_description(),
       annotations = ellmer::tool_annotations(
