@@ -199,7 +199,24 @@ btw_tool_subagent_impl <- function(
 
   # We could update session metadata here, but `chat` is stateful
 
-  tokens <- md_table(chat$get_tokens())
+  # Get tokens for just this round
+  idx_prompt <- which(map_lgl(chat$get_turns(), function(t) {
+    t@role == "user" && identical(ellmer::contents_text(t), prompt)
+  }))
+  chat2 <- chat$clone()
+  if (idx_prompt > 1) {
+    chat2$set_turns(chat2$get_turns()[-seq_len(idx_prompt - 1)])
+  }
+  tokens <- md_table(chat2$get_tokens())
+  for (i in seq_len(ncol(tokens))) {
+    if (is.numeric(tokens[[i]])) {
+      tokens[[i]] <- format(tokens[[i]], big.mark = ",")
+    }
+  }
+
+  tool_calls <- map(chat2$get_turns(), function(turn) {
+    keep(turn@contents, S7::S7_inherits, ellmer::ContentToolRequest)
+  })
 
   display_md <- glue_(
     r"(
@@ -211,6 +228,8 @@ btw_tool_subagent_impl <- function(
   {{ prompt }}
 
   #### Tokens
+
+  **Tool Calls:** {{ length(unlist(tool_calls)) }}
 
   {{ tokens }}
 
