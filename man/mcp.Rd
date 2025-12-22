@@ -36,7 +36,7 @@ environment.
 \section{Configuration}{
 
 To configure this server with MCP clients, use the command \code{Rscript} and the
-args \verb{-e "btw::btw_mcp_server()"}. For example, in \href{https://docs.claude.com/en/docs/claude-code/mcp#add-mcp-servers-from-json-configuration}{Claude Desktop's configuration format}:
+args \verb{-e "btw::btw_mcp_server()"}. For example, in \href{https://code.claude.com/docs/en/mcp#add-mcp-servers-from-json-configuration}{Claude Desktop's configuration format}:
 
 \if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
   "mcpServers": \{
@@ -48,7 +48,7 @@ args \verb{-e "btw::btw_mcp_server()"}. For example, in \href{https://docs.claud
 \}
 }\if{html}{\out{</div>}}
 
-For \href{https://docs.claude.com/en/docs/claude-code/overview}{Claude Code}:
+For \href{https://code.claude.com/docs/en/overview}{Claude Code}:
 
 \if{html}{\out{<div class="sourceCode bash">}}\preformatted{claude mcp add -s "user" r-btw -- Rscript -e "btw::btw_mcp_server()"
 }\if{html}{\out{</div>}}

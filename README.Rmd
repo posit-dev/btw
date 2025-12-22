@@ -99,7 +99,7 @@ Pick and choose which tools you use with friendly group names
 chat$register_tools(btw_tools(c("docs", "files")))
 ```
 
-or expose btw tools to external coding agents via the [Model Context Protocol](https://modelcontextprotocol.org/) using [mcptools](https://posit-dev.github.io/mcptools/).
+or expose btw tools to external coding agents via the [Model Context Protocol](https://modelcontextprotocol.io/) using [mcptools](https://posit-dev.github.io/mcptools/).
 
 ```{r eval = FALSE}
 # Run as a background process or in a separate R session
