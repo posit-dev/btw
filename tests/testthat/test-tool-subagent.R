@@ -206,8 +206,7 @@ test_that("build_subagent_description() includes tool groups", {
 
   expect_type(desc, "character")
   expect_match(desc, "Delegate a task")
-  expect_match(desc, "Available tool groups")
-  expect_true(any(grepl("docs|env|search|github", desc)))
+  expect_match(desc, "AVAILABLE TOOLS")
 })
 
 test_that("build_subagent_description() includes basic text", {

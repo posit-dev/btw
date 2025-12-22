@@ -318,15 +318,19 @@ btw_subagent_client_config <- function(
     tools_default %||%
     getOption("btw.subagent.tools_default") %||%
     getOption("btw.tools")
+  tools_default <- subagent_disallow_recursion(tools_default)
 
   tools_allowed <-
     tools_allowed %||%
     getOption("btw.subagent.tools_allowed")
+  tools_allowed <- subagent_disallow_recursion(tools_allowed)
 
   configured_tools <-
     tools %||%
     tools_default %||%
-    keep(btw_tools(), function(t) t@name != "btw_tool_subagent")
+    compact(map(.btw_tools, function(t) {
+      if (t$name != "btw_tool_subagent") t$tool()
+    }))
 
   configured_tools <- flatten_and_check_tools(configured_tools)
 
@@ -361,15 +365,7 @@ btw_subagent_client_config <- function(
   # Never allow subagents to create subagents (prevents infinite recursion)
   # This filtering happens after all tool resolution and allowed-list filtering
   # to ensure the subagent tool is always removed, regardless of how tools were specified
-  configured_tools <- keep(configured_tools, function(tool) {
-    if (tool@name != "btw_tool_subagent") {
-      return(TRUE)
-    }
-    cli::cli_warn(
-      "Removing {.code btw_tool_subagent} from subagent toolset to prevent recursion."
-    )
-    FALSE
-  })
+  configured_tools <- subagent_disallow_recursion(configured_tools)
 
   chat <- if (!is.null(subagent_client)) {
     as_ellmer_client(subagent_client)$clone()
@@ -384,6 +380,28 @@ btw_subagent_client_config <- function(
   chat
 }
 
+subagent_disallow_recursion <- function(tools) {
+  if (is.character(tools)) {
+    if ("btw_tool_subagent" %in% tools || "subagent" %in% tools) {
+      cli::cli_warn(
+        "Removing {.code btw_tool_subagent} from subagent toolset to prevent recursion."
+      )
+      return(setdiff(tools, c("btw_tool_subagent", "subagent")))
+    }
+    return(tools)
+  }
+
+  keep(tools, function(tool) {
+    if (tool@name != "btw_tool_subagent") {
+      return(TRUE)
+    }
+    cli::cli_warn(
+      "Removing {.code btw_tool_subagent} from subagent toolset to prevent recursion."
+    )
+    FALSE
+  })
+}
+
 #' Build dynamic tool description for btw_tool_subagent
 #'
 #' Generates a description that includes available tool groups dynamically.
@@ -391,22 +409,40 @@ btw_subagent_client_config <- function(
 #' @return Character string with the tool description
 #'
 #' @noRd
-build_subagent_description <- function() {
-  # Get unique tool groups from registered tools
-  tool_groups <- unique(map_chr(.btw_tools, function(x) x$group))
-  tool_groups <- sort(tool_groups)
-
-  # Build tool groups summary
-  if (length(tool_groups) > 0) {
-    tool_summary <- paste(
-      "\n\nAvailable tool groups:",
-      paste(tool_groups, collapse = ", ")
-    )
+build_subagent_description <- function(tools = .btw_tools) {
+  desc_tool_use <- if (length(tools) == 0) {
+    "No tools are available for use in the subagent."
   } else {
-    tool_summary <- "\n\nNo tool groups currently registered."
+    r"(
+CRITICAL - TOOL SELECTION:
+You MUST specify which tools the subagent needs using the 'tools' parameter. Choosing the right tools is essential for success:
+- Analyze the task requirements carefully
+- Select only the specific tools needed for the task
+- If uncertain which tools are needed, include relevant tool groups
+- The subagent can ONLY use the tools you provide - wrong tools = task failure
+
+AVAILABLE TOOLS FOR SUBAGENT USE:)"
   }
 
-  base_desc <- "Delegate a task to a specialized assistant that can work independently with its own conversation thread.
+  tool_summary <- if (length(tools) == 0) {
+    ""
+  } else {
+    map_chr(tools, function(tool) {
+      if (!inherits(tool, "ellmer::ToolDef")) {
+        if (is.function(tool$tool)) {
+          tool <- tool$tool()
+        } else {
+          rlang::abort("Unknown tool definition format.")
+        }
+      }
+      desc <- strsplit(tool@description, "\n|[.](\\s|$)")[[1]][1]
+      sprintf("- %s: %s", tool@name, desc)
+    })
+  }
+  tool_summary <- paste(tool_summary, collapse = "\n")
+
+  desc_base <- r"(
+Delegate a task to a specialized assistant that can work independently with its own conversation thread.
 
 WHEN TO USE:
 - For complex, multi-step tasks that would benefit from focused attention
@@ -414,21 +450,14 @@ WHEN TO USE:
 - To resume previous work by providing the session_id from an earlier call
 - When you can handle the task yourself with available tools, do so directly instead
 
-CRITICAL - TOOL SELECTION:
-You MUST specify which tools the subagent needs using the 'tools' parameter. Choosing the right tools is essential for success:
-- Analyze the task requirements carefully
-- Select only the specific tools needed (e.g., ['btw_tool_files_read_text_file', 'btw_tool_files_write_text_file'] for file tasks)
-- If uncertain which tools are needed, include relevant tool groups
-- The subagent can ONLY use the tools you provide - wrong tools = task failure
-
 BEST PRACTICES:
 - Write clear, complete task descriptions in the prompt
 - Specify expected output format if important
 - Store the returned session_id if you need to continue the work later
 - The subagent returns its final answer as plain text
-- Each subagent session is independent with its own context"
+- Each subagent session is independent with its own context)"
 
-  paste0(base_desc, tool_summary)
+  paste0(desc_base, "\n", desc_tool_use, "\n", tool_summary)
 }
 
 btw_tool_subagent_config <- function(config) {
@@ -450,11 +479,21 @@ btw_tool_subagent_config <- function(config) {
   group = "agent",
   tool = function() {
     config <- capture_subagent_config()
+    tools_allowed <- config$tools_allowed
+
+    if (is.null(tools_allowed)) {
+      btw_other_tools <- setdiff(names(.btw_tools), "btw_tool_subagent")
+      tools_allowed <- map(.btw_tools[btw_other_tools], function(t) t$tool())
+    } else {
+      tools_allowed <- subagent_disallow_recursion(tools_allowed)
+    }
+
+    tools_allowed <- flatten_and_check_tools(tools_allowed)
 
     ellmer::tool(
       btw_tool_subagent_config(config),
       name = "btw_tool_subagent",
-      description = build_subagent_description(),
+      description = build_subagent_description(tools_allowed),
       annotations = ellmer::tool_annotations(
         title = "Subagent",
         read_only_hint = FALSE,
