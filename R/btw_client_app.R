@@ -378,6 +378,7 @@ btw_status_bar_ui <- function(id, provider_model) {
       shiny::div(
         class = "ms-auto status-tokens font-monospace",
         bslib::tooltip(
+          id = ns("status_tokens_input_tooltip"),
           shiny::span(
             id = ns("status_tokens_input"),
             class = "status-countup",
@@ -438,16 +439,14 @@ btw_status_bar_server <- function(id, chat) {
               output_tokens <- as.integer(sum(tokens_assistant$tokens))
             }
           } else {
-            # output tokens this far are the sum of all output tokens
+            # output tokens are by turn, so we sum them all
             if ("output" %in% colnames(tokens)) {
               output_tokens <- sum(tokens$output)
             }
             # input and cached tokens are accumulated in the last API call
             if ("input" %in% colnames(tokens)) {
               input_tokens <-
-                tokens$input[[length(tokens$input)]] +
-                # include output tokens that will be part of next API call
-                tokens$output[[length(tokens$output)]]
+                tokens$input[[length(tokens$input)]]
             }
             if ("cached_input" %in% colnames(tokens)) {
               cached_tokens <- tokens$cached_input[[
@@ -512,8 +511,18 @@ btw_status_bar_server <- function(id, chat) {
         send_status_message(
           "status_tokens_input",
           "ready",
-          value = tokens$input
+          # show input + cached tokens to get total tokens
+          value = tokens$input + tokens$cached
         )
+        if (tokens$cached > 0) {
+          bslib::update_tooltip(
+            "status_tokens_input_tooltip",
+            sprintf(
+              "Input tokens (%s cached)",
+              format(tokens$cached, big.mark = ",")
+            )
+          )
+        }
         send_status_message(
           "status_tokens_output",
           "ready",
