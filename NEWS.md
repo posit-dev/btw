@@ -1,4 +1,4 @@
-# btw (development version)
+# btw 1.1.0
 
 * `btw_client()` now supports reading `CLAUDE.md` files as project context files. `CLAUDE.md` files are searched after `AGENTS.md` but before user-level `btw.md`. YAML frontmatter in `CLAUDE.md` files is stripped but not used for configuration (#146).
 
