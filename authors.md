@@ -24,7 +24,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/posit-dev/btw/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/posit-dev/btw/blob/v1.1.0/DESCRIPTION)
 
 Aden-Buie G, Couch S, Cheng J (2025). *btw: A Toolkit for Connecting R
 and Large Language Models*. R package version 1.1.0,
