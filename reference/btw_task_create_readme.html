@@ -23,7 +23,7 @@ each section with your input."><meta property="og:image" content="https://posit-
 
     <a class="navbar-brand me-2" href="../index.html">btw</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,7 +50,7 @@ each section with your input."><meta property="og:image" content="https://posit-
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Task: Create a Polished README</h1>
-      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/v1.0.0/R/task_create_readme.R" class="external-link"><code>R/task_create_readme.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/main/R/task_create_readme.R" class="external-link"><code>R/task_create_readme.R</code></a></small>
       <div class="d-none name"><code>btw_task_create_readme.Rd</code></div>
     </div>
 
@@ -114,7 +114,7 @@ ellmer tool object that can be used in other chat instances.</p>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other task and agent functions:
-<code><a href="btw_task_create_btw_md.html">btw_task_create_btw_md</a>()</code></p></div>
+<code><a href="btw_task_create_btw_md.html">btw_task_create_btw_md()</a></code></p></div>
     </div>
 
     <div class="section level2">
@@ -122,7 +122,7 @@ ellmer tool object that can be used in other chat instances.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_envvar.html" class="external-link">with_envvar</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ANTHROPIC_API_KEY <span class="op">=</span> <span class="st">"example"</span><span class="op">)</span>, <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu">btw_task_create_readme</span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"tool"</span>, client <span class="op">=</span> <span class="st">"anthropic"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using <span style="color: #00BB00;">model</span> = <span style="color: #0000BB;">"claude-sonnet-4-20250514"</span>.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using <span style="color: #00BB00;">model</span> = <span style="color: #0000BB;">"claude-sonnet-4-5-20250929"</span>.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # &lt;ellmer::ToolDef&gt; btw_task_create_readme(prompt)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # @name: btw_task_create_readme</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # @description: Create a polished, user-focused README file for your project.</span>
@@ -130,8 +130,8 @@ ellmer tool object that can be used in other chat instances.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> #</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> function (prompt) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> btw_task_create_readme_tool(prompt)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x560039a32c68&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x560039a32648&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x563ad7f4af68&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x563ad7f4a948&gt;</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -144,7 +144,7 @@ ellmer tool object that can be used in other chat instances.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

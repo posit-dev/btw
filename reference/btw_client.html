@@ -8,10 +8,11 @@ Project Context
 
 
 You can keep track of project-specific rules, guidance and context by adding
-a btw.md file or AGENTS.md in your project
-directory. See use_btw_md() for help creating a btw.md file in your
-project, or use path_btw to tell btw_client() to use a specific context
-file.
+a btw.md file, AGENTS.md, or CLAUDE.md in your
+project directory. See use_btw_md() for help creating a btw.md file in
+your project, or use path_btw to tell btw_client() to use a specific
+context file. Note that CLAUDE.md files will have their YAML frontmatter
+stripped but not used for configuration.
 btw_client() will also include context from an llms.txt file in the
 system prompt, if one is found in your project directory or as specified by
 the path_llms_txt argument.
@@ -55,10 +56,11 @@ Project Context
 
 
 You can keep track of project-specific rules, guidance and context by adding
-a btw.md file or AGENTS.md in your project
-directory. See use_btw_md() for help creating a btw.md file in your
-project, or use path_btw to tell btw_client() to use a specific context
-file.
+a btw.md file, AGENTS.md, or CLAUDE.md in your
+project directory. See use_btw_md() for help creating a btw.md file in
+your project, or use path_btw to tell btw_client() to use a specific
+context file. Note that CLAUDE.md files will have their YAML frontmatter
+stripped but not used for configuration.
 btw_client() will also include context from an llms.txt file in the
 system prompt, if one is found in your project directory or as specified by
 the path_llms_txt argument.
@@ -101,7 +103,7 @@ btw chat, see btw_tools() for details.`
 
     <a class="navbar-brand me-2" href="../index.html">btw</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -128,7 +130,7 @@ btw chat, see btw_tools() for details.`
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Create a btw-enhanced ellmer chat client</h1>
-      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/v1.0.0/R/btw_client.R" class="external-link"><code>R/btw_client.R</code></a>, <a href="https://github.com/posit-dev/btw/blob/v1.0.0/R/btw_client_app.R" class="external-link"><code>R/btw_client_app.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/main/R/btw_client.R" class="external-link"><code>R/btw_client.R</code></a>, <a href="https://github.com/posit-dev/btw/blob/main/R/btw_client_app.R" class="external-link"><code>R/btw_client_app.R</code></a></small>
       <div class="d-none name"><code>btw_client.Rd</code></div>
     </div>
 
@@ -142,10 +144,11 @@ local workspace.</p><div class="section">
 
 
 <p>You can keep track of project-specific rules, guidance and context by adding
-a <code>btw.md</code> file or <a href="https://agents.md/" class="external-link"><code>AGENTS.md</code></a> in your project
-directory. See <code><a href="use_btw_md.html">use_btw_md()</a></code> for help creating a <code>btw.md</code> file in your
-project, or use <code>path_btw</code> to tell <code>btw_client()</code> to use a specific context
-file.</p>
+a <code>btw.md</code> file, <a href="https://agents.md/" class="external-link"><code>AGENTS.md</code></a>, or <code>CLAUDE.md</code> in your
+project directory. See <code><a href="use_btw_md.html">use_btw_md()</a></code> for help creating a <code>btw.md</code> file in
+your project, or use <code>path_btw</code> to tell <code>btw_client()</code> to use a specific
+context file. Note that <code>CLAUDE.md</code> files will have their YAML frontmatter
+stripped but not used for configuration.</p>
 <p><code>btw_client()</code> will also include context from an <code>llms.txt</code> file in the
 system prompt, if one is found in your project directory or as specified by
 the <code>path_llms_txt</code> argument.</p>
@@ -228,11 +231,12 @@ client.</p></dd>
 
 
 <dt id="arg-path-btw">path_btw<a class="anchor" aria-label="anchor" href="#arg-path-btw"></a></dt>
-<dd><p>A path to a <code>btw.md</code> or <code>AGENTS.md</code> project context file. If
-<code>NULL</code>, btw will find a project-specific <code>btw.md</code> or <code>AGENTS.md</code> file in
-the parents of the current working directory, with fallback to user-level
-<code>btw.md</code> if no project file is found. Set <code>path_btw = FALSE</code> to
-create a chat client without using a <code>btw.md</code> file.</p></dd>
+<dd><p>A path to a <code>btw.md</code>, <code>AGENTS.md</code>, or <code>CLAUDE.md</code> project
+context file. If <code>NULL</code>, btw will find a project-specific <code>btw.md</code>,
+<code>AGENTS.md</code>, or <code>CLAUDE.md</code> file in the parents of the current working
+directory, with fallback to user-level <code>btw.md</code> if no project file is
+found. Set <code>path_btw = FALSE</code> to create a chat client without using a
+<code>btw.md</code> file.</p></dd>
 
 
 <dt id="arg-path-llms-txt">path_llms_txt<a class="anchor" aria-label="anchor" href="#arg-path-llms-txt"></a></dt>
@@ -243,7 +247,7 @@ the your current working directory or its parents. Set <code>path_llms_txt = FAL
 
 <dt id="arg-messages">messages<a class="anchor" aria-label="anchor" href="#arg-messages"></a></dt>
 <dd><p>A list of initial messages to show in the chat, passed to
-<code><a href="https://rdrr.io/pkg/shinychat/man/chat_app.html" class="external-link">shinychat::chat_mod_ui()</a></code>.</p></dd>
+<code><a href="https://posit-dev.github.io/shinychat/r/reference/chat_app.html" class="external-link">shinychat::chat_mod_ui()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -283,7 +287,7 @@ chat</p></li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

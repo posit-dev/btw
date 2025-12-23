@@ -35,6 +35,11 @@
 <url><loc>https://posit-dev.github.io/btw/reference/btw_tool_github.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_tool_ide_read_current_editor.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_tool_package_docs.html</loc></url>
+<url><loc>https://posit-dev.github.io/btw/reference/btw_tool_pkg_check.html</loc></url>
+<url><loc>https://posit-dev.github.io/btw/reference/btw_tool_pkg_coverage.html</loc></url>
+<url><loc>https://posit-dev.github.io/btw/reference/btw_tool_pkg_document.html</loc></url>
+<url><loc>https://posit-dev.github.io/btw/reference/btw_tool_pkg_test.html</loc></url>
+<url><loc>https://posit-dev.github.io/btw/reference/btw_tool_run_r.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_tool_search_package_info.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_tool_search_packages.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_tool_session_check_package_installed.html</loc></url>
