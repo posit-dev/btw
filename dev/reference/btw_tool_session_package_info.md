@@ -53,7 +53,7 @@ Other session tools:
 ``` r
 btw_tool_session_package_info("btw")
 #> <btw::BtwPackageInfoToolResult>
-#>  @ value  : chr "```\n package * version    date (UTC) lib source\n btw     * 1.0.0.9000 2025-12-20 [1] local\n\n [1] /home/runn"| __truncated__
+#>  @ value  : chr "```\n package * version    date (UTC) lib source\n btw     * 1.0.0.9000 2025-12-23 [1] local\n\n [1] /home/runn"| __truncated__
 #>  @ error  : NULL
 #>  @ extra  :List of 2
 #>  .. $ data   :Classes ‘packages_info’ and 'data.frame':  1 obs. of  11 variables:
@@ -64,7 +64,7 @@ btw_tool_session_package_info("btw")
 #>  ..  ..$ loadedpath   : chr "/home/runner/work/_temp/Library/btw"
 #>  ..  ..$ attached     : logi TRUE
 #>  ..  ..$ is_base      : logi FALSE
-#>  ..  ..$ date         : chr "2025-12-20"
+#>  ..  ..$ date         : chr "2025-12-23"
 #>  ..  ..$ source       : chr "local"
 #>  ..  ..$ md5ok        : logi NA
 #>  ..  ..$ library      : Factor w/ 3 levels "/home/runner/work/_temp/Library",..: 1
