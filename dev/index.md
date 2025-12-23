@@ -106,7 +106,7 @@ chat$register_tools(btw_tools(c("docs", "files")))
 ```
 
 or expose btw tools to external coding agents via the [Model Context
-Protocol](https://modelcontextprotocol.org/) using
+Protocol](https://modelcontextprotocol.io/) using
 [mcptools](https://posit-dev.github.io/mcptools/).
 
 ``` r

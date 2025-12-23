@@ -23,7 +23,7 @@ environment."><meta property="og:image" content="https://posit-dev.github.io/btw
 
     <a class="navbar-brand me-2" href="../index.html">btw</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.0.0.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.1.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,7 +50,7 @@ environment."><meta property="og:image" content="https://posit-dev.github.io/btw
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Start a Model Context Protocol server with btw tools</h1>
-      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/v1.0.0.9000/R/mcp.R" class="external-link"><code>R/mcp.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/main/R/mcp.R" class="external-link"><code>R/mcp.R</code></a></small>
       <div class="d-none name"><code>mcp.Rd</code></div>
     </div>
 
@@ -95,7 +95,7 @@ list of tools as supported by <code><a href="https://posit-dev.github.io/mcptool
 
 
 <p>To configure this server with MCP clients, use the command <code>Rscript</code> and the
-args <code>-e "btw::btw_mcp_server()"</code>. For example, in <a href="https://docs.claude.com/en/docs/claude-code/mcp#add-mcp-servers-from-json-configuration" class="external-link">Claude Desktop's configuration format</a>:</p>
+args <code>-e "btw::btw_mcp_server()"</code>. For example, in <a href="https://code.claude.com/docs/en/mcp#add-mcp-servers-from-json-configuration" class="external-link">Claude Desktop's configuration format</a>:</p>
 <p></p><div class="sourceCode json"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">{</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="dt">"mcpServers"</span><span class="fu">:</span> <span class="fu">{</span></span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>    <span class="dt">"r-btw"</span><span class="fu">:</span> <span class="fu">{</span></span>
@@ -104,7 +104,7 @@ args <code>-e "btw::btw_mcp_server()"</code>. For example, in <a href="https://d
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>    <span class="fu">}</span></span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="fu">}</span></span>
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">}</span></span></code></pre><p></p></div>
-<p>For <a href="https://docs.claude.com/en/docs/claude-code/overview" class="external-link">Claude Code</a>:</p>
+<p>For <a href="https://code.claude.com/docs/en/overview" class="external-link">Claude Code</a>:</p>
 <p></p><div class="sourceCode bash"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">claude</span> mcp add <span class="at">-s</span> <span class="st">"user"</span> r-btw <span class="at">--</span> Rscript <span class="at">-e</span> <span class="st">"btw::btw_mcp_server()"</span></span></code></pre><p></p></div>
 <p>For <a href="https://www.continue.dev/" class="external-link">Continue</a>, include the following in your
 <a href="https://docs.continue.dev/customize/deep-dives/configuration" class="external-link">config file</a>:</p>

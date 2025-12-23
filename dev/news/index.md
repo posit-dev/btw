@@ -2,6 +2,10 @@
 
 ## btw (development version)
 
+## btw 1.1.0
+
+CRAN release: 2025-12-22
+
 - [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
   now supports reading `CLAUDE.md` files as project context files.
   `CLAUDE.md` files are searched after `AGENTS.md` but before user-level

@@ -11,11 +11,13 @@ Shiny app for chatting with a btw-enhanced LLM in your local workspace.
 ### Project Context
 
 You can keep track of project-specific rules, guidance and context by
-adding a `btw.md` file or [`AGENTS.md`](https://agents.md/) in your
-project directory. See
+adding a `btw.md` file, [`AGENTS.md`](https://agents.md/), or
+`CLAUDE.md` in your project directory. See
 [`use_btw_md()`](https://posit-dev.github.io/btw/dev/reference/use_btw_md.md)
 for help creating a `btw.md` file in your project, or use `path_btw` to
-tell `btw_client()` to use a specific context file.
+tell `btw_client()` to use a specific context file. Note that
+`CLAUDE.md` files will have their YAML frontmatter stripped but not used
+for configuration.
 
 `btw_client()` will also include context from an `llms.txt` file in the
 system prompt, if one is found in your project directory or as specified
@@ -106,11 +108,12 @@ btw_app(..., client = NULL, tools = NULL, path_btw = NULL, messages = list())
 
 - path_btw:
 
-  A path to a `btw.md` or `AGENTS.md` project context file. If `NULL`,
-  btw will find a project-specific `btw.md` or `AGENTS.md` file in the
-  parents of the current working directory, with fallback to user-level
-  `btw.md` if no project file is found. Set `path_btw = FALSE` to create
-  a chat client without using a `btw.md` file.
+  A path to a `btw.md`, `AGENTS.md`, or `CLAUDE.md` project context
+  file. If `NULL`, btw will find a project-specific `btw.md`,
+  `AGENTS.md`, or `CLAUDE.md` file in the parents of the current working
+  directory, with fallback to user-level `btw.md` if no project file is
+  found. Set `path_btw = FALSE` to create a chat client without using a
+  `btw.md` file.
 
 - path_llms_txt:
 

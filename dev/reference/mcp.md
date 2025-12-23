@@ -47,7 +47,7 @@ or
 To configure this server with MCP clients, use the command `Rscript` and
 the args `-e "btw::btw_mcp_server()"`. For example, in [Claude Desktop's
 configuration
-format](https://docs.claude.com/en/docs/claude-code/mcp#add-mcp-servers-from-json-configuration):
+format](https://code.claude.com/docs/en/mcp#add-mcp-servers-from-json-configuration):
 
     {
       "mcpServers": {
@@ -58,7 +58,7 @@ format](https://docs.claude.com/en/docs/claude-code/mcp#add-mcp-servers-from-jso
       }
     }
 
-For [Claude Code](https://docs.claude.com/en/docs/claude-code/overview):
+For [Claude Code](https://code.claude.com/docs/en/overview):
 
     claude mcp add -s "user" r-btw -- Rscript -e "btw::btw_mcp_server()"
 
