@@ -74,14 +74,10 @@ btw_tools <- function(...) {
 
   tools_to_keep <- map_lgl(.btw_tools, is_tool_match, tools)
   res <- .btw_tools[tools_to_keep]
-  res <- as_ellmer_tools(res)
 
-  tools_can_register <- map_lgl(res, function(tool) {
-    is.null(tool@annotations$btw_can_register) ||
-      tool@annotations$btw_can_register()
-  })
-
-  res[tools_can_register]
+  # as_ellmer_tools() now handles can_register checks before instantiation
+  # and propagates can_register to btw_can_register annotation
+  as_ellmer_tools(res)
 }
 
 is_tool_match <- function(tool, labels = NULL) {
@@ -103,9 +99,39 @@ is_tool_match <- function(tool, labels = NULL) {
 # Convert from .btw_tools (or a filtered version of it)
 # to a format compatible with `client$set_tools()`
 as_ellmer_tools <- function(x) {
+  # 1. Filter by can_register BEFORE instantiation
+  # This prevents infinite recursion when a tool's $tool() function
+  # tries to resolve tools that include itself (e.g., subagent)
+  can_register_fns <- map(x, function(.x) .x$can_register)
+  can_instantiate <- map_lgl(can_register_fns, function(fn) {
+    is.null(fn) || fn()
+  })
+  x <- x[can_instantiate]
+  can_register_fns <- can_register_fns[can_instantiate]
+
+  # 2. Instantiate tools
   groups <- map_chr(x, function(.x) .x$group)
   tools <- compact(map(x, function(.x) .x$tool()))
+
+  # Handle case where compact() removed some tools
+  # (shouldn't happen normally, but be defensive)
+  if (length(tools) < length(groups)) {
+    groups <- groups[seq_along(tools)]
+    can_register_fns <- can_register_fns[seq_along(tools)]
+  }
+
+  # 3. Set icons
   tools <- map2(tools, groups, set_tool_icon)
+
+  # 4. Propagate can_register to btw_can_register annotation
+  tools <- map2(tools, can_register_fns, function(tool, fn) {
+    if (!is.null(fn)) {
+      tool@annotations$btw_can_register <- fn
+    }
+    tool
+  })
+
+  # 5. Wrap with intent
   map(tools, wrap_with_intent)
 }
 

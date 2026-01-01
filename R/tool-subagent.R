@@ -309,6 +309,16 @@ btw_subagent_client_config <- function(
   # Track whether tools were explicitly provided
   tools_explicit <- !is.null(tools)
 
+  # Error immediately if subagent is explicitly requested
+  # This provides clear feedback rather than silent filtering
+  if (subagent_explicitly_requested(tools)) {
+    cli::cli_abort(c(
+      "Subagents cannot spawn other subagents.",
+      "x" = "The {.arg tools} parameter includes {.val btw_tool_subagent}.",
+      "i" = "Remove the subagent tool from the tools list."
+    ))
+  }
+
   subagent_client <-
     client %||%
     getOption("btw.subagent.client") %||%
@@ -323,7 +333,9 @@ btw_subagent_client_config <- function(
   tools_allowed <-
     tools_allowed %||%
     getOption("btw.subagent.tools_allowed")
-  tools_allowed <- subagent_disallow_recursion(tools_allowed)
+  # Note: Don't filter subagent from tools_allowed here.
+  # The allowed list should be used as-is for validation.
+  # The final subagent_disallow_recursion() at the end handles the actual filtering.
 
   configured_tools <-
     tools %||%
@@ -381,25 +393,42 @@ btw_subagent_client_config <- function(
 }
 
 subagent_disallow_recursion <- function(tools) {
+  if (is.null(tools)) return(NULL)
+
   if (is.character(tools)) {
-    if ("btw_tool_subagent" %in% tools || "subagent" %in% tools) {
-      cli::cli_warn(
-        "Removing {.code btw_tool_subagent} from subagent toolset to prevent recursion."
-      )
-      return(setdiff(tools, c("btw_tool_subagent", "subagent")))
-    }
-    return(tools)
+    return(setdiff(tools, c("btw_tool_subagent", "subagent")))
   }
 
   keep(tools, function(tool) {
-    if (tool@name != "btw_tool_subagent") {
-      return(TRUE)
-    }
-    cli::cli_warn(
-      "Removing {.code btw_tool_subagent} from subagent toolset to prevent recursion."
-    )
-    FALSE
+    !inherits(tool, "ellmer::ToolDef") || tool@name != "btw_tool_subagent"
   })
+}
+
+#' Check if subagent tool is explicitly requested
+#'
+#' Detects explicit requests for the subagent tool by name (not via group).
+#' Used to provide clear error messages when users try to give subagents
+#' the ability to spawn other subagents.
+#'
+#' @param tools Character vector of tool names/groups or list of ToolDef objects
+#' @return TRUE if subagent is explicitly requested by name, FALSE otherwise
+#' @noRd
+subagent_explicitly_requested <- function(tools) {
+  if (is.null(tools)) return(FALSE)
+
+  if (is.character(tools)) {
+    return("btw_tool_subagent" %in% tools || "subagent" %in% tools)
+  }
+
+  if (is.list(tools)) {
+    for (t in tools) {
+      if (inherits(t, "ellmer::ToolDef") && t@name == "btw_tool_subagent") {
+        return(TRUE)
+      }
+    }
+  }
+
+  FALSE
 }
 
 #' Build dynamic tool description for btw_tool_subagent
@@ -473,11 +502,25 @@ btw_tool_subagent_config <- function(config) {
   }
 }
 
+# Helper: Check if subagent tool can register
+btw_can_register_subagent_tool <- function() {
+
+  # Prevent registration when resolving tools for subagent description.
+  # This breaks the infinite recursion chain that occurs when the tool's
+  # $tool() function calls btw_tools() which would try to instantiate
+  # this tool again.
+  !isTRUE(getOption(".btw_resolving_for_subagent"))
+}
+
 # Register the tool
 .btw_add_to_tools(
   name = "btw_tool_subagent",
   group = "agent",
+  can_register = function() btw_can_register_subagent_tool(),
   tool = function() {
+    # Set context flag before any tool resolution to prevent recursion
+    withr::local_options(.btw_resolving_for_subagent = TRUE)
+
     config <- capture_subagent_config()
     tools_allowed <- config$tools_allowed
 
@@ -497,8 +540,8 @@ btw_tool_subagent_config <- function(config) {
       annotations = ellmer::tool_annotations(
         title = "Subagent",
         read_only_hint = FALSE,
-        open_world_hint = TRUE,
-        btw_can_register = function() TRUE
+        open_world_hint = TRUE
+        # btw_can_register is propagated from can_register by as_ellmer_tools()
       ),
       arguments = list(
         prompt = ellmer::type_string(

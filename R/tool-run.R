@@ -383,6 +383,7 @@ fansi_to_html <- function(text) {
 .btw_add_to_tools(
   name = "btw_tool_run_r",
   group = "run",
+  can_register = function() btw_can_register_run_r_tool(),
   tool = function() {
     ellmer::tool(
       function(code) {
@@ -426,8 +427,7 @@ Executes R code and captures printed values, text output, plots, messages, warni
       annotations = ellmer::tool_annotations(
         title = "Run R Code",
         read_only_hint = FALSE,
-        open_world_hint = FALSE,
-        btw_can_register = btw_can_register_run_r_tool
+        open_world_hint = FALSE
       ),
       arguments = list(
         code = ellmer::type_string("The R code to run")
