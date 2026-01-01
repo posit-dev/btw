@@ -217,15 +217,15 @@ test_that("build_subagent_description() includes basic text", {
   expect_match(desc, "subagent")
 })
 
-test_that("btw_tool_subagent is registered in btw_tools", {
+test_that("btw_tool_agent_subagent is registered in btw_tools", {
   all_tools <- btw_tools()
 
   tool_names <- sapply(all_tools, function(t) t@name)
-  expect_true("btw_tool_subagent" %in% tool_names)
+  expect_true("btw_tool_agent_subagent" %in% tool_names)
 
-  subagent_tool <- all_tools[[which(tool_names == "btw_tool_subagent")]]
+  subagent_tool <- all_tools[[which(tool_names == "btw_tool_agent_subagent")]]
 
-  expect_equal(subagent_tool@name, "btw_tool_subagent")
+  expect_equal(subagent_tool@name, "btw_tool_agent_subagent")
   expect_type(subagent_tool@description, "character")
   expect_match(subagent_tool@description, "Delegate a task")
   expect_true(length(subagent_tool@arguments) > 0)
@@ -431,10 +431,10 @@ test_that("btw_subagent_client_config() tools_allowed works with specific tool n
 
 # Tests for subagent tool filtering (prevents recursive subagents)
 
-test_that("btw_tool_subagent errors when explicitly requested", {
+test_that("btw_tool_agent_subagent errors when explicitly requested", {
   # Explicitly requesting the subagent tool now throws an error
   expect_error(
-    btw_subagent_client_config(tools = c("btw_tool_subagent", "docs")),
+    btw_subagent_client_config(tools = c("btw_tool_agent_subagent", "docs")),
     "Subagents cannot spawn other subagents"
   )
 
@@ -445,7 +445,7 @@ test_that("btw_tool_subagent errors when explicitly requested", {
   )
 })
 
-test_that("btw_tool_subagent is filtered out from default tools", {
+test_that("btw_tool_agent_subagent is filtered out from default tools", {
   withr::local_options(
     btw.subagent.tools_default = NULL,
     btw.tools = NULL,
@@ -457,25 +457,25 @@ test_that("btw_tool_subagent is filtered out from default tools", {
 
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
 
-  # btw_tool_subagent should not be in the tools
-  expect_false("btw_tool_subagent" %in% tool_names)
+  # btw_tool_agent_subagent should not be in the tools
+  expect_false("btw_tool_agent_subagent" %in% tool_names)
 
   # But other tools should be present
   expect_true(length(tool_names) > 0)
 })
 
-test_that("btw_tool_subagent is silently filtered out from 'agent' tool group", {
-  # Request the 'agent' tool group which includes btw_tool_subagent
+test_that("btw_tool_agent_subagent is silently filtered out from 'agent' tool group", {
+  # Request the 'agent' tool group which includes btw_tool_agent_subagent
   # The subagent tool is silently filtered via can_register (no warning)
   chat <- btw_subagent_client_config(tools = c("agent"))
 
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
 
-  # btw_tool_subagent should be filtered out
-  expect_false("btw_tool_subagent" %in% tool_names)
+  # btw_tool_agent_subagent should be filtered out
+  expect_false("btw_tool_agent_subagent" %in% tool_names)
 })
 
-test_that("btw_tool_subagent is silently filtered out even when in tools_allowed", {
+test_that("btw_tool_agent_subagent is silently filtered out even when in tools_allowed", {
   withr::local_options(
     btw.subagent.tools_allowed = c("agent", "docs")
   )
@@ -486,26 +486,26 @@ test_that("btw_tool_subagent is silently filtered out even when in tools_allowed
 
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
 
-  # btw_tool_subagent should still be filtered out
-  expect_false("btw_tool_subagent" %in% tool_names)
+  # btw_tool_agent_subagent should still be filtered out
+  expect_false("btw_tool_agent_subagent" %in% tool_names)
 
   # But other tools should be present
   expect_true(any(grepl("^btw_tool_docs_", tool_names)))
 })
 
-test_that("btw_tool_subagent never appears in chat$get_tools() for subagent", {
+test_that("btw_tool_agent_subagent never appears in chat$get_tools() for subagent", {
   # Test multiple scenarios to ensure subagent tool never appears
 
   # Scenario 1: Explicit request → throws error
   expect_error(
-    btw_subagent_client_config(tools = c("btw_tool_subagent")),
+    btw_subagent_client_config(tools = c("btw_tool_agent_subagent")),
     "Subagents cannot spawn other subagents"
   )
 
   # Scenario 2: Via tool group → silently filtered
   chat2 <- btw_subagent_client_config(tools = c("agent"))
   expect_false(
-    "btw_tool_subagent" %in% sapply(chat2$get_tools(), function(t) t@name)
+    "btw_tool_agent_subagent" %in% sapply(chat2$get_tools(), function(t) t@name)
   )
 
   # Scenario 3: Default tools → silently filtered
@@ -515,24 +515,26 @@ test_that("btw_tool_subagent never appears in chat$get_tools() for subagent", {
   )
   chat3 <- btw_subagent_client_config(tools = NULL)
   expect_false(
-    "btw_tool_subagent" %in% sapply(chat3$get_tools(), function(t) t@name)
+    "btw_tool_agent_subagent" %in% sapply(chat3$get_tools(), function(t) t@name)
   )
 
   # Scenario 4: Mixed explicit with other tools → throws error
   expect_error(
-    btw_subagent_client_config(tools = c("btw_tool_subagent", "docs", "files")),
+    btw_subagent_client_config(
+      tools = c("btw_tool_agent_subagent", "docs", "files")
+    ),
     "Subagents cannot spawn other subagents"
   )
 })
 
 test_that("subagent tool errors even when in tools_allowed", {
   withr::local_options(
-    btw.subagent.tools_allowed = c("btw_tool_subagent", "docs")
+    btw.subagent.tools_allowed = c("btw_tool_agent_subagent", "docs")
   )
 
   # Even if subagent tool is in allowed list, explicit request throws error
   expect_error(
-    btw_subagent_client_config(tools = c("btw_tool_subagent", "docs")),
+    btw_subagent_client_config(tools = c("btw_tool_agent_subagent", "docs")),
     "Subagents cannot spawn other subagents"
   )
 
@@ -541,7 +543,7 @@ test_that("subagent tool errors even when in tools_allowed", {
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
 
   # Subagent tool should be filtered out
-  expect_false("btw_tool_subagent" %in% tool_names)
+  expect_false("btw_tool_agent_subagent" %in% tool_names)
 
   # Docs tools should remain
   expect_true(any(grepl("^btw_tool_docs_", tool_names)))

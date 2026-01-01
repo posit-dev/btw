@@ -1,3 +1,6 @@
+#' @include tool-result.R
+NULL
+
 BtwSubagentResult <- S7::new_class(
   "BtwSubagentResult",
   parent = BtwToolResult,
@@ -9,7 +12,7 @@ BtwSubagentResult <- S7::new_class(
 #' Tool: Subagent
 #'
 #' @description
-#' `btw_tool_subagent()` is a btw tool that enables hierarchical agent
+#' `btw_tool_agent_subagent()` is a btw tool that enables hierarchical agent
 #' workflows. When used by an LLM assistant (like [btw_app()], [btw_client()],
 #' or third-party tools like Claude Code), this tool allows the orchestrating
 #' agent to delegate complex tasks to specialized subagents, each with their own
@@ -75,7 +78,7 @@ BtwSubagentResult <- S7::new_class(
 #' @examples
 #' \dontrun{
 #' # Typically used by LLMs via tool use, but can be called directly for testing
-#' result <- btw_tool_subagent(
+#' result <- btw_tool_agent_subagent(
 #'   prompt = "List all R files in the current directory",
 #'   tools = c("btw_tool_files_list_files")
 #' )
@@ -85,7 +88,7 @@ BtwSubagentResult <- S7::new_class(
 #' session_id <- result@session_id
 #'
 #' # Resume the same session with a follow-up
-#' result2 <- btw_tool_subagent(
+#' result2 <- btw_tool_agent_subagent(
 #'   prompt = "Now read the first file you found",
 #'   tools = c("btw_tool_files_read_text_file"),
 #'   session_id = session_id
@@ -97,7 +100,7 @@ BtwSubagentResult <- S7::new_class(
 #'   btw.subagent.tools_default = "files"  # Default to file tools only
 #' ))
 #'
-#' result3 <- btw_tool_subagent(
+#' result3 <- btw_tool_agent_subagent(
 #'   prompt = "Find all TODO comments in R files"
 #' )
 #'
@@ -108,14 +111,14 @@ BtwSubagentResult <- S7::new_class(
 #' ))
 #'
 #' # This works - files tools are allowed
-#' result4 <- btw_tool_subagent(
+#' result4 <- btw_tool_agent_subagent(
 #'   prompt = "List R files",
 #'   tools = "files"
 #' )
 #'
 #' # This would error - github tools are not in the allowed list
 #' tryCatch(
-#'   btw_tool_subagent(
+#'   btw_tool_agent_subagent(
 #'     prompt = "Create a GitHub issue",
 #'     tools = "github"
 #'   ),
@@ -146,7 +149,7 @@ BtwSubagentResult <- S7::new_class(
 #' @seealso [btw_tools()] for available tools and tool groups
 #' @family agent tools
 #' @export
-btw_tool_subagent <- function(
+btw_tool_agent_subagent <- function(
   prompt,
   tools = NULL,
   session_id = NULL,
@@ -154,7 +157,7 @@ btw_tool_subagent <- function(
 ) {}
 
 
-btw_tool_subagent_impl <- function(
+btw_tool_agent_subagent_impl <- function(
   prompt,
   tools = NULL,
   session_id = NULL,
@@ -273,7 +276,7 @@ btw_tool_subagent_impl <- function(
 #' Capture subagent configuration from current R options
 #'
 #' Reads the relevant btw.subagent.* and btw.* options and returns them as a
-#' named list for later use by btw_tool_subagent_impl().
+#' named list for later use by btw_tool_agent_subagent_impl().
 #'
 #' @return A list with captured configuration
 #' @noRd
@@ -314,7 +317,7 @@ btw_subagent_client_config <- function(
   if (subagent_explicitly_requested(tools)) {
     cli::cli_abort(c(
       "Subagents cannot spawn other subagents.",
-      "x" = "The {.arg tools} parameter includes {.val btw_tool_subagent}.",
+      "x" = "The {.arg tools} parameter includes {.val btw_tool_agent_subagent}.",
       "i" = "Remove the subagent tool from the tools list."
     ))
   }
@@ -341,7 +344,7 @@ btw_subagent_client_config <- function(
     tools %||%
     tools_default %||%
     compact(map(.btw_tools, function(t) {
-      if (t$name != "btw_tool_subagent") t$tool()
+      if (t$name != "btw_tool_agent_subagent") t$tool()
     }))
 
   configured_tools <- flatten_and_check_tools(configured_tools)
@@ -393,14 +396,16 @@ btw_subagent_client_config <- function(
 }
 
 subagent_disallow_recursion <- function(tools) {
-  if (is.null(tools)) return(NULL)
+  if (is.null(tools)) {
+    return(NULL)
+  }
 
   if (is.character(tools)) {
-    return(setdiff(tools, c("btw_tool_subagent", "subagent")))
+    return(setdiff(tools, c("btw_tool_agent_subagent", "subagent")))
   }
 
   keep(tools, function(tool) {
-    !inherits(tool, "ellmer::ToolDef") || tool@name != "btw_tool_subagent"
+    !inherits(tool, "ellmer::ToolDef") || tool@name != "btw_tool_agent_subagent"
   })
 }
 
@@ -414,15 +419,19 @@ subagent_disallow_recursion <- function(tools) {
 #' @return TRUE if subagent is explicitly requested by name, FALSE otherwise
 #' @noRd
 subagent_explicitly_requested <- function(tools) {
-  if (is.null(tools)) return(FALSE)
+  if (is.null(tools)) {
+    return(FALSE)
+  }
 
   if (is.character(tools)) {
-    return("btw_tool_subagent" %in% tools || "subagent" %in% tools)
+    return("btw_tool_agent_subagent" %in% tools || "subagent" %in% tools)
   }
 
   if (is.list(tools)) {
     for (t in tools) {
-      if (inherits(t, "ellmer::ToolDef") && t@name == "btw_tool_subagent") {
+      if (
+        inherits(t, "ellmer::ToolDef") && t@name == "btw_tool_agent_subagent"
+      ) {
         return(TRUE)
       }
     }
@@ -431,7 +440,7 @@ subagent_explicitly_requested <- function(tools) {
   FALSE
 }
 
-#' Build dynamic tool description for btw_tool_subagent
+#' Build dynamic tool description for btw_tool_agent_subagent
 #'
 #' Generates a description that includes available tool groups dynamically.
 #'
@@ -489,11 +498,11 @@ BEST PRACTICES:
   paste0(desc_base, "\n", desc_tool_use, "\n", tool_summary)
 }
 
-btw_tool_subagent_config <- function(config) {
+btw_tool_agent_subagent_config <- function(config) {
   force(config)
 
   function(prompt, tools = NULL, session_id = NULL) {
-    btw_tool_subagent_impl(
+    btw_tool_agent_subagent_impl(
       prompt = prompt,
       tools = tools,
       session_id = session_id,
@@ -504,7 +513,6 @@ btw_tool_subagent_config <- function(config) {
 
 # Helper: Check if subagent tool can register
 btw_can_register_subagent_tool <- function() {
-
   # Prevent registration when resolving tools for subagent description.
   # This breaks the infinite recursion chain that occurs when the tool's
   # $tool() function calls btw_tools() which would try to instantiate
@@ -514,7 +522,7 @@ btw_can_register_subagent_tool <- function() {
 
 # Register the tool
 .btw_add_to_tools(
-  name = "btw_tool_subagent",
+  name = "btw_tool_agent_subagent",
   group = "agent",
   can_register = function() btw_can_register_subagent_tool(),
   tool = function() {
@@ -525,7 +533,7 @@ btw_can_register_subagent_tool <- function() {
     tools_allowed <- config$tools_allowed
 
     if (is.null(tools_allowed)) {
-      btw_other_tools <- setdiff(names(.btw_tools), "btw_tool_subagent")
+      btw_other_tools <- setdiff(names(.btw_tools), "btw_tool_agent_subagent")
       tools_allowed <- map(.btw_tools[btw_other_tools], function(t) t$tool())
     } else {
       tools_allowed <- subagent_disallow_recursion(tools_allowed)
@@ -534,8 +542,8 @@ btw_can_register_subagent_tool <- function() {
     tools_allowed <- flatten_and_check_tools(tools_allowed)
 
     ellmer::tool(
-      btw_tool_subagent_config(config),
-      name = "btw_tool_subagent",
+      btw_tool_agent_subagent_config(config),
+      name = "btw_tool_agent_subagent",
       description = build_subagent_description(tools_allowed),
       annotations = ellmer::tool_annotations(
         title = "Subagent",
