@@ -40,16 +40,27 @@
 #'
 #' @export
 btw_tools <- function(...) {
+
   tools <- c(...)
   check_character(tools, allow_null = TRUE)
 
+  # Merge built-in tools with custom agent tools from agent-*.md files
+  all_btw_tools <- .btw_tools
+  custom_agents <- get_custom_agent_tools()
+  for (name in names(custom_agents)) {
+    # Custom agents don't override built-in tools
+    if (!name %in% names(all_btw_tools)) {
+      all_btw_tools[[name]] <- custom_agents[[name]]
+    }
+  }
+
   if (length(tools) == 0) {
     withr::local_options(.btw_tools.match_mode = "all")
-    tools <- names(.btw_tools)
+    tools <- names(all_btw_tools)
   } else {
     withr::local_options(.btw_tools.match_mode = "explicit")
-    tool_names <- map_chr(.btw_tools, function(x) x$name)
-    tool_groups <- map_chr(.btw_tools, function(x) x$group)
+    tool_names <- map_chr(all_btw_tools, function(x) x$name)
+    tool_groups <- map_chr(all_btw_tools, function(x) x$group)
 
     allowed <- c(
       tool_groups,
@@ -72,8 +83,8 @@ btw_tools <- function(...) {
     )
   }
 
-  tools_to_keep <- map_lgl(.btw_tools, is_tool_match, tools)
-  res <- .btw_tools[tools_to_keep]
+  tools_to_keep <- map_lgl(all_btw_tools, is_tool_match, tools)
+  res <- all_btw_tools[tools_to_keep]
 
   # as_ellmer_tools() now handles can_register checks before instantiation
   # and propagates can_register to btw_can_register annotation

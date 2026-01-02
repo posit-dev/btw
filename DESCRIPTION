@@ -97,6 +97,7 @@ Collate:
     'task_create_readme.R'
     'tool-result.R'
     'tool-agent-subagent.R'
+    'tool-agent-custom.R'
     'tool-docs-news.R'
     'tool-docs.R'
     'tool-env-df.R'

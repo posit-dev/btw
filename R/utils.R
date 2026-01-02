@@ -174,7 +174,57 @@ path_find_user <- function(filename) {
 }
 
 detect_project_is_r_package <- function(dir = getwd()) {
+
   !is.null(path_find_in_project("DESCRIPTION", dir))
+}
+
+# Agent file discovery ---------------------------------------------------------
+
+#' Find project-level agent-*.md files
+#'
+#' Searches for agent definition files in the `.btw/` directory within the
+#' project root.
+#'
+#' @param dir Starting directory for search (defaults to current working directory)
+#' @return Character vector of absolute paths to agent-*.md files, or empty character
+#' @noRd
+find_project_agent_files <- function(dir = getwd()) {
+  btw_dir <- path_find_in_project(".btw", dir)
+
+  if (is.null(btw_dir) || !fs::dir_exists(btw_dir)) {
+    return(character())
+  }
+
+  files <- fs::dir_ls(btw_dir, regexp = "agent-.*\\.md$", type = "file")
+  as.character(files)
+}
+
+#' Find user-level agent-*.md files
+#'
+#' Searches for agent definition files in user configuration directories:
+#' `~/.btw/` and `~/.config/btw/`.
+#'
+#' @return Character vector of absolute paths to agent-*.md files, or empty character
+#' @noRd
+find_user_agent_files <- function() {
+  if (identical(Sys.getenv("TESTTHAT"), "true")) {
+    return(character())
+  }
+
+  user_dirs <- c(
+    fs::path_home(".btw"),
+    fs::path_home(".config", "btw")
+  )
+
+  files <- character()
+  for (dir in user_dirs) {
+    if (fs::dir_exists(dir)) {
+      found <- fs::dir_ls(dir, regexp = "agent-.*\\.md$", type = "file")
+      files <- c(files, as.character(found))
+    }
+  }
+
+  files
 }
 
 path_btw_cache <- function(...) {
