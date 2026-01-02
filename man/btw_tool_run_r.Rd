@@ -4,7 +4,7 @@
 \alias{btw_tool_run_r}
 \title{Tool: Run R code}
 \usage{
-btw_tool_run_r(code, `_intent` = "")
+btw_tool_run_r(code, `_intent`)
 }
 \arguments{
 \item{code}{A character string containing R code to run.}

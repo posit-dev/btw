@@ -1,8 +1,10 @@
 .btw_tools <- list()
 
-.btw_add_to_tools <- function(name, group = name, tool) {
+.btw_add_to_tools <- function(name, group = name, tool, can_register = NULL) {
   check_string(name)
   check_string(group)
+  check_function(can_register, allow_null = TRUE)
+
   if (!is_function(tool)) {
     abort(
       "`tool` must be a function to ensure `ellmer::tool()` is called at run time."
@@ -16,7 +18,8 @@
   .btw_tools[[name]] <<- list(
     name = name,
     group = group,
-    tool = tool
+    tool = tool,
+    can_register = can_register
   )
 
   invisible(tool)
