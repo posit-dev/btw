@@ -4,10 +4,16 @@
 \alias{btw_agent_tool}
 \title{Create a custom agent tool from a markdown file}
 \usage{
-btw_agent_tool(path)
+btw_agent_tool(path, client = NULL)
 }
 \arguments{
-\item{path}{Path to an agent markdown file (\verb{agent-*.md}).}
+\item{path}{Path to an agent markdown file.}
+
+\item{client}{Optional. A client specification to override the agent's
+configured client. Can be a string like
+\code{"anthropic/claude-sonnet-4-20250514"}, an \link[ellmer:Chat]{ellmer::Chat} object, or a list
+with \code{provider} and \code{model} keys. If \code{NULL} (default), uses the \code{client}
+field from the agent file or falls back to btw's default client resolution.}
 }
 \value{
 An \code{ellmer::ToolDef} object that can be registered with a chat
@@ -95,28 +101,79 @@ Provide specific, actionable feedback.
 
 \subsection{Automatic Discovery}{
 
-Agent files are automatically discovered by \code{\link[=btw_tools]{btw_tools()}} when placed in:
+Agent files are automatically discovered by \code{\link[=btw_tools]{btw_tools()}} when placed in
+the following locations (in order of priority):
 \itemize{
-\item \strong{Project level}: \verb{.btw/agent-*.md} in your project directory
-\item \strong{User level}: \verb{~/.btw/agent-*.md} or \verb{~/.config/btw/agent-*.md}
+\item \strong{Project level (btw)}: \verb{.btw/agent-*.md} in your project directory
+\item \strong{User level (btw)}: \verb{~/.btw/agent-*.md} or \verb{~/.config/btw/agent-*.md}
+\item \strong{Project level (Claude Code)}: \verb{.claude/agents/*.md} in your project directory
+\item \strong{User level (Claude Code)}: \verb{~/.claude/agents/*.md}
 }
 
-Project-level agents take precedence over user-level agents with the same
-name.
+btw-style agents take precedence over Claude Code agents with the same name.
+When duplicate agent names are found, a warning is issued.
+}
+
+\subsection{Claude Code Compatibility}{
+
+btw supports loading agent files from Claude Code's \verb{.claude/agents/}
+directory for compatibility. However, some Claude Code fields are not
+supported:
+\itemize{
+\item \strong{Name normalization}: Agent names with hyphens (e.g., \code{code-reviewer})
+are automatically converted to underscores (\code{code_reviewer}) for R
+compatibility.
+\item \strong{Ignored fields}: The following Claude Code fields are ignored (with
+a warning): \code{model}, \code{tools}, \code{permissionMode}, \code{skills}. Use btw's
+\code{client} field instead of \code{model}, and btw agents use default tools.
+\item \strong{\code{client} argument}: Use the \code{client} argument to manually override
+the model for any agent file.
+}
 }
 }
 \examples{
-\dontrun{
-# Create a tool from a specific agent file
-tool <- btw_agent_tool("path/to/agent-reviewer.md")
+# Create a btw-style agent file
+withr::with_tempdir({
+  dir.create(".btw")
+  writeLines(
+    c(
+      "---",
+      "name: code_reviewer",
+      "description: Reviews code for best practices.",
+      "---",
+      "",
+      "You are a code reviewer. Analyze code for best practices."
+    ),
+    ".btw/agent-code_reviewer.md"
+  )
 
-# Register with a chat client
-chat <- ellmer::chat_anthropic()
-chat$register_tool(tool)
+  tool <- btw_agent_tool(".btw/agent-code_reviewer.md")
+  # Use `chat$register_tool(tool)` to register with an ellmer chat client
 
-# Or include with other btw tools
-chat$register_tools(c(btw_tools("docs"), tool))
-}
+  tool
+})
+
+# Create a Claude Code-style agent file (name with hyphens)
+withr::with_tempdir({
+  dir.create(".claude/agents", recursive = TRUE)
+  writeLines(
+    c(
+      "---",
+      "name: test-helper",
+      "description: Helps write tests.",
+      "model: sonnet",
+      "---",
+      "",
+      "You help write tests for R code."
+    ),
+    ".claude/agents/test-helper.md"
+  )
+
+  tool <- btw_agent_tool(".claude/agents/test-helper.md")
+  # Use `chat$register_tool(tool)` to register with an ellmer chat client
+
+  tool
+})
 
 }
 \seealso{
