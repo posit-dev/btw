@@ -163,7 +163,13 @@ btw_client_config <- function(
   config$tools <- flatten_and_check_tools(config$tools)
 
   if (!is.null(client)) {
-    config$client <- as_ellmer_client(client)
+    # Check if client is an alias name that should be resolved from config
+    resolved <- resolve_client_alias(client, config$client)
+    if (!is.null(resolved)) {
+      config$client <- as_ellmer_client(resolved)
+    } else {
+      config$client <- as_ellmer_client(client)
+    }
     return(config)
   }
 
@@ -257,8 +263,10 @@ as_ellmer_client <- function(client) {
 }
 
 is_client_array <- function(client) {
-  # A client array is a character vector with multiple elements,
-  # or an unnamed list where elements are client configs.
+  # A client array is:
+  # - A character vector with multiple elements
+  # - An unnamed list where elements are client configs
+  # - A named list of aliases (names are not 'provider' or 'model')
   # Single configs are: single strings, Chat objects, or lists with a 'provider' key
 
   # Character vector with multiple elements is an array
@@ -279,6 +287,11 @@ is_client_array <- function(client) {
     return(FALSE)
   }
 
+  # Check for alias map: named list where names are not 'provider' or 'model'
+  if (is_client_alias_map(client)) {
+    return(TRUE)
+  }
+
   # Check if it's an unnamed list (array-like)
   nms <- names(client)
   if (!is.null(nms) && any(nzchar(nms))) {
@@ -289,7 +302,53 @@ is_client_array <- function(client) {
   length(client) > 0
 }
 
-format_client_label <- function(client) {
+is_client_alias_map <- function(client) {
+  # An alias map is a named list where:
+  # - All elements have names
+  # - Names are not 'provider' or 'model' (which would indicate a single config)
+  if (!is.list(client) || length(client) == 0) {
+    return(FALSE)
+  }
+
+  nms <- names(client)
+  if (is.null(nms) || !all(nzchar(nms))) {
+    return(FALSE)
+  }
+
+  # If it has 'provider' or 'model' as a name, it's a single config, not an alias map
+  if (any(nms %in% c("provider", "model"))) {
+    return(FALSE)
+  }
+
+  TRUE
+}
+
+resolve_client_alias <- function(client, client_config) {
+  # Resolve a potential alias name from a client alias map
+  # Returns the resolved client config, or NULL if not an alias
+
+  # Only strings can be alias names
+  if (!is_string(client)) {
+    return(NULL)
+  }
+
+  # Check if client_config is an alias map
+  if (!is_client_alias_map(client_config)) {
+    return(NULL)
+  }
+
+  # Look up alias (case-insensitive)
+  aliases <- names(client_config)
+  alias_match <- match(tolower(client), tolower(aliases))
+
+  if (is.na(alias_match)) {
+    return(NULL)
+  }
+
+  client_config[[alias_match]]
+}
+
+format_client_label <- function(client, alias = NULL) {
   if (is_string(client)) {
     client_parts <- strsplit(client, "/", fixed = TRUE)[[1]]
     client <- list(
@@ -301,15 +360,21 @@ format_client_label <- function(client) {
   }
 
   if (is.list(client) && !is.null(client$provider)) {
-    if (!is.null(client$model)) {
-      return(cli::format_inline(
-        "{.field {client$provider}}/{.strong {client$model}}"
-      ))
+    provider_model <- if (!is.null(client$model)) {
+      cli::format_inline("{.field {client$provider}}/{.strong {client$model}}")
     } else {
-      return(cli::format_inline("{.field {client$provider}}"))
+      cli::format_inline("{.field {client$provider}}")
     }
+
+    if (!is.null(alias)) {
+      return(cli::format_inline("{.strong {alias}}: {provider_model}"))
+    }
+    return(provider_model)
   }
 
+  if (!is.null(alias)) {
+    return(cli::format_inline("{.strong {alias}}: <unknown>"))
+  }
   "<unknown>"
 }
 
@@ -327,8 +392,15 @@ choose_client_from_array <- function(clients, is_user_interactive = FALSE) {
     return(clients[[1]])
   }
 
+  # Get alias names if this is an alias map
+  aliases <- if (is_client_alias_map(clients)) names(clients) else NULL
+
   # Build labels for each option
-  labels <- vapply(clients, format_client_label, character(1))
+  labels <- vapply(
+    seq_along(clients),
+    function(i) format_client_label(clients[[i]], alias = aliases[i]),
+    character(1)
+  )
 
   # Display the menu
   cli::cli_h3("Select a client")
@@ -341,11 +413,16 @@ choose_client_from_array <- function(clients, is_user_interactive = FALSE) {
   }
   cli::cli_text("")
 
+  # Build prompt
+  prompt_hint <- if (!is.null(aliases)) {
+    sprintf("Enter choice [1-%d, alias name, or 0 to exit]: ", length(clients))
+  } else {
+    sprintf("Enter choice [1-%d, 0 to exit]: ", length(clients))
+  }
+
   # Get user input
   repeat {
-    choice <- readline(
-      prompt = sprintf("Enter choice [1-%d, 0 to exit]: ", length(clients))
-    )
+    choice <- readline(prompt = prompt_hint)
 
     if (choice == "0") {
       cli::cli_abort("Aborted by user.")
@@ -354,6 +431,14 @@ choose_client_from_array <- function(clients, is_user_interactive = FALSE) {
     # Enter/empty string = default (first option)
     if (choice == "") {
       return(clients[[1]])
+    }
+
+    # Try to match alias name (case-insensitive)
+    if (!is.null(aliases)) {
+      alias_match <- match(tolower(choice), tolower(aliases))
+      if (!is.na(alias_match)) {
+        return(clients[[alias_match]])
+      }
     }
 
     # Try to parse as integer
@@ -365,9 +450,15 @@ choose_client_from_array <- function(clients, is_user_interactive = FALSE) {
       return(clients[[choice_int]])
     }
 
-    cli::cli_alert_warning(
-      "Invalid choice. Please enter a number between {.strong 1 and {length(clients)}}."
-    )
+    if (!is.null(aliases)) {
+      cli::cli_alert_warning(
+        "Invalid choice. Enter a number (1-{length(clients)}) or alias name."
+      )
+    } else {
+      cli::cli_alert_warning(
+        "Invalid choice. Please enter a number between {.strong 1 and {length(clients)}}."
+      )
+    }
   }
 }
 
