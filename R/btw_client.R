@@ -199,7 +199,6 @@ btw_default_chat_client <- function() {
 }
 
 as_ellmer_client <- function(client) {
-
   if (inherits(client, "Chat")) {
     return(client)
   }
@@ -279,11 +278,17 @@ flatten_and_check_tools <- function(tools) {
 }
 
 flatten_config_options <- function(opts, prefix = "btw", sep = ".") {
+  # Keys that should be treated as leaf values (not recursed into)
+  # even if they contain nested lists
+  leaf_keys <- c("client")
+
   out <- list()
 
-  recurse <- function(x, key_prefix) {
-    # If x is a list, dive deeper
-    if (is.list(x) && !is.data.frame(x)) {
+  recurse <- function(x, key_prefix, current_key = "") {
+    is_leaf_key <- current_key %in% leaf_keys
+
+    # If x is a list and not a leaf key, dive deeper
+    if (is.list(x) && !is.data.frame(x) && !is_leaf_key) {
       nm <- names2(x)
       if (!all(nzchar(nm))) {
         cli::cli_abort("All options must be named.")
@@ -295,7 +300,7 @@ flatten_config_options <- function(opts, prefix = "btw", sep = ".") {
         } else {
           new_key <- nm[i]
         }
-        recurse(x[[i]], new_key)
+        recurse(x[[i]], new_key, current_key = nm[i])
       }
     } else {
       # Leaf: assign it directly

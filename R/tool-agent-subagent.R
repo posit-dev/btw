@@ -317,19 +317,41 @@ btw_agent_display_markdown <- function(result, session_id, agent_name, prompt) {
 
 #' Resolve agent chat client from options hierarchy
 #'
+#' Checks for client configuration in the following order:
+#' 1. Explicit `client` argument (from agent-*.md file)
+#' 2. `btw.subagent.client` R option
+#' 3. `btw.md` file's `options.subagent.client`
+#' 4. `btw.client` R option
+#' 5. `btw.md` file's `client`
+#' 6. Default Anthropic client
+#'
 #' @param client Optional explicit client
 #' @return A Chat object
 #' @noRd
 btw_agent_resolve_client <- function(client = NULL) {
+  # Check explicit argument and R options first
   resolved <- client %||%
     getOption("btw.subagent.client") %||%
     getOption("btw.client")
 
   if (!is.null(resolved)) {
-    as_ellmer_client(resolved)$clone()
-  } else {
-    btw_default_chat_client()
+    return(as_ellmer_client(resolved)$clone())
   }
+
+
+  # Fall back to btw.md file configuration
+
+  btw_config <- read_btw_file()
+
+  # Check for subagent-specific client in btw.md options
+  resolved <- btw_config$options[["btw.subagent.client"]] %||%
+    btw_config$client
+
+  if (!is.null(resolved)) {
+    return(as_ellmer_client(resolved)$clone())
+  }
+
+  btw_default_chat_client()
 }
 
 
