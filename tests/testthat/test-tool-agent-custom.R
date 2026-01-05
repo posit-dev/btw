@@ -436,13 +436,14 @@ describe("custom_icon()", {
     expect_true(grepl("fa-ho", as.character(result)))
   })
 
-  it("returns shiny.tag even for unknown icon names", {
-    # shiny::icon() doesn't error for unknown names, it just prints a message
+  it("warns and returns NULL for unknown icon names", {
     skip_if_not_installed("shiny")
 
-    result <- custom_icon("some-unknown-icon-name")
-    # shiny::icon() returns a tag anyway
-    expect_s3_class(result, "shiny.tag")
+    expect_warning(
+      result <- custom_icon("some-unknown-icon-name"),
+      "is not supported"
+    )
+    expect_null(result)
   })
 
   it("warns for unknown package prefix", {
@@ -624,8 +625,7 @@ describe("custom_icon() integration with btw_agent_tool()", {
     expect_false(is.null(tool@annotations$icon))
   })
 
-  it("accepts unknown shiny icon names without warning", {
-    # shiny::icon() doesn't warn for unknown icon names, so neither do we
+  it("falls back to default icon for unknown shiny icon names", {
     skip_if_not_installed("shiny")
 
     tmp_dir <- withr::local_tempdir()
@@ -642,11 +642,13 @@ describe("custom_icon() integration with btw_agent_tool()", {
       agent_file
     )
 
-    # No warning expected since shiny::icon() accepts any name
-    tool <- btw_agent_tool(agent_file)
+    expect_warning(
+      tool <- btw_agent_tool(agent_file),
+      "is not supported"
+    )
 
     expect_false(is.null(tool))
-    # Will have the shiny icon (even though it's not a real FA icon)
-    expect_s3_class(tool@annotations$icon, "shiny.tag")
+    # Should fall back to default agent icon
+    expect_false(is.null(tool@annotations$icon))
   })
 })

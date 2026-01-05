@@ -422,7 +422,12 @@ custom_icon <- function(icon_spec) {
     return(htmltools::HTML(icon_spec))
   }
 
-  # Package icon: pkg::icon-name
+  # Default to shiny::icon()
+  pkg <- "shiny"
+  icon_fn <- "icon"
+  icon_name <- icon_spec
+
+  # Parse package prefix if present: pkg::icon-name
   if (grepl("::", icon_spec, fixed = TRUE)) {
     parts <- strsplit(icon_spec, "::", fixed = TRUE)[[1]]
     if (length(parts) != 2) {
@@ -449,56 +454,62 @@ custom_icon <- function(icon_spec) {
       cli::cli_warn("Unknown icon package: {.val {pkg}}")
       return(NULL)
     }
-
-    # Check if package is installed
-    if (!requireNamespace(pkg, quietly = TRUE)) {
-      cli::cli_warn(
-        "Package {.pkg {pkg}} is not installed for icon {.val {icon_spec}}"
-      )
-      return(NULL)
-    }
-
-    # Get the function from the package namespace
-    ns <- tryCatch(asNamespace(pkg), error = function(e) NULL)
-    if (is.null(ns)) {
-      cli::cli_warn("Cannot access namespace for package {.pkg {pkg}}")
-      return(NULL)
-    }
-
-    fn <- ns[[icon_fn]]
-    if (is.null(fn) || !is.function(fn)) {
-      cli::cli_warn(
-        "Function {.fn {icon_fn}} not found in package {.pkg {pkg}}"
-      )
-      return(NULL)
-    }
-
-    # Call the icon function
-    result <- tryCatch(
-      fn(icon_name),
-      error = function(e) {
-        cli::cli_warn(c(
-          "Error creating icon {.val {icon_name}} from {.pkg {pkg}}",
-          "x" = conditionMessage(e)
-        ))
-        NULL
-      }
-    )
-
-    return(result)
   }
 
-  # Default: use shiny::icon()
-  tryCatch(
-    shiny::icon(icon_spec),
+  # Check if package is installed
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    cli::cli_warn(
+      "Package {.pkg {pkg}} is not installed for icon {.val {icon_spec}}"
+    )
+    return(NULL)
+  }
+
+  # Get the function from the package namespace
+  ns <- tryCatch(asNamespace(pkg), error = function(e) NULL)
+  if (is.null(ns)) {
+    cli::cli_warn("Cannot access namespace for package {.pkg {pkg}}")
+    return(NULL)
+  }
+
+  fn <- ns[[icon_fn]]
+  if (is.null(fn) || !is.function(fn)) {
+    cli::cli_warn(
+      "Function {.fn {icon_fn}} not found in package {.pkg {pkg}}"
+    )
+    return(NULL)
+  }
+
+  # Call the icon function, catching errors and "unknown icon" messages
+  unknown_icon <- FALSE
+
+  result <- tryCatch(
+    withCallingHandlers(
+      fn(icon_name),
+      message = function(m) {
+        if (grepl("does not correspond to a known icon", conditionMessage(m))) {
+          unknown_icon <<- TRUE
+          invokeRestart("muffleMessage")
+        }
+      }
+    ),
     error = function(e) {
       cli::cli_warn(c(
-        "Invalid icon name: {.val {icon_spec}}",
+        "Error creating icon {.val {icon_name}} from {.pkg {pkg}}",
         "x" = conditionMessage(e)
       ))
       NULL
     }
   )
+
+  if (unknown_icon) {
+    pkg_fn <- paste0(pkg, "::", icon_fn)
+    cli::cli_warn(
+      "Icon {.val {icon_name}} is not supported by {.fn {pkg_fn}}."
+    )
+    return(NULL)
+  }
+
+  result
 }
 
 #' Get custom agent tools with lazy discovery and caching
