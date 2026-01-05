@@ -821,3 +821,273 @@ test_that("btw_client() throws for invalid `tools` argument", {
     "tools\\[\\[2\\]\\]"
   )
 })
+
+# --- Multiple Providers and Models ---
+
+describe("client_aliases()", {
+  it("returns NULL for non-list inputs", {
+    expect_null(client_aliases("anthropic/claude"))
+    expect_null(client_aliases(c("a", "b")))
+    expect_null(client_aliases(42))
+  })
+
+  it("returns NULL for empty list", {
+    expect_null(client_aliases(list()))
+  })
+
+  it("returns NULL for unnamed list", {
+    expect_null(client_aliases(list("anthropic/claude", "openai/gpt-4")))
+  })
+
+  it("returns NULL for list with 'provider' key (single config)", {
+    expect_null(client_aliases(list(provider = "anthropic", model = "claude")))
+  })
+
+  it("returns NULL for list with 'model' key (single config)", {
+    expect_null(client_aliases(list(model = "claude")))
+  })
+
+  it("returns alias names for valid alias map", {
+    aliases <- client_aliases(list(
+      haiku = "anthropic/claude-haiku",
+      sonnet = "anthropic/claude-sonnet"
+    ))
+    expect_equal(aliases, c("haiku", "sonnet"))
+  })
+
+  it("returns alias names for mixed format alias map", {
+    aliases <- client_aliases(list(
+      fast = "openai/gpt-4o-mini",
+      smart = list(provider = "anthropic", model = "claude-sonnet-4")
+    ))
+    expect_equal(aliases, c("fast", "smart"))
+  })
+})
+
+describe("is_client_array()", {
+  it("returns FALSE for single string", {
+    expect_false(is_client_array("anthropic/claude"))
+  })
+
+  it("returns TRUE for character vector with multiple elements", {
+    expect_true(is_client_array(c("anthropic/claude", "openai/gpt-4")))
+  })
+
+  it("returns FALSE for Chat object", {
+    withr::local_envvar(ANTHROPIC_API_KEY = "test")
+    chat <- ellmer::chat_anthropic()
+    expect_false(is_client_array(chat))
+  })
+
+  it("returns FALSE for single config list with provider", {
+    expect_false(is_client_array(list(provider = "anthropic")))
+  })
+
+  it("returns TRUE for unnamed list of configs", {
+    expect_true(is_client_array(list("anthropic/claude", "openai/gpt-4")))
+  })
+
+  it("returns TRUE for alias map", {
+    expect_true(is_client_array(list(
+      haiku = "anthropic/claude-haiku",
+      sonnet = "anthropic/claude-sonnet"
+    )))
+  })
+})
+
+describe("resolve_client_alias()", {
+  it("returns NULL for non-string input", {
+    clients <- list(haiku = "anthropic/haiku")
+    expect_null(resolve_client_alias(123, clients))
+    expect_null(resolve_client_alias(list(), clients))
+  })
+
+  it("returns NULL when clients is not an alias map", {
+    expect_null(resolve_client_alias("haiku", "anthropic/claude"))
+    expect_null(resolve_client_alias("haiku", list("a", "b")))
+  })
+
+  it("returns NULL for non-matching alias", {
+    clients <- list(haiku = "anthropic/haiku", sonnet = "anthropic/sonnet")
+    expect_null(resolve_client_alias("opus", clients))
+  })
+
+  it("resolves matching alias (case-insensitive)", {
+    clients <- list(
+      Haiku = "anthropic/claude-haiku",
+      Sonnet = list(provider = "anthropic", model = "claude-sonnet-4")
+    )
+    expect_equal(resolve_client_alias("haiku", clients), "anthropic/claude-haiku")
+    expect_equal(resolve_client_alias("SONNET", clients)$provider, "anthropic")
+  })
+})
+
+describe("format_client_label()", {
+  it("formats string provider/model", {
+    label <- format_client_label("anthropic/claude-sonnet-4")
+    expect_match(label, "anthropic")
+    expect_match(label, "claude-sonnet-4")
+  })
+
+  it("formats string provider only", {
+    label <- format_client_label("anthropic")
+    expect_match(label, "anthropic")
+  })
+
+  it("formats list config with provider and model", {
+    label <- format_client_label(list(provider = "openai", model = "gpt-4"))
+    expect_match(label, "openai")
+    expect_match(label, "gpt-4")
+  })
+
+  it("formats list config with provider only", {
+    label <- format_client_label(list(provider = "openai"))
+    expect_match(label, "openai")
+  })
+
+  it("includes alias when provided", {
+    label <- format_client_label("anthropic/claude", alias = "fast")
+    expect_match(label, "fast")
+    expect_match(label, "anthropic")
+  })
+
+  it("returns <unknown> for unrecognized format", {
+    expect_equal(format_client_label(list(foo = "bar")), "<unknown>")
+  })
+})
+
+describe("choose_client_from_array()", {
+  it("throws error for empty array", {
+    expect_error(choose_client_from_array(list()), "No client")
+  })
+
+  it("returns single element without prompting", {
+    result <- choose_client_from_array(list("anthropic/claude"))
+    expect_equal(result, "anthropic/claude")
+  })
+
+  it("returns first element in non-interactive mode", {
+    clients <- list("first", "second", "third")
+    result <- choose_client_from_array(clients, is_user_interactive = FALSE)
+    expect_equal(result, "first")
+  })
+
+  it("returns first element when is_user_interactive is FALSE", {
+    clients <- list(
+      haiku = "anthropic/haiku",
+      sonnet = "anthropic/sonnet"
+    )
+    result <- choose_client_from_array(clients, is_user_interactive = FALSE)
+    expect_equal(result, "anthropic/haiku")
+  })
+})
+
+describe("btw_client() with multiple clients", {
+  withr::local_envvar(list(OPENAI_API_KEY = "test", ANTHROPIC_API_KEY = "test"))
+
+  it("uses first client from array in non-interactive mode", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  - openai/gpt-4.1-mini",
+        "  - anthropic/claude-sonnet-4",
+        "---"
+      )
+    )
+
+    chat <- btw_client(path_btw = btw_md)
+    expect_equal(chat$get_model(), "gpt-4.1-mini")
+  })
+
+  it("uses first client from alias map in non-interactive mode", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  fast: openai/gpt-4.1-mini",
+        "  smart: anthropic/claude-sonnet-4",
+        "---"
+      )
+    )
+
+    chat <- btw_client(path_btw = btw_md)
+    expect_equal(chat$get_model(), "gpt-4.1-mini")
+  })
+
+  it("resolves alias passed as client argument", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  fast: openai/gpt-4.1-mini",
+        "  smart: anthropic/claude-sonnet-4",
+        "---"
+      )
+    )
+
+    chat <- btw_client(client = "smart", path_btw = btw_md)
+    expect_equal(chat$get_model(), "claude-sonnet-4")
+    expect_s3_class(chat$get_provider(), "ellmer::ProviderAnthropic")
+  })
+
+  it("resolves alias case-insensitively", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  Fast: openai/gpt-4.1-mini",
+        "  Smart: anthropic/claude-sonnet-4",
+        "---"
+      )
+    )
+
+    chat <- btw_client(client = "SMART", path_btw = btw_md)
+    expect_equal(chat$get_model(), "claude-sonnet-4")
+  })
+
+  it("uses client argument directly if not an alias", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  fast: openai/gpt-4.1-mini",
+        "---"
+      )
+    )
+
+    # "anthropic" is not an alias, so use it directly
+    chat <- btw_client(client = "anthropic", path_btw = btw_md)
+    expect_s3_class(chat$get_provider(), "ellmer::ProviderAnthropic")
+  })
+
+  it("handles mixed format alias map", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  fast: openai/gpt-4.1-mini",
+        "  smart:",
+        "    provider: anthropic",
+        "    model: claude-sonnet-4",
+        "---"
+      )
+    )
+
+    chat <- btw_client(client = "smart", path_btw = btw_md)
+    expect_equal(chat$get_model(), "claude-sonnet-4")
+    expect_s3_class(chat$get_provider(), "ellmer::ProviderAnthropic")
+  })
+})
