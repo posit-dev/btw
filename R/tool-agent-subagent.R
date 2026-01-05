@@ -244,9 +244,13 @@ btw_agent_process_response <- function(chat, prompt, agent_name, session_id) {
     message_text = message_text,
     tokens = tokens,
     tool_calls = tool_calls,
+    chat_round = chat2,
     provider = chat$get_provider()@name,
     model = chat$get_model(),
-    tool_names = paste(sprintf("`%s`", names(chat$get_tools())), collapse = ", ")
+    tool_names = paste(
+      sprintf("`%s`", names(chat$get_tools())),
+      collapse = ", "
+    )
   )
 }
 
@@ -268,14 +272,24 @@ btw_agent_display_markdown <- function(result, session_id, agent_name, prompt) {
     ""
   }
 
+  chat <- result$chat_round$clone()
+  chat$set_turns(chat$get_turns()[-1]) # remove prompt
+  chat$set_turns(chat$get_turns()[-length(chat$get_turns())]) # and final response
+
+  full_results <- map(chat$get_turns(), function(turn) {
+    turn <- shinychat::contents_shinychat(turn)
+    map(turn, function(c) as.character(htmltools::as.tags(c)))
+  })
+  full_results <- paste(unlist(full_results), collapse = "\n\n")
+
   glue_(
     r"(
-  #### Prompt
-
   {{ agent_line }}**Session ID:** {{ session_id }}<br>
   **Provider:** {{ result$provider }}<br>
   **Model:** `{{ result$model }}`<br>
   **Tools:** {{ result$tool_names }}
+
+  #### Prompt
 
   {{ prompt }}
 
@@ -286,6 +300,14 @@ btw_agent_display_markdown <- function(result, session_id, agent_name, prompt) {
   {{ md_table(result$tokens) }}
 
   #### Response
+
+  <details class="mb-2"><summary>Full Conversation</summary>
+
+  {{ full_results }}
+
+  ---
+
+  </details>
 
   {{ result$message_text }}
   )"
