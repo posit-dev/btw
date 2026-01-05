@@ -108,16 +108,18 @@ is_tool_match <- function(tool, labels = NULL) {
 
 # Convert from .btw_tools (or a filtered version of it)
 # to a format compatible with `client$set_tools()`
-as_ellmer_tools <- function(x) {
+as_ellmer_tools <- function(x, force = FALSE) {
   # 1. Filter by can_register BEFORE instantiation
   # This prevents infinite recursion when a tool's $tool() function
   # tries to resolve tools that include itself (e.g., subagent)
   can_register_fns <- map(x, function(.x) .x$can_register)
-  can_instantiate <- map_lgl(can_register_fns, function(fn) {
-    is.null(fn) || fn()
-  })
-  x <- x[can_instantiate]
-  can_register_fns <- can_register_fns[can_instantiate]
+  if (!force) {
+    can_instantiate <- map_lgl(can_register_fns, function(fn) {
+      is.null(fn) || fn()
+    })
+    x <- x[can_instantiate]
+    can_register_fns <- can_register_fns[can_instantiate]
+  }
 
   # 2. Instantiate tools
   groups <- map_chr(x, function(.x) .x$group)

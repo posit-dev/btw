@@ -44,7 +44,11 @@ btw_can_register_git_tool <- function() {
 #'
 #' @family git tools
 #' @export
-btw_tool_git_status <- function(include, pathspec, `_intent`) {}
+btw_tool_git_status <- function(
+  include = c("both", "staged", "unstaged"),
+  pathspec = NULL,
+  `_intent` = ""
+) {}
 
 btw_tool_git_status_impl <- function(
   include = c("both", "staged", "unstaged"),
@@ -147,7 +151,7 @@ RETURNS: A list of file paths, their status (new, modified, deleted, etc.), and 
 #'
 #' @family git tools
 #' @export
-btw_tool_git_diff <- function(ref, `_intent`) {}
+btw_tool_git_diff <- function(ref = NULL, `_intent` = "") {}
 
 btw_tool_git_diff_impl <- function(ref = NULL) {
   check_installed("gert")
@@ -250,7 +254,12 @@ LIMITATION: This tool does not support diffing between two arbitrary commits.
 #'
 #' @family git tools
 #' @export
-btw_tool_git_log <- function(ref, max, after, `_intent`) {}
+btw_tool_git_log <- function(
+  ref = "HEAD",
+  max = 10,
+  after = NULL,
+  `_intent` = ""
+) {}
 
 btw_tool_git_log_impl <- function(
   ref = "HEAD",
@@ -372,7 +381,7 @@ RETURNS: A list of commits with SHA (short), author, timestamp, number of files,
 #'
 #' @family git tools
 #' @export
-btw_tool_git_commit <- function(message, files, `_intent`) {}
+btw_tool_git_commit <- function(message, files = NULL, `_intent` = "") {}
 
 btw_tool_git_commit_impl <- function(
   message,
@@ -480,7 +489,10 @@ RETURNS: The commit SHA and confirmation message.
 #'
 #' @family git tools
 #' @export
-btw_tool_git_branch_list <- function(include, `_intent`) {}
+btw_tool_git_branch_list <- function(
+  include = c("local", "remote", "all"),
+  `_intent` = ""
+) {}
 
 btw_tool_git_branch_list_impl <- function(
   include = c("local", "remote", "all")
@@ -579,7 +591,12 @@ RETURNS: A table of branch names, upstream tracking, and last update time.
 #'
 #' @family git tools
 #' @export
-btw_tool_git_branch_create <- function(branch, ref, checkout, `_intent`) {}
+btw_tool_git_branch_create <- function(
+  branch,
+  ref = "HEAD",
+  checkout = TRUE,
+  `_intent` = ""
+) {}
 
 btw_tool_git_branch_create_impl <- function(
   branch,
@@ -693,7 +710,11 @@ RETURNS: Confirmation message with branch name and ref.
 #'
 #' @family git tools
 #' @export
-btw_tool_git_branch_checkout <- function(branch, force, `_intent`) {}
+btw_tool_git_branch_checkout <- function(
+  branch,
+  force = FALSE,
+  `_intent` = ""
+) {}
 
 btw_tool_git_branch_checkout_impl <- function(
   branch,
