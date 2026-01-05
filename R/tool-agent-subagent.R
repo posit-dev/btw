@@ -76,55 +76,30 @@ BtwSubagentResult <- S7::new_class(
 #' filter on top of the resolved tools, regardless of their source.
 #'
 #' @examples
-#' \dontrun{
-#' # Typically used by LLMs via tool use, but can be called directly for testing
-#' result <- btw_tool_agent_subagent(
-#'   prompt = "List all R files in the current directory",
-#'   tools = c("btw_tool_files_list_files")
-#' )
+#' # This tool is typically called by LLMs via tool use, not directly.
+#' # The examples below show how to configure subagent behavior.
 #'
-#' # Access the subagent's response and session ID
-#' cat(result@value)
-#' session_id <- result@session_id
-#'
-#' # Resume the same session with a follow-up
-#' result2 <- btw_tool_agent_subagent(
-#'   prompt = "Now read the first file you found",
-#'   tools = c("btw_tool_files_read_text_file"),
-#'   session_id = session_id
-#' )
-#'
-#' # Configure default tools for subagents
-#' withr::local_options(list(
-#'   btw.subagent.client = "anthropic/claude-sonnet-4-20250514",
-#'   btw.subagent.tools_default = "files"  # Default to file tools only
-#' ))
-#'
-#' result3 <- btw_tool_agent_subagent(
-#'   prompt = "Find all TODO comments in R files"
-#' )
-#'
-#' # Restrict subagents to a whitelist of allowed tools
-#' withr::local_options(list(
-#'   btw.subagent.tools_allowed = c("files", "search"),
-#'   btw.subagent.tools_default = "files"
-#' ))
-#'
-#' # This works - files tools are allowed
-#' result4 <- btw_tool_agent_subagent(
-#'   prompt = "List R files",
-#'   tools = "files"
-#' )
-#'
-#' # This would error - github tools are not in the allowed list
-#' tryCatch(
-#'   btw_tool_agent_subagent(
-#'     prompt = "Create a GitHub issue",
-#'     tools = "github"
+#' # Configure the client and default tools for subagents
+#' withr::with_options(
+#'   list(
+#'     btw.subagent.client = "anthropic/claude-sonnet-4-20250514",
+#'     btw.subagent.tools_default = "files"
 #'   ),
-#'   error = function(e) message("Error: ", e$message)
+#'   {
+#'     getOption("btw.subagent.client")
+#'   }
 #' )
-#' }
+#'
+#' # Restrict subagents to only certain tools
+#' withr::with_options(
+#'   list(
+#'     btw.subagent.tools_allowed = c("files", "docs"),
+#'     btw.subagent.tools_default = "files"
+#'   ),
+#'   {
+#'     getOption("btw.subagent.tools_allowed")
+#'   }
+#' )
 #'
 #' @param prompt Character string with the task description for the subagent.
 #'   The subagent will work on this task using only the tools specified in
