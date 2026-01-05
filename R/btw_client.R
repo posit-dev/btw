@@ -101,7 +101,18 @@ btw_client <- function(
 ) {
   check_dots_empty()
 
-  config <- btw_client_config(client, tools, config = read_btw_file(path_btw))
+  is_user_interactive <-
+    rlang::is_interactive() &&
+    identical(rlang::caller_env(), rlang::global_env()) ||
+    (identical(rlang::caller_fn(), btw_app) &&
+      identical(rlang::caller_env(n = 2), rlang::global_env()))
+
+  config <- btw_client_config(
+    client,
+    tools,
+    config = read_btw_file(path_btw),
+    is_user_interactive = is_user_interactive
+  )
   client <- config$client
   skip_tools <- isFALSE(config$tools) || identical(config$tools, "none")
   withr::local_options(config$options)
@@ -134,7 +145,12 @@ btw_client <- function(
   client
 }
 
-btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
+btw_client_config <- function(
+  client = NULL,
+  tools = NULL,
+  config = list(),
+  is_user_interactive = FALSE
+) {
   # Options should be flattened and btw-prefixed by `read_btw_file()`.
   withr::local_options(config$options)
 
@@ -174,6 +190,14 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
   }
 
   if (!is.null(config$client)) {
+    # Check if this is an array of client configs
+    if (is_client_array(config$client)) {
+      config$client <- choose_client_from_array(
+        config$client,
+        is_user_interactive
+      )
+    }
+
     # Show informational message for list configs with model specified
     show_model_info <-
       is.list(config$client) &&
@@ -230,6 +254,121 @@ as_ellmer_client <- function(client) {
     "i" = "Examples: {.or {.val {c('openai/gpt-4.1-mini', 'anthropic/claude-sonnet-4-20250514')}}}.",
     "i" = "Or as a list: {.code list(provider = 'anthropic', model = 'claude-sonnet-4-20250514')}"
   ))
+}
+
+is_client_array <- function(client) {
+  # A client array is a character vector with multiple elements,
+  # or an unnamed list where elements are client configs.
+  # Single configs are: single strings, Chat objects, or lists with a 'provider' key
+
+  # Character vector with multiple elements is an array
+  if (is.character(client)) {
+    return(length(client) > 1)
+  }
+
+  if (!is.list(client)) {
+    return(FALSE)
+  }
+
+  if (inherits(client, "Chat")) {
+    return(FALSE)
+  }
+
+  # If it has a 'provider' key, it's a single config
+  if (!is.null(client$provider)) {
+    return(FALSE)
+  }
+
+  # Check if it's an unnamed list (array-like)
+  nms <- names(client)
+  if (!is.null(nms) && any(nzchar(nms))) {
+    return(FALSE)
+  }
+
+  # It's an array if it has elements
+  length(client) > 0
+}
+
+format_client_label <- function(client) {
+  if (is_string(client)) {
+    client_parts <- strsplit(client, "/", fixed = TRUE)[[1]]
+    client <- list(
+      provider = client_parts[1],
+      model = if (length(client_parts) > 1) {
+        paste(client_parts[-1], collapse = "/")
+      }
+    )
+  }
+
+  if (is.list(client) && !is.null(client$provider)) {
+    if (!is.null(client$model)) {
+      return(cli::format_inline(
+        "{.field {client$provider}}/{.strong {client$model}}"
+      ))
+    } else {
+      return(cli::format_inline("{.field {client$provider}}"))
+    }
+  }
+
+  "<unknown>"
+}
+
+choose_client_from_array <- function(clients, is_user_interactive = FALSE) {
+  if (length(clients) == 0) {
+    cli::cli_abort("No client configurations provided.")
+  }
+
+  if (length(clients) == 1) {
+    return(clients[[1]])
+  }
+
+  # Non-interactive: use first option
+  if (!is_user_interactive || !rlang::is_interactive()) {
+    return(clients[[1]])
+  }
+
+  # Build labels for each option
+  labels <- vapply(clients, format_client_label, character(1))
+
+  # Display the menu
+  cli::cli_h3("Select a client")
+  for (i in seq_along(labels)) {
+    if (i == 1) {
+      cli::cli_text("{i}. {labels[i]} {cli::col_red('[default]')}")
+    } else {
+      cli::cli_text("{i}. {labels[i]}")
+    }
+  }
+  cli::cli_text("")
+
+  # Get user input
+  repeat {
+    choice <- readline(
+      prompt = sprintf("Enter choice [1-%d, 0 to exit]: ", length(clients))
+    )
+
+    if (choice == "0") {
+      cli::cli_abort("Aborted by user.")
+    }
+
+    # Enter/empty string = default (first option)
+    if (choice == "") {
+      return(clients[[1]])
+    }
+
+    # Try to parse as integer
+    choice_int <- suppressWarnings(as.integer(choice))
+
+    if (
+      !is.na(choice_int) && choice_int >= 1 && choice_int <= length(clients)
+    ) {
+      return(clients[[choice_int]])
+    }
+
+    cli::cli_alert_warning(
+      "Invalid choice. Please enter a number between {.strong 1 and {length(clients)}}."
+    )
+  }
 }
 
 flatten_and_check_tools <- function(tools) {
