@@ -191,7 +191,9 @@ set_tool_annotations <- function(tool, group) {
     tool@annotations <- list()
   }
 
-  tool@annotations$icon <- tool_group_icon(group)
+  if (is.null(tool@annotations$icon)) {
+    tool@annotations$icon <- tool_group_icon(group)
+  }
   tool@annotations$btw_group <- group
   tool
 }

@@ -83,6 +83,114 @@ validate_agent_name <- function(name, path) {
   TRUE
 }
 
+#' Resolve custom icon from string specification
+#'
+#' Parses an icon specification and returns the appropriate icon object.
+#'
+#' @param icon_spec String specifying the icon. Can be:
+#'   - Raw SVG: starts with `<svg` - wrapped in `htmltools::HTML()`
+#'   - Package icon: `pkg::icon-name` format (e.g., `fontawesome::home`)
+#'   - Shiny icon: just the icon name (uses `shiny::icon()`)
+#'
+#' Supported packages:
+#' - `fontawesome`: uses `fa("icon-name")`
+#' - `bsicons`: uses `bs_icon("icon-name")`
+#' - `phosphoricons`: uses `ph("icon-name")`
+#' - `rheroicons`: uses `rheroicon("icon-name")`
+#' - `tabler`: uses `icon("icon-name")`
+#' - `shiny`: uses `icon("icon-name")`
+#'
+#' @return An icon object (shiny.tag) or NULL if the icon cannot be resolved
+#' @noRd
+custom_icon <- function(icon_spec) {
+  if (is.null(icon_spec) || !nzchar(icon_spec)) {
+    return(NULL)
+  }
+
+  # Raw SVG: wrap in HTML()
+  if (grepl("^\\s*<svg", icon_spec, ignore.case = TRUE)) {
+    return(htmltools::HTML(icon_spec))
+  }
+
+  # Package icon: pkg::icon-name
+  if (grepl("::", icon_spec, fixed = TRUE)) {
+    parts <- strsplit(icon_spec, "::", fixed = TRUE)[[1]]
+    if (length(parts) != 2) {
+      cli::cli_warn("Invalid icon specification: {.val {icon_spec}}")
+      return(NULL)
+    }
+
+    pkg <- parts[1]
+    icon_name <- parts[2]
+
+    # Map package to function name
+    icon_fn <- switch(
+      pkg,
+      fontawesome = "fa",
+      bsicons = "bs_icon",
+      phosphoricons = "ph",
+      rheroicons = "rheroicon",
+      tabler = "icon",
+      shiny = "icon",
+      NULL
+    )
+
+    if (is.null(icon_fn)) {
+      cli::cli_warn("Unknown icon package: {.val {pkg}}")
+      return(NULL)
+    }
+
+    # Check if package is installed
+    if (!requireNamespace(pkg, quietly = TRUE)) {
+      cli::cli_warn(
+        "Package {.pkg {pkg}} is not installed for icon {.val {icon_spec}}"
+      )
+      return(NULL)
+    }
+
+    # Get the function from the package namespace
+    ns <- tryCatch(asNamespace(pkg), error = function(e) NULL)
+    if (is.null(ns)) {
+      cli::cli_warn("Cannot access namespace for package {.pkg {pkg}}")
+      return(NULL)
+    }
+
+    fn <- ns[[icon_fn]]
+    if (is.null(fn) || !is.function(fn)) {
+      cli::cli_warn(
+        "Function {.fn {icon_fn}} not found in package {.pkg {pkg}}"
+      )
+      return(NULL)
+    }
+
+    # Call the icon function
+    result <- tryCatch(
+      fn(icon_name),
+      error = function(e) {
+        cli::cli_warn(c(
+          "Error creating icon {.val {icon_name}} from {.pkg {pkg}}",
+          "x" = conditionMessage(e)
+        ))
+        NULL
+      }
+    )
+
+    return(result)
+  }
+
+  # Default: use shiny::icon()
+  tryCatch(
+    shiny::icon(icon_spec),
+    error = function(e) {
+      cli::cli_warn(c(
+        "Invalid icon name: {.val {icon_spec}}",
+        "x" = conditionMessage(e)
+      ))
+      NULL
+    }
+  )
+}
+
 #' Create a custom agent tool from a markdown file
 #'
 #' @description
@@ -99,19 +207,46 @@ validate_agent_name <- function(name, path) {
 #' ### Required Fields
 #'
 #' * `name`: A valid R identifier (letters, numbers, underscores) that becomes
-#'   part of the tool name. Cannot be `"subagent"` (reserved).
+#'   part of the tool name: `btw_tool_agent_{name}`. The final name cannot
+#'   conflict with any existing [btw_tools()] names.
 #'
 #' ### Optional Fields
 #'
 #' * `description`: Tool description shown to the LLM. Defaults to a generic
 #'   delegation message.
 #' * `title`: User-facing title for the tool. Defaults to title-cased name.
-#' * `icon`: Font Awesome icon name (e.g., `"robot"`, `"code"`). Defaults to
-#'   the standard agent icon.
+#' * `icon`: Icon specification for the agent (see **Icon Specification**
+#'   below). Defaults to the standard agent icon.
 #' * `client`: Model specification like `"anthropic/claude-sonnet-4-20250514"`.
 #'   Falls back to `btw.subagent.client` or `btw.client` options.
 #' * `tools`: List of tool names or groups available to this agent. Defaults to
 #'   all non-agent tools.
+#'
+#' ### Icon Specification
+#'
+#' The `icon` field supports three formats:
+#'
+#' 1. **Plain icon name**: Uses `shiny::icon()` (Font Awesome icons). Example:
+#'    `icon: robot` or `icon: code`
+#'
+#' 2. **Raw SVG**: Starts with `<svg` and is used literally. Example:
+#'    `icon: '<svg viewBox="0 0 24 24">...</svg>'`
+#'
+#' 3. **Package-prefixed icon**: Uses `pkg::icon-name` format to specify icons
+#'    from other icon packages. Supported packages:
+#'
+#'    | Package        | Syntax                      | Function Called          |
+#'    |----------------|-----------------------------|--------------------------
+#'    | fontawesome    | `fontawesome::home`         | [fontawesome::fa()]      |
+#'    | bsicons        | `bsicons::house`            | [bsicons::bs_icon()]     |
+#'    | phosphoricons  | `phosphoricons::house`      | [phosphoricons::ph()]    |
+#'    | rheroicons     | `rheroicons::home`          | [rheroicons::rheroicon()]|
+#'    | tabler         | `tabler::home`              | [tabler::icon()]         |
+#'    | shiny          | `shiny::home`               | [shiny::icon()]          |
+#'
+#'    The specified package must be installed. If the package is missing or the
+#'    icon name is invalid, a warning is issued and the default agent icon is
+#'    used.
 #'
 #' ### Example Agent File
 #'
@@ -120,7 +255,7 @@ validate_agent_name <- function(name, path) {
 #' name: code_reviewer
 #' description: Reviews code for best practices and potential issues.
 #' title: Code Reviewer
-#' icon: magnifying-glass-chart
+#' icon: magnifying-glass
 #' tools:
 #'   - files
 #'   - docs
@@ -232,23 +367,8 @@ btw_agent_tool <- function(path) {
   )
 
   # Set icon if specified, otherwise use default agent icon
-  if (!is.null(config$icon) && nzchar(config$icon)) {
-    tryCatch(
-      {
-        tool@annotations$icon <- shiny::icon(config$icon)
-      },
-      error = function(e) {
-        cli::cli_warn(c(
-          "Invalid icon {.val {config$icon}} for agent {.val {name}}: {.path {path}}",
-          "i" = "Using default agent icon.",
-          "x" = conditionMessage(e)
-        ))
-        tool@annotations$icon <<- tool_group_icon("agent")
-      }
-    )
-  } else {
-    tool@annotations$icon <- tool_group_icon("agent")
-  }
+  tool@annotations$icon <- custom_icon(config$icon) %||%
+    tool_group_icon("agent")
 
   tool
 }

@@ -396,3 +396,257 @@ test_that("multiple custom agents can be discovered and registered", {
   expect_equal(agent_two_def$group, "agent")
   expect_type(agent_two_def$tool, "closure")
 })
+
+# Test custom_icon() -----------------------------------------------------------
+
+describe("custom_icon()", {
+  it("returns NULL for NULL or empty input", {
+    expect_null(custom_icon(NULL))
+    expect_null(custom_icon(""))
+  })
+
+  it("handles raw SVG input", {
+    svg <- '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg>'
+    result <- custom_icon(svg)
+
+    expect_s3_class(result, "html")
+    expect_true(grepl("<svg", as.character(result)))
+  })
+
+  it("handles SVG with leading whitespace", {
+    svg <- '  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>'
+    result <- custom_icon(svg)
+
+    expect_s3_class(result, "html")
+  })
+
+  it("handles SVG case-insensitively", {
+    svg <- '<SVG viewBox="0 0 24 24"><rect width="24" height="24"/></SVG>'
+    result <- custom_icon(svg)
+
+    expect_s3_class(result, "html")
+  })
+
+  it("uses shiny::icon() for plain icon names", {
+    skip_if_not_installed("shiny")
+
+    result <- custom_icon("home")
+    expect_s3_class(result, "shiny.tag")
+    # Font Awesome 6 uses "fa-house" for "home"
+    expect_true(grepl("fa-ho", as.character(result)))
+  })
+
+  it("returns shiny.tag even for unknown icon names", {
+    # shiny::icon() doesn't error for unknown names, it just prints a message
+    skip_if_not_installed("shiny")
+
+    result <- custom_icon("some-unknown-icon-name")
+    # shiny::icon() returns a tag anyway
+    expect_s3_class(result, "shiny.tag")
+  })
+
+  it("warns for unknown package prefix", {
+    expect_warning(
+      result <- custom_icon("unknownpkg::someicon"),
+      "Unknown icon package"
+    )
+    expect_null(result)
+  })
+
+  it("warns for invalid specification format", {
+    expect_warning(
+      result <- custom_icon("too::many::colons"),
+      "Invalid icon specification"
+    )
+    expect_null(result)
+  })
+
+  it("warns when package is not installed", {
+    # Use a package that definitely isn't installed
+    expect_warning(
+      result <- custom_icon("notarealpackage123::home"),
+      "Unknown icon package"
+    )
+    expect_null(result)
+  })
+})
+
+describe("custom_icon() with fontawesome package", {
+  skip_if_not_installed("fontawesome")
+
+  it("uses fontawesome::fa() for fontawesome:: prefix", {
+    result <- custom_icon("fontawesome::home")
+
+    expect_s3_class(result, "fontawesome")
+    expect_true(grepl("svg", as.character(result)))
+  })
+
+  it("warns for invalid fontawesome icon", {
+    expect_warning(
+      result <- custom_icon("fontawesome::nonexistent-icon-xyz"),
+      "Error creating icon"
+    )
+    expect_null(result)
+  })
+})
+
+describe("custom_icon() with bsicons package", {
+  skip_if_not_installed("bsicons")
+
+  it("uses bsicons::bs_icon() for bsicons:: prefix", {
+    result <- custom_icon("bsicons::house")
+
+    # bsicons returns an "html" class object
+    expect_s3_class(result, "html")
+    expect_true(grepl("svg", as.character(result)))
+  })
+
+  it("warns for invalid bsicons icon", {
+    expect_warning(
+      result <- custom_icon("bsicons::nonexistent-icon-xyz"),
+      "Error creating icon"
+    )
+    expect_null(result)
+  })
+})
+
+describe("custom_icon() with phosphoricons package", {
+  skip_if_not_installed("phosphoricons")
+
+  it("uses phosphoricons::ph() for phosphoricons:: prefix", {
+    result <- custom_icon("phosphoricons::house")
+
+    expect_s3_class(result, "shiny.tag")
+    expect_true(grepl("svg", as.character(result)))
+  })
+})
+
+describe("custom_icon() with shiny:: prefix", {
+  skip_if_not_installed("shiny")
+
+  it("uses shiny::icon() for shiny:: prefix", {
+    result <- custom_icon("shiny::home")
+
+    expect_s3_class(result, "shiny.tag")
+    # Font Awesome 6 uses "fa-house" for "home"
+    expect_true(grepl("fa-ho", as.character(result)))
+  })
+})
+
+describe("custom_icon() integration with btw_agent_tool()", {
+  it("applies custom icon from config", {
+    skip_if_not_installed("shiny")
+
+    tmp_dir <- withr::local_tempdir()
+    agent_file <- file.path(tmp_dir, "agent-icon_test.md")
+    writeLines(
+      c(
+        "---",
+        "name: icon_test",
+        "description: Test icon configuration",
+        "icon: robot",
+        "---",
+        "Test prompt"
+      ),
+      agent_file
+    )
+
+    tool <- btw_agent_tool(agent_file)
+
+    expect_false(is.null(tool))
+    expect_s3_class(tool@annotations$icon, "shiny.tag")
+  })
+
+  it("applies SVG icon from config", {
+    tmp_dir <- withr::local_tempdir()
+    agent_file <- file.path(tmp_dir, "agent-svg_test.md")
+    writeLines(
+      c(
+        "---",
+        "name: svg_test",
+        "description: Test SVG icon",
+        'icon: \'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>\'',
+        "---",
+        "Test prompt"
+      ),
+      agent_file
+    )
+
+    tool <- btw_agent_tool(agent_file)
+
+    expect_false(is.null(tool))
+    expect_s3_class(tool@annotations$icon, "html")
+  })
+
+  it("falls back to default icon when custom_icon returns NULL", {
+    tmp_dir <- withr::local_tempdir()
+    agent_file <- file.path(tmp_dir, "agent-no_icon.md")
+    writeLines(
+      c(
+        "---",
+        "name: no_icon",
+        "description: Test without icon",
+        "---",
+        "Test prompt"
+      ),
+      agent_file
+    )
+
+    tool <- btw_agent_tool(agent_file)
+
+    expect_false(is.null(tool))
+    # Should have the default agent icon
+    expect_false(is.null(tool@annotations$icon))
+  })
+
+  it("falls back to default icon for unknown package prefix", {
+    tmp_dir <- withr::local_tempdir()
+    agent_file <- file.path(tmp_dir, "agent-bad_icon.md")
+    writeLines(
+      c(
+        "---",
+        "name: bad_icon",
+        "description: Test with invalid icon",
+        "icon: unknownpkg::someicon",
+        "---",
+        "Test prompt"
+      ),
+      agent_file
+    )
+
+    expect_warning(
+      tool <- btw_agent_tool(agent_file),
+      "Unknown icon package"
+    )
+
+    expect_false(is.null(tool))
+    # Should fall back to default agent icon
+    expect_false(is.null(tool@annotations$icon))
+  })
+
+  it("accepts unknown shiny icon names without warning", {
+    # shiny::icon() doesn't warn for unknown icon names, so neither do we
+    skip_if_not_installed("shiny")
+
+    tmp_dir <- withr::local_tempdir()
+    agent_file <- file.path(tmp_dir, "agent-unknown_icon.md")
+    writeLines(
+      c(
+        "---",
+        "name: unknown_icon",
+        "description: Test with unknown shiny icon",
+        "icon: some-unknown-icon-xyz",
+        "---",
+        "Test prompt"
+      ),
+      agent_file
+    )
+
+    # No warning expected since shiny::icon() accepts any name
+    tool <- btw_agent_tool(agent_file)
+
+    expect_false(is.null(tool))
+    # Will have the shiny icon (even though it's not a real FA icon)
+    expect_s3_class(tool@annotations$icon, "shiny.tag")
+  })
+})
