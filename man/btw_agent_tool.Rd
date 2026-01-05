@@ -25,7 +25,8 @@ body becoming the agent's system prompt. The file should be named
 \subsection{Required Fields}{
 \itemize{
 \item \code{name}: A valid R identifier (letters, numbers, underscores) that becomes
-part of the tool name. Cannot be \code{"subagent"} (reserved).
+part of the tool name: \verb{btw_tool_agent_\{name\}}. The final name cannot
+conflict with any existing \code{\link[=btw_tools]{btw_tools()}} names.
 }
 }
 
@@ -34,12 +35,38 @@ part of the tool name. Cannot be \code{"subagent"} (reserved).
 \item \code{description}: Tool description shown to the LLM. Defaults to a generic
 delegation message.
 \item \code{title}: User-facing title for the tool. Defaults to title-cased name.
-\item \code{icon}: Font Awesome icon name (e.g., \code{"robot"}, \code{"code"}). Defaults to
-the standard agent icon.
+\item \code{icon}: Icon specification for the agent (see \strong{Icon Specification}
+below). Defaults to the standard agent icon.
 \item \code{client}: Model specification like \code{"anthropic/claude-sonnet-4-20250514"}.
 Falls back to \code{btw.subagent.client} or \code{btw.client} options.
 \item \code{tools}: List of tool names or groups available to this agent. Defaults to
 all non-agent tools.
+}
+}
+
+\subsection{Icon Specification}{
+
+The \code{icon} field supports three formats:
+\enumerate{
+\item \strong{Plain icon name}: Uses \code{shiny::icon()} (Font Awesome icons). Example:
+\code{icon: robot} or \code{icon: code}
+\item \strong{Raw SVG}: Starts with \verb{<svg} and is used literally. Example:
+\code{icon: '<svg viewBox="0 0 24 24">...</svg>'}
+\item \strong{Package-prefixed icon}: Uses \code{pkg::icon-name} format to specify icons
+from other icon packages. Supported packages:\tabular{lll}{
+   Package \tab Syntax \tab Function Called \cr
+   fontawesome \tab \code{fontawesome::home} \tab \code{\link[fontawesome:fa]{fontawesome::fa()}} \cr
+   bsicons \tab \code{bsicons::house} \tab \code{\link[bsicons:bs_icon]{bsicons::bs_icon()}} \cr
+   phosphoricons \tab \code{phosphoricons::house} \tab \code{\link[phosphoricons:ph]{phosphoricons::ph()}} \cr
+   rheroicons \tab \code{rheroicons::home} \tab \code{\link[rheroicons:rheroicon]{rheroicons::rheroicon()}} \cr
+   tabler \tab \code{tabler::home} \tab \code{\link[tabler:tabler-components]{tabler::icon()}} \cr
+   shiny \tab \code{shiny::home} \tab \code{\link[shiny:icon]{shiny::icon()}} \cr
+}
+
+
+The specified package must be installed. If the package is missing or the
+icon name is invalid, a warning is issued and the default agent icon is
+used.
 }
 }
 
@@ -49,7 +76,7 @@ all non-agent tools.
 name: code_reviewer
 description: Reviews code for best practices and potential issues.
 title: Code Reviewer
-icon: magnifying-glass-chart
+icon: magnifying-glass
 tools:
   - files
   - docs
