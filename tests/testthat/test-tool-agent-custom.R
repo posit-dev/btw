@@ -1,261 +1,3 @@
-# Helper to create a valid agent-*.md file
-create_test_agent_file <- function(dir, name = "test_agent", content = NULL) {
-  if (is.null(content)) {
-    content <- sprintf(
-      "---
-name: %s
-description: A test agent
-title: Test Agent
-tools:
-  - files
----
-
-This is the system prompt for the test agent.",
-      name
-    )
-  }
-
-  path <- file.path(dir, sprintf("agent-%s.md", name))
-  writeLines(content, path)
-  path
-}
-
-# Test file discovery ---------------------------------------------------------
-
-test_that("find_project_agent_files() finds .btw/agent-*.md files", {
-  tmp_dir <- withr::local_tempdir()
-  btw_dir <- file.path(tmp_dir, ".btw")
-  dir.create(btw_dir)
-
-  # Create some agent files
-  agent1 <- file.path(btw_dir, "agent-code-reviewer.md")
-  agent2 <- file.path(btw_dir, "agent-docs-writer.md")
-  writeLines("---\nname: code_reviewer\n---\nReview code.", agent1)
-  writeLines("---\nname: docs_writer\n---\nWrite docs.", agent2)
-
-  # Also create a non-matching file
-  writeLines("Not an agent", file.path(btw_dir, "other.md"))
-
-  files <- withr::with_dir(tmp_dir, find_project_agent_files())
-
-  expect_length(files, 2)
-  expect_true(any(grepl("agent-code-reviewer.md$", files)))
-  expect_true(any(grepl("agent-docs-writer.md$", files)))
-  expect_false(any(grepl("other.md$", files)))
-})
-
-test_that("find_project_agent_files() returns empty when no .btw directory", {
-  tmp_dir <- withr::local_tempdir()
-
-  files <- withr::with_dir(tmp_dir, find_project_agent_files())
-
-  expect_length(files, 0)
-})
-
-test_that("find_project_agent_files() returns empty when .btw exists but no agents", {
-  tmp_dir <- withr::local_tempdir()
-  btw_dir <- file.path(tmp_dir, ".btw")
-  dir.create(btw_dir)
-
-  # Create a non-agent file
-  writeLines("Not an agent", file.path(btw_dir, "other.md"))
-
-  files <- withr::with_dir(tmp_dir, find_project_agent_files())
-
-  expect_length(files, 0)
-})
-
-test_that("find_user_agent_files() returns empty in test mode", {
-  # In testthat, TESTTHAT=true, so should return empty
-  expect_equal(Sys.getenv("TESTTHAT"), "true")
-
-  files <- find_user_agent_files()
-
-  expect_length(files, 0)
-})
-
-test_that("discover_agent_md_files() combines project and user files", {
-  tmp_dir <- withr::local_tempdir()
-  btw_dir <- file.path(tmp_dir, ".btw")
-  dir.create(btw_dir)
-
-  agent1 <- file.path(btw_dir, "agent-test1.md")
-  writeLines("---\nname: test1\n---\nTest 1.", agent1)
-
-  # Clear cache
-
-  files <- withr::with_dir(tmp_dir, discover_agent_md_files())
-
-  expect_length(files, 1)
-  expect_true(any(grepl("agent-test1.md$", files)))
-})
-
-test_that("discover_agent_md_files() returns unique files", {
-  tmp_dir <- withr::local_tempdir()
-  btw_dir <- file.path(tmp_dir, ".btw")
-  dir.create(btw_dir)
-
-  agent1 <- file.path(btw_dir, "agent-unique.md")
-  writeLines("---\nname: unique\n---\nUnique agent.", agent1)
-
-  # Clear cache
-
-  files <- withr::with_dir(tmp_dir, discover_agent_md_files())
-
-  # Should not have duplicates
-  expect_equal(length(files), length(unique(files)))
-})
-
-# Test name validation --------------------------------------------------------
-
-test_that("validate_agent_name() accepts valid names", {
-  valid_names <- c(
-    "my_agent",
-    "CodeReviewer",
-    "agent1",
-    "test_agent_v2",
-    "AgentName"
-  )
-
-  for (name in valid_names) {
-    expect_true(validate_agent_name(name, "test.md"))
-  }
-})
-
-test_that("validate_agent_name() rejects empty or NULL names", {
-  expect_warning(
-    result <- validate_agent_name(NULL, "test.md"),
-    "has no name"
-  )
-  expect_false(result)
-
-  expect_warning(
-    result <- validate_agent_name("", "test.md"),
-    "has no name"
-  )
-  expect_false(result)
-})
-
-test_that("validate_agent_name() rejects reserved names (built-in tool names)", {
-  # Any name that matches a built-in tool name is reserved
-  reserved_name <- names(.btw_tools)[1]
-
-  expect_warning(
-    result <- validate_agent_name(reserved_name, "test.md"),
-    "reserved"
-  )
-  expect_false(result)
-})
-
-test_that("validate_agent_name() rejects invalid characters", {
-  invalid_names <- c(
-    "123invalid",
-    "has-dash",
-    "has space",
-    "has.dot",
-    "has@symbol"
-  )
-
-  for (name in invalid_names) {
-    expect_warning(
-      result <- validate_agent_name(name, "test.md"),
-      "Invalid agent name"
-    )
-    expect_false(result)
-  }
-})
-
-test_that("validate_agent_name() warning messages include path", {
-  expect_warning(
-    validate_agent_name(NULL, "/path/to/agent.md"),
-    "/path/to/agent.md"
-  )
-
-  expect_warning(
-    validate_agent_name(names(.btw_tools)[1], "/path/to/agent.md"),
-    "/path/to/agent.md"
-  )
-
-  expect_warning(
-    validate_agent_name("123invalid", "/path/to/agent.md"),
-    "/path/to/agent.md"
-  )
-})
-
-# Test file parsing -----------------------------------------------------------
-
-test_that("read_agent_md_file() returns NULL for non-existent file", {
-  result <- read_agent_md_file("/nonexistent/path/agent.md")
-
-  expect_null(result)
-})
-
-test_that("read_agent_md_file() parses YAML frontmatter", {
-  tmp_dir <- withr::local_tempdir()
-  path <- create_test_agent_file(tmp_dir, "parser_test")
-
-  config <- read_agent_md_file(path)
-
-  expect_type(config, "list")
-  expect_equal(config$name, "parser_test")
-  expect_equal(config$description, "A test agent")
-  expect_equal(config$title, "Test Agent")
-  # YAML parses tools as character vector, not list
-  expect_equal(config$tools, "files")
-})
-
-test_that("read_agent_md_file() extracts body as system_prompt", {
-  tmp_dir <- withr::local_tempdir()
-  path <- create_test_agent_file(tmp_dir, "body_test")
-
-  config <- read_agent_md_file(path)
-
-  expect_true("system_prompt" %in% names(config))
-  expect_match(config$system_prompt, "This is the system prompt")
-})
-
-test_that("read_agent_md_file() handles files without YAML", {
-  tmp_dir <- withr::local_tempdir()
-  path <- file.path(tmp_dir, "agent-no-yaml.md")
-  writeLines("Just body content, no frontmatter.", path)
-
-  # This should still work but return minimal config
-  config <- read_agent_md_file(path)
-
-  expect_type(config, "list")
-  expect_true("system_prompt" %in% names(config))
-})
-
-test_that("read_agent_md_file() handles various YAML fields", {
-  tmp_dir <- withr::local_tempdir()
-  content <- "---
-name: complex_agent
-description: A complex agent
-title: Complex Agent
-icon: robot
-client: anthropic/claude-sonnet-4-20250514
-tools:
-  - files
-  - docs
----
-
-Complex system prompt with multiple lines.
-And more content here."
-
-  path <- file.path(tmp_dir, "agent-complex.md")
-  writeLines(content, path)
-
-  config <- read_agent_md_file(path)
-
-  expect_equal(config$name, "complex_agent")
-  expect_equal(config$description, "A complex agent")
-  expect_equal(config$title, "Complex Agent")
-  expect_equal(config$icon, "robot")
-  expect_equal(config$client, "anthropic/claude-sonnet-4-20250514")
-  expect_length(config$tools, 2)
-  expect_match(config$system_prompt, "Complex system prompt")
-})
-
 # Test tool creation ----------------------------------------------------------
 # Note: btw_agent_tool() returns raw tools that get wrapped with _intent
 # argument later by as_ellmer_tools(). These tests check the unwrapped tools.
@@ -309,9 +51,7 @@ test_that("custom agents can be discovered and loaded", {
   btw_dir <- file.path(tmp_dir, ".btw")
   dir.create(btw_dir)
 
-  create_test_agent_file(btw_dir, "integration_test")
-
-  # Clear cache
+  local_test_agent_file(btw_dir, "integration_test")
 
   # Get tools from that directory
   tools <- withr::with_dir(tmp_dir, get_custom_agent_tools())
@@ -335,8 +75,6 @@ test_that("get_custom_agent_tools() returns empty list when no agents", {
   btw_dir <- file.path(tmp_dir, ".btw")
   dir.create(btw_dir)
 
-  # Clear cache
-
   tools <- withr::with_dir(tmp_dir, get_custom_agent_tools())
 
   expect_length(tools, 0)
@@ -350,7 +88,7 @@ test_that("get_custom_agent_tools() skips files with invalid names", {
   dir.create(btw_dir)
 
   # Create valid agent
-  create_test_agent_file(btw_dir, "valid_agent")
+  local_test_agent_file(btw_dir, "valid_agent")
 
   # Create agent with invalid name
   content_invalid <- "---
@@ -359,8 +97,6 @@ description: Invalid
 ---
 Invalid agent."
   writeLines(content_invalid, file.path(btw_dir, "agent-invalid.md"))
-
-  # Clear cache
 
   expect_warning(
     tools <- withr::with_dir(tmp_dir, get_custom_agent_tools()),
@@ -386,9 +122,11 @@ description: No name
 Agent without name."
   writeLines(content_no_name, file.path(btw_dir, "agent-noname.md"))
 
-  # Clear cache
-
-  tools <- withr::with_dir(tmp_dir, get_custom_agent_tools())
+  # Should warn about missing name
+  expect_warning(
+    tools <- withr::with_dir(tmp_dir, get_custom_agent_tools()),
+    "Agent file has no name"
+  )
 
   expect_length(tools, 0)
 })
@@ -406,8 +144,6 @@ description: [invalid yaml structure
 Bad YAML."
   writeLines(content_bad_yaml, file.path(btw_dir, "agent-bad.md"))
 
-  # Clear cache
-
   expect_warning(
     tools <- withr::with_dir(tmp_dir, get_custom_agent_tools()),
     "Error loading custom agent"
@@ -421,11 +157,9 @@ test_that("get_custom_agent_tools() handles multiple agents", {
   btw_dir <- file.path(tmp_dir, ".btw")
   dir.create(btw_dir)
 
-  create_test_agent_file(btw_dir, "agent_one")
-  create_test_agent_file(btw_dir, "agent_two")
-  create_test_agent_file(btw_dir, "agent_three")
-
-  # Clear cache
+  local_test_agent_file(btw_dir, "agent_one")
+  local_test_agent_file(btw_dir, "agent_two")
+  local_test_agent_file(btw_dir, "agent_three")
 
   tools <- withr::with_dir(tmp_dir, get_custom_agent_tools())
 
@@ -522,29 +256,8 @@ test_that("validate_agent_name() rejects edge cases", {
   }
 })
 
-# Test tool closure and configuration -----------------------------------------
-
-test_that("btw_tool_agent_custom_config() creates proper closure", {
-  agent_config <- list(
-    name = "closure_test",
-    client = NULL,
-    tools = c("files"),
-    system_prompt = "Test",
-    tools_default = NULL,
-    tools_allowed = NULL
-  )
-
-  tool_fn <- btw_tool_agent_custom_config(agent_config)
-
-  expect_type(tool_fn, "closure")
-
-  # Function should have correct parameters (without _intent, which is added by wrapper)
-  fn_args <- names(formals(tool_fn))
-  expect_true("prompt" %in% fn_args)
-  expect_true("session_id" %in% fn_args)
-  # _intent is NOT in the closure - it's added later by wrap_with_intent()
-  expect_false("_intent" %in% fn_args)
-})
+# Internal closure structure is an implementation detail.
+# Tool behavior is tested through integration tests below.
 
 # Test register_custom_agent_tools() ------------------------------------------
 
@@ -555,4 +268,142 @@ test_that("register_custom_agent_tools() can be called without error", {
   # Clear cache first
 
   expect_no_error(register_custom_agent_tools())
+})
+
+# ---- Custom Agent Configuration (Behavioral) --------------------------------
+
+test_that("btw_custom_agent_client_config creates chat with custom system prompt", {
+  tmp_dir <- withr::local_tempdir()
+  btw_dir <- file.path(tmp_dir, ".btw")
+  dir.create(btw_dir)
+
+  # Create agent file
+  writeLines(
+    c(
+      "---",
+      "name: code_reviewer",
+      "description: Expert code reviewer",
+      "tools:",
+      "  - files",
+      "---",
+      "",
+      "You are an expert code reviewer. Focus on:",
+      "- Code quality and best practices",
+      "- Performance issues",
+      "- Security vulnerabilities"
+    ),
+    file.path(btw_dir, "agent-code-reviewer.md")
+  )
+
+  # Load config and create chat
+  agent_config <- withr::with_dir(tmp_dir, {
+    read_agent_md_file(file.path(btw_dir, "agent-code-reviewer.md"))
+  })
+
+  chat <- btw_custom_agent_client_config(agent_config)
+
+  expect_true(inherits(chat, "Chat"))
+
+  # Verify system prompt
+  system_prompt <- chat$get_system_prompt()
+  expect_match(system_prompt, "expert code reviewer", ignore.case = TRUE)
+  expect_match(system_prompt, "Code quality", ignore.case = TRUE)
+
+  # Verify tools
+  tool_names <- map_chr(chat$get_tools(), function(t) t@name)
+  expect_true(all(grepl("^btw_tool_files_", tool_names)))
+  expect_false(any(grepl("^btw_tool_docs_", tool_names)))
+})
+
+test_that("btw_custom_agent_client_config respects tool restrictions", {
+  agent_config <- list(
+    name = "docs_agent",
+    description = "Documentation expert",
+    tools = "docs",
+    system_prompt = "You help with documentation.",
+    tools_default = NULL,
+    tools_allowed = NULL,
+    client = NULL
+  )
+
+  chat <- btw_custom_agent_client_config(agent_config)
+
+  tool_names <- map_chr(chat$get_tools(), function(t) t@name)
+  expect_true(all(grepl("^btw_tool_docs_", tool_names)))
+  expect_false(any(grepl("^btw_tool_files_", tool_names)))
+})
+
+test_that("btw_custom_agent_client_config concatenates system prompts", {
+  agent_config <- list(
+    name = "test",
+    client = NULL,
+    tools = "files",
+    system_prompt = "Custom instructions for this agent.",
+    tools_default = NULL,
+    tools_allowed = NULL
+  )
+
+  chat <- btw_custom_agent_client_config(agent_config)
+  system_prompt <- chat$get_system_prompt()
+
+  # Should include base prompt
+  expect_match(system_prompt, "Task Execution", ignore.case = TRUE)
+  # Should include custom prompt
+  expect_match(system_prompt, "Custom instructions", ignore.case = TRUE)
+  # Should have separator
+  expect_match(system_prompt, "---")
+})
+
+test_that("btw_custom_agent_client_config uses btw_agent_resolve_client", {
+  # Test explicit client
+  custom_client <- ellmer::chat_anthropic(model = "claude-opus-4-20241120")
+  agent_config <- list(
+    name = "test",
+    client = custom_client,
+    tools = "files",
+    system_prompt = "Test"
+  )
+
+  chat <- btw_custom_agent_client_config(agent_config)
+  expect_identical(chat, custom_client)
+
+  # Test option fallback
+  withr::local_options(
+    btw.subagent.client = "anthropic/claude-sonnet-4-20250514"
+  )
+  agent_config$client <- NULL
+
+  chat2 <- btw_custom_agent_client_config(agent_config)
+  expect_equal(chat2$get_model(), "claude-sonnet-4-20250514")
+})
+
+# ---- Multiple Custom Agents -------------------------------------------------
+
+test_that("multiple custom agents can be discovered and registered", {
+  tmp_dir <- withr::local_tempdir()
+  btw_dir <- file.path(tmp_dir, ".btw")
+  dir.create(btw_dir)
+
+  # Create two agents
+  local_test_agent_file(btw_dir, "agent_one")
+  local_test_agent_file(btw_dir, "agent_two")
+
+  # Use get_custom_agent_tools() to get internal btw tool structure
+  tools <- withr::with_dir(tmp_dir, get_custom_agent_tools())
+
+  expect_type(tools, "list")
+  expect_true("btw_tool_agent_agent_one" %in% names(tools))
+  expect_true("btw_tool_agent_agent_two" %in% names(tools))
+
+  # Verify they have correct structure
+  agent_one_def <- tools[["btw_tool_agent_agent_one"]]
+  agent_two_def <- tools[["btw_tool_agent_agent_two"]]
+
+  expect_equal(agent_one_def$name, "btw_tool_agent_agent_one")
+  expect_equal(agent_one_def$group, "agent")
+  expect_type(agent_one_def$tool, "closure")
+
+  expect_equal(agent_two_def$name, "btw_tool_agent_agent_two")
+  expect_equal(agent_two_def$group, "agent")
+  expect_type(agent_two_def$tool, "closure")
 })

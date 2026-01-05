@@ -269,104 +269,38 @@ btw_tool_agent_custom_impl <- function(
   agent_config
 ) {
   check_string(prompt)
-  check_string(session_id, allow_null = TRUE)
 
-  if (!is.null(session_id)) {
-    session <- retrieve_session(session_id)
-
-    if (is.null(session)) {
-      cli::cli_abort(c(
-        "Session not found: {.val {session_id}}",
-        "i" = "The session may have expired or the ID is incorrect.",
-        "i" = "Omit {.arg session_id} to start a new session."
-      ))
+  session <- btw_agent_get_or_create_session(
+    session_id,
+    create_chat_fn = function() {
+      btw_custom_agent_client_config(agent_config)
     }
+  )
 
-    chat <- session$chat
-  } else {
-    session_id <- generate_session_id()
-    chat <- btw_custom_agent_client_config(agent_config)
-    store_session(session_id, chat)
-  }
+  chat <- session$chat
+  session_id <- session$session_id
 
   response <- chat$chat(prompt)
 
-  last_turn <- chat$last_turn()
-  message_text <- if (is.null(last_turn) || length(last_turn@contents) == 0) {
-    "(The agent completed successfully but returned no message.)"
-  } else {
-    ellmer::contents_markdown(last_turn)
-  }
-  message_text <- sprintf(
-    '<agent-response agent="%s" session_id="%s">\n%s\n</agent-response>',
-    agent_config$name,
-    session_id,
-    message_text
-  )
+  result <- btw_agent_process_response(chat, prompt, agent_config$name, session_id)
 
-  # Get tokens for just this round
-  idx_prompt <- which(map_lgl(chat$get_turns(), function(t) {
-    t@role == "user" && identical(ellmer::contents_text(t), prompt)
-  }))
-  chat2 <- chat$clone()
-  if (idx_prompt > 1) {
-    chat2$set_turns(chat2$get_turns()[-seq_len(idx_prompt - 1)])
-  }
-  tokens <- chat2$get_tokens()
-  for (i in seq_len(ncol(tokens))) {
-    if (is.numeric(tokens[[i]])) {
-      tokens[[i]] <- format(tokens[[i]], big.mark = ",")
-    }
-  }
-
-  tool_calls <- map(chat2$get_turns(), function(turn) {
-    keep(turn@contents, S7::S7_inherits, ellmer::ContentToolRequest)
-  })
-
-  provider <- chat$get_provider()@name
-  model <- chat$get_model()
-  tool_names <- paste(
-    sprintf("`%s`", names(chat$get_tools())),
-    collapse = ", "
-  )
-
-  display_md <- glue_(
-    r"(
-  #### Prompt
-
-  **Agent:** {{ agent_config$name }}<br>
-  **Session ID:** {{ session_id }}<br>
-  **Provider:** {{ provider }}<br>
-  **Model:** `{{ model }}`<br>
-  **Tools:** {{ tool_names }}
-
-  {{ prompt }}
-
-  #### Tokens
-
-  **Tool Calls:** {{ length(unlist(tool_calls)) }}
-
-  {{ md_table(tokens) }}
-
-  #### Response
-
-  {{ message_text }}
-  )"
+  display_md <- btw_agent_display_markdown(
+    result = result,
+    session_id = session_id,
+    agent_name = agent_config$name,
+    prompt = prompt
   )
 
   BtwSubagentResult(
-    value = message_text,
+    value = result$message_text,
     session_id = session_id,
     extra = list(
       prompt = prompt,
       agent = agent_config$name,
-      provider = provider,
-      model = model,
-      tokens = tokens,
-      display = list(
-        markdown = display_md,
-        show_request = FALSE
-      )
+      provider = result$provider,
+      model = result$model,
+      tokens = result$tokens,
+      display = list(markdown = display_md, show_request = FALSE)
     )
   )
 }
@@ -380,23 +314,16 @@ btw_tool_agent_custom_impl <- function(
 #' @return A configured Chat object with system prompt and tools attached
 #' @noRd
 btw_custom_agent_client_config <- function(agent_config) {
-  # Determine client
-  custom_client <-
-    agent_config$client %||%
-    getOption("btw.subagent.client") %||%
-    getOption("btw.client")
+  chat <- btw_agent_resolve_client(agent_config$client)
 
   # Determine tools
-  tools_default <-
-    agent_config$tools_default %||%
+  tools_default <- agent_config$tools_default %||%
     getOption("btw.subagent.tools_default") %||%
     getOption("btw.tools")
 
-  tools_allowed <-
-    agent_config$tools_allowed %||%
+  tools_allowed <- agent_config$tools_allowed %||%
     getOption("btw.subagent.tools_allowed")
 
-  # If agent specifies tools, use them; otherwise use defaults (non-agent tools)
   configured_tools <- if (!is.null(agent_config$tools)) {
     agent_config$tools
   } else if (!is.null(tools_default)) {
@@ -414,22 +341,12 @@ btw_custom_agent_client_config <- function(agent_config) {
   if (!is.null(tools_allowed)) {
     allowed_tools <- flatten_and_check_tools(tools_allowed)
     allowed_names <- map_chr(allowed_tools, function(t) t@name)
-    configured_names <- map_chr(configured_tools, function(t) t@name)
-
-    # Filter to only allowed tools (no error for custom agents)
     configured_tools <- keep(configured_tools, function(t) {
       t@name %in% allowed_names
     })
   }
 
-  # Create chat client
-  chat <- if (!is.null(custom_client)) {
-    as_ellmer_client(custom_client)$clone()
-  } else {
-    btw_default_chat_client()
-  }
-
-  # Build system prompt: base subagent prompt + custom agent prompt
+  # Build system prompt
   base_prompt <- btw_prompt("btw-subagent.md")
   custom_prompt <- agent_config$system_prompt %||% ""
 

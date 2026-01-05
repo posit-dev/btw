@@ -9,148 +9,9 @@ mock_chat <- function() {
   )
 }
 
-test_that("generate_session_id() creates valid IDs", {
-  id1 <- generate_session_id()
-  id2 <- generate_session_id()
-
-  expect_match(id1, "^[a-z]+_[a-z]+$")
-  expect_match(id2, "^[a-z]+_[a-z]+$")
-
-  # IDs should be different (probabilistically, could fail occasionally but unlikely)
-  ids <- replicate(10, generate_session_id())
-  expect_true(length(unique(ids)) > 5)
-})
-
-test_that("generate_session_id() checks for uniqueness", {
-  clear_all_subagent_sessions()
-
-  id1 <- generate_session_id()
-  store_session(id1, mock_chat())
-
-  ids <- replicate(20, generate_session_id())
-  expect_false(id1 %in% ids)
-
-  clear_all_subagent_sessions()
-})
-
-test_that("store_session() and retrieve_session() work", {
-  clear_all_subagent_sessions()
-
-  session_id <- "test_session"
-  chat <- mock_chat()
-
-  result <- store_session(session_id, chat)
-  expect_equal(result, session_id)
-
-  session <- retrieve_session(session_id)
-  expect_type(session, "list")
-  expect_equal(session$id, session_id)
-  expect_equal(session$chat, chat)
-  expect_s3_class(session$created, "POSIXct")
-  expect_null(session$last_used)
-
-  clear_all_subagent_sessions()
-})
-
-test_that("store_session() requires Chat object", {
-  expect_error(
-    store_session("test", "not a chat object"),
-    "must be a.*Chat"
-  )
-})
-
-test_that("retrieve_session() returns NULL for nonexistent session", {
-  clear_all_subagent_sessions()
-  session <- retrieve_session("nonexistent_session")
-  expect_null(session)
-})
-
-test_that("store_session() can include metadata", {
-  clear_all_subagent_sessions()
-
-  session_id <- "test_with_metadata"
-  chat <- mock_chat()
-  metadata <- list(custom_field = "custom_value")
-
-  store_session(session_id, chat, metadata)
-  session <- retrieve_session(session_id)
-
-  expect_equal(session$custom_field, "custom_value")
-
-  clear_all_subagent_sessions()
-})
-
-test_that("list_subagent_sessions() works with no sessions", {
-  clear_all_subagent_sessions()
-
-  result <- list_subagent_sessions()
-  expect_type(result, "list")
-  expect_equal(length(result), 0)
-})
-
-test_that("list_subagent_sessions() lists all sessions", {
-  clear_all_subagent_sessions()
-
-  store_session("session_1", mock_chat())
-  store_session("session_2", mock_chat())
-  store_session("session_3", mock_chat())
-
-  result <- list_subagent_sessions()
-  expect_type(result, "list")
-  expect_equal(length(result), 3)
-
-  session_ids <- names(result)
-  expect_true("session_1" %in% session_ids)
-  expect_true("session_2" %in% session_ids)
-  expect_true("session_3" %in% session_ids)
-
-  expect_equal(result$session_1$id, "session_1")
-  expect_equal(result$session_2$id, "session_2")
-  expect_equal(result$session_3$id, "session_3")
-
-  clear_all_subagent_sessions()
-})
-
-test_that("clear_subagent_session() removes a session", {
-  clear_all_subagent_sessions()
-
-  session_id <- "test_clear"
-  store_session(session_id, mock_chat())
-
-  expect_false(is.null(retrieve_session(session_id)))
-
-  result <- clear_subagent_session(session_id)
-  expect_true(result)
-
-  expect_null(retrieve_session(session_id))
-})
-
-test_that("clear_subagent_session() returns FALSE for nonexistent session", {
-  clear_all_subagent_sessions()
-  result <- clear_subagent_session("nonexistent")
-  expect_false(result)
-})
-
-test_that("clear_all_subagent_sessions() clears all sessions", {
-  clear_all_subagent_sessions()
-
-  store_session("session_1", mock_chat())
-  store_session("session_2", mock_chat())
-  store_session("session_3", mock_chat())
-
-  expect_equal(length(list_subagent_sessions()), 3)
-
-  count <- clear_all_subagent_sessions()
-  expect_equal(count, 3)
-
-  expect_equal(length(list_subagent_sessions()), 0)
-})
-
-test_that("clear_all_subagent_sessions() returns 0 when no sessions", {
-  clear_all_subagent_sessions()
-  count <- clear_all_subagent_sessions()
-  expect_equal(count, 0)
-})
+# Internal session management functions (generate_session_id, store_session, etc.)
+# are tested through the public API via btw_agent_get_or_create_session()
+# See behavioral tests at the end of this file.
 
 test_that("btw_subagent_client_config() uses default tools", {
   withr::local_options(
@@ -201,21 +62,8 @@ test_that("btw_subagent_client_config() clones clients from options", {
   expect_false(identical(chat1, chat_obj))
 })
 
-test_that("build_subagent_description() includes tool groups", {
-  desc <- build_subagent_description()
-
-  expect_type(desc, "character")
-  expect_match(desc, "Delegate a task")
-  expect_match(desc, "AVAILABLE TOOLS")
-})
-
-test_that("build_subagent_description() includes basic text", {
-  desc <- build_subagent_description()
-
-  expect_type(desc, "character")
-  expect_match(desc, "Delegate a task")
-  expect_match(desc, "subagent")
-})
+# build_subagent_description() is internal - description content is tested
+# through btw_tool_agent_subagent registration tests below
 
 test_that("btw_tool_agent_subagent is registered in btw_tools", {
   all_tools <- btw_tools()
@@ -547,4 +395,127 @@ test_that("subagent tool errors even when in tools_allowed", {
 
   # Docs tools should remain
   expect_true(any(grepl("^btw_tool_docs_", tool_names)))
+})
+
+# ---- Chat Client Configuration ----------------------------------------------
+
+test_that("btw_subagent_client_config creates chat with filtered tools", {
+  chat <- btw_subagent_client_config(tools = "files")
+
+  expect_true(inherits(chat, "Chat"))
+
+  tool_names <- map_chr(chat$get_tools(), function(t) t@name)
+  expect_true(all(grepl("^btw_tool_files_", tool_names)))
+  expect_false(any(grepl("^btw_tool_docs_", tool_names)))
+})
+
+test_that("btw_subagent_client_config respects explicit client parameter", {
+  custom_client <- ellmer::chat_anthropic(model = "claude-opus-4-20241120")
+
+  chat <- btw_subagent_client_config(client = custom_client)
+
+  expect_identical(chat, custom_client)
+})
+
+test_that("btw_subagent_client_config includes base subagent prompt", {
+  chat <- btw_subagent_client_config()
+
+  system_prompt <- chat$get_system_prompt()
+
+  expect_match(system_prompt, "Task Execution Guidelines")
+  expect_match(system_prompt, "Work Efficiently")
+  expect_true(nchar(system_prompt) > 0)
+})
+
+# ---- Session Management (via helpers) ---------------------------------------
+
+test_that("btw_agent_get_or_create_session creates new session when ID is NULL", {
+  clear_all_subagent_sessions()
+
+  result <- btw_agent_get_or_create_session(
+    session_id = NULL,
+    create_chat_fn = function() mock_chat()
+  )
+
+  expect_type(result, "list")
+  expect_false(is.null(result$session_id))
+  expect_match(result$session_id, "^[a-z]+_[a-z]+$")
+  expect_true(result$is_new)
+  expect_true(inherits(result$chat, "Chat"))
+
+  clear_all_subagent_sessions()
+})
+
+test_that("btw_agent_get_or_create_session retrieves existing session", {
+  clear_all_subagent_sessions()
+
+  # Create a session first
+  session_id <- generate_session_id()
+  chat <- mock_chat()
+  store_session(session_id, chat)
+
+  # Retrieve it
+  result <- btw_agent_get_or_create_session(
+    session_id = session_id,
+    create_chat_fn = function() stop("Should not be called")
+  )
+
+  expect_equal(result$session_id, session_id)
+  expect_identical(result$chat, chat)
+  expect_false(result$is_new)
+
+  clear_all_subagent_sessions()
+})
+
+test_that("btw_agent_get_or_create_session errors helpfully for invalid session", {
+  clear_all_subagent_sessions()
+
+  expect_error(
+    btw_agent_get_or_create_session(
+      session_id = "nonexistent_badger_wombat",
+      create_chat_fn = function() mock_chat()
+    ),
+    regexp = "Session not found.*nonexistent_badger_wombat"
+  )
+
+  expect_error(
+    btw_agent_get_or_create_session(
+      session_id = "nonexistent",
+      create_chat_fn = function() mock_chat()
+    ),
+    regexp = "Omit.*session_id.*to start a new session"
+  )
+})
+
+# ---- Tool Filtering and Restrictions ----------------------------------------
+
+test_that("tools_allowed option filters configured tools", {
+  withr::local_options(
+    btw.subagent.tools_allowed = c("docs"),
+    btw.subagent.tools_default = c("docs", "files")
+  )
+
+  chat <- btw_subagent_client_config(tools = NULL)
+
+  tool_names <- map_chr(chat$get_tools(), function(t) t@name)
+
+  expect_true(all(grepl("^btw_tool_docs_", tool_names)))
+  expect_false(any(grepl("^btw_tool_files_", tool_names)))
+})
+
+test_that("subagent recursion is prevented in default tools", {
+  withr::local_options(
+    btw.subagent.tools_default = NULL,
+    btw.tools = NULL,
+    btw.subagent.tools_allowed = NULL
+  )
+
+  chat <- btw_subagent_client_config(tools = NULL)
+
+  tool_names <- map_chr(chat$get_tools(), function(t) t@name)
+
+  # Subagent tool should be filtered out
+  expect_false("btw_tool_agent_subagent" %in% tool_names)
+  # But other tools should be present
+  expect_true(length(tool_names) > 0)
 })

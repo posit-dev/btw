@@ -157,13 +157,13 @@ btw_tool_agent_subagent <- function(
 ) {}
 
 
-btw_tool_agent_subagent_impl <- function(
-  prompt,
-  tools = NULL,
-  session_id = NULL,
-  config = NULL
-) {
-  check_string(prompt)
+#' Get existing session or create new one
+#'
+#' @param session_id Optional session ID to retrieve
+#' @param create_chat_fn Function that creates a new Chat when called
+#' @return List with `chat`, `session_id`, and `is_new`
+#' @noRd
+btw_agent_get_or_create_session <- function(session_id, create_chat_fn) {
   check_string(session_id, allow_null = TRUE)
 
   if (!is.null(session_id)) {
@@ -177,36 +177,49 @@ btw_tool_agent_subagent_impl <- function(
       ))
     }
 
-    chat <- session$chat
-
-    # TODO: Add turn limit tracking. Currently we can't limit turns within a subagent
-    # because the chat$chat() method doesn't expose turn count control.
-  } else {
-    session_id <- generate_session_id()
-    chat <- btw_subagent_client_config(
-      client = config$client,
-      tools = tools,
-      tools_default = config$tools_default,
-      tools_allowed = config$tools_allowed
-    )
-    store_session(session_id, chat)
+    return(list(chat = session$chat, session_id = session_id, is_new = FALSE))
   }
 
-  response <- chat$chat(prompt)
+  session_id <- generate_session_id()
+  chat <- create_chat_fn()
+  store_session(session_id, chat)
 
+  list(chat = chat, session_id = session_id, is_new = TRUE)
+}
+
+
+#' Process agent chat response into result components
+#'
+#' @param chat The Chat object after running
+#' @param prompt The original prompt
+#' @param agent_name Name for the response tag (e.g., "subagent" or custom agent name)
+#' @param session_id The session ID
+#' @return List with message_text, tokens, tool_calls, provider, model, tool_names
+#' @noRd
+btw_agent_process_response <- function(chat, prompt, agent_name, session_id) {
+  # Extract last turn message
   last_turn <- chat$last_turn()
   message_text <- if (is.null(last_turn) || length(last_turn@contents) == 0) {
-    "(The subagent completed successfully but returned no message.)"
+    "(The agent completed successfully but returned no message.)"
   } else {
     ellmer::contents_markdown(last_turn)
   }
-  message_text <- sprintf(
-    '<subagent-response session_id="%s">\n%s\n</subagent-response>',
-    session_id,
-    message_text
-  )
 
-  # We could update session metadata here, but `chat` is stateful
+  # Format with XML-like wrapper - "subagent" uses <subagent-response>, others use <agent-response>
+  if (agent_name == "subagent") {
+    message_text <- sprintf(
+      '<subagent-response session_id="%s">\n%s\n</subagent-response>',
+      session_id,
+      message_text
+    )
+  } else {
+    message_text <- sprintf(
+      '<agent-response agent="%s" session_id="%s">\n%s\n</agent-response>',
+      agent_name,
+      session_id,
+      message_text
+    )
+  }
 
   # Get tokens for just this round
   idx_prompt <- which(map_lgl(chat$get_turns(), function(t) {
@@ -227,48 +240,120 @@ btw_tool_agent_subagent_impl <- function(
     keep(turn@contents, S7::S7_inherits, ellmer::ContentToolRequest)
   })
 
-  provider <- chat$get_provider()@name
-  model <- chat$get_model()
-  tool_names <- paste(
-    sprintf("`%s`", names(chat$get_tools())),
-    collapse = ", "
+  list(
+    message_text = message_text,
+    tokens = tokens,
+    tool_calls = tool_calls,
+    provider = chat$get_provider()@name,
+    model = chat$get_model(),
+    tool_names = paste(sprintf("`%s`", names(chat$get_tools())), collapse = ", ")
   )
+}
 
-  display_md <- glue_(
+
+#' Generate display markdown for agent result
+#'
+#' @param result List returned from btw_agent_process_response() containing
+#'   message_text, tokens, tool_calls, provider, model, and tool_names
+#' @param session_id Session ID
+#' @param agent_name Agent name (NULL or "subagent" for subagent, otherwise custom agent name)
+#' @param prompt The prompt text
+#' @return Markdown string for display
+#' @noRd
+btw_agent_display_markdown <- function(result, session_id, agent_name, prompt) {
+  # Only show agent line for custom agents, not for subagent
+  agent_line <- if (!is.null(agent_name) && agent_name != "subagent") {
+    sprintf("**Agent:** %s<br>\n  ", agent_name)
+  } else {
+    ""
+  }
+
+  glue_(
     r"(
   #### Prompt
 
-  **Session ID:** {{ session_id }}<br>
-  **Provider:** {{ provider }}<br>
-  **Model:** `{{ model }}`<br>
-  **Tools:** {{ tool_names }}
+  {{ agent_line }}**Session ID:** {{ session_id }}<br>
+  **Provider:** {{ result$provider }}<br>
+  **Model:** `{{ result$model }}`<br>
+  **Tools:** {{ result$tool_names }}
 
   {{ prompt }}
 
   #### Tokens
 
-  **Tool Calls:** {{ length(unlist(tool_calls)) }}
+  **Tool Calls:** {{ length(unlist(result$tool_calls)) }}
 
-  {{ md_table(tokens) }}
+  {{ md_table(result$tokens) }}
 
   #### Response
 
-  {{ message_text }}
+  {{ result$message_text }}
   )"
+  )
+}
+
+
+#' Resolve agent chat client from options hierarchy
+#'
+#' @param client Optional explicit client
+#' @return A Chat object
+#' @noRd
+btw_agent_resolve_client <- function(client = NULL) {
+  resolved <- client %||%
+    getOption("btw.subagent.client") %||%
+    getOption("btw.client")
+
+  if (!is.null(resolved)) {
+    as_ellmer_client(resolved)$clone()
+  } else {
+    btw_default_chat_client()
+  }
+}
+
+
+btw_tool_agent_subagent_impl <- function(
+  prompt,
+  tools = NULL,
+  session_id = NULL,
+  config = NULL
+) {
+  check_string(prompt)
+
+  session <- btw_agent_get_or_create_session(
+    session_id,
+    create_chat_fn = function() {
+      btw_subagent_client_config(
+        client = config$client,
+        tools = tools,
+        tools_default = config$tools_default,
+        tools_allowed = config$tools_allowed
+      )
+    }
+  )
+
+  chat <- session$chat
+  session_id <- session$session_id
+
+  response <- chat$chat(prompt)
+
+  result <- btw_agent_process_response(chat, prompt, "subagent", session_id)
+
+  display_md <- btw_agent_display_markdown(
+    result = result,
+    session_id = session_id,
+    agent_name = "subagent",
+    prompt = prompt
   )
 
   BtwSubagentResult(
-    value = message_text,
+    value = result$message_text,
     session_id = session_id,
     extra = list(
       prompt = prompt,
-      provider = provider,
-      model = model,
-      tokens = tokens,
-      display = list(
-        markdown = display_md,
-        show_request = FALSE
-      )
+      provider = result$provider,
+      model = result$model,
+      tokens = result$tokens,
+      display = list(markdown = display_md, show_request = FALSE)
     )
   )
 }
