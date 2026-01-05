@@ -92,7 +92,7 @@
 #' ```
 #'
 #' @param code A character string containing R code to run.
-#' @param _intent Intent description (automatically added by ellmer).
+#' @inheritParams btw_tool_docs_package_news
 #'
 #' @returns A list of ellmer Content objects:
 #'   - `ContentText`: visible return values and text output
@@ -116,7 +116,7 @@
 #' @seealso [btw_tools()]
 #' @family run tools
 #' @export
-btw_tool_run_r <- function(code, `_intent`) {}
+btw_tool_run_r <- function(code, `_intent` = "") {}
 
 btw_tool_run_r_impl <- function(
   code,

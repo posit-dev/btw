@@ -228,7 +228,7 @@ get_github_repo <- function(owner = NULL, repo = NULL) {
 #'
 #' @family github tools
 #' @export
-btw_tool_github <- function(code, fields, `_intent`) {}
+btw_tool_github <- function(code, fields = "default", `_intent` = "") {}
 
 btw_tool_github_impl <- function(code, fields = "default") {
   check_installed("gh")

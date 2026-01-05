@@ -128,7 +128,7 @@ btw_tool_agent_subagent <- function(
   prompt,
   tools = NULL,
   session_id = NULL,
-  `_intent`
+  `_intent` = ""
 ) {}
 
 
