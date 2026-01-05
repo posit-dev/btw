@@ -44,6 +44,35 @@
 #' * `btw.tools`: The btw tools to include by default when starting a new
 #'   btw chat, see [btw_tools()] for details.`
 #'
+#' ## Multiple Providers and Models
+#'
+#' You can configure multiple client options in your `btw.md` file. When
+#' `btw_client()` is called interactively from the console, you'll be presented
+#' with a menu to choose which client to use. In non-interactive contexts, the
+#' first client is used automatically.
+#'
+#' **Array format** (unnamed list):
+#' ```yaml
+#' client:
+#'   - anthropic/claude-sonnet-4
+#'   - openai/gpt-4.1
+#'   - aws_bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0
+#' ```
+#'
+#' **Alias format** (named list):
+#' ```yaml
+#' client:
+#'   haiku: aws_bedrock/us.anthropic.claude-haiku-4-5-20251001-v1:0
+#'   sonnet:
+#'     provider: aws_bedrock
+#'     model: us.anthropic.claude-sonnet-4-5-20250929-v1:0
+#' ```
+#'
+#' With aliases, you can select a client by name:
+#'
+#' - In the interactive menu, type the alias name (e.g., "sonnet")
+#' - Or pass the alias directly: `btw_client(client = "sonnet")`
+#'
 #' @examplesIf rlang::is_interactive()
 #' withr::local_options(list(
 #'   btw.client = ellmer::chat_ollama(model="llama3.1:8b")

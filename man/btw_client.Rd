@@ -105,6 +105,37 @@ take precedence over settings in a \code{btw.md} file:
 btw chat, see \code{\link[=btw_tools]{btw_tools()}} for details.`
 }
 }
+
+\subsection{Multiple Providers and Models}{
+
+You can configure multiple client options in your \code{btw.md} file. When
+\code{btw_client()} is called interactively from the console, you'll be presented
+with a menu to choose which client to use. In non-interactive contexts, the
+first client is used automatically.
+
+\strong{Array format} (unnamed list):
+
+\if{html}{\out{<div class="sourceCode yaml">}}\preformatted{client:
+  - anthropic/claude-sonnet-4
+  - openai/gpt-4.1
+  - aws_bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0
+}\if{html}{\out{</div>}}
+
+\strong{Alias format} (named list):
+
+\if{html}{\out{<div class="sourceCode yaml">}}\preformatted{client:
+  haiku: aws_bedrock/us.anthropic.claude-haiku-4-5-20251001-v1:0
+  sonnet:
+    provider: aws_bedrock
+    model: us.anthropic.claude-sonnet-4-5-20250929-v1:0
+}\if{html}{\out{</div>}}
+
+With aliases, you can select a client by name:
+\itemize{
+\item In the interactive menu, type the alias name (e.g., "sonnet")
+\item Or pass the alias directly: \code{btw_client(client = "sonnet")}
+}
+}
 }
 \section{Functions}{
 \itemize{
