@@ -392,12 +392,12 @@ test_that("btw_subagent_client_config() error message is helpful", {
   )
 
   expect_error(
-    btw_subagent_client_config(tools = c("files", "github")),
+    btw_subagent_client_config(tools = c("files")),
     "btw_tool_files_"
   )
 
   expect_error(
-    btw_subagent_client_config(tools = c("files", "github")),
+    btw_subagent_client_config(tools = c("github")),
     "btw_tool_github"
   )
 
