@@ -9,30 +9,30 @@ mock_chat <- function() {
   )
 }
 
-# Internal session management functions (generate_session_id, store_session, etc.)
-# are tested through the public API via btw_agent_get_or_create_session()
+# Internal session management functions (subagent_new_session_id, subagent_store_session, etc.)
+# are tested through the public API via subagent_get_or_create_session()
 # See behavioral tests at the end of this file.
 
-test_that("btw_subagent_client_config() uses default tools", {
+test_that("subagent_client() uses default tools", {
   withr::local_options(
     btw.subagent.tools_default = NULL,
     btw.tools = NULL
   )
 
-  chat <- btw_subagent_client_config()
+  chat <- subagent_client()
 
   expect_true(inherits(chat, "Chat"))
   expect_true(length(chat$get_tools()) > 0)
 })
 
-test_that("btw_subagent_client_config() respects tool filtering", {
-  chat <- btw_subagent_client_config(tools = c("docs"))
+test_that("subagent_client() respects tool filtering", {
+  chat <- subagent_client(tools = c("docs"))
 
   expect_true(inherits(chat, "Chat"))
   expect_true(length(chat$get_tools()) > 0)
 })
 
-test_that("btw_subagent_client_config() follows client precedence", {
+test_that("subagent_client() follows client precedence", {
   skip_if_not_installed("ellmer")
 
   withr::local_options(
@@ -40,29 +40,29 @@ test_that("btw_subagent_client_config() follows client precedence", {
     btw.client = "anthropic/claude-opus-4-20241120"
   )
 
-  chat <- btw_subagent_client_config()
+  chat <- subagent_client()
   expect_true(inherits(chat, "Chat"))
 
   chat_obj <- ellmer::chat_anthropic()
-  chat2 <- btw_subagent_client_config(client = chat_obj)
+  chat2 <- subagent_client(client = chat_obj)
   expect_identical(chat2, chat_obj)
 })
 
-test_that("btw_subagent_client_config() clones clients from options", {
+test_that("subagent_client() clones clients from options", {
   skip_if_not_installed("ellmer")
 
   chat_obj <- ellmer::chat_anthropic()
 
   withr::local_options(btw.subagent.client = chat_obj)
 
-  chat1 <- btw_subagent_client_config()
-  chat2 <- btw_subagent_client_config()
+  chat1 <- subagent_client()
+  chat2 <- subagent_client()
 
   expect_false(identical(chat1, chat2))
   expect_false(identical(chat1, chat_obj))
 })
 
-# build_subagent_description() is internal - description content is tested
+# subagent_build_description() is internal - description content is tested
 # through btw_tool_agent_subagent registration tests below
 
 test_that("btw_tool_agent_subagent is registered in btw_tools", {
@@ -94,20 +94,20 @@ test_that("BtwSubagentResult inherits from BtwToolResult", {
 
 # Tests for new btw.subagent.tools_default and btw.subagent.tools_allowed options
 
-test_that("btw_subagent_client_config() uses tools_default when tools is NULL", {
+test_that("subagent_client() uses tools_default when tools is NULL", {
   withr::local_options(
     btw.subagent.tools_default = c("docs"),
     btw.tools = NULL
   )
 
-  chat <- btw_subagent_client_config(tools = NULL)
+  chat <- subagent_client(tools = NULL)
 
   expect_true(inherits(chat, "Chat"))
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
   expect_true(all(grepl("^btw_tool_docs_", tool_names)))
 })
 
-test_that("btw_subagent_client_config() falls back through precedence chain", {
+test_that("subagent_client() falls back through precedence chain", {
   # Test fallback: tools_default -> btw.tools -> btw_tools()
 
   # Test fallback to btw.tools
@@ -116,7 +116,7 @@ test_that("btw_subagent_client_config() falls back through precedence chain", {
     btw.tools = c("search")
   )
 
-  chat <- btw_subagent_client_config(tools = NULL)
+  chat <- subagent_client(tools = NULL)
 
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
   expect_true(all(grepl("^btw_tool_search_", tool_names)))
@@ -127,106 +127,106 @@ test_that("btw_subagent_client_config() falls back through precedence chain", {
     btw.tools = NULL
   )
 
-  chat2 <- btw_subagent_client_config(tools = NULL)
+  chat2 <- subagent_client(tools = NULL)
 
   tool_names2 <- sapply(chat2$get_tools(), function(t) t@name)
   expect_true(length(tool_names2) > 0) # Should get all btw_tools()
 })
 
-test_that("btw_subagent_client_config() filters tools with tools_allowed", {
+test_that("subagent_client() filters tools with tools_allowed", {
   withr::local_options(
     btw.subagent.tools_allowed = c("docs"),
     btw.subagent.tools_default = c("docs", "files")
   )
 
-  chat <- btw_subagent_client_config(tools = NULL)
+  chat <- subagent_client(tools = NULL)
 
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
   expect_true(all(grepl("^btw_tool_docs_", tool_names)))
   expect_false(any(grepl("^btw_tool_files_", tool_names)))
 })
 
-test_that("btw_subagent_client_config() errors on disallowed tools", {
+test_that("subagent_client() errors on disallowed tools", {
   withr::local_options(
     btw.subagent.tools_allowed = c("docs")
   )
 
   expect_error(
-    btw_subagent_client_config(tools = c("files")),
+    subagent_client(tools = c("files")),
     "Subagent requested disallowed tools"
   )
 
   expect_error(
-    btw_subagent_client_config(tools = c("files")),
+    subagent_client(tools = c("files")),
     "btw.subagent.tools_allowed"
   )
 })
 
-test_that("btw_subagent_client_config() allows tools within whitelist", {
+test_that("subagent_client() allows tools within whitelist", {
   withr::local_options(
     btw.subagent.tools_allowed = c("docs", "files")
   )
 
   # Should not error
-  chat <- btw_subagent_client_config(tools = c("docs"))
+  chat <- subagent_client(tools = c("docs"))
 
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
   expect_true(all(grepl("^btw_tool_docs_", tool_names)))
 })
 
-test_that("btw_subagent_client_config() filters explicit tools against tools_allowed", {
+test_that("subagent_client() filters explicit tools against tools_allowed", {
   withr::local_options(
     btw.subagent.tools_allowed = c("docs", "search")
   )
 
   # Requesting tools partially in whitelist should error
   expect_error(
-    btw_subagent_client_config(tools = c("docs", "files")),
+    subagent_client(tools = c("docs", "files")),
     "disallowed tools"
   )
 
   # Requesting only allowed tools should work
-  chat <- btw_subagent_client_config(tools = c("docs", "search"))
+  chat <- subagent_client(tools = c("docs", "search"))
 
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
   expect_true(any(grepl("^btw_tool_docs_", tool_names)))
   expect_true(any(grepl("^btw_tool_search_", tool_names)))
 })
 
-test_that("btw_subagent_client_config() works without tools_allowed set", {
+test_that("subagent_client() works without tools_allowed set", {
   withr::local_options(
     btw.subagent.tools_allowed = NULL,
     btw.subagent.tools_default = c("files")
   )
 
   # Should work with any tools when tools_allowed is NULL
-  chat <- btw_subagent_client_config(tools = c("docs"))
+  chat <- subagent_client(tools = c("docs"))
 
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
   expect_true(all(grepl("^btw_tool_docs_", tool_names)))
 })
 
-test_that("btw_subagent_client_config() precedence: explicit tools > tools_default", {
+test_that("subagent_client() precedence: explicit tools > tools_default", {
   withr::local_options(
     btw.subagent.tools_default = c("docs"),
     btw.subagent.tools_allowed = c("docs", "files")
   )
 
   # Explicit tools argument should override tools_default
-  chat <- btw_subagent_client_config(tools = c("files"))
+  chat <- subagent_client(tools = c("files"))
 
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
   expect_true(all(grepl("^btw_tool_files_", tool_names)))
   expect_false(any(grepl("^btw_tool_docs_", tool_names)))
 })
 
-test_that("btw_subagent_client_config() tools_allowed filters defaults", {
+test_that("subagent_client() tools_allowed filters defaults", {
   withr::local_options(
     btw.subagent.tools_allowed = c("docs"),
     btw.subagent.tools_default = c("docs", "files", "search")
   )
 
-  chat <- btw_subagent_client_config(tools = NULL)
+  chat <- subagent_client(tools = NULL)
 
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
   expect_true(all(grepl("^btw_tool_docs_", tool_names)))
@@ -234,28 +234,28 @@ test_that("btw_subagent_client_config() tools_allowed filters defaults", {
   expect_false(any(grepl("^btw_tool_search_", tool_names)))
 })
 
-test_that("btw_subagent_client_config() error message is helpful", {
+test_that("subagent_client() error message is helpful", {
   withr::local_options(
     btw.subagent.tools_allowed = c("docs")
   )
 
   expect_error(
-    btw_subagent_client_config(tools = c("files")),
+    subagent_client(tools = c("files")),
     "btw_tool_files_"
   )
 
   expect_error(
-    btw_subagent_client_config(tools = c("github")),
+    subagent_client(tools = c("github")),
     "btw_tool_github"
   )
 
   expect_error(
-    btw_subagent_client_config(tools = c("files")),
+    subagent_client(tools = c("files")),
     "Set.*btw.subagent.tools_allowed = NULL"
   )
 })
 
-test_that("btw_subagent_client_config() tools_allowed works with specific tool names", {
+test_that("subagent_client() tools_allowed works with specific tool names", {
   withr::local_options(
     btw.subagent.tools_allowed = c(
       "btw_tool_docs_help_page",
@@ -264,7 +264,7 @@ test_that("btw_subagent_client_config() tools_allowed works with specific tool n
   )
 
   # Should work with specific allowed tools
-  chat <- btw_subagent_client_config(tools = c("btw_tool_docs_help_page"))
+  chat <- subagent_client(tools = c("btw_tool_docs_help_page"))
 
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
   expect_true("btw_tool_docs_help_page" %in% tool_names)
@@ -272,7 +272,7 @@ test_that("btw_subagent_client_config() tools_allowed works with specific tool n
 
   # Should error with disallowed specific tool
   expect_error(
-    btw_subagent_client_config(tools = c("search_packages")),
+    subagent_client(tools = c("search_packages")),
     "disallowed tools"
   )
 })
@@ -282,13 +282,13 @@ test_that("btw_subagent_client_config() tools_allowed works with specific tool n
 test_that("btw_tool_agent_subagent errors when explicitly requested", {
   # Explicitly requesting the subagent tool now throws an error
   expect_error(
-    btw_subagent_client_config(tools = c("btw_tool_agent_subagent", "docs")),
+    subagent_client(tools = c("btw_tool_agent_subagent", "docs")),
     "Subagents cannot spawn other subagents"
   )
 
   # Same for short name
   expect_error(
-    btw_subagent_client_config(tools = c("subagent", "docs")),
+    subagent_client(tools = c("subagent", "docs")),
     "Subagents cannot spawn other subagents"
   )
 })
@@ -301,7 +301,7 @@ test_that("btw_tool_agent_subagent is filtered out from default tools", {
   )
 
   # Use default tools (btw_tools())
-  chat <- btw_subagent_client_config(tools = NULL)
+  chat <- subagent_client(tools = NULL)
 
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
 
@@ -315,7 +315,7 @@ test_that("btw_tool_agent_subagent is filtered out from default tools", {
 test_that("btw_tool_agent_subagent is silently filtered out from 'agent' tool group", {
   # Request the 'agent' tool group which includes btw_tool_agent_subagent
   # The subagent tool is silently filtered via can_register (no warning)
-  chat <- btw_subagent_client_config(tools = c("agent"))
+  chat <- subagent_client(tools = c("agent"))
 
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
 
@@ -330,7 +330,7 @@ test_that("btw_tool_agent_subagent is silently filtered out even when in tools_a
 
   # Request agent group (which includes subagent tool)
   # The subagent tool is silently filtered via can_register
-  chat <- btw_subagent_client_config(tools = c("agent", "docs"))
+  chat <- subagent_client(tools = c("agent", "docs"))
 
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
 
@@ -346,12 +346,12 @@ test_that("btw_tool_agent_subagent never appears in chat$get_tools() for subagen
 
   # Scenario 1: Explicit request → throws error
   expect_error(
-    btw_subagent_client_config(tools = c("btw_tool_agent_subagent")),
+    subagent_client(tools = c("btw_tool_agent_subagent")),
     "Subagents cannot spawn other subagents"
   )
 
   # Scenario 2: Via tool group → silently filtered
-  chat2 <- btw_subagent_client_config(tools = c("agent"))
+  chat2 <- subagent_client(tools = c("agent"))
   expect_false(
     "btw_tool_agent_subagent" %in% sapply(chat2$get_tools(), function(t) t@name)
   )
@@ -361,14 +361,14 @@ test_that("btw_tool_agent_subagent never appears in chat$get_tools() for subagen
     btw.subagent.tools_default = NULL,
     btw.tools = NULL
   )
-  chat3 <- btw_subagent_client_config(tools = NULL)
+  chat3 <- subagent_client(tools = NULL)
   expect_false(
     "btw_tool_agent_subagent" %in% sapply(chat3$get_tools(), function(t) t@name)
   )
 
   # Scenario 4: Mixed explicit with other tools → throws error
   expect_error(
-    btw_subagent_client_config(
+    subagent_client(
       tools = c("btw_tool_agent_subagent", "docs", "files")
     ),
     "Subagents cannot spawn other subagents"
@@ -382,12 +382,12 @@ test_that("subagent tool errors even when in tools_allowed", {
 
   # Even if subagent tool is in allowed list, explicit request throws error
   expect_error(
-    btw_subagent_client_config(tools = c("btw_tool_agent_subagent", "docs")),
+    subagent_client(tools = c("btw_tool_agent_subagent", "docs")),
     "Subagents cannot spawn other subagents"
   )
 
   # But requesting via group doesn't error - silently filters
-  chat <- btw_subagent_client_config(tools = c("agent", "docs"))
+  chat <- subagent_client(tools = c("agent", "docs"))
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
 
   # Subagent tool should be filtered out
@@ -399,8 +399,8 @@ test_that("subagent tool errors even when in tools_allowed", {
 
 # ---- Chat Client Configuration ----------------------------------------------
 
-test_that("btw_subagent_client_config creates chat with filtered tools", {
-  chat <- btw_subagent_client_config(tools = "files")
+test_that("subagent_client creates chat with filtered tools", {
+  chat <- subagent_client(tools = "files")
 
   expect_true(inherits(chat, "Chat"))
 
@@ -409,16 +409,16 @@ test_that("btw_subagent_client_config creates chat with filtered tools", {
   expect_false(any(grepl("^btw_tool_docs_", tool_names)))
 })
 
-test_that("btw_subagent_client_config respects explicit client parameter", {
+test_that("subagent_client respects explicit client parameter", {
   custom_client <- ellmer::chat_anthropic(model = "claude-opus-4-20241120")
 
-  chat <- btw_subagent_client_config(client = custom_client)
+  chat <- subagent_client(client = custom_client)
 
   expect_identical(chat, custom_client)
 })
 
-test_that("btw_subagent_client_config includes base subagent prompt", {
-  chat <- btw_subagent_client_config()
+test_that("subagent_client includes base subagent prompt", {
+  chat <- subagent_client()
 
   system_prompt <- chat$get_system_prompt()
 
@@ -429,10 +429,10 @@ test_that("btw_subagent_client_config includes base subagent prompt", {
 
 # ---- Session Management (via helpers) ---------------------------------------
 
-test_that("btw_agent_get_or_create_session creates new session when ID is NULL", {
-  clear_all_subagent_sessions()
+test_that("subagent_get_or_create_session creates new session when ID is NULL", {
+  subagent_clear_all_sessions()
 
-  result <- btw_agent_get_or_create_session(
+  result <- subagent_get_or_create_session(
     session_id = NULL,
     create_chat_fn = function() mock_chat()
   )
@@ -443,19 +443,19 @@ test_that("btw_agent_get_or_create_session creates new session when ID is NULL",
   expect_true(result$is_new)
   expect_true(inherits(result$chat, "Chat"))
 
-  clear_all_subagent_sessions()
+  subagent_clear_all_sessions()
 })
 
-test_that("btw_agent_get_or_create_session retrieves existing session", {
-  clear_all_subagent_sessions()
+test_that("subagent_get_or_create_session retrieves existing session", {
+  subagent_clear_all_sessions()
 
   # Create a session first
-  session_id <- generate_session_id()
+  session_id <- subagent_new_session_id()
   chat <- mock_chat()
-  store_session(session_id, chat)
+  subagent_store_session(session_id, chat)
 
   # Retrieve it
-  result <- btw_agent_get_or_create_session(
+  result <- subagent_get_or_create_session(
     session_id = session_id,
     create_chat_fn = function() stop("Should not be called")
   )
@@ -464,14 +464,14 @@ test_that("btw_agent_get_or_create_session retrieves existing session", {
   expect_identical(result$chat, chat)
   expect_false(result$is_new)
 
-  clear_all_subagent_sessions()
+  subagent_clear_all_sessions()
 })
 
-test_that("btw_agent_get_or_create_session errors helpfully for invalid session", {
-  clear_all_subagent_sessions()
+test_that("subagent_get_or_create_session errors helpfully for invalid session", {
+  subagent_clear_all_sessions()
 
   expect_error(
-    btw_agent_get_or_create_session(
+    subagent_get_or_create_session(
       session_id = "nonexistent_badger_wombat",
       create_chat_fn = function() mock_chat()
     ),
@@ -479,7 +479,7 @@ test_that("btw_agent_get_or_create_session errors helpfully for invalid session"
   )
 
   expect_error(
-    btw_agent_get_or_create_session(
+    subagent_get_or_create_session(
       session_id = "nonexistent",
       create_chat_fn = function() mock_chat()
     ),
@@ -495,7 +495,7 @@ test_that("tools_allowed option filters configured tools", {
     btw.subagent.tools_default = c("docs", "files")
   )
 
-  chat <- btw_subagent_client_config(tools = NULL)
+  chat <- subagent_client(tools = NULL)
 
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
 
@@ -510,7 +510,7 @@ test_that("subagent recursion is prevented in default tools", {
     btw.subagent.tools_allowed = NULL
   )
 
-  chat <- btw_subagent_client_config(tools = NULL)
+  chat <- subagent_client(tools = NULL)
 
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
 

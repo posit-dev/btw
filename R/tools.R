@@ -45,7 +45,7 @@ btw_tools <- function(...) {
 
   # Merge built-in tools with custom agent tools from agent-*.md files
   all_btw_tools <- .btw_tools
-  custom_agents <- get_custom_agent_tools()
+  custom_agents <- custom_agent_discover_tools()
   for (name in names(custom_agents)) {
     # Custom agents don't override built-in tools
     if (!name %in% names(all_btw_tools)) {

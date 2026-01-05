@@ -208,7 +208,7 @@ btw_agent_tool <- function(path) {
   )
 
   # Create the tool function with agent_config captured in closure
-  tool_fn <- btw_tool_agent_custom_config(agent_config)
+  tool_fn <- btw_tool_agent_custom_from_config(agent_config)
 
   # Build the ellmer::tool()
   tool <- ellmer::tool(
@@ -270,10 +270,10 @@ btw_tool_agent_custom_impl <- function(
 ) {
   check_string(prompt)
 
-  session <- btw_agent_get_or_create_session(
+  session <- subagent_get_or_create_session(
     session_id,
     create_chat_fn = function() {
-      btw_custom_agent_client_config(agent_config)
+      custom_agent_client_from_config(agent_config)
     }
   )
 
@@ -282,9 +282,9 @@ btw_tool_agent_custom_impl <- function(
 
   response <- chat$chat(prompt)
 
-  result <- btw_agent_process_response(chat, prompt, agent_config$name, session_id)
+  result <- subagent_process_result(chat, prompt, agent_config$name, session_id)
 
-  display_md <- btw_agent_display_markdown(
+  display_md <- subagent_display_result(
     result = result,
     session_id = session_id,
     agent_name = agent_config$name,
@@ -308,13 +308,13 @@ btw_tool_agent_custom_impl <- function(
 #' Configure custom agent client
 #'
 #' Creates and configures an ellmer Chat client for a custom agent session.
-#' Similar to btw_subagent_client_config but uses agent-specific configuration.
+#' Similar to subagent_client but uses agent-specific configuration.
 #'
 #' @param agent_config List with agent configuration
 #' @return A configured Chat object with system prompt and tools attached
 #' @noRd
-btw_custom_agent_client_config <- function(agent_config) {
-  chat <- btw_agent_resolve_client(agent_config$client)
+custom_agent_client_from_config <- function(agent_config) {
+  chat <- subagent_resolve_client(agent_config$client)
 
   # Determine tools
   tools_default <- agent_config$tools_default %||%
@@ -369,7 +369,7 @@ btw_custom_agent_client_config <- function(agent_config) {
 #' @param agent_config List with agent configuration
 #' @return Function that implements the tool
 #' @noRd
-btw_tool_agent_custom_config <- function(agent_config) {
+btw_tool_agent_custom_from_config <- function(agent_config) {
   force(agent_config)
 
   function(prompt, session_id = NULL) {
@@ -390,7 +390,7 @@ btw_tool_agent_custom_config <- function(agent_config) {
 #'
 #' @return Named list of tool definitions compatible with .btw_add_to_tools
 #' @noRd
-get_custom_agent_tools <- function() {
+custom_agent_discover_tools <- function() {
   files <- discover_agent_md_files()
 
   if (length(files) == 0) {
@@ -428,26 +428,4 @@ get_custom_agent_tools <- function() {
   }
 
   tools
-}
-
-#' Register custom agent tools
-#'
-#' This function is called to dynamically register custom agents found in
-#' agent-*.md files. It's separated from the discovery logic to allow
-#' registration to happen at the appropriate time during package load.
-#'
-#' @noRd
-register_custom_agent_tools <- function() {
-  tools <- get_custom_agent_tools()
-
-  for (tool_name in names(tools)) {
-    tool_def <- tools[[tool_name]]
-    .btw_add_to_tools(
-      name = tool_def$name,
-      group = tool_def$group,
-      tool = tool_def$tool
-    )
-  }
-
-  invisible(NULL)
 }

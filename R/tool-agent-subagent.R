@@ -163,11 +163,11 @@ btw_tool_agent_subagent <- function(
 #' @param create_chat_fn Function that creates a new Chat when called
 #' @return List with `chat`, `session_id`, and `is_new`
 #' @noRd
-btw_agent_get_or_create_session <- function(session_id, create_chat_fn) {
+subagent_get_or_create_session <- function(session_id, create_chat_fn) {
   check_string(session_id, allow_null = TRUE)
 
   if (!is.null(session_id)) {
-    session <- retrieve_session(session_id)
+    session <- subagent_get_session(session_id)
 
     if (is.null(session)) {
       cli::cli_abort(c(
@@ -180,9 +180,9 @@ btw_agent_get_or_create_session <- function(session_id, create_chat_fn) {
     return(list(chat = session$chat, session_id = session_id, is_new = FALSE))
   }
 
-  session_id <- generate_session_id()
+  session_id <- subagent_new_session_id()
   chat <- create_chat_fn()
-  store_session(session_id, chat)
+  subagent_store_session(session_id, chat)
 
   list(chat = chat, session_id = session_id, is_new = TRUE)
 }
@@ -196,7 +196,7 @@ btw_agent_get_or_create_session <- function(session_id, create_chat_fn) {
 #' @param session_id The session ID
 #' @return List with message_text, tokens, tool_calls, provider, model, tool_names
 #' @noRd
-btw_agent_process_response <- function(chat, prompt, agent_name, session_id) {
+subagent_process_result <- function(chat, prompt, agent_name, session_id) {
   # Extract last turn message
   last_turn <- chat$last_turn()
   message_text <- if (is.null(last_turn) || length(last_turn@contents) == 0) {
@@ -257,14 +257,14 @@ btw_agent_process_response <- function(chat, prompt, agent_name, session_id) {
 
 #' Generate display markdown for agent result
 #'
-#' @param result List returned from btw_agent_process_response() containing
+#' @param result List returned from subagent_process_result() containing
 #'   message_text, tokens, tool_calls, provider, model, and tool_names
 #' @param session_id Session ID
 #' @param agent_name Agent name (NULL or "subagent" for subagent, otherwise custom agent name)
 #' @param prompt The prompt text
 #' @return Markdown string for display
 #' @noRd
-btw_agent_display_markdown <- function(result, session_id, agent_name, prompt) {
+subagent_display_result <- function(result, session_id, agent_name, prompt) {
   # Only show agent line for custom agents, not for subagent
   agent_line <- if (!is.null(agent_name) && agent_name != "subagent") {
     sprintf("**Agent:** %s<br>\n  ", agent_name)
@@ -328,7 +328,7 @@ btw_agent_display_markdown <- function(result, session_id, agent_name, prompt) {
 #' @param client Optional explicit client
 #' @return A Chat object
 #' @noRd
-btw_agent_resolve_client <- function(client = NULL) {
+subagent_resolve_client <- function(client = NULL) {
   # Check explicit argument and R options first
   resolved <- client %||%
     getOption("btw.subagent.client") %||%
@@ -362,10 +362,10 @@ btw_tool_agent_subagent_impl <- function(
 ) {
   check_string(prompt)
 
-  session <- btw_agent_get_or_create_session(
+  session <- subagent_get_or_create_session(
     session_id,
     create_chat_fn = function() {
-      btw_subagent_client_config(
+      subagent_client(
         client = config$client,
         tools = tools,
         tools_default = config$tools_default,
@@ -379,9 +379,9 @@ btw_tool_agent_subagent_impl <- function(
 
   response <- chat$chat(prompt)
 
-  result <- btw_agent_process_response(chat, prompt, "subagent", session_id)
+  result <- subagent_process_result(chat, prompt, "subagent", session_id)
 
-  display_md <- btw_agent_display_markdown(
+  display_md <- subagent_display_result(
     result = result,
     session_id = session_id,
     agent_name = "subagent",
@@ -408,7 +408,7 @@ btw_tool_agent_subagent_impl <- function(
 #'
 #' @return A list with captured configuration
 #' @noRd
-capture_subagent_config <- function() {
+subagent_config_options <- function() {
   list(
     client = getOption("btw.subagent.client") %||% getOption("btw.client"),
     tools_default = getOption("btw.subagent.tools_default") %||%
@@ -431,7 +431,7 @@ capture_subagent_config <- function() {
 #' @return A configured Chat object with system prompt and tools attached
 #'
 #' @noRd
-btw_subagent_client_config <- function(
+subagent_client <- function(
   client = NULL,
   tools = NULL,
   tools_default = NULL,
@@ -442,7 +442,7 @@ btw_subagent_client_config <- function(
 
   # Error immediately if subagent is explicitly requested
   # This provides clear feedback rather than silent filtering
-  if (subagent_explicitly_requested(tools)) {
+  if (subagent_is_explicitly_requested(tools)) {
     cli::cli_abort(c(
       "Subagents cannot spawn other subagents.",
       "x" = "The {.arg tools} parameter includes {.val btw_tool_agent_subagent}.",
@@ -450,7 +450,7 @@ btw_subagent_client_config <- function(
     ))
   }
 
-  subagent_client <-
+  subagent_client_resolved <-
     client %||%
     getOption("btw.subagent.client") %||%
     getOption("btw.client")
@@ -510,8 +510,8 @@ btw_subagent_client_config <- function(
   # to ensure the subagent tool is always removed, regardless of how tools were specified
   configured_tools <- subagent_disallow_recursion(configured_tools)
 
-  chat <- if (!is.null(subagent_client)) {
-    as_ellmer_client(subagent_client)$clone()
+  chat <- if (!is.null(subagent_client_resolved)) {
+    as_ellmer_client(subagent_client_resolved)$clone()
   } else {
     btw_default_chat_client()
   }
@@ -546,7 +546,7 @@ subagent_disallow_recursion <- function(tools) {
 #' @param tools Character vector of tool names/groups or list of ToolDef objects
 #' @return TRUE if subagent is explicitly requested by name, FALSE otherwise
 #' @noRd
-subagent_explicitly_requested <- function(tools) {
+subagent_is_explicitly_requested <- function(tools) {
   if (is.null(tools)) {
     return(FALSE)
   }
@@ -575,7 +575,7 @@ subagent_explicitly_requested <- function(tools) {
 #' @return Character string with the tool description
 #'
 #' @noRd
-build_subagent_description <- function(tools = .btw_tools) {
+subagent_build_description <- function(tools = .btw_tools) {
   desc_tool_use <- if (length(tools) == 0) {
     "No tools are available for use in the subagent."
   } else {
@@ -626,7 +626,7 @@ BEST PRACTICES:
   paste0(desc_base, "\n", desc_tool_use, "\n", tool_summary)
 }
 
-btw_tool_agent_subagent_config <- function(config) {
+btw_tool_agent_subagent_from_config <- function(config) {
   force(config)
 
   function(prompt, tools = NULL, session_id = NULL) {
@@ -657,7 +657,7 @@ btw_can_register_subagent_tool <- function() {
     # Set context flag before any tool resolution to prevent recursion
     withr::local_options(.btw_resolving_for_subagent = TRUE)
 
-    config <- capture_subagent_config()
+    config <- subagent_config_options()
     tools_allowed <- config$tools_allowed
 
     if (is.null(tools_allowed)) {
@@ -670,9 +670,9 @@ btw_can_register_subagent_tool <- function() {
     tools_allowed <- flatten_and_check_tools(tools_allowed)
 
     ellmer::tool(
-      btw_tool_agent_subagent_config(config),
+      btw_tool_agent_subagent_from_config(config),
       name = "btw_tool_agent_subagent",
-      description = build_subagent_description(tools_allowed),
+      description = subagent_build_description(tools_allowed),
       annotations = ellmer::tool_annotations(
         title = "Subagent",
         read_only_hint = FALSE,
@@ -708,7 +708,7 @@ btw_can_register_subagent_tool <- function() {
 #'
 #' @return A character string containing the generated session ID
 #' @noRd
-generate_session_id <- function() {
+subagent_new_session_id <- function() {
   # Try up to 100 times to generate a unique ID
   for (i in seq_len(100)) {
     adj <- sample(.btw_memoids$adjective, 1)
@@ -740,7 +740,7 @@ generate_session_id <- function() {
 #' @return The session_id (invisibly)
 #'
 #' @noRd
-store_session <- function(session_id, chat, metadata = list()) {
+subagent_store_session <- function(session_id, chat, metadata = list()) {
   check_string(session_id)
   check_inherits(chat, "Chat")
 
@@ -765,7 +765,7 @@ store_session <- function(session_id, chat, metadata = list()) {
 #' @return A list containing the session data, or NULL if not found
 #'
 #' @noRd
-retrieve_session <- function(session_id) {
+subagent_get_session <- function(session_id) {
   check_string(session_id)
 
   env_get(.btw_subagent_sessions, session_id, default = NULL)
@@ -779,7 +779,7 @@ retrieve_session <- function(session_id) {
 #' @return A list of sessions with: id, chat, created
 #'
 #' @noRd
-list_subagent_sessions <- function() {
+subagent_list_sessions <- function() {
   env_get_list(.btw_subagent_sessions, env_names(.btw_subagent_sessions))
 }
 
@@ -792,7 +792,7 @@ list_subagent_sessions <- function() {
 #' @return TRUE if session was found and removed, FALSE otherwise
 #'
 #' @noRd
-clear_subagent_session <- function(session_id) {
+subagent_clear_session <- function(session_id) {
   check_string(session_id)
 
   if (!env_has(.btw_subagent_sessions, session_id)) {
@@ -809,7 +809,7 @@ clear_subagent_session <- function(session_id) {
 #' will be automatically cleaned up when the R session ends.
 #'
 #' @noRd
-clear_all_subagent_sessions <- function() {
+subagent_clear_all_sessions <- function() {
   session_ids <- env_names(.btw_subagent_sessions)
   count <- length(session_ids)
 
