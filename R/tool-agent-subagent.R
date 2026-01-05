@@ -338,7 +338,6 @@ btw_agent_resolve_client <- function(client = NULL) {
     return(as_ellmer_client(resolved)$clone())
   }
 
-
   # Fall back to btw.md file configuration
 
   btw_config <- read_btw_file()
@@ -700,83 +699,6 @@ btw_can_register_subagent_tool <- function() {
 
 .btw_subagent_sessions <- new.env(parent = emptyenv())
 
-.btw_adjectives <- c(
-  "agile",
-  "bold",
-  "bright",
-  "calm",
-  "clever",
-  "daring",
-  "eager",
-  "elegant",
-  "fair",
-  "fierce",
-  "gentle",
-  "happy",
-  "jolly",
-  "keen",
-  "lively",
-  "merry",
-  "nimble",
-  "noble",
-  "placid",
-  "quick",
-  "quiet",
-  "rapid",
-  "serene",
-  "shy",
-  "silent",
-  "smooth",
-  "stable",
-  "steady",
-  "swift",
-  "tranquil",
-  "valiant",
-  "vibrant",
-  "vigilant",
-  "vivid",
-  "warm",
-  "wise",
-  "witty",
-  "zealous"
-)
-
-.btw_nouns <- c(
-  "aardvark",
-  "badger",
-  "beaver",
-  "cheetah",
-  "dolphin",
-  "eagle",
-  "falcon",
-  "gazelle",
-  "hawk",
-  "jaguar",
-  "kangaroo",
-  "leopard",
-  "lynx",
-  "meerkat",
-  "otter",
-  "panther",
-  "penguin",
-  "puffin",
-  "rabbit",
-  "raven",
-  "salmon",
-  "sparrow",
-  "squirrel",
-  "starling",
-  "swift",
-  "tiger",
-  "turtle",
-  "viper",
-  "walrus",
-  "weasel",
-  "whale",
-  "wolf",
-  "wombat",
-  "zebra"
-)
 
 #' Generate a word-based session ID
 #'
@@ -789,8 +711,8 @@ btw_can_register_subagent_tool <- function() {
 generate_session_id <- function() {
   # Try up to 100 times to generate a unique ID
   for (i in seq_len(100)) {
-    adj <- sample(.btw_adjectives, 1)
-    noun <- sample(.btw_nouns, 1)
+    adj <- sample(.btw_memoids$adjective, 1)
+    noun <- sample(.btw_memoids$noun, 1)
     id <- paste(adj, noun, sep = "_")
 
     if (!env_has(.btw_subagent_sessions, id)) {
@@ -804,8 +726,6 @@ generate_session_id <- function() {
     "i" = "Falling back to random suffix."
   ))
 
-  adj <- sample(.btw_adjectives, 1)
-  noun <- sample(.btw_nouns, 1)
   suffix <- sample(1000:9999, 1)
   paste(c(adj, noun, suffix), collapse = "_")
 }

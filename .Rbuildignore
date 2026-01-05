@@ -18,3 +18,4 @@
 ^CRAN-SUBMISSION$
 ^\.prettierrc$
 ^node_modules$
+^data-raw$
