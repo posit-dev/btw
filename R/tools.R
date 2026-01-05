@@ -40,7 +40,6 @@
 #'
 #' @export
 btw_tools <- function(...) {
-
   tools <- c(...)
   check_character(tools, allow_null = TRUE)
 
@@ -131,8 +130,8 @@ as_ellmer_tools <- function(x) {
     can_register_fns <- can_register_fns[seq_along(tools)]
   }
 
-  # 3. Set icons
-  tools <- map2(tools, groups, set_tool_icon)
+  # 3. Set icon and group annotations
+  tools <- map2(tools, groups, set_tool_annotations)
 
   # 4. Propagate can_register to btw_can_register annotation
   tools <- map2(tools, can_register_fns, function(tool, fn) {
@@ -187,12 +186,13 @@ tool_group_icon <- function(group, default = NULL) {
   )
 }
 
-set_tool_icon <- function(tool, group) {
+set_tool_annotations <- function(tool, group) {
   if (!is.list(tool@annotations)) {
     tool@annotations <- list()
   }
 
   tool@annotations$icon <- tool_group_icon(group)
+  tool@annotations$btw_group <- group
   tool
 }
 

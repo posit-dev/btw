@@ -600,19 +600,15 @@ btw_status_bar_server <- function(id, chat) {
 
 # Tools in sidebar ----
 
-btw_tools_df <- function(include_tool_names = NULL) {
-  all_btw_tools <- .btw_tools[intersect(include_tool_names, names(.btw_tools))]
-  all_btw_tools <- map(all_btw_tools, function(def) {
-    tool <- def$tool()
-    if (is.null(tool)) {
-      return()
-    }
-    if (def$group == "env" && isTRUE(getOption("btw.app.in_addin"))) {
+btw_tools_df <- function(tools = btw_tools()) {
+  all_btw_tools <- map(tools, function(tool) {
+    group <- tool@annotations$btw_group %||% "other"
+    if (group == "env" && isTRUE(getOption("btw.app.in_addin"))) {
       # TODO: Remove this check when the addin can reach the global env
       return()
     }
     dplyr::tibble(
-      group = def$group,
+      group = group,
       name = tool@name,
       description = tool@description,
       title = tool@annotations$title,
