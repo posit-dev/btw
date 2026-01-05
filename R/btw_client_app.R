@@ -26,21 +26,24 @@ btw_app <- function(
     # When client is AsIs (pre-configured), use btw_tools() as reference
     reference_tools <- btw_tools()
   } else {
-    # Create a reference client to get the full tool set
-    withr::with_options(list(btw.client.quiet = TRUE), {
-      reference_client <- btw_client(
-        tools = names(btw_tools()),
-        path_btw = path_btw
-      )
-      reference_tools <- reference_client$get_tools()
-    })
-
-    # Also create the actual client if needed
     client <- btw_client(
       client = client,
       tools = tools,
       path_btw = path_btw
     )
+
+    # Create a reference client to get the full tool set
+    withr::with_options(list(btw.client.quiet = TRUE), {
+      bare_client <- client$clone()
+      bare_client$set_tools(list())
+
+      reference_client <- btw_client(
+        client = bare_client,
+        tools = names(btw_tools()),
+        path_btw = path_btw
+      )
+      reference_tools <- reference_client$get_tools()
+    })
   }
 
   btw_app_from_client(
@@ -150,7 +153,7 @@ btw_app_from_client <- function(
         shiny::div(
           class = "overflow-y-auto overflow-x-visible",
           app_tool_group_inputs(
-            btw_tools_df(names(all_available_tools)),
+            btw_tools_df(all_available_tools),
             initial_tool_names = names(original_client_tools)
           ),
           shiny::uiOutput("ui_other_tools")
@@ -196,7 +199,7 @@ btw_app_from_client <- function(
       bslib::toggle_sidebar("tools_sidebar")
     })
 
-    tool_groups <- unique(btw_tools_df(names(all_available_tools))$group)
+    tool_groups <- unique(btw_tools_df(all_available_tools)$group)
 
     # Split tools: btw tools and other (non-btw) tools
     btw_available_tools <- keep(all_available_tools, function(tool) {
@@ -214,7 +217,7 @@ btw_app_from_client <- function(
     })
 
     shiny::observeEvent(input$select_all, {
-      tools <- btw_tools_df(names(all_available_tools))
+      tools <- btw_tools_df(all_available_tools)
       for (group in tool_groups) {
         shiny::updateCheckboxGroupInput(
           session = session,
@@ -225,7 +228,7 @@ btw_app_from_client <- function(
     })
 
     shiny::observeEvent(input$deselect_all, {
-      tools <- btw_tools_df(names(all_available_tools))
+      tools <- btw_tools_df(all_available_tools)
       for (group in tool_groups) {
         shiny::updateCheckboxGroupInput(
           session = session,
@@ -238,7 +241,7 @@ btw_app_from_client <- function(
     lapply(tool_groups, function(group) {
       shiny::observeEvent(input[[paste0("tools_toggle_", group)]], {
         current <- input[[paste0("tools_", group)]]
-        all_tools <- btw_tools_df(names(all_available_tools))
+        all_tools <- btw_tools_df(all_available_tools)
         group_tools <- all_tools[all_tools$group == group, ][["name"]]
         if (length(current) == length(group_tools)) {
           # All selected, so deselect all
