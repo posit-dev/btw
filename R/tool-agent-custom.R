@@ -1,196 +1,6 @@
 #' @include tool-agent-subagent.R
 NULL
 
-#' Discover agent-*.md files from project and user directories
-#'
-#' Scans for custom agent definition files in:
-#' - `.btw/agent-*.md` (project level)
-#' - `~/.btw/agent-*.md` (user level)
-#' - `~/.config/btw/agent-*.md` (user level)
-#'
-#' @return Character vector of absolute paths to agent-*.md files
-#' @noRd
-discover_agent_md_files <- function() {
-  project_files <- find_project_agent_files()
-  user_files <- find_user_agent_files()
-  unique(c(project_files, user_files))
-}
-
-#' Read and parse an agent-*.md file
-#'
-#' Wrapper around `read_single_btw_file()` that extracts YAML frontmatter
-#' and body content from an agent definition file.
-#'
-#' @param path Path to the agent-*.md file
-#' @return List with YAML config and body content (system_prompt)
-#' @noRd
-read_agent_md_file <- function(path) {
-  if (!fs::file_exists(path)) {
-    return(NULL)
-  }
-
-  config <- read_single_btw_file(path)
-
-  # Rename btw_system_prompt to system_prompt for agent configs
-  if (!is.null(config$btw_system_prompt)) {
-    config$system_prompt <- config$btw_system_prompt
-    config$btw_system_prompt <- NULL
-  }
-
-  config
-}
-
-#' Validate agent name
-#'
-#' Ensures the agent name is a valid R identifier and not reserved.
-#'
-#' @param name The agent name from YAML frontmatter
-#' @param path Path to the file (for error messages)
-#' @return TRUE if valid, otherwise signals an error
-#' @noRd
-validate_agent_name <- function(name, path) {
-  check_string(name, allow_null = TRUE)
-
-  if (is.null(name) || !nzchar(name)) {
-    cli::cli_warn(c(
-      "Agent file has no name: {.path {path}}",
-      "i" = "Add {.code name: agent_name} to the YAML frontmatter.",
-      "i" = "Skipping this file."
-    ))
-    return(FALSE)
-  }
-
-  # Check for reserved name
-  if (name %in% names(.btw_tools)) {
-    cli::cli_warn(c(
-      "Agent name cannot be {.val {name}}: {.path {path}}",
-      "i" = "The name {.val {name}} is reserved. Skipping this file."
-    ))
-    return(FALSE)
-  }
-
-  # Check if valid R identifier
-  if (!grepl("^[a-zA-Z][a-zA-Z0-9_]*$", name)) {
-    cli::cli_warn(c(
-      "Invalid agent name {.val {name}}: {.path {path}}",
-      "i" = "Agent names must be valid R identifiers (letters, numbers, underscores).",
-      "i" = "Names must start with a letter.",
-      "i" = "Skipping this file."
-    ))
-    return(FALSE)
-  }
-
-  TRUE
-}
-
-#' Resolve custom icon from string specification
-#'
-#' Parses an icon specification and returns the appropriate icon object.
-#'
-#' @param icon_spec String specifying the icon. Can be:
-#'   - Raw SVG: starts with `<svg` - wrapped in `htmltools::HTML()`
-#'   - Package icon: `pkg::icon-name` format (e.g., `fontawesome::home`)
-#'   - Shiny icon: just the icon name (uses `shiny::icon()`)
-#'
-#' Supported packages:
-#' - `fontawesome`: uses `fa("icon-name")`
-#' - `bsicons`: uses `bs_icon("icon-name")`
-#' - `phosphoricons`: uses `ph("icon-name")`
-#' - `rheroicons`: uses `rheroicon("icon-name")`
-#' - `tabler`: uses `icon("icon-name")`
-#' - `shiny`: uses `icon("icon-name")`
-#'
-#' @return An icon object (shiny.tag) or NULL if the icon cannot be resolved
-#' @noRd
-custom_icon <- function(icon_spec) {
-  if (is.null(icon_spec) || !nzchar(icon_spec)) {
-    return(NULL)
-  }
-
-  # Raw SVG: wrap in HTML()
-  if (grepl("^\\s*<svg", icon_spec, ignore.case = TRUE)) {
-    return(htmltools::HTML(icon_spec))
-  }
-
-  # Package icon: pkg::icon-name
-  if (grepl("::", icon_spec, fixed = TRUE)) {
-    parts <- strsplit(icon_spec, "::", fixed = TRUE)[[1]]
-    if (length(parts) != 2) {
-      cli::cli_warn("Invalid icon specification: {.val {icon_spec}}")
-      return(NULL)
-    }
-
-    pkg <- parts[1]
-    icon_name <- parts[2]
-
-    # Map package to function name
-    icon_fn <- switch(
-      pkg,
-      fontawesome = "fa",
-      bsicons = "bs_icon",
-      phosphoricons = "ph",
-      rheroicons = "rheroicon",
-      tabler = "icon",
-      shiny = "icon",
-      NULL
-    )
-
-    if (is.null(icon_fn)) {
-      cli::cli_warn("Unknown icon package: {.val {pkg}}")
-      return(NULL)
-    }
-
-    # Check if package is installed
-    if (!requireNamespace(pkg, quietly = TRUE)) {
-      cli::cli_warn(
-        "Package {.pkg {pkg}} is not installed for icon {.val {icon_spec}}"
-      )
-      return(NULL)
-    }
-
-    # Get the function from the package namespace
-    ns <- tryCatch(asNamespace(pkg), error = function(e) NULL)
-    if (is.null(ns)) {
-      cli::cli_warn("Cannot access namespace for package {.pkg {pkg}}")
-      return(NULL)
-    }
-
-    fn <- ns[[icon_fn]]
-    if (is.null(fn) || !is.function(fn)) {
-      cli::cli_warn(
-        "Function {.fn {icon_fn}} not found in package {.pkg {pkg}}"
-      )
-      return(NULL)
-    }
-
-    # Call the icon function
-    result <- tryCatch(
-      fn(icon_name),
-      error = function(e) {
-        cli::cli_warn(c(
-          "Error creating icon {.val {icon_name}} from {.pkg {pkg}}",
-          "x" = conditionMessage(e)
-        ))
-        NULL
-      }
-    )
-
-    return(result)
-  }
-
-  # Default: use shiny::icon()
-  tryCatch(
-    shiny::icon(icon_spec),
-    error = function(e) {
-      cli::cli_warn(c(
-        "Invalid icon name: {.val {icon_spec}}",
-        "x" = conditionMessage(e)
-      ))
-      NULL
-    }
-  )
-}
-
 #' Create a custom agent tool from a markdown file
 #'
 #' @description
@@ -499,6 +309,196 @@ btw_tool_agent_custom_from_config <- function(agent_config) {
       agent_config = agent_config
     )
   }
+}
+
+#' Discover agent-*.md files from project and user directories
+#'
+#' Scans for custom agent definition files in:
+#' - `.btw/agent-*.md` (project level)
+#' - `~/.btw/agent-*.md` (user level)
+#' - `~/.config/btw/agent-*.md` (user level)
+#'
+#' @return Character vector of absolute paths to agent-*.md files
+#' @noRd
+discover_agent_md_files <- function() {
+  project_files <- find_project_agent_files()
+  user_files <- find_user_agent_files()
+  unique(c(project_files, user_files))
+}
+
+#' Read and parse an agent-*.md file
+#'
+#' Wrapper around `read_single_btw_file()` that extracts YAML frontmatter
+#' and body content from an agent definition file.
+#'
+#' @param path Path to the agent-*.md file
+#' @return List with YAML config and body content (system_prompt)
+#' @noRd
+read_agent_md_file <- function(path) {
+  if (!fs::file_exists(path)) {
+    return(NULL)
+  }
+
+  config <- read_single_btw_file(path)
+
+  # Rename btw_system_prompt to system_prompt for agent configs
+  if (!is.null(config$btw_system_prompt)) {
+    config$system_prompt <- config$btw_system_prompt
+    config$btw_system_prompt <- NULL
+  }
+
+  config
+}
+
+#' Validate agent name
+#'
+#' Ensures the agent name is a valid R identifier and not reserved.
+#'
+#' @param name The agent name from YAML frontmatter
+#' @param path Path to the file (for error messages)
+#' @return TRUE if valid, otherwise signals an error
+#' @noRd
+validate_agent_name <- function(name, path) {
+  check_string(name, allow_null = TRUE)
+
+  if (is.null(name) || !nzchar(name)) {
+    cli::cli_warn(c(
+      "Agent file has no name: {.path {path}}",
+      "i" = "Add {.code name: agent_name} to the YAML frontmatter.",
+      "i" = "Skipping this file."
+    ))
+    return(FALSE)
+  }
+
+  # Check for reserved name
+  if (name %in% names(.btw_tools)) {
+    cli::cli_warn(c(
+      "Agent name cannot be {.val {name}}: {.path {path}}",
+      "i" = "The name {.val {name}} is reserved. Skipping this file."
+    ))
+    return(FALSE)
+  }
+
+  # Check if valid R identifier
+  if (!grepl("^[a-zA-Z][a-zA-Z0-9_]*$", name)) {
+    cli::cli_warn(c(
+      "Invalid agent name {.val {name}}: {.path {path}}",
+      "i" = "Agent names must be valid R identifiers (letters, numbers, underscores).",
+      "i" = "Names must start with a letter.",
+      "i" = "Skipping this file."
+    ))
+    return(FALSE)
+  }
+
+  TRUE
+}
+
+#' Resolve custom icon from string specification
+#'
+#' Parses an icon specification and returns the appropriate icon object.
+#'
+#' @param icon_spec String specifying the icon. Can be:
+#'   - Raw SVG: starts with `<svg` - wrapped in `htmltools::HTML()`
+#'   - Package icon: `pkg::icon-name` format (e.g., `fontawesome::home`)
+#'   - Shiny icon: just the icon name (uses `shiny::icon()`)
+#'
+#' Supported packages:
+#' - `fontawesome`: uses `fa("icon-name")`
+#' - `bsicons`: uses `bs_icon("icon-name")`
+#' - `phosphoricons`: uses `ph("icon-name")`
+#' - `rheroicons`: uses `rheroicon("icon-name")`
+#' - `tabler`: uses `icon("icon-name")`
+#' - `shiny`: uses `icon("icon-name")`
+#'
+#' @return An icon object (shiny.tag) or NULL if the icon cannot be resolved
+#' @noRd
+custom_icon <- function(icon_spec) {
+  if (is.null(icon_spec) || !nzchar(icon_spec)) {
+    return(NULL)
+  }
+
+  # Raw SVG: wrap in HTML()
+  if (grepl("^\\s*<svg", icon_spec, ignore.case = TRUE)) {
+    return(htmltools::HTML(icon_spec))
+  }
+
+  # Package icon: pkg::icon-name
+  if (grepl("::", icon_spec, fixed = TRUE)) {
+    parts <- strsplit(icon_spec, "::", fixed = TRUE)[[1]]
+    if (length(parts) != 2) {
+      cli::cli_warn("Invalid icon specification: {.val {icon_spec}}")
+      return(NULL)
+    }
+
+    pkg <- parts[1]
+    icon_name <- parts[2]
+
+    # Map package to function name
+    icon_fn <- switch(
+      pkg,
+      fontawesome = "fa",
+      bsicons = "bs_icon",
+      phosphoricons = "ph",
+      rheroicons = "rheroicon",
+      tabler = "icon",
+      shiny = "icon",
+      NULL
+    )
+
+    if (is.null(icon_fn)) {
+      cli::cli_warn("Unknown icon package: {.val {pkg}}")
+      return(NULL)
+    }
+
+    # Check if package is installed
+    if (!requireNamespace(pkg, quietly = TRUE)) {
+      cli::cli_warn(
+        "Package {.pkg {pkg}} is not installed for icon {.val {icon_spec}}"
+      )
+      return(NULL)
+    }
+
+    # Get the function from the package namespace
+    ns <- tryCatch(asNamespace(pkg), error = function(e) NULL)
+    if (is.null(ns)) {
+      cli::cli_warn("Cannot access namespace for package {.pkg {pkg}}")
+      return(NULL)
+    }
+
+    fn <- ns[[icon_fn]]
+    if (is.null(fn) || !is.function(fn)) {
+      cli::cli_warn(
+        "Function {.fn {icon_fn}} not found in package {.pkg {pkg}}"
+      )
+      return(NULL)
+    }
+
+    # Call the icon function
+    result <- tryCatch(
+      fn(icon_name),
+      error = function(e) {
+        cli::cli_warn(c(
+          "Error creating icon {.val {icon_name}} from {.pkg {pkg}}",
+          "x" = conditionMessage(e)
+        ))
+        NULL
+      }
+    )
+
+    return(result)
+  }
+
+  # Default: use shiny::icon()
+  tryCatch(
+    shiny::icon(icon_spec),
+    error = function(e) {
+      cli::cli_warn(c(
+        "Invalid icon name: {.val {icon_spec}}",
+        "x" = conditionMessage(e)
+      ))
+      NULL
+    }
+  )
 }
 
 #' Get custom agent tools with lazy discovery and caching
