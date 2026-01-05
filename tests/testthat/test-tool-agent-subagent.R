@@ -245,8 +245,8 @@ test_that("subagent_client() error message is helpful", {
   )
 
   expect_error(
-    subagent_client(tools = c("github")),
-    "btw_tool_github"
+    subagent_client(tools = c("env")),
+    "btw_tool_env_describe_data_frame"
   )
 
   expect_error(
