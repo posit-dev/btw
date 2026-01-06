@@ -19,14 +19,15 @@ btw_app(..., client = NULL, tools = NULL, path_btw = NULL, messages = list())
 \item{...}{In \code{btw_app()}, additional arguments are passed to
 \code{\link[shiny:shinyApp]{shiny::shinyApp()}}. In \code{btw_client()}, additional arguments are ignored.}
 
-\item{client}{An \link[ellmer:Chat]{ellmer::Chat} client or a \code{provider/model} string to be
-passed to \code{\link[ellmer:chat-any]{ellmer::chat()}} to create a chat client. Defaults to
-\code{\link[ellmer:chat_anthropic]{ellmer::chat_anthropic()}}. You can use the \code{btw.client} option to set a
+\item{client}{An \link[ellmer:Chat]{ellmer::Chat} client, or a \code{provider/model} string to be
+passed to \code{\link[ellmer:chat-any]{ellmer::chat()}} to create a chat client, or an alias to a client
+setting in your \code{btw.md} file (see "Multiple Providers" section). Defaults
+to \code{\link[ellmer:chat_anthropic]{ellmer::chat_anthropic()}}. You can use the \code{btw.client} option to set a
 default client for new \code{btw_client()} calls, or use a \code{btw.md} project file
 for default chat client settings, like provider and model. We check the
 \code{client} argument, then the \code{btw.client} R option, and finally the \code{btw.md}
-project file (falling back to user-level \code{btw.md} if needed), using only the
-client definition from the first of these that is available.}
+project file (falling back to user-level \code{btw.md} if needed), using only
+the client definition from the first of these that is available.}
 
 \item{tools}{A list of tools to include in the chat, defaults to
 \code{\link[=btw_tools]{btw_tools()}}. Join \code{\link[=btw_tools]{btw_tools()}} with additional tools defined by
@@ -130,11 +131,8 @@ first client is used automatically.
     model: us.anthropic.claude-sonnet-4-5-20250929-v1:0
 }\if{html}{\out{</div>}}
 
-With aliases, you can select a client by name:
-\itemize{
-\item In the interactive menu, type the alias name (e.g., "sonnet")
-\item Or pass the alias directly: \code{btw_client(client = "sonnet")}
-}
+With aliases, you can select a client by name in the interactive menu or pass
+the alias directly: \code{btw_client(client = "sonnet")}.
 }
 }
 \section{Functions}{

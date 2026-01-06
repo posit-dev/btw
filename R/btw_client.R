@@ -68,10 +68,8 @@
 #'     model: us.anthropic.claude-sonnet-4-5-20250929-v1:0
 #' ```
 #'
-#' With aliases, you can select a client by name:
-#'
-#' - In the interactive menu, type the alias name (e.g., "sonnet")
-#' - Or pass the alias directly: `btw_client(client = "sonnet")`
+#' With aliases, you can select a client by name in the interactive menu or pass
+#' the alias directly: `btw_client(client = "sonnet")`.
 #'
 #' @examplesIf rlang::is_interactive()
 #' withr::local_options(list(
@@ -83,14 +81,15 @@
 #'   "How can I replace `stop()` calls with functions from the cli package?"
 #' )
 #'
-#' @param client An [ellmer::Chat] client or a `provider/model` string to be
-#'   passed to [ellmer::chat()] to create a chat client. Defaults to
-#'   [ellmer::chat_anthropic()]. You can use the `btw.client` option to set a
+#' @param client An [ellmer::Chat] client, or a `provider/model` string to be
+#'   passed to [ellmer::chat()] to create a chat client, or an alias to a client
+#'   setting in your `btw.md` file (see "Multiple Providers" section). Defaults
+#'   to [ellmer::chat_anthropic()]. You can use the `btw.client` option to set a
 #'   default client for new `btw_client()` calls, or use a `btw.md` project file
 #'   for default chat client settings, like provider and model. We check the
 #'   `client` argument, then the `btw.client` R option, and finally the `btw.md`
-#'   project file (falling back to user-level `btw.md` if needed), using only the
-#'   client definition from the first of these that is available.
+#'   project file (falling back to user-level `btw.md` if needed), using only
+#'   the client definition from the first of these that is available.
 #' @param tools A list of tools to include in the chat, defaults to
 #'   [btw_tools()]. Join [btw_tools()] with additional tools defined by
 #'   [ellmer::tool()] to include additional tools in the chat client.
