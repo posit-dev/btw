@@ -11,7 +11,7 @@
 #' @return Path to the created agent file
 #' @noRd
 local_test_agent_file <- function(
-  dir,
+  dir = ".",
   name = "test_agent",
   content = NULL,
   .envir = parent.frame()
@@ -31,10 +31,9 @@ This is the system prompt for the test agent.",
     )
   }
 
-  path <- file.path(dir, sprintf("agent-%s.md", name))
+  path <- fs::path_norm(file.path(dir, sprintf("agent-%s.md", name)))
   writeLines(content, path)
 
-  # Register cleanup in parent frame
   withr::defer(
     if (file.exists(path)) unlink(path),
     envir = .envir

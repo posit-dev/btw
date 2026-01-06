@@ -262,9 +262,8 @@ test_that("validate_agent_name() rejects edge cases", {
 # ---- Custom Agent Configuration (Behavioral) --------------------------------
 
 test_that("custom_agent_client_from_config creates chat with custom system prompt", {
-  tmp_dir <- withr::local_tempdir()
-  btw_dir <- file.path(tmp_dir, ".btw")
-  dir.create(btw_dir)
+  withr::local_dir(withr::local_tempdir())
+  dir.create(".btw")
 
   # Create agent file
   writeLines(
@@ -281,13 +280,11 @@ test_that("custom_agent_client_from_config creates chat with custom system promp
       "- Performance issues",
       "- Security vulnerabilities"
     ),
-    file.path(btw_dir, "agent-code-reviewer.md")
+    ".btw/agent-code-reviewer.md"
   )
 
   # Load config and create chat
-  agent_config <- withr::with_dir(tmp_dir, {
-    read_agent_md_file(file.path(btw_dir, "agent-code-reviewer.md"))
-  })
+  agent_config <- read_agent_md_file(".btw/agent-code-reviewer.md")
 
   chat <- custom_agent_client_from_config(agent_config)
 
@@ -305,6 +302,8 @@ test_that("custom_agent_client_from_config creates chat with custom system promp
 })
 
 test_that("custom_agent_client_from_config respects tool restrictions", {
+  withr::local_dir(withr::local_tempdir()) # avoid any user/global btw.md files
+
   agent_config <- list(
     name = "docs_agent",
     description = "Documentation expert",
@@ -323,6 +322,8 @@ test_that("custom_agent_client_from_config respects tool restrictions", {
 })
 
 test_that("custom_agent_client_from_config concatenates system prompts", {
+  withr::local_dir(withr::local_tempdir()) # avoid any user/global btw.md files
+
   agent_config <- list(
     name = "test",
     client = NULL,
@@ -369,16 +370,15 @@ test_that("custom_agent_client_from_config uses subagent_resolve_client", {
 # ---- Multiple Custom Agents -------------------------------------------------
 
 test_that("multiple custom agents can be discovered and registered", {
-  tmp_dir <- withr::local_tempdir()
-  btw_dir <- file.path(tmp_dir, ".btw")
-  dir.create(btw_dir)
+  withr::local_dir(withr::local_tempdir())
+  dir.create(".btw")
 
   # Create two agents
-  local_test_agent_file(btw_dir, "agent_one")
-  local_test_agent_file(btw_dir, "agent_two")
+  local_test_agent_file(".btw", "agent_one")
+  local_test_agent_file(".btw", "agent_two")
 
   # Use custom_agent_discover_tools() to get internal btw tool structure
-  tools <- withr::with_dir(tmp_dir, custom_agent_discover_tools())
+  tools <- custom_agent_discover_tools()
 
   expect_type(tools, "list")
   expect_true("btw_tool_agent_agent_one" %in% names(tools))
