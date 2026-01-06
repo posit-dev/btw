@@ -338,7 +338,7 @@ resolve_client_alias <- function(name, clients) {
   if (is.na(idx)) NULL else clients[[idx]]
 }
 
-format_client_label <- function(client, alias = NULL) {
+format_client_label <- function(client, alias = NULL, default = FALSE) {
   # Parse string format into list
   if (is_string(client)) {
     parts <- strsplit(client, "/", fixed = TRUE)[[1]]
@@ -348,6 +348,8 @@ format_client_label <- function(client, alias = NULL) {
     )
   }
 
+  default <- if (default) cli::col_red(" [default]") else ""
+
   # Format provider/model
   if (is.list(client) && !is.null(client$provider)) {
     label <- if (!is.null(client$model)) {
@@ -356,16 +358,16 @@ format_client_label <- function(client, alias = NULL) {
       cli::format_inline("{.field {client$provider}}")
     }
     if (!is.null(alias)) {
+      alias <- cli::col_magenta(alias)
       label <- cli::format_inline("{.strong {alias}}: {label}")
     }
-    return(label)
+  } else if (!is.null(alias)) {
+    label <- cli::format_inline("{.strong {alias}}: <unknown>")
+  } else {
+    label <- "<unknown>"
   }
 
-  if (!is.null(alias)) {
-    cli::format_inline("{.strong {alias}}: <unknown>")
-  } else {
-    "<unknown>"
-  }
+  paste0(label, default)
 }
 
 choose_client_from_array <- function(clients, is_user_interactive = FALSE) {
@@ -379,23 +381,27 @@ choose_client_from_array <- function(clients, is_user_interactive = FALSE) {
   aliases <- client_aliases(clients)
   labels <- vapply(
     seq_along(clients),
-    function(i) format_client_label(clients[[i]], alias = aliases[i]),
+    function(i) {
+      format_client_label(clients[[i]], alias = aliases[i], default = i == 1)
+    },
     character(1)
   )
 
   # Display menu
-  cli::cli_h3("Select a client")
-  for (i in seq_along(labels)) {
-    suffix <- if (i == 1) cli::col_red(" [default]") else ""
-    cli::cli_text("{i}. {labels[i]}{suffix}")
-  }
+  cli::cli_h2("Select a client")
+  cli::cli_ol(labels)
   cli::cli_text("")
 
-  prompt <- if (!is.null(aliases)) {
-    sprintf("Enter choice [1-%d, alias name, or 0 to exit]: ", length(clients))
-  } else {
-    sprintf("Enter choice [1-%d, 0 to exit]: ", length(clients))
-  }
+  cli::cli_div(
+    theme = list(span.subtle = list(color = "silver"))
+  )
+  prompt <- cli::format_inline(
+    "Enter choice {.subtle [1-{n_clients}{alias}, or 0 to exit]}: ",
+    .envir = env(
+      n_clients = length(clients),
+      alias = if (!is.null(aliases)) ", alias name" else ""
+    )
+  )
 
   repeat {
     choice <- readline(prompt = prompt)
