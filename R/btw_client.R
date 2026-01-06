@@ -130,10 +130,10 @@ btw_client <- function(
   check_dots_empty()
 
   is_user_interactive <-
-    rlang::is_interactive() &&
-    identical(rlang::caller_env(), rlang::global_env()) ||
-    (identical(rlang::caller_fn(), btw_app) &&
-      identical(rlang::caller_env(n = 2), rlang::global_env()))
+    is_interactive() &&
+    identical(caller_env(), global_env()) ||
+    (identical(fn_env(caller_fn()), fn_env(btw_client)) &&
+      identical(caller_env(n = 2), global_env()))
 
   config <- btw_client_config(
     client,
@@ -372,9 +372,7 @@ choose_client_from_array <- function(clients, is_user_interactive = FALSE) {
   if (length(clients) == 0) {
     cli::cli_abort("No client configurations provided.")
   }
-  if (
-    length(clients) == 1 || !is_user_interactive || !rlang::is_interactive()
-  ) {
+  if (length(clients) == 1 || !is_user_interactive || !is_interactive()) {
     return(clients[[1]])
   }
 
