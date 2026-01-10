@@ -96,8 +96,8 @@ NULL
 #' ## Claude Code Compatibility
 #'
 #' btw supports loading agent files from Claude Code's `.claude/agents/`
-#' directory for compatibility. However, some Claude Code fields are not
-#' supported:
+#' directory for compatibility. However, there are some small differences
+#' when Claude Code agents are used in btw:
 #'
 #' * **Name normalization**: Agent names with hyphens (e.g., `code-reviewer`)
 #'   are automatically converted to underscores (`code_reviewer`) for R
