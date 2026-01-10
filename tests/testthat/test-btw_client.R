@@ -761,6 +761,7 @@ describe("remove_hidden_content()", {
 })
 
 test_that("btw_client() accepts a list of tools in `tools` argument", {
+  withr::local_dir(withr::local_tempdir()) # avoid any user/global btw.md files
   withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
 
   chat <- btw_client(tools = btw_tools("docs"))

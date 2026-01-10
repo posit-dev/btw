@@ -21,15 +21,37 @@ btw_app <- function(
     cli::cli_alert("Starting up {.fn btw::btw_app} ...")
   }
 
-  if (!inherits(client, "AsIs")) {
+  # Get reference tools for the app
+  if (inherits(client, "AsIs")) {
+    # When client is AsIs (pre-configured), use btw_tools() as reference
+    reference_tools <- btw_tools()
+  } else {
     client <- btw_client(
       client = client,
       tools = tools,
       path_btw = path_btw
     )
+
+    # Create a reference client to get the full tool set
+    withr::with_options(list(btw.client.quiet = TRUE), {
+      bare_client <- client$clone()
+      bare_client$set_tools(list())
+
+      reference_client <- btw_client(
+        client = bare_client,
+        tools = names(btw_tools()),
+        path_btw = path_btw
+      )
+      reference_tools <- reference_client$get_tools()
+    })
   }
 
-  btw_app_from_client(client, messages = messages, ...)
+  btw_app_from_client(
+    client,
+    messages = messages,
+    allowed_tools = reference_tools,
+    ...
+  )
 }
 
 btw_app_html_dep <- function() {
@@ -46,7 +68,12 @@ btw_app_html_dep <- function() {
   )
 }
 
-btw_app_from_client <- function(client, messages = list(), ...) {
+btw_app_from_client <- function(
+  client,
+  messages = list(),
+  allowed_tools = btw_tools(),
+  ...
+) {
   path_figures_installed <- system.file("help", "figures", package = "btw")
   path_figures_dev <- system.file("man", "figures", package = "btw")
   path_logo <- "btw_figures/logo.png"
@@ -56,6 +83,13 @@ btw_app_from_client <- function(client, messages = list(), ...) {
     client$get_provider()@name,
     client$get_model()
   )
+
+  # Store original client tools (preserves configuration like closures)
+  # $get_tools() returns a named list where names are tool names
+  original_client_tools <- client$get_tools()
+
+  # Union: all tools to show in UI preferring original client tools
+  all_available_tools <- utils::modifyList(allowed_tools, original_client_tools)
 
   if (nzchar(path_figures_installed)) {
     shiny::addResourcePath("btw_figures", path_figures_installed)
@@ -119,8 +153,8 @@ btw_app_from_client <- function(client, messages = list(), ...) {
         shiny::div(
           class = "overflow-y-auto overflow-x-visible",
           app_tool_group_inputs(
-            btw_tools_df(),
-            initial_tool_names = map_chr(client$get_tools(), S7::prop, "name")
+            btw_tools_df(all_available_tools),
+            initial_tool_names = names(original_client_tools)
           ),
           shiny::uiOutput("ui_other_tools")
         ),
@@ -165,8 +199,13 @@ btw_app_from_client <- function(client, messages = list(), ...) {
       bslib::toggle_sidebar("tools_sidebar")
     })
 
-    tool_groups <- unique(btw_tools_df()$group)
-    other_tools <- keep(client$get_tools(), function(tool) {
+    tool_groups <- unique(btw_tools_df(all_available_tools)$group)
+
+    # Split tools: btw tools and other (non-btw) tools
+    btw_available_tools <- keep(all_available_tools, function(tool) {
+      identical(substring(tool@name, 1, 9), "btw_tool_")
+    })
+    other_tools <- keep(all_available_tools, function(tool) {
       !identical(substring(tool@name, 1, 9), "btw_tool_")
     })
 
@@ -178,7 +217,7 @@ btw_app_from_client <- function(client, messages = list(), ...) {
     })
 
     shiny::observeEvent(input$select_all, {
-      tools <- btw_tools_df()
+      tools <- btw_tools_df(all_available_tools)
       for (group in tool_groups) {
         shiny::updateCheckboxGroupInput(
           session = session,
@@ -189,7 +228,7 @@ btw_app_from_client <- function(client, messages = list(), ...) {
     })
 
     shiny::observeEvent(input$deselect_all, {
-      tools <- btw_tools_df()
+      tools <- btw_tools_df(all_available_tools)
       for (group in tool_groups) {
         shiny::updateCheckboxGroupInput(
           session = session,
@@ -202,7 +241,7 @@ btw_app_from_client <- function(client, messages = list(), ...) {
     lapply(tool_groups, function(group) {
       shiny::observeEvent(input[[paste0("tools_toggle_", group)]], {
         current <- input[[paste0("tools_", group)]]
-        all_tools <- btw_tools_df()
+        all_tools <- btw_tools_df(all_available_tools)
         group_tools <- all_tools[all_tools$group == group, ][["name"]]
         if (length(current) == length(group_tools)) {
           # All selected, so deselect all
@@ -226,15 +265,7 @@ btw_app_from_client <- function(client, messages = list(), ...) {
       if (!length(selected_tools())) {
         client$set_tools(list())
       } else {
-        sel_btw_tools <- btw_tools(
-          intersect(names(.btw_tools), selected_tools())
-        )
-        sel_other_tools <- keep(other_tools, function(tool) {
-          tool@name %in% selected_tools()
-        })
-        sel_tools <- c(sel_btw_tools, sel_other_tools)
-        # tool_names <- map_chr(tools, S7::prop, "name")
-        # cli::cli_inform("Setting {.field client} tools to: {.val {tool_names}}")
+        sel_tools <- all_available_tools[selected_tools()]
         client$set_tools(sel_tools)
       }
     })
@@ -415,73 +446,18 @@ btw_status_bar_server <- function(id, chat) {
   shiny::moduleServer(
     id,
     function(input, output, session) {
-      chat_get_tokens <- function() {
-        tokens <- tryCatch(
-          chat$client$get_tokens(),
-          error = function(e) NULL
-        )
-        if (is.null(tokens)) {
-          return(NULL)
-        }
-
-        input_tokens <- 0
-        output_tokens <- 0
-        cached_tokens <- 0
-
-        if (!is.null(tokens) && nrow(tokens) > 0) {
-          if (utils::packageVersion("ellmer") <= "0.3.0") {
-            last_user <- tokens[tokens$role == "user", ]
-            if (nrow(last_user) > 0) {
-              input_tokens <- as.integer(utils::tail(last_user$tokens_total, 1))
-            }
-            tokens_assistant <- tokens[tokens$role == "assistant", ]
-            if (nrow(tokens_assistant) > 0) {
-              output_tokens <- as.integer(sum(tokens_assistant$tokens))
-            }
-          } else {
-            # output tokens are by turn, so we sum them all
-            if ("output" %in% colnames(tokens)) {
-              output_tokens <- sum(tokens$output)
-            }
-            # input and cached tokens are accumulated in the last API call
-            if ("input" %in% colnames(tokens)) {
-              input_tokens <-
-                tokens$input[[length(tokens$input)]]
-            }
-            if ("cached_input" %in% colnames(tokens)) {
-              cached_tokens <- tokens$cached_input[[
-                length(tokens$cached_input)
-              ]]
-            }
-          }
-        }
-
-        list(
-          input = input_tokens,
-          output = output_tokens,
-          cached = cached_tokens
-        )
-      }
-
-      chat_get_cost <- function() {
-        tryCatch(
-          chat$client$get_cost(),
-          error = function(e) NA
-        )
-      }
-
       chat_tokens <- shiny::reactiveVal(
-        chat_get_tokens(),
+        chat_get_tokens(chat$client),
         label = "btw_app_tokens"
       )
       chat_cost <- shiny::reactiveVal(
-        chat_get_cost(),
+        chat_get_cost(chat$client),
         label = "btw_app_cost"
       )
 
       shiny::observeEvent(chat$last_turn(), {
-        chat_tokens(chat_get_tokens())
-        chat_cost(chat_get_cost())
+        chat_tokens(chat_get_tokens(chat$client))
+        chat_cost(chat_get_cost(chat$client))
       })
 
       send_status_message <- function(id, status, ...) {
@@ -627,18 +603,15 @@ btw_status_bar_server <- function(id, chat) {
 
 # Tools in sidebar ----
 
-btw_tools_df <- function() {
-  .btw_tools <- map(.btw_tools, function(def) {
-    tool <- def$tool()
-    if (is.null(tool)) {
-      return()
-    }
-    if (def$group == "env" && isTRUE(getOption("btw.app.in_addin"))) {
+btw_tools_df <- function(tools = btw_tools()) {
+  all_btw_tools <- map(tools, function(tool) {
+    group <- tool@annotations$btw_group %||% "other"
+    if (group == "env" && isTRUE(getOption("btw.app.in_addin"))) {
       # TODO: Remove this check when the addin can reach the global env
       return()
     }
     dplyr::tibble(
-      group = def$group,
+      group = group,
       name = tool@name,
       description = tool@description,
       title = tool@annotations$title,
@@ -646,7 +619,7 @@ btw_tools_df <- function() {
       is_open_world = tool@annotations$open_world_hint %||% NA
     )
   })
-  dplyr::bind_rows(.btw_tools)
+  dplyr::bind_rows(all_btw_tools)
 }
 
 app_tool_group_inputs <- function(tools_df, initial_tool_names = NULL) {
@@ -675,6 +648,7 @@ app_tool_group_choice_input <- function(
 
   label_text <- switch(
     group,
+    "agent" = shiny::span(label_icon, "Agents"),
     "docs" = shiny::span(label_icon, "Documentation"),
     "env" = shiny::span(label_icon, "Environment"),
     "eval" = shiny::span(label_icon, "Code Evaluation"),

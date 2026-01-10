@@ -43,13 +43,23 @@ btw_tools <- function(...) {
   tools <- c(...)
   check_character(tools, allow_null = TRUE)
 
+  # Merge built-in tools with custom agent tools from agent-*.md files
+  all_btw_tools <- .btw_tools
+  custom_agents <- custom_agent_discover_tools()
+  for (name in names(custom_agents)) {
+    # Custom agents don't override built-in tools
+    if (!name %in% names(all_btw_tools)) {
+      all_btw_tools[[name]] <- custom_agents[[name]]
+    }
+  }
+
   if (length(tools) == 0) {
     withr::local_options(.btw_tools.match_mode = "all")
-    tools <- names(.btw_tools)
+    tools <- names(all_btw_tools)
   } else {
     withr::local_options(.btw_tools.match_mode = "explicit")
-    tool_names <- map_chr(.btw_tools, function(x) x$name)
-    tool_groups <- map_chr(.btw_tools, function(x) x$group)
+    tool_names <- map_chr(all_btw_tools, function(x) x$name)
+    tool_groups <- map_chr(all_btw_tools, function(x) x$group)
 
     allowed <- c(
       tool_groups,
@@ -72,16 +82,12 @@ btw_tools <- function(...) {
     )
   }
 
-  tools_to_keep <- map_lgl(.btw_tools, is_tool_match, tools)
-  res <- .btw_tools[tools_to_keep]
-  res <- as_ellmer_tools(res)
+  tools_to_keep <- map_lgl(all_btw_tools, is_tool_match, tools)
+  res <- all_btw_tools[tools_to_keep]
 
-  tools_can_register <- map_lgl(res, function(tool) {
-    is.null(tool@annotations$btw_can_register) ||
-      tool@annotations$btw_can_register()
-  })
-
-  res[tools_can_register]
+  # as_ellmer_tools() now handles can_register checks before instantiation
+  # and propagates can_register to btw_can_register annotation
+  as_ellmer_tools(res)
 }
 
 is_tool_match <- function(tool, labels = NULL) {
@@ -102,10 +108,42 @@ is_tool_match <- function(tool, labels = NULL) {
 
 # Convert from .btw_tools (or a filtered version of it)
 # to a format compatible with `client$set_tools()`
-as_ellmer_tools <- function(x) {
+as_ellmer_tools <- function(x, force = FALSE) {
+  # 1. Filter by can_register BEFORE instantiation
+  # This prevents infinite recursion when a tool's $tool() function
+  # tries to resolve tools that include itself (e.g., subagent)
+  can_register_fns <- map(x, function(.x) .x$can_register)
+  if (!force) {
+    can_instantiate <- map_lgl(can_register_fns, function(fn) {
+      is.null(fn) || fn()
+    })
+    x <- x[can_instantiate]
+    can_register_fns <- can_register_fns[can_instantiate]
+  }
+
+  # 2. Instantiate tools
   groups <- map_chr(x, function(.x) .x$group)
   tools <- compact(map(x, function(.x) .x$tool()))
-  tools <- map2(tools, groups, set_tool_icon)
+
+  # Handle case where compact() removed some tools
+  # (shouldn't happen normally, but be defensive)
+  if (length(tools) < length(groups)) {
+    groups <- groups[seq_along(tools)]
+    can_register_fns <- can_register_fns[seq_along(tools)]
+  }
+
+  # 3. Set icon and group annotations
+  tools <- map2(tools, groups, set_tool_annotations)
+
+  # 4. Propagate can_register to btw_can_register annotation
+  tools <- map2(tools, can_register_fns, function(tool, fn) {
+    if (!is.null(fn)) {
+      tool@annotations$btw_can_register <- fn
+    }
+    tool
+  })
+
+  # 5. Wrap with intent
   map(tools, wrap_with_intent)
 }
 
@@ -134,6 +172,7 @@ wrap_with_intent <- function(tool) {
 tool_group_icon <- function(group, default = NULL) {
   switch(
     group,
+    "agent" = tool_icon("robot"),
     "docs" = tool_icon("dictionary"),
     "env" = tool_icon("source-environment"),
     "eval" = tool_icon("play-circle"),
@@ -149,12 +188,15 @@ tool_group_icon <- function(group, default = NULL) {
   )
 }
 
-set_tool_icon <- function(tool, group) {
+set_tool_annotations <- function(tool, group) {
   if (!is.list(tool@annotations)) {
     tool@annotations <- list()
   }
 
-  tool@annotations$icon <- tool_group_icon(group)
+  if (is.null(tool@annotations$icon)) {
+    tool@annotations$icon <- tool_group_icon(group)
+  }
+  tool@annotations$btw_group <- group
   tool
 }
 

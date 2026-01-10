@@ -228,7 +228,7 @@ get_github_repo <- function(owner = NULL, repo = NULL) {
 #'
 #' @family github tools
 #' @export
-btw_tool_github <- function(code, fields, `_intent`) {}
+btw_tool_github <- function(code, fields = "default", `_intent` = "") {}
 
 btw_tool_github_impl <- function(code, fields = "default") {
   check_installed("gh")
@@ -268,6 +268,7 @@ btw_tool_github_impl <- function(code, fields = "default") {
 .btw_add_to_tools(
   name = "btw_tool_github",
   group = "github",
+  can_register = function() btw_can_register_gh_tool(),
   tool = function() {
     ellmer::tool(
       btw_tool_github_impl,
@@ -340,8 +341,7 @@ RETURNS: The result from the GitHub API call, formatted as JSON.
         title = "GitHub API",
         read_only_hint = FALSE, # Can perform writes
         open_world_hint = TRUE,
-        idempotent_hint = FALSE,
-        btw_can_register = btw_can_register_gh_tool
+        idempotent_hint = FALSE
       ),
       arguments = list(
         code = ellmer::type_string(

@@ -174,28 +174,17 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
   }
 
   if (!is.null(config$client)) {
-    if (is_string(config$client)) {
-      config$client <- as_ellmer_client(config$client)
-      return(config)
-    }
+    # Show informational message for list configs with model specified
+    show_model_info <-
+      is.list(config$client) &&
+      !is.null(config$client$model) &&
+      !isTRUE(getOption("btw.client.quiet"))
 
-    chat_args <- utils::modifyList(
-      list(echo = "output"), # defaults
-      config$client
-    )
+    config$client <- as_ellmer_client(config$client)
 
-    chat_fn <- gsub(" ", "_", tolower(chat_args$provider))
-    if (!grepl("^chat_", chat_fn)) {
-      chat_fn <- paste0("chat_", chat_fn)
-    }
-    chat_args$provider <- NULL
-
-    chat_client <- call2(.ns = "ellmer", chat_fn, !!!chat_args)
-    config$client <- eval(chat_client)
-
-    if (!is.null(chat_args$model) && !isTRUE(getOption("btw.client.quiet"))) {
+    if (show_model_info) {
       cli::cli_inform(
-        "Using {.field {chat_args$model}} from {.strong {config$client$get_provider()@name}}."
+        "Using {.field {config$client$get_model()}} from {.strong {config$client$get_provider()@name}}."
       )
     }
     return(config)
@@ -214,14 +203,33 @@ as_ellmer_client <- function(client) {
     return(client)
   }
 
-  if (!is_string(client)) {
-    cli::cli_abort(c(
-      "{.arg client} must be an {.help ellmer::Chat} client or a string naming a chat provider and model to pass to {.fn ellmer::chat}, not {.obj_type_friendly {client}}.",
-      "i" = "Examples: {.or {.val {c('openai/gpt-5-mini', 'anthropic/claude-3-7-sonnet-20250219')}}}."
-    ))
+  if (is_string(client)) {
+    return(ellmer::chat(client, echo = "output"))
   }
 
-  ellmer::chat(client, echo = "output")
+  # Handle list/mapping configuration (e.g., from YAML frontmatter)
+  # Example: client: {provider: aws_bedrock, model: claude-sonnet-4}
+  if (is.list(client) && !is.null(client$provider)) {
+    chat_args <- utils::modifyList(
+      list(echo = "output"),
+      client
+    )
+
+    chat_fn <- gsub(" ", "_", tolower(chat_args$provider))
+    if (!grepl("^chat_", chat_fn)) {
+      chat_fn <- paste0("chat_", chat_fn)
+    }
+    chat_args$provider <- NULL
+
+    chat_client <- call2(.ns = "ellmer", chat_fn, !!!chat_args)
+    return(eval(chat_client))
+  }
+
+  cli::cli_abort(c(
+    "{.arg client} must be an {.help ellmer::Chat} client, a {.val provider/model} string, or a list with {.field provider} (and optionally {.field model}).",
+    "i" = "Examples: {.or {.val {c('openai/gpt-4.1-mini', 'anthropic/claude-sonnet-4-20250514')}}}.",
+    "i" = "Or as a list: {.code list(provider = 'anthropic', model = 'claude-sonnet-4-20250514')}"
+  ))
 }
 
 flatten_and_check_tools <- function(tools) {
@@ -270,11 +278,17 @@ flatten_and_check_tools <- function(tools) {
 }
 
 flatten_config_options <- function(opts, prefix = "btw", sep = ".") {
+  # Keys that should be treated as leaf values (not recursed into)
+  # even if they contain nested lists
+  leaf_keys <- c("client")
+
   out <- list()
 
-  recurse <- function(x, key_prefix) {
-    # If x is a list, dive deeper
-    if (is.list(x) && !is.data.frame(x)) {
+  recurse <- function(x, key_prefix, current_key = "") {
+    is_leaf_key <- current_key %in% leaf_keys
+
+    # If x is a list and not a leaf key, dive deeper
+    if (is.list(x) && !is.data.frame(x) && !is_leaf_key) {
       nm <- names2(x)
       if (!all(nzchar(nm))) {
         cli::cli_abort("All options must be named.")
@@ -286,7 +300,7 @@ flatten_config_options <- function(opts, prefix = "btw", sep = ".") {
         } else {
           new_key <- nm[i]
         }
-        recurse(x[[i]], new_key)
+        recurse(x[[i]], new_key, current_key = nm[i])
       }
     } else {
       # Leaf: assign it directly
