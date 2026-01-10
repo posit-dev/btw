@@ -44,6 +44,33 @@
 #' * `btw.tools`: The btw tools to include by default when starting a new
 #'   btw chat, see [btw_tools()] for details.`
 #'
+#' ## Multiple Providers and Models
+#'
+#' You can configure multiple client options in your `btw.md` file. When
+#' `btw_client()` is called interactively from the console, you'll be presented
+#' with a menu to choose which client to use. In non-interactive contexts, the
+#' first client is used automatically.
+#'
+#' **Array format** (unnamed list):
+#' ```yaml
+#' client:
+#'   - anthropic/claude-sonnet-4
+#'   - openai/gpt-4.1
+#'   - aws_bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0
+#' ```
+#'
+#' **Alias format** (named list):
+#' ```yaml
+#' client:
+#'   haiku: aws_bedrock/us.anthropic.claude-haiku-4-5-20251001-v1:0
+#'   sonnet:
+#'     provider: aws_bedrock
+#'     model: us.anthropic.claude-sonnet-4-5-20250929-v1:0
+#' ```
+#'
+#' With aliases, you can select a client by name in the interactive menu or pass
+#' the alias directly: `btw_client(client = "sonnet")`.
+#'
 #' @examplesIf rlang::is_interactive()
 #' withr::local_options(list(
 #'   btw.client = ellmer::chat_ollama(model="llama3.1:8b")
@@ -54,14 +81,15 @@
 #'   "How can I replace `stop()` calls with functions from the cli package?"
 #' )
 #'
-#' @param client An [ellmer::Chat] client or a `provider/model` string to be
-#'   passed to [ellmer::chat()] to create a chat client. Defaults to
-#'   [ellmer::chat_anthropic()]. You can use the `btw.client` option to set a
+#' @param client An [ellmer::Chat] client, or a `provider/model` string to be
+#'   passed to [ellmer::chat()] to create a chat client, or an alias to a client
+#'   setting in your `btw.md` file (see "Multiple Providers" section). Defaults
+#'   to [ellmer::chat_anthropic()]. You can use the `btw.client` option to set a
 #'   default client for new `btw_client()` calls, or use a `btw.md` project file
 #'   for default chat client settings, like provider and model. We check the
 #'   `client` argument, then the `btw.client` R option, and finally the `btw.md`
-#'   project file (falling back to user-level `btw.md` if needed), using only the
-#'   client definition from the first of these that is available.
+#'   project file (falling back to user-level `btw.md` if needed), using only
+#'   the client definition from the first of these that is available.
 #' @param tools A list of tools to include in the chat, defaults to
 #'   [btw_tools()]. Join [btw_tools()] with additional tools defined by
 #'   [ellmer::tool()] to include additional tools in the chat client.
@@ -101,7 +129,18 @@ btw_client <- function(
 ) {
   check_dots_empty()
 
-  config <- btw_client_config(client, tools, config = read_btw_file(path_btw))
+  is_user_interactive <-
+    is_interactive() &&
+    identical(caller_env(), global_env()) ||
+    (identical(fn_env(caller_fn()), fn_env(btw_client)) &&
+      identical(caller_env(n = 2), global_env()))
+
+  config <- btw_client_config(
+    client,
+    tools,
+    config = read_btw_file(path_btw),
+    is_user_interactive = is_user_interactive
+  )
   client <- config$client
   skip_tools <- isFALSE(config$tools) || identical(config$tools, "none")
   withr::local_options(config$options)
@@ -134,7 +173,12 @@ btw_client <- function(
   client
 }
 
-btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
+btw_client_config <- function(
+  client = NULL,
+  tools = NULL,
+  config = list(),
+  is_user_interactive = FALSE
+) {
   # Options should be flattened and btw-prefixed by `read_btw_file()`.
   withr::local_options(config$options)
 
@@ -147,7 +191,13 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
   config$tools <- flatten_and_check_tools(config$tools)
 
   if (!is.null(client)) {
-    config$client <- as_ellmer_client(client)
+    # Check if client is an alias name that should be resolved from config
+    resolved <- resolve_client_alias(client, config$client)
+    if (!is.null(resolved)) {
+      config$client <- as_ellmer_client(resolved)
+    } else {
+      config$client <- as_ellmer_client(client)
+    }
     return(config)
   }
 
@@ -174,6 +224,14 @@ btw_client_config <- function(client = NULL, tools = NULL, config = list()) {
   }
 
   if (!is.null(config$client)) {
+    # Check if this is an array of client configs
+    if (is_client_array(config$client)) {
+      config$client <- choose_client_from_array(
+        config$client,
+        is_user_interactive
+      )
+    }
+
     # Show informational message for list configs with model specified
     show_model_info <-
       is.list(config$client) &&
@@ -230,6 +288,153 @@ as_ellmer_client <- function(client) {
     "i" = "Examples: {.or {.val {c('openai/gpt-4.1-mini', 'anthropic/claude-sonnet-4-20250514')}}}.",
     "i" = "Or as a list: {.code list(provider = 'anthropic', model = 'claude-sonnet-4-20250514')}"
   ))
+}
+
+# --- Client array/alias utilities ---
+# A "client array" is multiple client configs: character vector, unnamed list,
+# or a named alias map. Single configs are: strings, Chat objects, or lists
+# with a 'provider' key.
+
+client_aliases <- function(clients) {
+  # Returns alias names if clients is an alias map, NULL otherwise.
+  # An alias map is a named list where names are not 'provider' or 'model'.
+  if (!is.list(clients) || length(clients) == 0) {
+    return(NULL)
+  }
+  nms <- names(clients)
+  if (
+    is.null(nms) || !all(nzchar(nms)) || any(nms %in% c("provider", "model"))
+  ) {
+    return(NULL)
+  }
+  nms
+}
+
+is_client_array <- function(client) {
+  if (is.character(client)) {
+    return(length(client) > 1)
+  }
+  if (
+    !is.list(client) || inherits(client, "Chat") || !is.null(client$provider)
+  ) {
+    return(FALSE)
+  }
+  # Alias map or unnamed list with elements
+  !is.null(client_aliases(client)) ||
+    (is.null(names(client)) && length(client) > 0)
+}
+
+resolve_client_alias <- function(name, clients) {
+  # Resolve an alias name from a client alias map (case-insensitive).
+  # Returns the resolved config, or NULL if not found.
+  if (!is_string(name)) {
+    return(NULL)
+  }
+  aliases <- client_aliases(clients)
+  if (is.null(aliases)) {
+    return(NULL)
+  }
+  idx <- match(tolower(name), tolower(aliases))
+  if (is.na(idx)) NULL else clients[[idx]]
+}
+
+format_client_label <- function(client, alias = NULL, default = FALSE) {
+  # Parse string format into list
+  if (is_string(client)) {
+    parts <- strsplit(client, "/", fixed = TRUE)[[1]]
+    client <- list(
+      provider = parts[1],
+      model = if (length(parts) > 1) paste(parts[-1], collapse = "/")
+    )
+  }
+
+  default <- if (default) cli::col_red(" [default]") else ""
+
+  # Format provider/model
+  if (is.list(client) && !is.null(client$provider)) {
+    label <- if (!is.null(client$model)) {
+      cli::format_inline("{.field {client$provider}}/{.strong {client$model}}")
+    } else {
+      cli::format_inline("{.field {client$provider}}")
+    }
+    if (!is.null(alias)) {
+      alias <- cli::col_magenta(alias)
+      label <- cli::format_inline("{.strong {alias}}: {label}")
+    }
+  } else if (!is.null(alias)) {
+    label <- cli::format_inline("{.strong {alias}}: <unknown>")
+  } else {
+    label <- "<unknown>"
+  }
+
+  paste0(label, default)
+}
+
+choose_client_from_array <- function(clients, is_user_interactive = FALSE) {
+  if (length(clients) == 0) {
+    cli::cli_abort("No client configurations provided.")
+  }
+  if (length(clients) == 1 || !is_user_interactive || !is_interactive()) {
+    return(clients[[1]])
+  }
+
+  aliases <- client_aliases(clients)
+  labels <- vapply(
+    seq_along(clients),
+    function(i) {
+      format_client_label(clients[[i]], alias = aliases[i], default = i == 1)
+    },
+    character(1)
+  )
+
+  # Display menu
+  cli::cli_h2("Select a client")
+  cli::cli_ol(labels)
+  cli::cli_text("")
+
+  cli::cli_div(
+    theme = list(span.subtle = list(color = "silver"))
+  )
+  prompt <- cli::format_inline(
+    "Enter choice {.subtle [1-{n_clients}{alias}, or 0 to exit]}: ",
+    .envir = env(
+      n_clients = length(clients),
+      alias = if (!is.null(aliases)) ", alias name" else ""
+    )
+  )
+
+  repeat {
+    choice <- readline(prompt = prompt)
+
+    if (choice == "0") {
+      cli::cli_abort("Aborted by user.")
+    }
+    if (choice == "") {
+      return(clients[[1]])
+    }
+
+    # Try alias match
+    resolved <- resolve_client_alias(choice, clients)
+    if (!is.null(resolved)) {
+      return(resolved)
+    }
+
+    # Try numeric
+    idx <- suppressWarnings(as.integer(choice))
+    if (!is.na(idx) && idx >= 1 && idx <= length(clients)) {
+      return(clients[[idx]])
+    }
+
+    if (!is.null(aliases)) {
+      cli::cli_alert_warning(
+        "Invalid choice. Enter a number (1-{length(clients)}) or alias name."
+      )
+    } else {
+      cli::cli_alert_warning(
+        "Invalid choice. Enter a number between 1 and {length(clients)}."
+      )
+    }
+  }
 }
 
 flatten_and_check_tools <- function(tools) {
