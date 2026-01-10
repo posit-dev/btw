@@ -52,6 +52,31 @@ client and take precedence over settings in a `btw.md` file:
   [`btw_tools()`](https://posit-dev.github.io/btw/dev/reference/btw_tools.md)
   for details.\`
 
+### Multiple Providers and Models
+
+You can configure multiple client options in your `btw.md` file. When
+`btw_client()` is called interactively from the console, you'll be
+presented with a menu to choose which client to use. In non-interactive
+contexts, the first client is used automatically.
+
+**Array format** (unnamed list):
+
+    client:
+      - anthropic/claude-sonnet-4
+      - openai/gpt-4.1
+      - aws_bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0
+
+**Alias format** (named list):
+
+    client:
+      haiku: aws_bedrock/us.anthropic.claude-haiku-4-5-20251001-v1:0
+      sonnet:
+        provider: aws_bedrock
+        model: us.anthropic.claude-sonnet-4-5-20250929-v1:0
+
+With aliases, you can select a client by name in the interactive menu or
+pass the alias directly: `btw_client(client = "sonnet")`.
+
 ## Usage
 
 ``` r
@@ -77,9 +102,10 @@ btw_app(..., client = NULL, tools = NULL, path_btw = NULL, messages = list())
 - client:
 
   An [ellmer::Chat](https://ellmer.tidyverse.org/reference/Chat.html)
-  client or a `provider/model` string to be passed to
+  client, or a `provider/model` string to be passed to
   [`ellmer::chat()`](https://ellmer.tidyverse.org/reference/chat-any.html)
-  to create a chat client. Defaults to
+  to create a chat client, or an alias to a client setting in your
+  `btw.md` file (see "Multiple Providers" section). Defaults to
   [`ellmer::chat_anthropic()`](https://ellmer.tidyverse.org/reference/chat_anthropic.html).
   You can use the `btw.client` option to set a default client for new
   `btw_client()` calls, or use a `btw.md` project file for default chat

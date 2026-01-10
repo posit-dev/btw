@@ -47,6 +47,31 @@ btw chat, see btw_tools() for details.`
 
 
 
+
+
+Multiple Providers and Models
+
+
+You can configure multiple client options in your btw.md file. When
+btw_client() is called interactively from the console, you'll be presented
+with a menu to choose which client to use. In non-interactive contexts, the
+first client is used automatically.
+Array format (unnamed list):
+client:
+  - anthropic/claude-sonnet-4
+  - openai/gpt-4.1
+  - aws_bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0
+
+Alias format (named list):
+client:
+  haiku: aws_bedrock/us.anthropic.claude-haiku-4-5-20251001-v1:0
+  sonnet:
+    provider: aws_bedrock
+    model: us.anthropic.claude-sonnet-4-5-20250929-v1:0
+
+With aliases, you can select a client by name in the interactive menu or pass
+the alias directly: btw_client(client = &quot;sonnet&quot;).
+
 "><meta property="og:description" content="Creates an ellmer::Chat client, enhanced with the tools from
 btw_tools(). Use btw_client() to create the chat client for
 general or interactive use at the console, or btw_app() to create a chat
@@ -94,6 +119,31 @@ btw.tools: The btw tools to include by default when starting a new
 btw chat, see btw_tools() for details.`
 
 
+
+
+
+Multiple Providers and Models
+
+
+You can configure multiple client options in your btw.md file. When
+btw_client() is called interactively from the console, you'll be presented
+with a menu to choose which client to use. In non-interactive contexts, the
+first client is used automatically.
+Array format (unnamed list):
+client:
+  - anthropic/claude-sonnet-4
+  - openai/gpt-4.1
+  - aws_bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0
+
+Alias format (named list):
+client:
+  haiku: aws_bedrock/us.anthropic.claude-haiku-4-5-20251001-v1:0
+  sonnet:
+    provider: aws_bedrock
+    model: us.anthropic.claude-sonnet-4-5-20250929-v1:0
+
+With aliases, you can select a client by name in the interactive menu or pass
+the alias directly: btw_client(client = &quot;sonnet&quot;).
 
 "><meta property="og:image" content="https://posit-dev.github.io/btw/logo.png"><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -181,6 +231,29 @@ take precedence over settings in a <code>btw.md</code> file:</p><ul><li><p><code
 btw chat, see <code><a href="btw_tools.html">btw_tools()</a></code> for details.`</p></li>
 </ul></div>
 
+<div class="section">
+<h3 id="multiple-providers-and-models">Multiple Providers and Models<a class="anchor" aria-label="anchor" href="#multiple-providers-and-models"></a></h3>
+
+
+<p>You can configure multiple client options in your <code>btw.md</code> file. When
+<code>btw_client()</code> is called interactively from the console, you'll be presented
+with a menu to choose which client to use. In non-interactive contexts, the
+first client is used automatically.</p>
+<p><strong>Array format</strong> (unnamed list):</p>
+<p></p><div class="sourceCode yaml"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">client</span><span class="kw">:</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> anthropic/claude-sonnet-4</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> openai/gpt-4.1</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> aws_bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0</span></span></code></pre><p></p></div>
+<p><strong>Alias format</strong> (named list):</p>
+<p></p><div class="sourceCode yaml"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">client</span><span class="kw">:</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="at">  </span><span class="fu">haiku</span><span class="kw">:</span><span class="at"> aws_bedrock/us.anthropic.claude-haiku-4-5-20251001-v1:0</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="at">  </span><span class="fu">sonnet</span><span class="kw">:</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="at">    </span><span class="fu">provider</span><span class="kw">:</span><span class="at"> aws_bedrock</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="at">    </span><span class="fu">model</span><span class="kw">:</span><span class="at"> us.anthropic.claude-sonnet-4-5-20250929-v1:0</span></span></code></pre><p></p></div>
+<p>With aliases, you can select a client by name in the interactive menu or pass
+the alias directly: <code>btw_client(client = "sonnet")</code>.</p>
+</div>
+
     </div>
 
     <div class="section level2">
@@ -206,14 +279,15 @@ btw chat, see <code><a href="btw_tools.html">btw_tools()</a></code> for details.
 
 
 <dt id="arg-client">client<a class="anchor" aria-label="anchor" href="#arg-client"></a></dt>
-<dd><p>An <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client or a <code>provider/model</code> string to be
-passed to <code><a href="https://ellmer.tidyverse.org/reference/chat-any.html" class="external-link">ellmer::chat()</a></code> to create a chat client. Defaults to
-<code><a href="https://ellmer.tidyverse.org/reference/chat_anthropic.html" class="external-link">ellmer::chat_anthropic()</a></code>. You can use the <code>btw.client</code> option to set a
+<dd><p>An <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client, or a <code>provider/model</code> string to be
+passed to <code><a href="https://ellmer.tidyverse.org/reference/chat-any.html" class="external-link">ellmer::chat()</a></code> to create a chat client, or an alias to a client
+setting in your <code>btw.md</code> file (see "Multiple Providers" section). Defaults
+to <code><a href="https://ellmer.tidyverse.org/reference/chat_anthropic.html" class="external-link">ellmer::chat_anthropic()</a></code>. You can use the <code>btw.client</code> option to set a
 default client for new <code>btw_client()</code> calls, or use a <code>btw.md</code> project file
 for default chat client settings, like provider and model. We check the
 <code>client</code> argument, then the <code>btw.client</code> R option, and finally the <code>btw.md</code>
-project file (falling back to user-level <code>btw.md</code> if needed), using only the
-client definition from the first of these that is available.</p></dd>
+project file (falling back to user-level <code>btw.md</code> if needed), using only
+the client definition from the first of these that is available.</p></dd>
 
 
 <dt id="arg-tools">tools<a class="anchor" aria-label="anchor" href="#arg-tools"></a></dt>

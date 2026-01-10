@@ -33,9 +33,10 @@ btw_task_create_readme(
 - client:
 
   An [ellmer::Chat](https://ellmer.tidyverse.org/reference/Chat.html)
-  client or a `provider/model` string to be passed to
+  client, or a `provider/model` string to be passed to
   [`ellmer::chat()`](https://ellmer.tidyverse.org/reference/chat-any.html)
-  to create a chat client. Defaults to
+  to create a chat client, or an alias to a client setting in your
+  `btw.md` file (see "Multiple Providers" section). Defaults to
   [`ellmer::chat_anthropic()`](https://ellmer.tidyverse.org/reference/chat_anthropic.html).
   You can use the `btw.client` option to set a default client for new
   [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
@@ -82,6 +83,6 @@ withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
 #> #
 #> function (prompt) 
 #> btw_task_create_readme_tool(prompt)
-#> <bytecode: 0x5645dae00298>
-#> <environment: 0x5645dadffc78>
+#> <bytecode: 0x5628af1f5798>
+#> <environment: 0x5628af1f5178>
 ```

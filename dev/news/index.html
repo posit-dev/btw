@@ -39,7 +39,20 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="btw-development-version">btw (development version)<a class="anchor" aria-label="anchor" href="#btw-development-version"></a></h2>
-<ul><li><p>New <code><a href="../reference/btw_tool_agent_subagent.html">btw_tool_agent_subagent()</a></code> tool enables hierarchical agent workflows by allowing an orchestrating LLM to delegate tasks to subagents. Each subagent runs in its own isolated chat session with restricted tool access and maintains conversation state that can be resumed via <code>session_id</code>. This allows you to delegate tasks to smaller cheaper models or reduce context bloat in the main conversation (<a href="https://github.com/posit-dev/btw/issues/149" class="external-link">#149</a>).</p></li>
+<ul><li>
+<p><code>btw.md</code> now supports configuring multiple client options. When <code><a href="../reference/btw_client.html">btw_client()</a></code> is called interactively, you’ll be presented with a menu to choose which client to use. Clients can be specified as an array:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">client</span><span class="kw">:</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> anthropic/claude-sonnet-4</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> openai/gpt-4.1</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> aws_bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0</span></span></code></pre></div>
+<p>Or as named aliases:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">client</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="at">  </span><span class="fu">haiku</span><span class="kw">:</span><span class="at"> aws_bedrock/us.anthropic.claude-haiku-4-5-20251001-v1:0</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="at">  </span><span class="fu">sonnet</span><span class="kw">:</span><span class="at"> anthropic/claude-sonnet-4</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="at">  </span><span class="fu">chatgpt</span><span class="kw">:</span><span class="at"> openai/gpt-5.2</span></span></code></pre></div>
+<p>With aliases, you can select a client by name in the interactive menu or pass the alias directly via <code>btw_client(client = "alias")</code>. In non-interactive contexts, the first client is used automatically (<a href="https://github.com/posit-dev/btw/issues/153" class="external-link">#153</a>).</p>
+</li>
+<li><p>New <code><a href="../reference/btw_tool_agent_subagent.html">btw_tool_agent_subagent()</a></code> tool enables hierarchical agent workflows by allowing an orchestrating LLM to delegate tasks to subagents. Each subagent runs in its own isolated chat session with restricted tool access and maintains conversation state that can be resumed via <code>session_id</code>. This allows you to delegate tasks to smaller cheaper models or reduce context bloat in the main conversation (<a href="https://github.com/posit-dev/btw/issues/149" class="external-link">#149</a>).</p></li>
 <li><p>New <code><a href="../reference/btw_agent_tool.html">btw_agent_tool()</a></code> allows you to create specialized custom subagents from <code>btw.md</code> style markdown files. Agent files are automatically discovered from <code>.btw/agent-*.md</code> (project and user directories) and <code>.claude/agents/</code> (for Claude Code compatibility), and are registered as callable tools in <code><a href="../reference/btw_tools.html">btw_tools()</a></code>. Custom agents can specify their own system prompts, icons, models, and available tools (<a href="https://github.com/posit-dev/btw/issues/149" class="external-link">#149</a>).</p></li>
 </ul></div>
     <div class="section level2">

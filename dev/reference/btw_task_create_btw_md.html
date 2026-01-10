@@ -84,14 +84,15 @@ R objects that can be converted to text using <code><a href="btw.html">btw()</a>
 
 
 <dt id="arg-client">client<a class="anchor" aria-label="anchor" href="#arg-client"></a></dt>
-<dd><p>An <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client or a <code>provider/model</code> string to be
-passed to <code><a href="https://ellmer.tidyverse.org/reference/chat-any.html" class="external-link">ellmer::chat()</a></code> to create a chat client. Defaults to
-<code><a href="https://ellmer.tidyverse.org/reference/chat_anthropic.html" class="external-link">ellmer::chat_anthropic()</a></code>. You can use the <code>btw.client</code> option to set a
+<dd><p>An <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client, or a <code>provider/model</code> string to be
+passed to <code><a href="https://ellmer.tidyverse.org/reference/chat-any.html" class="external-link">ellmer::chat()</a></code> to create a chat client, or an alias to a client
+setting in your <code>btw.md</code> file (see "Multiple Providers" section). Defaults
+to <code><a href="https://ellmer.tidyverse.org/reference/chat_anthropic.html" class="external-link">ellmer::chat_anthropic()</a></code>. You can use the <code>btw.client</code> option to set a
 default client for new <code><a href="btw_client.html">btw_client()</a></code> calls, or use a <code>btw.md</code> project file
 for default chat client settings, like provider and model. We check the
 <code>client</code> argument, then the <code>btw.client</code> R option, and finally the <code>btw.md</code>
-project file (falling back to user-level <code>btw.md</code> if needed), using only the
-client definition from the first of these that is available.</p></dd>
+project file (falling back to user-level <code>btw.md</code> if needed), using only
+the client definition from the first of these that is available.</p></dd>
 
 
 <dt id="arg-mode">mode<a class="anchor" aria-label="anchor" href="#arg-mode"></a></dt>
@@ -129,8 +130,8 @@ ellmer tool object that can be used in other chat instances.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> #</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> function (prompt, path = NULL) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> task_create_btw_md_tool(prompt, path)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5645da227ce0&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5645da227068&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5628aee81ff0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5628aee85640&gt;</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

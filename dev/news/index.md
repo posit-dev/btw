@@ -2,6 +2,32 @@
 
 ## btw (development version)
 
+- `btw.md` now supports configuring multiple client options. When
+  [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+  is called interactively, you’ll be presented with a menu to choose
+  which client to use. Clients can be specified as an array:
+
+  ``` yaml
+  client:
+    - anthropic/claude-sonnet-4
+    - openai/gpt-4.1
+    - aws_bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0
+  ```
+
+  Or as named aliases:
+
+  ``` yaml
+  client:
+    haiku: aws_bedrock/us.anthropic.claude-haiku-4-5-20251001-v1:0
+    sonnet: anthropic/claude-sonnet-4
+    chatgpt: openai/gpt-5.2
+  ```
+
+  With aliases, you can select a client by name in the interactive menu
+  or pass the alias directly via `btw_client(client = "alias")`. In
+  non-interactive contexts, the first client is used automatically
+  ([\#153](https://github.com/posit-dev/btw/issues/153)).
+
 - New
   [`btw_tool_agent_subagent()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_agent_subagent.md)
   tool enables hierarchical agent workflows by allowing an orchestrating
