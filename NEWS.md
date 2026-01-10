@@ -1,5 +1,9 @@
 # btw (development version)
 
+* New `btw_tool_agent_subagent()` tool enables hierarchical agent workflows by allowing an orchestrating LLM to delegate tasks to subagents. Each subagent runs in its own isolated chat session with restricted tool access and maintains conversation state that can be resumed via `session_id`. This allows you to delegate tasks to smaller cheaper models or reduce context bloat in the main conversation (#149).
+
+* New custom agent tools feature allows users to define specialized LLM assistants via `agent-*.md` files with YAML frontmatter. Agent files are automatically discovered from `.btw/` (project and user directories) and `.claude/agents/` (for Claude Code compatibility), and are registered as callable tools in `btw_tools()`. Custom agents can specify their own system prompts, icons, models, and available tools. The new exported function `btw_agent_tool()` allows programmatic creation of agent tools from markdown files (#149).
+
 * `btw_client()` now supports reading `CLAUDE.md` files as project context files. `CLAUDE.md` files are searched after `AGENTS.md` but before user-level `btw.md`. YAML frontmatter in `CLAUDE.md` files is stripped but not used for configuration (#146).
 
 * `btw_app()` now shows a rich diff view in the `btw_tool_files_write_text_file()` tool, if the `{diffviewer}` package is installed (#144).
