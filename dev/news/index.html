@@ -39,7 +39,9 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="btw-development-version">btw (development version)<a class="anchor" aria-label="anchor" href="#btw-development-version"></a></h2>
-</div>
+<ul><li><p>New <code><a href="../reference/btw_tool_agent_subagent.html">btw_tool_agent_subagent()</a></code> tool enables hierarchical agent workflows by allowing an orchestrating LLM to delegate tasks to subagents. Each subagent runs in its own isolated chat session with restricted tool access and maintains conversation state that can be resumed via <code>session_id</code>. This allows you to delegate tasks to smaller cheaper models or reduce context bloat in the main conversation (<a href="https://github.com/posit-dev/btw/issues/149" class="external-link">#149</a>).</p></li>
+<li><p>New <code><a href="../reference/btw_agent_tool.html">btw_agent_tool()</a></code> allows you to create specialized custom subagents from <code>btw.md</code> style markdown files. Agent files are automatically discovered from <code>.btw/agent-*.md</code> (project and user directories) and <code>.claude/agents/</code> (for Claude Code compatibility), and are registered as callable tools in <code><a href="../reference/btw_tools.html">btw_tools()</a></code>. Custom agents can specify their own system prompts, icons, models, and available tools (<a href="https://github.com/posit-dev/btw/issues/149" class="external-link">#149</a>).</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.0" id="btw-110">btw 1.1.0<a class="anchor" aria-label="anchor" href="#btw-110"></a></h2><p class="text-muted">CRAN release: 2025-12-22</p>
 <ul><li><p><code><a href="../reference/btw_client.html">btw_client()</a></code> now supports reading <code>CLAUDE.md</code> files as project context files. <code>CLAUDE.md</code> files are searched after <code>AGENTS.md</code> but before user-level <code>btw.md</code>. YAML frontmatter in <code>CLAUDE.md</code> files is stripped but not used for configuration (<a href="https://github.com/posit-dev/btw/issues/146" class="external-link">#146</a>).</p></li>

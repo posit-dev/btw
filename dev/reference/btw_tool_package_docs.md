@@ -76,12 +76,13 @@ btw_tool_docs_package_help_topics("btw")
 #>  @ value  : chr [1:3] "```json" ...
 #>  @ error  : NULL
 #>  @ extra  :List of 2
-#>  .. $ data   : tibble [40 × 3] (S3: tbl_df/tbl/data.frame)
-#>  ..  ..$ topic_id: chr [1:40] "btw" "btw-package" "btw_client" "btw_task_create_btw_md" ...
-#>  ..  ..$ title   : chr [1:40] "Plain-text descriptions of R objects" "btw: A Toolkit for Connecting R and Large Language Models" "Create a btw-enhanced ellmer chat client" "Task: Initialize Project Context File" ...
-#>  ..  ..$ aliases :List of 40
+#>  .. $ data   : tibble [42 × 3] (S3: tbl_df/tbl/data.frame)
+#>  ..  ..$ topic_id: chr [1:42] "btw" "btw-package" "btw_agent_tool" "btw_client" ...
+#>  ..  ..$ title   : chr [1:42] "Plain-text descriptions of R objects" "btw: A Toolkit for Connecting R and Large Language Models" "Create a custom agent tool from a markdown file" "Create a btw-enhanced ellmer chat client" ...
+#>  ..  ..$ aliases :List of 42
 #>  ..  .. ..$ : 'AsIs' chr "btw"
 #>  ..  .. ..$ : 'AsIs' chr "btw-package"
+#>  ..  .. ..$ : 'AsIs' chr "btw_agent_tool"
 #>  ..  .. ..$ : 'AsIs' chr [1:2] "btw_client" "btw_app"
 #>  ..  .. ..$ : 'AsIs' chr "btw_task_create_btw_md"
 #>  ..  .. ..$ : 'AsIs' chr "btw_task_create_readme"
@@ -89,6 +90,7 @@ btw_tool_docs_package_help_topics("btw")
 #>  ..  .. ..$ : 'AsIs' chr "btw_this.character"
 #>  ..  .. ..$ : 'AsIs' chr [1:2] "btw_this.data.frame" "btw_this.tbl"
 #>  ..  .. ..$ : 'AsIs' chr "btw_this.environment"
+#>  ..  .. ..$ : 'AsIs' chr "btw_tool_agent_subagent"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_docs_package_news"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_env_describe_data_frame"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_env_describe_environment"

@@ -10,6 +10,7 @@
 <url><loc>https://posit-dev.github.io/btw/dev/news/index.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw-package.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw.html</loc></url>
+<url><loc>https://posit-dev.github.io/btw/dev/reference/btw_agent_tool.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_client.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_task_create_btw_md.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_task_create_readme.html</loc></url>
@@ -17,6 +18,7 @@
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_this.data.frame.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_this.environment.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_this.html</loc></url>
+<url><loc>https://posit-dev.github.io/btw/dev/reference/btw_tool_agent_subagent.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_tool_docs_package_news.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_tool_env_describe_data_frame.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_tool_env_describe_environment.html</loc></url>

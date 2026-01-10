@@ -3,6 +3,18 @@
 with an ellmer chat via chat$register_tools() that allow the chat to
 interface with your computational environment. Chats returned by
 this function have access to the tools:
+Group: agent
+
+NameDescription
+btw_tool_agent_subagent()
+Delegate a task to a specialized assistant that can work independently with its own conversation thread.
+
+
+
+
+
+
+
 Group: docs
 
 NameDescription
@@ -146,6 +158,18 @@ btw_tool_web_read_url()Read a web page and convert it to Markdown format.
 with an ellmer chat via chat$register_tools() that allow the chat to
 interface with your computational environment. Chats returned by
 this function have access to the tools:
+Group: agent
+
+NameDescription
+btw_tool_agent_subagent()
+Delegate a task to a specialized assistant that can work independently with its own conversation thread.
+
+
+
+
+
+
+
 Group: docs
 
 NameDescription
@@ -329,6 +353,10 @@ btw_tool_web_read_url()Read a web page and convert it to Markdown format.
 with an ellmer chat via <code>chat$register_tools()</code> that allow the chat to
 interface with your computational environment. Chats returned by
 this function have access to the tools:</p><div class="section">
+<h3 id="group-agent">Group: agent<a class="anchor" aria-label="anchor" href="#group-agent"></a></h3>
+<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_agent_subagent.html">btw_tool_agent_subagent()</a></code></td><td></td></tr><tr><td>Delegate a task to a specialized assistant that can work independently with its own conversation thread.</td><td></td></tr></table></div>
+
+<div class="section">
 <h3 id="group-docs">Group: docs<a class="anchor" aria-label="anchor" href="#group-docs"></a></h3>
 <table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_package_docs.html">btw_tool_docs_available_vignettes()</a></code></td><td>List available vignettes for an R package.</td></tr><tr><td><code><a href="btw_tool_package_docs.html">btw_tool_docs_help_page()</a></code></td><td>Get help page from package.</td></tr><tr><td><code><a href="btw_tool_package_docs.html">btw_tool_docs_package_help_topics()</a></code></td><td>Get available help topics for an R package.</td></tr><tr><td><code><a href="btw_tool_docs_package_news.html">btw_tool_docs_package_news()</a></code></td><td>Read the release notes (NEWS) for a package.</td></tr><tr><td><code><a href="btw_tool_package_docs.html">btw_tool_docs_vignette()</a></code></td><td>Get a package vignette in plain text.</td></tr></table></div>
 
@@ -427,6 +455,7 @@ place. The <code>chat</code> input is returned invisibly.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># ensure that the current tools persist</span></span></span>
 <span class="r-in"><span><span class="va">ch</span><span class="op">$</span><span class="fu">register_tools</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">ch</span><span class="op">$</span><span class="fu">get_tools</span><span class="op">(</span><span class="op">)</span>, <span class="fu">btw_tools</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_agent_subagent tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_package_news tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_package_help_topics tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_help_page tool.</span>
@@ -445,6 +474,7 @@ place. The <code>chat</code> input is returned invisibly.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_branch_list tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_branch_create tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_branch_checkout tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_ide_read_current_editor tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_pkg_coverage tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_pkg_document tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_pkg_check tool.</span>
@@ -455,6 +485,7 @@ place. The <code>chat</code> input is returned invisibly.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_session_package_info tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_session_check_package_installed tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_web_read_url tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_agent_subagent tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_package_news tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_package_help_topics tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_help_page tool.</span>
@@ -473,6 +504,7 @@ place. The <code>chat</code> input is returned invisibly.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_branch_list tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_branch_create tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_branch_checkout tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_ide_read_current_editor tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_pkg_coverage tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_pkg_document tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_pkg_check tool.</span>

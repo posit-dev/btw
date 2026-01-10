@@ -26,14 +26,14 @@
 Source:
 [`DESCRIPTION`](https://github.com/posit-dev/btw/blob/main/DESCRIPTION)
 
-Aden-Buie G, Couch S, Cheng J (2025). *btw: A Toolkit for Connecting R
+Aden-Buie G, Couch S, Cheng J (2026). *btw: A Toolkit for Connecting R
 and Large Language Models*. R package version 1.1.0.9000,
 <https://github.com/posit-dev/btw>.
 
     @Manual{,
       title = {btw: A Toolkit for Connecting R and Large Language Models},
       author = {Garrick Aden-Buie and Simon Couch and Joe Cheng},
-      year = {2025},
+      year = {2026},
       note = {R package version 1.1.0.9000},
       url = {https://github.com/posit-dev/btw},
     }

@@ -5,6 +5,14 @@ registered with an ellmer chat via `chat$register_tools()` that allow
 the chat to interface with your computational environment. Chats
 returned by this function have access to the tools:
 
+### Group: agent
+
+|  |  |
+|----|----|
+| Name | Description |
+| [`btw_tool_agent_subagent()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_agent_subagent.md) |  |
+| Delegate a task to a specialized assistant that can work independently with its own conversation thread. |  |
+
 ### Group: docs
 
 |  |  |
@@ -159,6 +167,7 @@ ch$register_tools(btw_tools("docs"))
 
 # ensure that the current tools persist
 ch$register_tools(c(ch$get_tools(), btw_tools()))
+#> Replacing existing btw_tool_agent_subagent tool.
 #> Replacing existing btw_tool_docs_package_news tool.
 #> Replacing existing btw_tool_docs_package_help_topics tool.
 #> Replacing existing btw_tool_docs_help_page tool.
@@ -177,6 +186,7 @@ ch$register_tools(c(ch$get_tools(), btw_tools()))
 #> Replacing existing btw_tool_git_branch_list tool.
 #> Replacing existing btw_tool_git_branch_create tool.
 #> Replacing existing btw_tool_git_branch_checkout tool.
+#> Replacing existing btw_tool_ide_read_current_editor tool.
 #> Replacing existing btw_tool_pkg_coverage tool.
 #> Replacing existing btw_tool_pkg_document tool.
 #> Replacing existing btw_tool_pkg_check tool.
@@ -187,6 +197,7 @@ ch$register_tools(c(ch$get_tools(), btw_tools()))
 #> Replacing existing btw_tool_session_package_info tool.
 #> Replacing existing btw_tool_session_check_package_installed tool.
 #> Replacing existing btw_tool_web_read_url tool.
+#> Replacing existing btw_tool_agent_subagent tool.
 #> Replacing existing btw_tool_docs_package_news tool.
 #> Replacing existing btw_tool_docs_package_help_topics tool.
 #> Replacing existing btw_tool_docs_help_page tool.
@@ -205,6 +216,7 @@ ch$register_tools(c(ch$get_tools(), btw_tools()))
 #> Replacing existing btw_tool_git_branch_list tool.
 #> Replacing existing btw_tool_git_branch_create tool.
 #> Replacing existing btw_tool_git_branch_checkout tool.
+#> Replacing existing btw_tool_ide_read_current_editor tool.
 #> Replacing existing btw_tool_pkg_coverage tool.
 #> Replacing existing btw_tool_pkg_document tool.
 #> Replacing existing btw_tool_pkg_check tool.

@@ -2,6 +2,28 @@
 
 ## btw (development version)
 
+- New
+  [`btw_tool_agent_subagent()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_agent_subagent.md)
+  tool enables hierarchical agent workflows by allowing an orchestrating
+  LLM to delegate tasks to subagents. Each subagent runs in its own
+  isolated chat session with restricted tool access and maintains
+  conversation state that can be resumed via `session_id`. This allows
+  you to delegate tasks to smaller cheaper models or reduce context
+  bloat in the main conversation
+  ([\#149](https://github.com/posit-dev/btw/issues/149)).
+
+- New
+  [`btw_agent_tool()`](https://posit-dev.github.io/btw/dev/reference/btw_agent_tool.md)
+  allows you to create specialized custom subagents from `btw.md` style
+  markdown files. Agent files are automatically discovered from
+  `.btw/agent-*.md` (project and user directories) and `.claude/agents/`
+  (for Claude Code compatibility), and are registered as callable tools
+  in
+  [`btw_tools()`](https://posit-dev.github.io/btw/dev/reference/btw_tools.md).
+  Custom agents can specify their own system prompts, icons, models, and
+  available tools
+  ([\#149](https://github.com/posit-dev/btw/issues/149)).
+
 ## btw 1.1.0
 
 CRAN release: 2025-12-22

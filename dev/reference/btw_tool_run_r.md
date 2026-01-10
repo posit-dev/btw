@@ -21,7 +21,9 @@ btw_tool_run_r(code, `_intent` = "")
 
 - \_intent:
 
-  Intent description (automatically added by ellmer).
+  An optional string describing the intent of the tool use. When the
+  tool is used by an LLM, the model will use this argument to explain
+  why it called the tool.
 
 ## Value
 

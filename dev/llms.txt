@@ -208,6 +208,8 @@ used programmatically.
   : Task: Initialize Project Context File
 - [`btw_task_create_readme()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_readme.md)
   : Task: Create a Polished README
+- [`btw_agent_tool()`](https://posit-dev.github.io/btw/dev/reference/btw_agent_tool.md)
+  : Create a custom agent tool from a markdown file
 
 ## Tools
 
@@ -220,6 +222,8 @@ counterparts available via
 for interactive use. The long and awkward function names are for LLMs
 and to avoid name clashes with other tools.
 
+- [`btw_tool_agent_subagent()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_agent_subagent.md)
+  : Tool: Subagent
 - [`btw_tool_docs_package_news()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_docs_package_news.md)
   : Tool: Package Release Notes
 - [`btw_tool_env_describe_data_frame()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_env_describe_data_frame.md)
