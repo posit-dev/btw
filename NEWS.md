@@ -4,6 +4,8 @@
 
 * New `btw_agent_tool()` allows you to create specialized custom subagents from `btw.md` style markdown files. Agent files are automatically discovered from `.btw/agent-*.md` (project and user directories) and `.claude/agents/` (for Claude Code compatibility), and are registered as callable tools in `btw_tools()`. Custom agents can specify their own system prompts, icons, models, and available tools (#149).
 
+# btw 1.1.0
+
 * `btw_client()` now supports reading `CLAUDE.md` files as project context files. `CLAUDE.md` files are searched after `AGENTS.md` but before user-level `btw.md`. YAML frontmatter in `CLAUDE.md` files is stripped but not used for configuration (#146).
 
 * `btw_app()` now shows a rich diff view in the `btw_tool_files_write_text_file()` tool, if the `{diffviewer}` package is installed (#144).
