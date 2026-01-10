@@ -180,14 +180,7 @@ detect_project_is_r_package <- function(dir = getwd()) {
 
 # Agent file discovery ---------------------------------------------------------
 
-#' Find project-level agent-*.md files
-#'
-#' Searches for agent definition files in the `.btw/` directory within the
-#' project root.
-#'
-#' @param dir Starting directory for search (defaults to current working directory)
-#' @return Character vector of absolute paths to agent-*.md files, or empty character
-#' @noRd
+# Find agent-*.md files in project .btw/ directory
 find_project_agent_files <- function(dir = getwd()) {
   btw_dir <- path_find_in_project(".btw", dir)
 
@@ -199,13 +192,7 @@ find_project_agent_files <- function(dir = getwd()) {
   as.character(files)
 }
 
-#' Find user-level agent-*.md files
-#'
-#' Searches for agent definition files in user configuration directories:
-#' `~/.btw/` and `~/.config/btw/`.
-#'
-#' @return Character vector of absolute paths to agent-*.md files, or empty character
-#' @noRd
+# Find agent-*.md files in user config directories (~/.btw/, ~/.config/btw/)
 find_user_agent_files <- function() {
   if (identical(Sys.getenv("TESTTHAT"), "true")) {
     return(character())
@@ -229,15 +216,7 @@ find_user_agent_files <- function() {
 
 # Claude Code agent file discovery ---------------------------------------------
 
-#' Find project-level Claude Code agent files
-#'
-#' Searches for agent definition files in the `.claude/agents/` directory within
-#' the project root. Claude Code agent files are any `.md` files in this directory
-#' (no `agent-` prefix required).
-#'
-#' @param dir Starting directory for search (defaults to current working directory)
-#' @return Character vector of absolute paths to agent .md files, or empty character
-#' @noRd
+# Find agent *.md files in project .claude/agents/ directory
 find_project_claude_code_agent_files <- function(dir = getwd()) {
   agents_dir <- path_find_in_project(".claude/agents", dir)
 
@@ -257,14 +236,7 @@ find_project_claude_code_agent_files <- function(dir = getwd()) {
   as.character(files)
 }
 
-#' Find user-level Claude Code agent files
-#'
-#' Searches for agent definition files in the user's `~/.claude/agents/`
-#' directory. Claude Code agent files are any `.md` files in this directory
-#' (no `agent-` prefix required).
-#'
-#' @return Character vector of absolute paths to agent .md files, or empty character
-#' @noRd
+# Find agent *.md files in ~/.claude/agents/ directory
 find_user_claude_code_agent_files <- function() {
   if (identical(Sys.getenv("TESTTHAT"), "true")) {
     return(character())

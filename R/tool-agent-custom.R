@@ -243,16 +243,6 @@ btw_agent_tool <- function(path, client = NULL) {
   tool
 }
 
-#' Execute custom subagent
-#'
-#' Implementation function that executes a custom agent with its configuration.
-#' This reuses the session management and execution logic from btw_tool_agent_subagent_impl.
-#'
-#' @param prompt Task description for the agent
-#' @param session_id Optional session ID to resume a conversation
-#' @param agent_config Configuration for this custom agent
-#' @return A BtwSubagentResult object
-#' @noRd
 btw_tool_agent_custom_impl <- function(
   prompt,
   session_id = NULL,
@@ -295,14 +285,7 @@ btw_tool_agent_custom_impl <- function(
   )
 }
 
-#' Configure custom agent client
-#'
-#' Creates and configures an ellmer Chat client for a custom agent session.
-#' Similar to subagent_client but uses agent-specific configuration.
-#'
-#' @param agent_config List with agent configuration
-#' @return A configured Chat object with system prompt and tools attached
-#' @noRd
+# Create a configured ellmer Chat client for a custom agent session
 custom_agent_client_from_config <- function(agent_config) {
   chat <- subagent_resolve_client(agent_config$client)
 
@@ -352,13 +335,6 @@ custom_agent_client_from_config <- function(agent_config) {
   chat
 }
 
-#' Create tool function with captured agent configuration
-#'
-#' Returns a closure that captures the agent_config and calls btw_tool_agent_custom_impl.
-#'
-#' @param agent_config List with agent configuration
-#' @return Function that implements the tool
-#' @noRd
 btw_tool_agent_custom_from_config <- function(agent_config) {
   force(agent_config)
 
@@ -371,17 +347,9 @@ btw_tool_agent_custom_from_config <- function(agent_config) {
   }
 }
 
-#' Discover agent-*.md files from project and user directories
-#'
-#' Scans for custom agent definition files in the following order (earlier = higher priority):
-#' - `.btw/agent-*.md` (project level btw)
-#' - `~/.btw/agent-*.md` (user level btw)
-#' - `~/.config/btw/agent-*.md` (user level btw)
-#' - `.claude/agents/*.md` (project level Claude Code)
-#' - `~/.claude/agents/*.md` (user level Claude Code)
-#'
-#' @return Character vector of absolute paths to agent .md files
-#' @noRd
+# Discover agent definition files from project and user directories.
+# Priority order (highest first): project .btw/, user .btw/, user .config/btw/,
+# project .claude/agents/, user .claude/agents/
 discover_agent_md_files <- function() {
   # btw locations (highest priority)
   project_btw <- find_project_agent_files()
@@ -394,14 +362,6 @@ discover_agent_md_files <- function() {
   unique(c(project_btw, user_btw, project_cc, user_cc))
 }
 
-#' Read and parse an agent-*.md file
-#'
-#' Wrapper around `read_single_btw_file()` that extracts YAML frontmatter
-#' and body content from an agent definition file.
-#'
-#' @param path Path to the agent-*.md file
-#' @return List with YAML config and body content (system_prompt)
-#' @noRd
 read_agent_md_file <- function(path) {
   if (!fs::file_exists(path)) {
     return(NULL)
@@ -418,14 +378,7 @@ read_agent_md_file <- function(path) {
   config
 }
 
-#' Validate agent name
-#'
-#' Ensures the agent name is a valid R identifier and not reserved.
-#'
-#' @param name The agent name from YAML frontmatter
-#' @param path Path to the file (for error messages)
-#' @return TRUE if valid, otherwise signals an error
-#' @noRd
+# Ensures the agent name is a valid R identifier and not reserved.
 validate_agent_name <- function(name, path) {
   check_string(name, allow_null = TRUE)
 
@@ -461,14 +414,7 @@ validate_agent_name <- function(name, path) {
   TRUE
 }
 
-#' Normalize agent name for R compatibility
-#'
-#' Converts Claude Code style names (with hyphens) to valid R identifiers
-#' (with underscores).
-#'
-#' @param name The agent name from YAML frontmatter
-#' @return Normalized name with hyphens converted to underscores
-#' @noRd
+# Converts Claude Code style names (with hyphens) to valid R identifiers
 normalize_agent_name <- function(name) {
   if (is.null(name)) {
     return(NULL)

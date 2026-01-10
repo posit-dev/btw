@@ -132,12 +132,6 @@ btw_tool_agent_subagent <- function(
 ) {}
 
 
-#' Get existing session or create new one
-#'
-#' @param session_id Optional session ID to retrieve
-#' @param create_chat_fn Function that creates a new Chat when called
-#' @return List with `chat`, `session_id`, and `is_new`
-#' @noRd
 subagent_get_or_create_session <- function(session_id, create_chat_fn) {
   check_string(session_id, allow_null = TRUE)
 
@@ -290,19 +284,13 @@ subagent_display_result <- function(result, session_id, agent_name, prompt) {
 }
 
 
-#' Resolve agent chat client from options hierarchy
-#'
-#' Checks for client configuration in the following order:
-#' 1. Explicit `client` argument (from agent-*.md file)
-#' 2. `btw.subagent.client` R option
-#' 3. `btw.md` file's `options.subagent.client`
-#' 4. `btw.client` R option
-#' 5. `btw.md` file's `client`
-#' 6. Default Anthropic client
-#'
-#' @param client Optional explicit client
-#' @return A Chat object
-#' @noRd
+# Resolve agent chat client from options hierarchy in the following order:
+# 1. Explicit `client` argument (from agent-*.md file)
+# 2. `btw.subagent.client` R option
+# 3. `btw.md` file's `options.subagent.client`
+# 4. `btw.client` R option
+# 5. `btw.md` file's `client`
+# 6. Default Anthropic client
 subagent_resolve_client <- function(client = NULL) {
   # Check explicit argument and R options first
   resolved <- client %||%
@@ -376,13 +364,10 @@ btw_tool_agent_subagent_impl <- function(
   )
 }
 
-#' Capture subagent configuration from current R options
-#'
-#' Reads the relevant btw.subagent.* and btw.* options and returns them as a
-#' named list for later use by btw_tool_agent_subagent_impl().
-#'
-#' @return A list with captured configuration
-#' @noRd
+# Capture subagent configuration from current R options
+#
+# Reads the relevant btw.subagent.* and btw.* options and returns them as a
+# named list for later use by btw_tool_agent_subagent_impl().
 subagent_config_options <- function() {
   list(
     client = getOption("btw.subagent.client") %||% getOption("btw.client"),
@@ -512,15 +497,8 @@ subagent_disallow_recursion <- function(tools) {
   })
 }
 
-#' Check if subagent tool is explicitly requested
-#'
-#' Detects explicit requests for the subagent tool by name (not via group).
-#' Used to provide clear error messages when users try to give subagents
-#' the ability to spawn other subagents.
-#'
-#' @param tools Character vector of tool names/groups or list of ToolDef objects
-#' @return TRUE if subagent is explicitly requested by name, FALSE otherwise
-#' @noRd
+# Check if subagent tool is explicitly requested to provide clear error messages
+# when users try to give subagents the ability to spawn other subagents.
 subagent_is_explicitly_requested <- function(tools) {
   if (is.null(tools)) {
     return(FALSE)
@@ -543,13 +521,7 @@ subagent_is_explicitly_requested <- function(tools) {
   FALSE
 }
 
-#' Build dynamic tool description for btw_tool_agent_subagent
-#'
-#' Generates a description that includes available tool groups dynamically.
-#'
-#' @return Character string with the tool description
-#'
-#' @noRd
+# Build dynamic tool description that includes available tool groups
 subagent_build_description <- function(tools = .btw_tools) {
   desc_tool_use <- if (length(tools) == 0) {
     "No tools are available for use in the subagent."
@@ -675,14 +647,9 @@ btw_can_register_subagent_tool <- function() {
 .btw_subagent_sessions <- new.env(parent = emptyenv())
 
 
-#' Generate a word-based session ID
-#'
-#' Creates a human-readable session identifier in the format "adjective-noun"
-#' (e.g., "stable-genius", "swift-falcon"). Checks for uniqueness against
-#' currently active sessions.
-#'
-#' @return A character string containing the generated session ID
-#' @noRd
+# Generate unique session ID in "adjective_noun" format (e.g., "stable_genius",
+# "swift_falcon"). Falls back to adding numeric suffix if uniqueness fails after
+# 100 attempts.
 subagent_new_session_id <- function() {
   # Try up to 100 times to generate a unique ID
   for (i in seq_len(100)) {
@@ -705,16 +672,6 @@ subagent_new_session_id <- function() {
   paste(c(adj, noun, suffix), collapse = "_")
 }
 
-#' Store a subagent session
-#'
-#' Stores a chat object and associated metadata in the session environment.
-#'
-#' @param session_id Character string with the session identifier
-#' @param chat An ellmer Chat object
-#' @param metadata Optional list of additional metadata to store
-#' @return The session_id (invisibly)
-#'
-#' @noRd
 subagent_store_session <- function(session_id, chat, metadata = list()) {
   check_string(session_id)
   check_inherits(chat, "Chat")
@@ -732,41 +689,16 @@ subagent_store_session <- function(session_id, chat, metadata = list()) {
   invisible(session_id)
 }
 
-#' Retrieve a subagent session
-#'
-#' Retrieves a stored session from the session environment.
-#'
-#' @param session_id Character string with the session identifier
-#' @return A list containing the session data, or NULL if not found
-#'
-#' @noRd
 subagent_get_session <- function(session_id) {
   check_string(session_id)
 
   env_get(.btw_subagent_sessions, session_id, default = NULL)
 }
 
-#' List all active subagent sessions
-#'
-#' Returns a list with information about all currently active subagent
-#' sessions. Useful for debugging and monitoring.
-#'
-#' @return A list of sessions with: id, chat, created
-#'
-#' @noRd
 subagent_list_sessions <- function() {
   env_get_list(.btw_subagent_sessions, env_names(.btw_subagent_sessions))
 }
 
-#' Clear a specific subagent session
-#'
-#' Explicitly removes a session from the session store. This is optional -
-#' sessions will be automatically cleaned up when the R session ends.
-#'
-#' @param session_id Character string with the session identifier
-#' @return TRUE if session was found and removed, FALSE otherwise
-#'
-#' @noRd
 subagent_clear_session <- function(session_id) {
   check_string(session_id)
 
@@ -778,12 +710,6 @@ subagent_clear_session <- function(session_id) {
   TRUE
 }
 
-#' Clear all subagent sessions
-#'
-#' Removes all sessions from the session store. This is optional - sessions
-#' will be automatically cleaned up when the R session ends.
-#'
-#' @noRd
 subagent_clear_all_sessions <- function() {
   session_ids <- env_names(.btw_subagent_sessions)
   count <- length(session_ids)
