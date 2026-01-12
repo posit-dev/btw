@@ -30,6 +30,7 @@ pattern.
 Other pkg tools: 
 \code{\link{btw_tool_pkg_check}()},
 \code{\link{btw_tool_pkg_coverage}()},
-\code{\link{btw_tool_pkg_document}()}
+\code{\link{btw_tool_pkg_document}()},
+\code{\link{btw_tool_pkg_load_all}()}
 }
 \concept{pkg tools}

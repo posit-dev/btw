@@ -398,3 +398,63 @@ test_that("pkg tools pass through btw_tool_run_r_impl status", {
   result3 <- btw_tool_pkg_test_impl(".")
   expect_equal(result3@extra$status, "error")
 })
+
+# Test btw_tool_pkg_load_all ---------------------------------------------------
+
+test_that("btw_tool_pkg_load_all constructs correct code", {
+  local_mocked_bindings(
+    btw_tool_run_r_impl = function(code, show_last_value) {
+      BtwRunToolResult(
+        value = list(ContentOutput(text = "Package loaded successfully!")),
+        extra = list(
+          code = code,
+          status = "success",
+          data = NULL,
+          contents = list()
+        )
+      )
+    }
+  )
+
+  result <- btw_tool_pkg_load_all_impl(".")
+  expect_s7_class(result, BtwRunToolResult)
+  expect_match(result@extra$code, "btw:::btw_pkg_load_all")
+  expect_match(result@extra$code, "pkg = '.'")
+})
+
+test_that("btw_tool_pkg_load_all handles subdirectory paths", {
+  local_mocked_bindings(
+    btw_tool_run_r_impl = function(code, show_last_value) {
+      BtwRunToolResult(
+        value = list(ContentOutput(text = "Package loaded successfully!")),
+        extra = list(
+          code = code,
+          status = "success",
+          data = NULL,
+          contents = list()
+        )
+      )
+    }
+  )
+
+  result <- btw_tool_pkg_load_all_impl("subdir/pkg")
+  expect_s7_class(result, BtwRunToolResult)
+  expect_match(result@extra$code, "pkg = 'subdir/pkg'")
+})
+
+test_that("btw_tool_pkg_load_all rejects paths outside current directory", {
+  expect_error(
+    btw_tool_pkg_load_all_impl("/tmp/outside"),
+    "not allowed to list or read"
+  )
+  expect_error(
+    btw_tool_pkg_load_all_impl("../outside"),
+    "not allowed to list or read"
+  )
+})
+
+test_that("btw_tool_pkg_load_all validates pkg argument", {
+  expect_error(btw_tool_pkg_load_all_impl(123))
+  expect_error(btw_tool_pkg_load_all_impl(c("a", "b")))
+  expect_error(btw_tool_pkg_load_all_impl(NULL))
+})

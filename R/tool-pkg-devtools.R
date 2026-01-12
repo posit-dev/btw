@@ -9,6 +9,10 @@ has_roxygen2 <- function() {
   is_installed("roxygen2")
 }
 
+has_pkgload_and_callr <- function() {
+  is_installed("pkgload") && is_installed("callr")
+}
+
 btw_can_register_pkg_coverage <- function() {
   is_installed("covr") && is_installed("testthat")
 }
@@ -224,6 +228,94 @@ Use `filter` when working on specific functionality to get faster feedback. The 
         ),
         filter = ellmer::type_string(
           "Optional regex to filter test files. Example: 'helper' matches 'test-helper.R'.",
+          required = FALSE
+        )
+      )
+    )
+  }
+)
+
+# btw_tool_pkg_load_all --------------------------------------------------------
+
+#' Tool: Load package code
+#'
+#' Load package code using [pkgload::load_all()] in a separate R process via
+#' [callr::r()]. This verifies that the package code loads without syntax errors
+#' and triggers recompilation of any compiled code (C, C++, etc.).
+#'
+#' **Important:** This tool runs `load_all()` in an isolated R process and does
+#' NOT load the package code into your current R session. If you need to load
+#' the package code in your current session for interactive use, use the run R
+#' code tool to call `pkgload::load_all()` directly.
+#'
+#' @param pkg Path to package directory. Defaults to '.'. Must be within
+#'   current working directory.
+#' @inheritParams btw_tool_docs_package_news
+#'
+#' @returns The output from [pkgload::load_all()].
+#'
+#' @seealso [btw_tools()]
+#' @family pkg tools
+#' @export
+btw_tool_pkg_load_all <- function(pkg = ".", `_intent`) {}
+
+btw_tool_pkg_load_all_impl <- function(pkg = ".") {
+  check_installed("pkgload")
+  check_installed("callr")
+  check_string(pkg)
+  check_path_within_current_wd(pkg)
+
+  code <- glue_("btw:::btw_pkg_load_all(pkg = '{{pkg}}')")
+  btw_tool_run_r_impl(code, show_last_value = FALSE)
+}
+
+btw_pkg_load_all <- function(pkg = ".") {
+  res <- tryCatch(
+    callr::r(
+      function(pkg) {
+        pkgload::load_all(pkg, export_all = FALSE, quiet = FALSE)
+      },
+      args = list(pkg = pkg)
+    ),
+    error = function(e) {
+      rlang::cnd_signal(e$parent)
+    }
+  )
+  cat("Package loaded successfully!")
+  invisible(res)
+}
+
+.btw_add_to_tools(
+  name = "btw_tool_pkg_load_all",
+  group = "pkg",
+  tool = function() {
+    ellmer::tool(
+      btw_tool_pkg_load_all_impl,
+      name = "btw_tool_pkg_load_all",
+      description = "Load package code to verify it loads correctly.
+
+Runs `pkgload::load_all()` to verify the package can be loaded (without affecting the user's current session).
+
+## When to Use This Tool
+
+Use this tool when:
+- You need quick verification that package code loads without running tests or R CMD check
+- You want to verify code changes haven't broken the package structure
+- You need to trigger recompilation of compiled code
+- You want a natural prerequisite step before running tests or examples
+
+This is lighter and faster than running tests or checks when you only need to verify loadability. If you need to run tests, use the `btw_tool_pkg_test` tool instead, which also verifies loading.
+
+**IMPORTANT:** This tool does NOT load the package into your current R session. The code runs in an isolated subprocess that exits after completion. If you need the package loaded in your current session for interactive use, use the run R code tool instead and call `pkgload::load_all()` directly.",
+      annotations = ellmer::tool_annotations(
+        title = "Package Load All",
+        read_only_hint = FALSE,
+        idempotent_hint = TRUE,
+        btw_can_register = function() has_pkgload_and_callr()
+      ),
+      arguments = list(
+        pkg = ellmer::type_string(
+          "Path to package directory. Defaults to '.'. Must be within current working directory.",
           required = FALSE
         )
       )

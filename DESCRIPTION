@@ -53,6 +53,7 @@ Imports:
     xml2
 Suggests:
     bslib (>= 0.7.0),
+    callr,
     chromote,
     covr,
     DBI,
