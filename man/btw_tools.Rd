@@ -99,6 +99,7 @@ this function have access to the tools:
    \code{\link[=btw_tool_pkg_check]{btw_tool_pkg_check()}} \tab Run comprehensive package checks. \cr
    \code{\link[=btw_tool_pkg_coverage]{btw_tool_pkg_coverage()}} \tab Compute test coverage for an R package. \cr
    \code{\link[=btw_tool_pkg_document]{btw_tool_pkg_document()}} \tab Generate package documentation. \cr
+   \code{\link[=btw_tool_pkg_load_all]{btw_tool_pkg_load_all()}} \tab Load package code to verify it loads correctly. \cr
    \code{\link[=btw_tool_pkg_test]{btw_tool_pkg_test()}} \tab Run testthat tests for an R package. \cr
 }
 

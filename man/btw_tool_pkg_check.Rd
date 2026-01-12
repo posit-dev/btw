@@ -31,6 +31,7 @@ The check runs with \code{remote = TRUE}, \code{cran = TRUE}, \code{manual = FAL
 Other pkg tools: 
 \code{\link{btw_tool_pkg_coverage}()},
 \code{\link{btw_tool_pkg_document}()},
+\code{\link{btw_tool_pkg_load_all}()},
 \code{\link{btw_tool_pkg_test}()}
 }
 \concept{pkg tools}
