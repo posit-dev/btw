@@ -1,5 +1,7 @@
 # btw (development version)
 
+* New `btw_tool_pkg_load_all()` tool runs `pkgload::load_all()` in an isolated subprocess to verify package code loads correctly and trigger recompilation of compiled code. Useful for quick validation during development without running full tests or affecting the current R session (#156).
+
 * `btw.md` now supports configuring multiple client options. When `btw_client()` is called interactively, you'll be presented with a menu to choose which client to use. Clients can be specified as an array:
 
   ```yaml
