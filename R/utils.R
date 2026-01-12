@@ -174,7 +174,6 @@ path_find_user <- function(filename) {
 }
 
 detect_project_is_r_package <- function(dir = getwd()) {
-
   !is.null(path_find_in_project("DESCRIPTION", dir))
 }
 
@@ -298,7 +297,7 @@ local_reproducible_output <- function(
 
   withr::local_options(
     cli.dynamic = FALSE,
-    cli.spinner = FALSE,
+    cli.spinner = NULL,
     cli.hyperlink = FALSE,
     cli.hyperlink_run = FALSE,
     cli.hyperlink_help = FALSE,

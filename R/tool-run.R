@@ -203,13 +203,13 @@ btw_tool_run_r_impl <- function(
     },
     warning = function(warn) {
       append_last_plot()
-      append_content(ContentWarning(conditionMessage(warn)))
+      append_content(ContentWarning(conditionMessage(warn), condition = warn))
       warn
     },
     error = function(err) {
       append_last_plot()
       had_error <<- TRUE
-      append_content(ContentError(conditionMessage(err)))
+      append_content(ContentError(conditionMessage(err), condition = err))
       err
     },
     value = function(value, visible) {
@@ -454,12 +454,18 @@ ContentMessage <- S7::new_class(
 
 ContentWarning <- S7::new_class(
   "ContentWarning",
-  parent = ellmer::ContentText
+  parent = ellmer::ContentText,
+  properties = list(
+    condition = S7::class_any
+  )
 )
 
 ContentError <- S7::new_class(
   "ContentError",
-  parent = ellmer::ContentText
+  parent = ellmer::ContentText,
+  properties = list(
+    condition = S7::class_any
+  )
 )
 
 BtwRunToolResult <- S7::new_class(

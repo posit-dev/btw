@@ -99,7 +99,7 @@ btw_tool_pkg_check_impl <- function(pkg = ".") {
   check_string(pkg)
   check_path_within_current_wd(pkg)
 
-  withr::local_envvar(TESTHAT_PROBLEMS = "false")
+  withr::local_envvar(TESTTHAT_PROBLEMS = "false")
   code <- sprintf(
     'devtools::check(pkg = "%s", remote = TRUE, cran = TRUE, manual = FALSE, quiet = FALSE, error_on = "never")',
     pkg
@@ -177,13 +177,16 @@ btw_tool_pkg_test_impl <- function(pkg = ".", filter = NULL) {
     ""
   }
 
+  rptr <- if (utils::packageVersion("testthat") >= "3.3.2") "llm" else "check"
+
   code <- sprintf(
-    'devtools::test(pkg = "%s"%s, stop_on_failure = FALSE, export_all = TRUE, reporter = "check")',
+    'devtools::test(pkg = "%s"%s, stop_on_failure = FALSE, export_all = TRUE, reporter = "%s")',
     pkg,
-    filter_arg
+    filter_arg,
+    rptr
   )
 
-  withr::local_envvar(TESTHAT_PROBLEMS = "false")
+  withr::local_envvar(TESTTHAT_PROBLEMS = "false")
   btw_tool_run_r_impl(code)
 }
 
