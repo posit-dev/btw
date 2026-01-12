@@ -107,6 +107,8 @@ and to avoid name clashes with other tools.
   : Tool: Compute package test coverage
 - [`btw_tool_pkg_document()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_document.md)
   : Tool: Generate package documentation
+- [`btw_tool_pkg_load_all()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_load_all.md)
+  : Tool: Load package code
 - [`btw_tool_pkg_test()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_test.md)
   : Tool: Run package tests
 - [`btw_tool_run_r()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_run_r.md)

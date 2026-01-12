@@ -39,7 +39,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="btw-development-version">btw (development version)<a class="anchor" aria-label="anchor" href="#btw-development-version"></a></h2>
-<ul><li>
+<ul><li><p>New <code><a href="../reference/btw_tool_pkg_load_all.html">btw_tool_pkg_load_all()</a></code> tool runs <code><a href="https://pkgload.r-lib.org/reference/load_all.html" class="external-link">pkgload::load_all()</a></code> in an isolated subprocess to verify package code loads correctly and trigger recompilation of compiled code. Useful for quick validation during development without running full tests or affecting the current R session (<a href="https://github.com/posit-dev/btw/issues/156" class="external-link">#156</a>).</p></li>
+<li>
 <p><code>btw.md</code> now supports configuring multiple client options. When <code><a href="../reference/btw_client.html">btw_client()</a></code> is called interactively, you’ll be presented with a menu to choose which client to use. Clients can be specified as an array:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">client</span><span class="kw">:</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> anthropic/claude-sonnet-4</span></span>

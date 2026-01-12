@@ -77,6 +77,7 @@ returned by this function have access to the tools:
 | [`btw_tool_pkg_check()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_check.md) | Run comprehensive package checks. |
 | [`btw_tool_pkg_coverage()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_coverage.md) | Compute test coverage for an R package. |
 | [`btw_tool_pkg_document()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_document.md) | Generate package documentation. |
+| [`btw_tool_pkg_load_all()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_load_all.md) | Load package code to verify it loads correctly. |
 | [`btw_tool_pkg_test()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_test.md) | Run testthat tests for an R package. |
 
 ### Group: run
@@ -191,6 +192,7 @@ ch$register_tools(c(ch$get_tools(), btw_tools()))
 #> Replacing existing btw_tool_pkg_document tool.
 #> Replacing existing btw_tool_pkg_check tool.
 #> Replacing existing btw_tool_pkg_test tool.
+#> Replacing existing btw_tool_pkg_load_all tool.
 #> Replacing existing btw_tool_search_packages tool.
 #> Replacing existing btw_tool_search_package_info tool.
 #> Replacing existing btw_tool_session_platform_info tool.
@@ -221,6 +223,7 @@ ch$register_tools(c(ch$get_tools(), btw_tools()))
 #> Replacing existing btw_tool_pkg_document tool.
 #> Replacing existing btw_tool_pkg_check tool.
 #> Replacing existing btw_tool_pkg_test tool.
+#> Replacing existing btw_tool_pkg_load_all tool.
 #> Replacing existing btw_tool_search_packages tool.
 #> Replacing existing btw_tool_search_package_info tool.
 #> Replacing existing btw_tool_session_platform_info tool.
