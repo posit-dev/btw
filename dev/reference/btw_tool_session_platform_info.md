@@ -48,7 +48,7 @@ btw_tool_session_platform_info()
 #>  .. $ locale:   : chr "C"
 #>  .. $ encoding: : chr "C.UTF-8"
 #>  .. $ timezone: : chr "UTC"
-#>  .. $ date:     : chr "Saturday, January 10, 2026 (2026-01-10)"
+#>  .. $ date:     : chr "Monday, January 12, 2026 (2026-01-12)"
 #>  .. - attr(*, "class")= chr [1:2] "platform_info" "list"
 #>  @ request: NULL
 ```
