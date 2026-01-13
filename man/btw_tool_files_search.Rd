@@ -11,7 +11,7 @@ btw_tool_files_code_search(
   case_sensitive = TRUE,
   use_regex = FALSE,
   show_lines = FALSE,
-  .intent = ""
+  `_intent` = ""
 )
 
 btw_tool_files_search(
