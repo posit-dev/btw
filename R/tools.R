@@ -61,10 +61,17 @@ btw_tools <- function(...) {
     tool_names <- map_chr(all_btw_tools, function(x) x$name)
     tool_groups <- map_chr(all_btw_tools, function(x) x$group)
 
+    # Add aliases to allowed names for arg_match validation
+    alias_names <- unlist(compact(map(all_btw_tools, function(x) x$alias_name)))
+    alias_groups <- unlist(compact(map(all_btw_tools, function(x) x$alias_group)))
+
     allowed <- c(
       tool_groups,
       tool_names,
-      sub("btw_tool_", "", tool_names, fixed = TRUE)
+      sub("btw_tool_", "", tool_names, fixed = TRUE),
+      alias_names,
+      alias_groups,
+      sub("btw_tool_", "", alias_names, fixed = TRUE)
     )
     allowed <- unique(allowed)
 
@@ -103,6 +110,34 @@ is_tool_match <- function(tool, labels = NULL) {
   if (sub("btw_tool_", "", tool$name) %in% labels) {
     return(TRUE)
   }
+
+
+  # Check alias_name with deprecation warning
+  alias_names <- c(
+    tool$alias_name,
+    sub("btw_tool_", "", tool$alias_name, fixed = TRUE)
+  )
+  if (length(alias_names) > 0 && any(alias_names %in% labels)) {
+    matched <- alias_names[alias_names %in% labels][1]
+    lifecycle::deprecate_warn(
+      "1.2.0",
+      I(sprintf("btw_tools('%s')", matched)),
+      I(sprintf("btw_tools('%s')", sub("btw_tool_", "", tool$name)))
+    )
+    return(TRUE)
+  }
+
+  # Check alias_group with deprecation warning
+  if (length(tool$alias_group) > 0 && any(tool$alias_group %in% labels)) {
+    matched <- tool$alias_group[tool$alias_group %in% labels][1]
+    lifecycle::deprecate_warn(
+      "1.2.0",
+      I(sprintf("btw_tools('%s')", matched)),
+      I(sprintf("btw_tools('%s')", tool$group))
+    )
+    return(TRUE)
+  }
+
   FALSE
 }
 
@@ -173,6 +208,7 @@ tool_group_icon <- function(group, default = NULL) {
   switch(
     group,
     "agent" = tool_icon("robot"),
+    "cran" = tool_icon("search"),
     "docs" = tool_icon("dictionary"),
     "env" = tool_icon("source-environment"),
     "eval" = tool_icon("play-circle"),
@@ -183,6 +219,7 @@ tool_group_icon <- function(group, default = NULL) {
     "pkg" = tool_icon("package"),
     "search" = tool_icon("search"),
     "session" = tool_icon("screen-search-desktop"),
+    "sessioninfo" = tool_icon("screen-search-desktop"),
     "web" = tool_icon("globe-book"),
     if (!is.null(default)) tool_icon(default)
   )

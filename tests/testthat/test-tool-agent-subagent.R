@@ -113,13 +113,13 @@ test_that("subagent_client() falls back through precedence chain", {
   # Test fallback to btw.tools
   withr::local_options(
     btw.subagent.tools_default = NULL,
-    btw.tools = c("search")
+    btw.tools = c("cran")
   )
 
   chat <- subagent_client(tools = NULL)
 
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
-  expect_true(all(grepl("^btw_tool_search_", tool_names)))
+  expect_true(all(grepl("^btw_tool_cran_", tool_names)))
 
   # Test fallback to btw_tools()
   withr::local_options(
@@ -176,7 +176,7 @@ test_that("subagent_client() allows tools within whitelist", {
 
 test_that("subagent_client() filters explicit tools against tools_allowed", {
   withr::local_options(
-    btw.subagent.tools_allowed = c("docs", "search")
+    btw.subagent.tools_allowed = c("docs", "cran")
   )
 
   # Requesting tools partially in whitelist should error
@@ -186,11 +186,11 @@ test_that("subagent_client() filters explicit tools against tools_allowed", {
   )
 
   # Requesting only allowed tools should work
-  chat <- subagent_client(tools = c("docs", "search"))
+  chat <- subagent_client(tools = c("docs", "cran"))
 
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
   expect_true(any(grepl("^btw_tool_docs_", tool_names)))
-  expect_true(any(grepl("^btw_tool_search_", tool_names)))
+  expect_true(any(grepl("^btw_tool_cran_", tool_names)))
 })
 
 test_that("subagent_client() works without tools_allowed set", {

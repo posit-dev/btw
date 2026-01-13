@@ -3,6 +3,10 @@
     Code
       cli::cat_line(btw_tool_search_packages("string interpolation", format = "long")@
         value)
+    Condition
+      Warning:
+      `btw_tool_search_packages()` was deprecated in btw 1.2.0.
+      i Please use `btw_tool_cran_search()` instead.
     Output
       Found 337 packages matching `string interpolation`, showing 3 results.
       
@@ -58,6 +62,10 @@
     Code
       cli::cat_line(btw_tool_search_packages("string interpolation", format = "short")@
         value)
+    Condition
+      Warning:
+      `btw_tool_search_packages()` was deprecated in btw 1.2.0.
+      i Please use `btw_tool_cran_search()` instead.
     Output
       Found 337 packages matching `string interpolation`, showing 3 results.
       
@@ -71,6 +79,10 @@
 
     Code
       cli::cat_line(btw_tool_search_package_info("anyflights")@value)
+    Condition
+      Warning:
+      `btw_tool_search_package_info()` was deprecated in btw 1.2.0.
+      i Please use `btw_tool_cran_package()` instead.
     Output
       ### anyflights (v0.3.5) -- Query 'nycflights13'-Like Air Travel Data for Given Years and
       Airports

@@ -1,9 +1,18 @@
 .btw_tools <- list()
 
-.btw_add_to_tools <- function(name, group = name, tool, can_register = NULL) {
+.btw_add_to_tools <- function(
+    name,
+    group = name,
+    tool,
+    can_register = NULL,
+    alias_group = NULL,
+    alias_name = NULL
+) {
   check_string(name)
   check_string(group)
   check_function(can_register, allow_null = TRUE)
+  check_character(alias_group, allow_null = TRUE)
+  check_character(alias_name, allow_null = TRUE)
 
   if (!is_function(tool)) {
     abort(
@@ -19,7 +28,9 @@
     name = name,
     group = group,
     tool = tool,
-    can_register = can_register
+    can_register = can_register,
+    alias_group = alias_group,
+    alias_name = alias_name
   )
 
   invisible(tool)

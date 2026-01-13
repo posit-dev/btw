@@ -1,5 +1,24 @@
 # btw (development version)
 
+* BREAKING CHANGE: Several tool groups and tool names have been renamed for clarity (#158):
+
+
+  | Old Name | New Name |
+  |----------|----------|
+  | `session` group | `sessioninfo` group |
+  | `search` group | `cran` group |
+  | `btw_tool_session_platform_info()` | `btw_tool_sessioninfo_platform()` |
+  | `btw_tool_session_package_info()` | `btw_tool_sessioninfo_package()` |
+  | `btw_tool_session_check_package_installed()` | `btw_tool_sessioninfo_is_package_installed()` |
+  | `btw_tool_search_packages()` | `btw_tool_cran_search()` |
+  | `btw_tool_search_package_info()` | `btw_tool_cran_package()` |
+  | `btw_tool_files_list_files()` | `btw_tool_files_list()` |
+  | `btw_tool_files_read_text_file()` | `btw_tool_files_read()` |
+  | `btw_tool_files_write_text_file()` | `btw_tool_files_write()` |
+  | `btw_tool_files_code_search()` | `btw_tool_files_search()` |
+
+  The old names and group aliases continue to work but emit deprecation warnings. The `btw.files_code_search.extensions` and `btw.files_code_search.exclusions` options have also been renamed to `btw.files_search.extensions` and `btw.files_search.exclusions`, with the old option names emitting deprecation warnings.
+
 * New `btw_tool_pkg_load_all()` tool runs `pkgload::load_all()` in an isolated subprocess to verify package code loads correctly and trigger recompilation of compiled code. Useful for quick validation during development without running full tests or affecting the current R session (#156).
 
 * `btw.md` now supports configuring multiple client options. When `btw_client()` is called interactively, you'll be presented with a menu to choose which client to use. Clients can be specified as an array:

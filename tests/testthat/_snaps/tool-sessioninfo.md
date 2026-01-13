@@ -1,4 +1,4 @@
-# btw_tool_session_platform_info() works
+# btw_tool_sessioninfo_platform() works
 
     Code
       cat(platform_description@value)
@@ -19,6 +19,10 @@
 
     Code
       cat(btw_tool_session_package_info("dplyr")@value)
+    Condition
+      Warning:
+      `btw_tool_session_package_info()` was deprecated in btw 1.2.0.
+      i Please use `btw_tool_sessioninfo_package()` instead.
     Output
       ```
        package    * version date (UTC) lib source
@@ -47,6 +51,10 @@
 
     Code
       cat(btw_tool_session_package_info("digest", c("Imports", "Suggests"))@value)
+    Condition
+      Warning:
+      `btw_tool_session_package_info()` was deprecated in btw 1.2.0.
+      i Please use `btw_tool_sessioninfo_package()` instead.
     Output
       ```
        ! package         * version date (UTC) lib source
@@ -64,6 +72,10 @@
 
     Code
       cat(btw_tool_session_package_info("attached")@value)
+    Condition
+      Warning:
+      `btw_tool_session_package_info()` was deprecated in btw 1.2.0.
+      i Please use `btw_tool_sessioninfo_package()` instead.
     Output
       ### Attached Packages
       
@@ -85,6 +97,10 @@
 
     Code
       cat(btw_tool_session_package_info("loaded")@value)
+    Condition
+      Warning:
+      `btw_tool_session_package_info()` was deprecated in btw 1.2.0.
+      i Please use `btw_tool_sessioninfo_package()` instead.
     Output
       ### Loaded Packages
       
@@ -169,6 +185,10 @@
 
     Code
       cat(btw_tool_session_package_info("dplyr,tidyr", "false")@value)
+    Condition
+      Warning:
+      `btw_tool_session_package_info()` was deprecated in btw 1.2.0.
+      i Please use `btw_tool_sessioninfo_package()` instead.
     Output
       ```
        package * version date (UTC) lib source
