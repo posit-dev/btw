@@ -81,22 +81,6 @@ Other task and agent functions:
 withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
   btw_task_create_btw_md(mode = "tool", client = "anthropic")
 })
-#> Warning: btw_tools('btw_tool_files_code_search') was deprecated in btw 1.2.0.
-#> ℹ Please use btw_tools('files_search') instead.
-#> ℹ The deprecated feature was likely used in the base package.
-#>   Please report the issue to the authors.
-#> Warning: btw_tools('btw_tool_files_list_files') was deprecated in btw 1.2.0.
-#> ℹ Please use btw_tools('files_list') instead.
-#> ℹ The deprecated feature was likely used in the base package.
-#>   Please report the issue to the authors.
-#> Warning: btw_tools('btw_tool_files_read_text_file') was deprecated in btw 1.2.0.
-#> ℹ Please use btw_tools('files_read') instead.
-#> ℹ The deprecated feature was likely used in the base package.
-#>   Please report the issue to the authors.
-#> Warning: btw_tools('btw_tool_files_write_text_file') was deprecated in btw 1.2.0.
-#> ℹ Please use btw_tools('files_write') instead.
-#> ℹ The deprecated feature was likely used in the base package.
-#>   Please report the issue to the authors.
 #> Using model = "claude-sonnet-4-5-20250929".
 #> # <ellmer::ToolDef> btw_task_create_btw_md(prompt, path)
 #> # @name: btw_task_create_btw_md
@@ -105,6 +89,6 @@ withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
 #> #
 #> function (prompt, path = NULL) 
 #> task_create_btw_md_tool(prompt, path)
-#> <bytecode: 0x55bfac944af8>
-#> <environment: 0x55bfac9212c8>
+#> <bytecode: 0x55b0ed167298>
+#> <environment: 0x55b0ed126788>
 ```

@@ -3,7 +3,7 @@
 ## btw (development version)
 
 - BREAKING CHANGE: Several tool groups and tool names have been renamed
-  for clarity ([\#158](https://github.com/posit-dev/btw/issues/158)):
+  for clarity ([\#159](https://github.com/posit-dev/btw/issues/159)):
 
   | Old Name | New Name |
   |----|----|
