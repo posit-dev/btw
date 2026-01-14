@@ -39,7 +39,39 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="btw-development-version">btw (development version)<a class="anchor" aria-label="anchor" href="#btw-development-version"></a></h2>
-<ul><li><p>New <code><a href="../reference/btw_tool_pkg_load_all.html">btw_tool_pkg_load_all()</a></code> tool runs <code><a href="https://pkgload.r-lib.org/reference/load_all.html" class="external-link">pkgload::load_all()</a></code> in an isolated subprocess to verify package code loads correctly and trigger recompilation of compiled code. Useful for quick validation during development without running full tests or affecting the current R session (<a href="https://github.com/posit-dev/btw/issues/156" class="external-link">#156</a>).</p></li>
+<ul><li>
+<p>BREAKING CHANGE: Several tool groups and tool names have been renamed for clarity (<a href="https://github.com/posit-dev/btw/issues/158" class="external-link">#158</a>):</p>
+<table class="table"><colgroup><col width="50%"><col width="50%"></colgroup><thead><tr><th>Old Name</th>
+<th>New Name</th>
+</tr></thead><tbody><tr><td>
+<code>session</code> group</td>
+<td>
+<code>sessioninfo</code> group</td>
+</tr><tr><td>
+<code>search</code> group</td>
+<td>
+<code>cran</code> group</td>
+</tr><tr><td><code><a href="../reference/deprecated.html">btw_tool_session_platform_info()</a></code></td>
+<td><code><a href="../reference/btw_tool_sessioninfo_platform.html">btw_tool_sessioninfo_platform()</a></code></td>
+</tr><tr><td><code><a href="../reference/deprecated.html">btw_tool_session_package_info()</a></code></td>
+<td><code><a href="../reference/btw_tool_sessioninfo_package.html">btw_tool_sessioninfo_package()</a></code></td>
+</tr><tr><td><code><a href="../reference/deprecated.html">btw_tool_session_check_package_installed()</a></code></td>
+<td><code><a href="../reference/btw_tool_sessioninfo_is_package_installed.html">btw_tool_sessioninfo_is_package_installed()</a></code></td>
+</tr><tr><td><code><a href="../reference/deprecated.html">btw_tool_search_packages()</a></code></td>
+<td><code><a href="../reference/btw_tool_cran_search.html">btw_tool_cran_search()</a></code></td>
+</tr><tr><td><code><a href="../reference/deprecated.html">btw_tool_search_package_info()</a></code></td>
+<td><code><a href="../reference/btw_tool_cran_package.html">btw_tool_cran_package()</a></code></td>
+</tr><tr><td><code><a href="../reference/deprecated.html">btw_tool_files_list_files()</a></code></td>
+<td><code><a href="../reference/btw_tool_files_list.html">btw_tool_files_list()</a></code></td>
+</tr><tr><td><code><a href="../reference/deprecated.html">btw_tool_files_read_text_file()</a></code></td>
+<td><code><a href="../reference/btw_tool_files_read.html">btw_tool_files_read()</a></code></td>
+</tr><tr><td><code><a href="../reference/deprecated.html">btw_tool_files_write_text_file()</a></code></td>
+<td><code><a href="../reference/btw_tool_files_write.html">btw_tool_files_write()</a></code></td>
+</tr><tr><td><code><a href="../reference/deprecated.html">btw_tool_files_code_search()</a></code></td>
+<td><code><a href="../reference/btw_tool_files_search.html">btw_tool_files_search()</a></code></td>
+</tr></tbody></table><p>The old names and group aliases continue to work but emit deprecation warnings. The <code>btw.files_code_search.extensions</code> and <code>btw.files_code_search.exclusions</code> options have also been renamed to <code>btw.files_search.extensions</code> and <code>btw.files_search.exclusions</code>, with the old option names emitting deprecation warnings.</p>
+</li>
+<li><p>New <code><a href="../reference/btw_tool_pkg_load_all.html">btw_tool_pkg_load_all()</a></code> tool runs <code><a href="https://pkgload.r-lib.org/reference/load_all.html" class="external-link">pkgload::load_all()</a></code> in an isolated subprocess to verify package code loads correctly and trigger recompilation of compiled code. Useful for quick validation during development without running full tests or affecting the current R session (<a href="https://github.com/posit-dev/btw/issues/156" class="external-link">#156</a>).</p></li>
 <li>
 <p><code>btw.md</code> now supports configuring multiple client options. When <code><a href="../reference/btw_client.html">btw_client()</a></code> is called interactively, you’ll be presented with a menu to choose which client to use. Clients can be specified as an array:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">client</span><span class="kw">:</span></span>
@@ -59,7 +91,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.0" id="btw-110">btw 1.1.0<a class="anchor" aria-label="anchor" href="#btw-110"></a></h2><p class="text-muted">CRAN release: 2025-12-22</p>
 <ul><li><p><code><a href="../reference/btw_client.html">btw_client()</a></code> now supports reading <code>CLAUDE.md</code> files as project context files. <code>CLAUDE.md</code> files are searched after <code>AGENTS.md</code> but before user-level <code>btw.md</code>. YAML frontmatter in <code>CLAUDE.md</code> files is stripped but not used for configuration (<a href="https://github.com/posit-dev/btw/issues/146" class="external-link">#146</a>).</p></li>
-<li><p><code><a href="../reference/btw_client.html">btw_app()</a></code> now shows a rich diff view in the <code><a href="../reference/btw_tool_files_write_text_file.html">btw_tool_files_write_text_file()</a></code> tool, if the <a href="https://diffviewer.r-lib.org" class="external-link">diffviewer</a> package is installed (<a href="https://github.com/posit-dev/btw/issues/144" class="external-link">#144</a>).</p></li>
+<li><p><code><a href="../reference/btw_client.html">btw_app()</a></code> now shows a rich diff view in the <code><a href="../reference/deprecated.html">btw_tool_files_write_text_file()</a></code> tool, if the <a href="https://diffviewer.r-lib.org" class="external-link">diffviewer</a> package is installed (<a href="https://github.com/posit-dev/btw/issues/144" class="external-link">#144</a>).</p></li>
 <li><p><code><a href="../reference/btw.html">btw()</a></code> now correctly handles character matrices (<a href="https://github.com/posit-dev/btw/issues/139" class="external-link">#139</a>).</p></li>
 <li><p><code><a href="../reference/btw_client.html">btw_app()</a></code> now correctly displays input tokens with ellmer v0.4.0. Previously, we were showing the total input tokens sent across all API calls, rather than the current number of input tokens as of the last API call. We now show the size of the input context window (i.e. the number of input tokens that will be used for the conversation history in the next API call). Note that token usage is dependent on the provider and model used and is only an estimate.</p></li>
 <li><p>New “pkg” tool group with package development tools: <code><a href="../reference/btw_tool_pkg_document.html">btw_tool_pkg_document()</a></code>, <code><a href="../reference/btw_tool_pkg_check.html">btw_tool_pkg_check()</a></code>, <code><a href="../reference/btw_tool_pkg_test.html">btw_tool_pkg_test()</a></code> and <code><a href="../reference/btw_tool_pkg_coverage.html">btw_tool_pkg_coverage()</a></code> provide LLMs with the ability to document, check, test, and check test coverage of R packages during development (<a href="https://github.com/posit-dev/btw/issues/133" class="external-link">#133</a>, <a href="https://github.com/posit-dev/btw/issues/136" class="external-link">#136</a>).</p></li>

@@ -13,6 +13,14 @@ returned by this function have access to the tools:
 | [`btw_tool_agent_subagent()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_agent_subagent.md) |  |
 | Delegate a task to a specialized assistant that can work independently with its own conversation thread. |  |
 
+### Group: cran
+
+|  |  |
+|----|----|
+| Name | Description |
+| [`btw_tool_cran_package()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_cran_package.md) | Describe a CRAN package. |
+| [`btw_tool_cran_search()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_cran_search.md) | Search for an R package on CRAN. |
+
 ### Group: docs
 
 |  |  |
@@ -37,10 +45,10 @@ returned by this function have access to the tools:
 |  |  |
 |----|----|
 | Name | Description |
-| [`btw_tool_files_code_search()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_code_search.md) | Search code files in the project. |
-| [`btw_tool_files_list_files()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_list_files.md) | List files or directories in the project. |
-| [`btw_tool_files_read_text_file()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read_text_file.md) | Read an entire text file. |
-| [`btw_tool_files_write_text_file()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_write_text_file.md) | Write content to a text file. |
+| [`btw_tool_files_list()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_list.md) | List files or directories in the project. |
+| [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md) | Read an entire text file. |
+| [`btw_tool_files_search()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_search.md) | Search code files in the project. |
+| [`btw_tool_files_write()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_write.md) | Write content to a text file. |
 
 ### Group: git
 
@@ -87,22 +95,14 @@ returned by this function have access to the tools:
 | Name | Description |
 | [`btw_tool_run_r()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_run_r.md) | Run R code. |
 
-### Group: search
+### Group: sessioninfo
 
 |  |  |
 |----|----|
 | Name | Description |
-| [`btw_tool_search_package_info()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_search_package_info.md) | Describe a CRAN package. |
-| [`btw_tool_search_packages()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_search_packages.md) | Search for an R package on CRAN. |
-
-### Group: session
-
-|  |  |
-|----|----|
-| Name | Description |
-| [`btw_tool_session_check_package_installed()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_session_check_package_installed.md) | Check if a package is installed in the current session. |
-| [`btw_tool_session_package_info()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_session_package_info.md) | Verify that a specific package is installed, or find out which packages are in use in the current session. |
-| [`btw_tool_session_platform_info()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_session_platform_info.md) | Describes the R version, operating system, language and locale settings for the user's system. |
+| [`btw_tool_sessioninfo_is_package_installed()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_sessioninfo_is_package_installed.md) | Check if a package is installed in the current session. |
+| [`btw_tool_sessioninfo_package()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_sessioninfo_package.md) | Verify that a specific package is installed, or find out which packages are in use in the current session. |
+| [`btw_tool_sessioninfo_platform()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_sessioninfo_platform.md) | Describes the R version, operating system, language and locale settings for the user's system. |
 
 ### Group: web
 
@@ -169,6 +169,8 @@ ch$register_tools(btw_tools("docs"))
 # ensure that the current tools persist
 ch$register_tools(c(ch$get_tools(), btw_tools()))
 #> Replacing existing btw_tool_agent_subagent tool.
+#> Replacing existing btw_tool_cran_search tool.
+#> Replacing existing btw_tool_cran_package tool.
 #> Replacing existing btw_tool_docs_package_news tool.
 #> Replacing existing btw_tool_docs_package_help_topics tool.
 #> Replacing existing btw_tool_docs_help_page tool.
@@ -176,10 +178,10 @@ ch$register_tools(c(ch$get_tools(), btw_tools()))
 #> Replacing existing btw_tool_docs_vignette tool.
 #> Replacing existing btw_tool_env_describe_data_frame tool.
 #> Replacing existing btw_tool_env_describe_environment tool.
-#> Replacing existing btw_tool_files_code_search tool.
-#> Replacing existing btw_tool_files_list_files tool.
-#> Replacing existing btw_tool_files_read_text_file tool.
-#> Replacing existing btw_tool_files_write_text_file tool.
+#> Replacing existing btw_tool_files_search tool.
+#> Replacing existing btw_tool_files_list tool.
+#> Replacing existing btw_tool_files_read tool.
+#> Replacing existing btw_tool_files_write tool.
 #> Replacing existing btw_tool_git_status tool.
 #> Replacing existing btw_tool_git_diff tool.
 #> Replacing existing btw_tool_git_log tool.
@@ -193,13 +195,13 @@ ch$register_tools(c(ch$get_tools(), btw_tools()))
 #> Replacing existing btw_tool_pkg_check tool.
 #> Replacing existing btw_tool_pkg_test tool.
 #> Replacing existing btw_tool_pkg_load_all tool.
-#> Replacing existing btw_tool_search_packages tool.
-#> Replacing existing btw_tool_search_package_info tool.
-#> Replacing existing btw_tool_session_platform_info tool.
-#> Replacing existing btw_tool_session_package_info tool.
-#> Replacing existing btw_tool_session_check_package_installed tool.
+#> Replacing existing btw_tool_sessioninfo_is_package_installed tool.
+#> Replacing existing btw_tool_sessioninfo_platform tool.
+#> Replacing existing btw_tool_sessioninfo_package tool.
 #> Replacing existing btw_tool_web_read_url tool.
 #> Replacing existing btw_tool_agent_subagent tool.
+#> Replacing existing btw_tool_cran_search tool.
+#> Replacing existing btw_tool_cran_package tool.
 #> Replacing existing btw_tool_docs_package_news tool.
 #> Replacing existing btw_tool_docs_package_help_topics tool.
 #> Replacing existing btw_tool_docs_help_page tool.
@@ -207,10 +209,10 @@ ch$register_tools(c(ch$get_tools(), btw_tools()))
 #> Replacing existing btw_tool_docs_vignette tool.
 #> Replacing existing btw_tool_env_describe_data_frame tool.
 #> Replacing existing btw_tool_env_describe_environment tool.
-#> Replacing existing btw_tool_files_code_search tool.
-#> Replacing existing btw_tool_files_list_files tool.
-#> Replacing existing btw_tool_files_read_text_file tool.
-#> Replacing existing btw_tool_files_write_text_file tool.
+#> Replacing existing btw_tool_files_search tool.
+#> Replacing existing btw_tool_files_list tool.
+#> Replacing existing btw_tool_files_read tool.
+#> Replacing existing btw_tool_files_write tool.
 #> Replacing existing btw_tool_git_status tool.
 #> Replacing existing btw_tool_git_diff tool.
 #> Replacing existing btw_tool_git_log tool.
@@ -224,10 +226,8 @@ ch$register_tools(c(ch$get_tools(), btw_tools()))
 #> Replacing existing btw_tool_pkg_check tool.
 #> Replacing existing btw_tool_pkg_test tool.
 #> Replacing existing btw_tool_pkg_load_all tool.
-#> Replacing existing btw_tool_search_packages tool.
-#> Replacing existing btw_tool_search_package_info tool.
-#> Replacing existing btw_tool_session_platform_info tool.
-#> Replacing existing btw_tool_session_package_info tool.
-#> Replacing existing btw_tool_session_check_package_installed tool.
+#> Replacing existing btw_tool_sessioninfo_is_package_installed tool.
+#> Replacing existing btw_tool_sessioninfo_platform tool.
+#> Replacing existing btw_tool_sessioninfo_package tool.
 #> Replacing existing btw_tool_web_read_url tool.
 ```

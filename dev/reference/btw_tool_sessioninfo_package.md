@@ -1,0 +1,74 @@
+# Tool: Gather information about a package or currently loaded packages
+
+Uses
+[`sessioninfo::package_info()`](https://sessioninfo.r-lib.org/reference/package_info.html)
+to provide information about the loaded, attached, or installed
+packages. The primary use case is to verify that a package is installed;
+check the version number of a specific packages; or determine which
+packages are already in use in a session.
+
+## Usage
+
+``` r
+btw_tool_sessioninfo_package(
+  packages = "attached",
+  dependencies = "",
+  `_intent` = ""
+)
+```
+
+## Arguments
+
+- packages:
+
+  Which packages to show, or `"loaded"` to show all loaded packages,
+  `"attached"` to show all attached packages, or `"installed"` to show
+  all installed packages.
+
+- dependencies:
+
+  Whether to include the dependencies when listing package information.
+
+- \_intent:
+
+  An optional string describing the intent of the tool use. When the
+  tool is used by an LLM, the model will use this argument to explain
+  why it called the tool.
+
+## Value
+
+Returns a string describing the selected packages.
+
+## See also
+
+[`btw_tools()`](https://posit-dev.github.io/btw/dev/reference/btw_tools.md),
+[`btw_tool_sessioninfo_platform()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_sessioninfo_platform.md)
+
+Other sessioninfo tools:
+[`btw_tool_sessioninfo_is_package_installed()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_sessioninfo_is_package_installed.md),
+[`btw_tool_sessioninfo_platform()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_sessioninfo_platform.md)
+
+## Examples
+
+``` r
+btw_tool_sessioninfo_package("btw")
+#> <btw::BtwPackageInfoToolResult>
+#>  @ value  : chr "```\n package * version    date (UTC) lib source\n btw     * 1.1.0.9000 2026-01-14 [1] local\n\n [1] /home/runn"| __truncated__
+#>  @ error  : NULL
+#>  @ extra  :List of 2
+#>  .. $ data   :Classes ‘packages_info’ and 'data.frame':  1 obs. of  11 variables:
+#>  ..  ..$ package      : chr "btw"
+#>  ..  ..$ ondiskversion: chr "1.1.0.9000"
+#>  ..  ..$ loadedversion: chr "1.1.0.9000"
+#>  ..  ..$ path         : chr "/home/runner/work/_temp/Library/btw"
+#>  ..  ..$ loadedpath   : chr "/home/runner/work/_temp/Library/btw"
+#>  ..  ..$ attached     : logi TRUE
+#>  ..  ..$ is_base      : logi FALSE
+#>  ..  ..$ date         : chr "2026-01-14"
+#>  ..  ..$ source       : chr "local"
+#>  ..  ..$ md5ok        : logi NA
+#>  ..  ..$ library      : Factor w/ 3 levels "/home/runner/work/_temp/Library",..: 1
+#>  .. $ display:List of 1
+#>  ..  ..$ markdown: chr "| package | ondiskversion | loadedversion | path | loadedpath | attached | is_base | date | source | md5ok | li"| __truncated__
+#>  @ request: NULL
+```

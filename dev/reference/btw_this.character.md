@@ -14,9 +14,9 @@ knows about the following special character string formats:
 - `"./path"`  
   Any string starting with `./` is treated as a relative path. If the
   path is a file, we call
-  [`btw_tool_files_read_text_file()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read_text_file.md)
+  [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md)
   and if the path is a directory we call
-  [`btw_tool_files_list_files()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_list_files.md)
+  [`btw_tool_files_list()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_list.md)
   on the path.
 
   - `btw_this("./data")` lists the files in `data/`.

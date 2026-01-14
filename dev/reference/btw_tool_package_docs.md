@@ -76,10 +76,10 @@ btw_tool_docs_package_help_topics("btw")
 #>  @ value  : chr [1:3] "```json" ...
 #>  @ error  : NULL
 #>  @ extra  :List of 2
-#>  .. $ data   : tibble [43 × 3] (S3: tbl_df/tbl/data.frame)
-#>  ..  ..$ topic_id: chr [1:43] "btw" "btw-package" "btw_agent_tool" "btw_client" ...
-#>  ..  ..$ title   : chr [1:43] "Plain-text descriptions of R objects" "btw: A Toolkit for Connecting R and Large Language Models" "Create a custom agent tool from a markdown file" "Create a btw-enhanced ellmer chat client" ...
-#>  ..  ..$ aliases :List of 43
+#>  .. $ data   : tibble [44 × 3] (S3: tbl_df/tbl/data.frame)
+#>  ..  ..$ topic_id: chr [1:44] "btw" "btw-package" "btw_agent_tool" "btw_client" ...
+#>  ..  ..$ title   : chr [1:44] "Plain-text descriptions of R objects" "btw: A Toolkit for Connecting R and Large Language Models" "Create a custom agent tool from a markdown file" "Create a btw-enhanced ellmer chat client" ...
+#>  ..  ..$ aliases :List of 44
 #>  ..  .. ..$ : 'AsIs' chr "btw"
 #>  ..  .. ..$ : 'AsIs' chr "btw-package"
 #>  ..  .. ..$ : 'AsIs' chr "btw_agent_tool"
@@ -91,13 +91,15 @@ btw_tool_docs_package_help_topics("btw")
 #>  ..  .. ..$ : 'AsIs' chr [1:2] "btw_this.data.frame" "btw_this.tbl"
 #>  ..  .. ..$ : 'AsIs' chr "btw_this.environment"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_agent_subagent"
+#>  ..  .. ..$ : 'AsIs' chr "btw_tool_cran_package"
+#>  ..  .. ..$ : 'AsIs' chr "btw_tool_cran_search"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_docs_package_news"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_env_describe_data_frame"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_env_describe_environment"
-#>  ..  .. ..$ : 'AsIs' chr "btw_tool_files_code_search"
-#>  ..  .. ..$ : 'AsIs' chr "btw_tool_files_list_files"
-#>  ..  .. ..$ : 'AsIs' chr "btw_tool_files_read_text_file"
-#>  ..  .. ..$ : 'AsIs' chr "btw_tool_files_write_text_file"
+#>  ..  .. ..$ : 'AsIs' chr "btw_tool_files_list"
+#>  ..  .. ..$ : 'AsIs' chr "btw_tool_files_read"
+#>  ..  .. ..$ : 'AsIs' chr "btw_tool_files_search"
+#>  ..  .. ..$ : 'AsIs' chr "btw_tool_files_write"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_git_branch_checkout"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_git_branch_create"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_git_branch_list"
@@ -114,13 +116,12 @@ btw_tool_docs_package_help_topics("btw")
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_pkg_load_all"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_pkg_test"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_run_r"
-#>  ..  .. ..$ : 'AsIs' chr "btw_tool_search_package_info"
-#>  ..  .. ..$ : 'AsIs' chr "btw_tool_search_packages"
-#>  ..  .. ..$ : 'AsIs' chr "btw_tool_session_check_package_installed"
-#>  ..  .. ..$ : 'AsIs' chr "btw_tool_session_package_info"
-#>  ..  .. ..$ : 'AsIs' chr "btw_tool_session_platform_info"
+#>  ..  .. ..$ : 'AsIs' chr "btw_tool_sessioninfo_is_package_installed"
+#>  ..  .. ..$ : 'AsIs' chr "btw_tool_sessioninfo_package"
+#>  ..  .. ..$ : 'AsIs' chr "btw_tool_sessioninfo_platform"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_web_read_url"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tools"
+#>  ..  .. ..$ : 'AsIs' chr [1:10] "deprecated" "btw_tool_session_platform_info" "btw_tool_session_package_info" "btw_tool_session_check_package_installed" ...
 #>  ..  .. ..$ : 'AsIs' chr [1:3] "mcp" "btw_mcp_server" "btw_mcp_session"
 #>  ..  .. ..$ : 'AsIs' chr [1:2] "use_btw_md" "edit_btw_md"
 #>  .. $ display:List of 2

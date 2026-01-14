@@ -64,19 +64,23 @@ and to avoid name clashes with other tools.
 
 - [`btw_tool_agent_subagent()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_agent_subagent.md)
   : Tool: Subagent
+- [`btw_tool_cran_package()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_cran_package.md)
+  : Tool: Describe a CRAN package
+- [`btw_tool_cran_search()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_cran_search.md)
+  : Tool: Search for an R package on CRAN
 - [`btw_tool_docs_package_news()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_docs_package_news.md)
   : Tool: Package Release Notes
 - [`btw_tool_env_describe_data_frame()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_env_describe_data_frame.md)
   : Tool: Describe data frame
 - [`btw_tool_env_describe_environment()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_env_describe_environment.md)
   : Tool: Describe an environment
-- [`btw_tool_files_code_search()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_code_search.md)
-  : Tool: Code Search in Project
-- [`btw_tool_files_list_files()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_list_files.md)
+- [`btw_tool_files_list()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_list.md)
   : Tool: List files
-- [`btw_tool_files_read_text_file()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read_text_file.md)
+- [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md)
   : Tool: Read a file
-- [`btw_tool_files_write_text_file()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_write_text_file.md)
+- [`btw_tool_files_search()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_search.md)
+  : Tool: Code Search in Project
+- [`btw_tool_files_write()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_write.md)
   : Tool: Write a text file
 - [`btw_tool_git_branch_checkout()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_git_branch_checkout.md)
   : Tool: Git Branch Checkout
@@ -113,16 +117,12 @@ and to avoid name clashes with other tools.
   : Tool: Run package tests
 - [`btw_tool_run_r()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_run_r.md)
   **\[experimental\]** : Tool: Run R code
-- [`btw_tool_search_package_info()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_search_package_info.md)
-  : Tool: Describe a CRAN package
-- [`btw_tool_search_packages()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_search_packages.md)
-  : Tool: Search for an R package on CRAN
-- [`btw_tool_session_check_package_installed()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_session_check_package_installed.md)
+- [`btw_tool_sessioninfo_is_package_installed()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_sessioninfo_is_package_installed.md)
   : Tool: Check if a package is installed
-- [`btw_tool_session_package_info()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_session_package_info.md)
+- [`btw_tool_sessioninfo_package()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_sessioninfo_package.md)
   : Tool: Gather information about a package or currently loaded
   packages
-- [`btw_tool_session_platform_info()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_session_platform_info.md)
+- [`btw_tool_sessioninfo_platform()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_sessioninfo_platform.md)
   : Tool: Describe user's platform
 - [`btw_tool_web_read_url()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_web_read_url.md)
   : Tool: Read a Web Page as Markdown

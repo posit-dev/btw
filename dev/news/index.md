@@ -2,6 +2,29 @@
 
 ## btw (development version)
 
+- BREAKING CHANGE: Several tool groups and tool names have been renamed
+  for clarity ([\#158](https://github.com/posit-dev/btw/issues/158)):
+
+  | Old Name | New Name |
+  |----|----|
+  | `session` group | `sessioninfo` group |
+  | `search` group | `cran` group |
+  | [`btw_tool_session_platform_info()`](https://posit-dev.github.io/btw/dev/reference/deprecated.md) | [`btw_tool_sessioninfo_platform()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_sessioninfo_platform.md) |
+  | [`btw_tool_session_package_info()`](https://posit-dev.github.io/btw/dev/reference/deprecated.md) | [`btw_tool_sessioninfo_package()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_sessioninfo_package.md) |
+  | [`btw_tool_session_check_package_installed()`](https://posit-dev.github.io/btw/dev/reference/deprecated.md) | [`btw_tool_sessioninfo_is_package_installed()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_sessioninfo_is_package_installed.md) |
+  | [`btw_tool_search_packages()`](https://posit-dev.github.io/btw/dev/reference/deprecated.md) | [`btw_tool_cran_search()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_cran_search.md) |
+  | [`btw_tool_search_package_info()`](https://posit-dev.github.io/btw/dev/reference/deprecated.md) | [`btw_tool_cran_package()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_cran_package.md) |
+  | [`btw_tool_files_list_files()`](https://posit-dev.github.io/btw/dev/reference/deprecated.md) | [`btw_tool_files_list()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_list.md) |
+  | [`btw_tool_files_read_text_file()`](https://posit-dev.github.io/btw/dev/reference/deprecated.md) | [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md) |
+  | [`btw_tool_files_write_text_file()`](https://posit-dev.github.io/btw/dev/reference/deprecated.md) | [`btw_tool_files_write()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_write.md) |
+  | [`btw_tool_files_code_search()`](https://posit-dev.github.io/btw/dev/reference/deprecated.md) | [`btw_tool_files_search()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_search.md) |
+
+  The old names and group aliases continue to work but emit deprecation
+  warnings. The `btw.files_code_search.extensions` and
+  `btw.files_code_search.exclusions` options have also been renamed to
+  `btw.files_search.extensions` and `btw.files_search.exclusions`, with
+  the old option names emitting deprecation warnings.
+
 - New
   [`btw_tool_pkg_load_all()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_load_all.md)
   tool runs
@@ -72,7 +95,7 @@ CRAN release: 2025-12-22
 
 - [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
   now shows a rich diff view in the
-  [`btw_tool_files_write_text_file()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_write_text_file.md)
+  [`btw_tool_files_write_text_file()`](https://posit-dev.github.io/btw/dev/reference/deprecated.md)
   tool, if the [diffviewer](https://diffviewer.r-lib.org) package is
   installed ([\#144](https://github.com/posit-dev/btw/issues/144)).
 
