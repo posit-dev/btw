@@ -1,11 +1,7 @@
-# btw_tool_files_list_files() works
+# btw_tool_files_list() works
 
     Code
-      writeLines(btw_tool_files_list_files()@value)
-    Condition
-      Warning:
-      `btw_tool_files_list_files()` was deprecated in btw 1.2.0.
-      i Please use `btw_tool_files_list()` instead.
+      writeLines(btw_tool_files_list()@value)
     Output
       | path | type | size | modification_time |
       |------|------|------|-------------------|
@@ -15,55 +11,40 @@
 ---
 
     Code
-      btw_tool_files_list_files("/")
+      btw_tool_files_list("/")
     Condition
-      Warning:
-      `btw_tool_files_list_files()` was deprecated in btw 1.2.0.
-      i Please use `btw_tool_files_list()` instead.
-      Error in `btw_tool_files_list_files()`:
+      Error in `btw_tool_files_list()`:
       ! You are not allowed to list or read files outside of the project directory. Make sure that `path` is relative to the current working directory.
 
 ---
 
     Code
-      btw_tool_files_list_files("../")
+      btw_tool_files_list("../")
     Condition
-      Warning:
-      `btw_tool_files_list_files()` was deprecated in btw 1.2.0.
-      i Please use `btw_tool_files_list()` instead.
-      Error in `btw_tool_files_list_files()`:
+      Error in `btw_tool_files_list()`:
       ! You are not allowed to list or read files outside of the project directory. Make sure that `path` is relative to the current working directory.
 
-# btw_tool_files_read_text_file() works
+# btw_tool_files_read() works
 
     Code
-      btw_tool_files_read_text_file("mtcars.rds")
+      btw_tool_files_read("mtcars.rds")
     Condition
-      Warning:
-      `btw_tool_files_read_text_file()` was deprecated in btw 1.2.0.
-      i Please use `btw_tool_files_read()` instead.
-      Error in `btw_tool_files_read_text_file()`:
+      Error in `btw_tool_files_read()`:
       ! Path 'mtcars.rds' is not a path to a text file.
 
 ---
 
     Code
-      btw_tool_files_read_text_file("../mtcars.rds")
+      btw_tool_files_read("../mtcars.rds")
     Condition
-      Warning:
-      `btw_tool_files_read_text_file()` was deprecated in btw 1.2.0.
-      i Please use `btw_tool_files_read()` instead.
-      Error in `btw_tool_files_read_text_file()`:
+      Error in `btw_tool_files_read()`:
       ! You are not allowed to list or read files outside of the project directory. Make sure that `path` is relative to the current working directory.
 
-# btw_tool_files_write_text_file() works
+# btw_tool_files_write() works
 
     Code
-      btw_tool_files_write_text_file("../test.txt", "content")
+      btw_tool_files_write("../test.txt", "content")
     Condition
-      Warning:
-      `btw_tool_files_write_text_file()` was deprecated in btw 1.2.0.
-      i Please use `btw_tool_files_write()` instead.
-      Error in `btw_tool_files_write_impl()`:
+      Error in `btw_tool_files_write()`:
       ! You are not allowed to list or read files outside of the project directory. Make sure that `path` is relative to the current working directory.
 

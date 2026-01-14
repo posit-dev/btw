@@ -1,6 +1,6 @@
 # btw (development version)
 
-* BREAKING CHANGE: Several tool groups and tool names have been renamed for clarity (#158):
+* BREAKING CHANGE: Several tool groups and tool names have been renamed for clarity (#159):
 
 
   | Old Name | New Name |

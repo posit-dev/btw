@@ -1,65 +1,65 @@
-test_that("btw_tool_files_list_files() works", {
+test_that("btw_tool_files_list() works", {
   withr::local_dir(withr::local_tempdir())
 
   writeLines("test", "test.csv")
   writeLines("test", "test.R")
 
-  expect_btw_tool_result(btw_tool_files_list_files())
+  expect_btw_tool_result(btw_tool_files_list())
 
   expect_equal(
-    btw_tool_files_list_files()@value,
+    btw_tool_files_list()@value,
     btw_this("./")
   )
 
   expect_no_match(
-    btw_tool_files_list_files(regexp = "[.]R$")@value,
+    btw_tool_files_list(regexp = "[.]R$")@value,
     "test\\.csv"
   )
 
   skip_if_not_snapshot_env()
 
   expect_snapshot(
-    writeLines(btw_tool_files_list_files()@value),
+    writeLines(btw_tool_files_list()@value),
     transform = function(x) {
       sub("\\d{4}-[0-9-]+ [0-9:]+", "MODIFIED TIME", x)
     }
   )
 
   expect_snapshot(
-    btw_tool_files_list_files("/"),
+    btw_tool_files_list("/"),
     error = TRUE
   )
 
   expect_snapshot(
-    btw_tool_files_list_files("../"),
+    btw_tool_files_list("../"),
     error = TRUE
   )
 })
 
-test_that("btw_tool_files_read_text_file() works", {
+test_that("btw_tool_files_read() works", {
   withr::local_dir(withr::local_tempdir())
 
   write.csv(mtcars, "mtcars.csv", row.names = FALSE)
   saveRDS(mtcars, "mtcars.rds")
 
   expect_btw_tool_result(
-    btw_tool_files_read_text_file("mtcars.csv"),
+    btw_tool_files_read("mtcars.csv"),
     has_data = FALSE
   )
 
   expect_equal(
-    btw_tool_files_read_text_file("mtcars.csv")@extra$path,
+    btw_tool_files_read("mtcars.csv")@extra$path,
     "mtcars.csv",
     ignore_attr = TRUE
   )
 
   expect_equal(
-    btw_tool_files_read_text_file("mtcars.csv")@value,
+    btw_tool_files_read("mtcars.csv")@value,
     btw_this("./mtcars.csv")
   )
 
   expect_equal(
-    btw_tool_files_read_text_file(
+    btw_tool_files_read(
       "mtcars.csv",
       line_start = 1,
       line_end = 1
@@ -68,7 +68,7 @@ test_that("btw_tool_files_read_text_file() works", {
   )
 
   expect_equal(
-    btw_tool_files_read_text_file(
+    btw_tool_files_read(
       "mtcars.csv",
       line_start = 32,
       line_end = 35
@@ -79,12 +79,12 @@ test_that("btw_tool_files_read_text_file() works", {
   skip_if_not_snapshot_env()
 
   expect_snapshot(
-    btw_tool_files_read_text_file("mtcars.rds"),
+    btw_tool_files_read("mtcars.rds"),
     error = TRUE
   )
 
   expect_snapshot(
-    btw_tool_files_read_text_file("../mtcars.rds"),
+    btw_tool_files_read("../mtcars.rds"),
     error = TRUE
   )
 })
@@ -161,10 +161,10 @@ test_that("is_common_ignorable_files works with different path formats", {
   expect_true(is_common_ignorable_files("path/to\\node_modules/file.js"))
 })
 
-test_that("btw_tool_files_write_text_file() works", {
+test_that("btw_tool_files_write() works", {
   withr::local_dir(withr::local_tempdir())
 
-  res_write_data <- btw_tool_files_write_text_file("test.txt", "Hello\nWorld!")
+  res_write_data <- btw_tool_files_write("test.txt", "Hello\nWorld!")
   expect_btw_tool_result(res_write_data, has_data = FALSE)
 
   expect_equal(res_write_data@extra$path, "test.txt")
@@ -177,7 +177,7 @@ test_that("btw_tool_files_write_text_file() works", {
   )
 
   # Test overwriting
-  res_write_data2 <- btw_tool_files_write_text_file("test.txt", "New content")
+  res_write_data2 <- btw_tool_files_write("test.txt", "New content")
   expect_equal(
     read_file("test.txt"),
     "New content"
@@ -186,7 +186,7 @@ test_that("btw_tool_files_write_text_file() works", {
   expect_equal(res_write_data2@extra$previous_content, "Hello\nWorld!")
 
   expect_snapshot(
-    btw_tool_files_write_text_file("../test.txt", "content"),
+    btw_tool_files_write("../test.txt", "content"),
     error = TRUE
   )
 })

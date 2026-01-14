@@ -15,14 +15,10 @@
       DATE: DAY OF WEEK, MONTH DAY, YEAR (YYYY-MM-DD)
       </system_info>
 
-# btw_tool_session_package_info()
+# btw_tool_sessioninfo_package()
 
     Code
-      cat(btw_tool_session_package_info("dplyr")@value)
-    Condition
-      Warning:
-      `btw_tool_session_package_info()` was deprecated in btw 1.2.0.
-      i Please use `btw_tool_sessioninfo_package()` instead.
+      cat(btw_tool_sessioninfo_package("dplyr")@value)
     Output
       ```
        package    * version date (UTC) lib source
@@ -50,11 +46,7 @@
 ---
 
     Code
-      cat(btw_tool_session_package_info("digest", c("Imports", "Suggests"))@value)
-    Condition
-      Warning:
-      `btw_tool_session_package_info()` was deprecated in btw 1.2.0.
-      i Please use `btw_tool_sessioninfo_package()` instead.
+      cat(btw_tool_sessioninfo_package("digest", c("Imports", "Suggests"))@value)
     Output
       ```
        ! package         * version date (UTC) lib source
@@ -71,11 +63,7 @@
 ---
 
     Code
-      cat(btw_tool_session_package_info("attached")@value)
-    Condition
-      Warning:
-      `btw_tool_session_package_info()` was deprecated in btw 1.2.0.
-      i Please use `btw_tool_sessioninfo_package()` instead.
+      cat(btw_tool_sessioninfo_package("attached")@value)
     Output
       ### Attached Packages
       
@@ -96,11 +84,7 @@
 ---
 
     Code
-      cat(btw_tool_session_package_info("loaded")@value)
-    Condition
-      Warning:
-      `btw_tool_session_package_info()` was deprecated in btw 1.2.0.
-      i Please use `btw_tool_sessioninfo_package()` instead.
+      cat(btw_tool_sessioninfo_package("loaded")@value)
     Output
       ### Loaded Packages
       
@@ -184,11 +168,7 @@
 ---
 
     Code
-      cat(btw_tool_session_package_info("dplyr,tidyr", "false")@value)
-    Condition
-      Warning:
-      `btw_tool_session_package_info()` was deprecated in btw 1.2.0.
-      i Please use `btw_tool_sessioninfo_package()` instead.
+      cat(btw_tool_sessioninfo_package("dplyr,tidyr", "false")@value)
     Output
       ```
        package * version date (UTC) lib source

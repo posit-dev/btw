@@ -223,7 +223,7 @@ test_that("subagent_client() precedence: explicit tools > tools_default", {
 test_that("subagent_client() tools_allowed filters defaults", {
   withr::local_options(
     btw.subagent.tools_allowed = c("docs"),
-    btw.subagent.tools_default = c("docs", "files", "search")
+    btw.subagent.tools_default = c("docs", "files", "cran")
   )
 
   chat <- subagent_client(tools = NULL)
@@ -231,7 +231,7 @@ test_that("subagent_client() tools_allowed filters defaults", {
   tool_names <- map_chr(chat$get_tools(), function(t) t@name)
   expect_true(all(grepl("^btw_tool_docs_", tool_names)))
   expect_false(any(grepl("^btw_tool_files_", tool_names)))
-  expect_false(any(grepl("^btw_tool_search_", tool_names)))
+  expect_false(any(grepl("^btw_tool_cran_", tool_names)))
 })
 
 test_that("subagent_client() error message is helpful", {
@@ -259,7 +259,7 @@ test_that("subagent_client() tools_allowed works with specific tool names", {
   withr::local_options(
     btw.subagent.tools_allowed = c(
       "btw_tool_docs_help_page",
-      "btw_tool_files_read_text_file"
+      "btw_tool_files_read"
     )
   )
 
@@ -272,7 +272,7 @@ test_that("subagent_client() tools_allowed works with specific tool names", {
 
   # Should error with disallowed specific tool
   expect_error(
-    subagent_client(tools = c("search_packages")),
+    subagent_client(tools = c("cran_search")),
     "disallowed tools"
   )
 })

@@ -1,12 +1,8 @@
-# btw_tool_search_packages() snapshots
+# btw_tool_cran_search() snapshots
 
     Code
-      cli::cat_line(btw_tool_search_packages("string interpolation", format = "long")@
+      cli::cat_line(btw_tool_cran_search("string interpolation", format = "long")@
         value)
-    Condition
-      Warning:
-      `btw_tool_search_packages()` was deprecated in btw 1.2.0.
-      i Please use `btw_tool_cran_search()` instead.
     Output
       Found 337 packages matching `string interpolation`, showing 3 results.
       
@@ -60,12 +56,8 @@
 ---
 
     Code
-      cli::cat_line(btw_tool_search_packages("string interpolation", format = "short")@
+      cli::cat_line(btw_tool_cran_search("string interpolation", format = "short")@
         value)
-    Condition
-      Warning:
-      `btw_tool_search_packages()` was deprecated in btw 1.2.0.
-      i Please use `btw_tool_cran_search()` instead.
     Output
       Found 337 packages matching `string interpolation`, showing 3 results.
       
@@ -75,14 +67,10 @@
       | epoxy | String Interpolation for Documents, Reports and Apps | 1.0.0 | 2023-09-19 | https://pkg.garrickadenbuie.com/epoxy/, https://github.com/gadenbuie/epoxy |       258 |
       | gsubfn | Utilities for Strings and Function Arguments | 0.7 | 2018-03-16 | https://github.com/ggrothendieck/gsubfn |    19,149 |
 
-# btw_tool_search_package_info() snapshots
+# btw_tool_cran_package() snapshots
 
     Code
-      cli::cat_line(btw_tool_search_package_info("anyflights")@value)
-    Condition
-      Warning:
-      `btw_tool_search_package_info()` was deprecated in btw 1.2.0.
-      i Please use `btw_tool_cran_package()` instead.
+      cli::cat_line(btw_tool_cran_package("anyflights")@value)
     Output
       ### anyflights (v0.3.5) -- Query 'nycflights13'-Like Air Travel Data for Given Years and
       Airports

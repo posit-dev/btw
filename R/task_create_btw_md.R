@@ -47,10 +47,10 @@ btw_task_create_btw_md <- function(
   client <- btw_client(
     client = client,
     tools = c(
-      "btw_tool_files_list_files",
-      "btw_tool_files_read_text_file",
-      "btw_tool_files_code_search",
-      "btw_tool_files_write_text_file",
+      "btw_tool_files_list",
+      "btw_tool_files_read",
+      "btw_tool_files_search",
+      "btw_tool_files_write",
       "docs",
       "btw_tool_env_describe_data_frame"
     )

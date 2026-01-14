@@ -59,6 +59,8 @@ describe("btw_client() chat client", {
     expected_client <- ellmer::chat_anthropic(
       model = "claude-3-7-sonnet-20250219"
     )
+    # Suppress deprecation warnings from internal tool validation
+    withr::local_options(lifecycle_verbosity = "quiet")
     chat <- btw_client(client = "anthropic/claude-3-7-sonnet-20250219")
     expect_equal(chat$get_provider(), expected_client$get_provider())
   })
@@ -807,6 +809,8 @@ test_that("btw_client() accepts a list of tools in `tools` argument", {
 
 test_that("btw_client() throws for invalid `tools` argument", {
   withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
+  # Suppress deprecation warnings from internal tool validation
+  withr::local_options(lifecycle_verbosity = "quiet")
 
   expect_error(
     btw_client(tools = "not_a_tool")

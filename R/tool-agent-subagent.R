@@ -631,7 +631,7 @@ btw_can_register_subagent_tool <- function() {
           "The complete task description for the subagent. Be specific and clear about requirements and expected output."
         ),
         tools = ellmer::type_array(
-          "REQUIRED (in practice): Array of specific tool names to provide to the subagent (e.g., ['btw_tool_files_read_text_file', 'btw_tool_code_search']). Choose tools that match the task requirements. The subagent can ONLY use these tools.",
+          "REQUIRED (in practice): Array of specific tool names to provide to the subagent (e.g., ['btw_tool_files_read', 'btw_tool_files_search']). Choose tools that match the task requirements. The subagent can ONLY use these tools.",
           items = ellmer::type_string(),
           required = FALSE
         ),

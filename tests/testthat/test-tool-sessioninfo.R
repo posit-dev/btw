@@ -37,12 +37,12 @@ test_that("btw_tool_sessioninfo_platform() detects RStudio, Positron, VS Code", 
   )
 })
 
-test_that("btw_tool_session_package_info()", {
+test_that("btw_tool_sessioninfo_package()", {
   with_mocked_bindings(
     package_info = function(...) package_info_mock_results[["dplyr"]],
     {
-      expect_btw_tool_result(btw_tool_session_package_info("dplyr"))
-      expect_snapshot(cat(btw_tool_session_package_info("dplyr")@value))
+      expect_btw_tool_result(btw_tool_sessioninfo_package("dplyr"))
+      expect_snapshot(cat(btw_tool_sessioninfo_package("dplyr")@value))
     }
   )
 
@@ -50,10 +50,10 @@ test_that("btw_tool_session_package_info()", {
     package_info = function(...) package_info_mock_results[["digest"]],
     {
       expect_btw_tool_result(
-        btw_tool_session_package_info("digest", c("Imports", "Suggests"))
+        btw_tool_sessioninfo_package("digest", c("Imports", "Suggests"))
       )
       expect_snapshot(cat(
-        btw_tool_session_package_info("digest", c("Imports", "Suggests"))@value
+        btw_tool_sessioninfo_package("digest", c("Imports", "Suggests"))@value
       ))
     }
   )
@@ -61,9 +61,9 @@ test_that("btw_tool_session_package_info()", {
   with_mocked_bindings(
     package_info = function(...) package_info_mock_results[["attached"]],
     {
-      expect_btw_tool_result(btw_tool_session_package_info("attached"))
+      expect_btw_tool_result(btw_tool_sessioninfo_package("attached"))
       expect_snapshot(cat(
-        btw_tool_session_package_info("attached")@value
+        btw_tool_sessioninfo_package("attached")@value
       ))
     }
   )
@@ -71,9 +71,9 @@ test_that("btw_tool_session_package_info()", {
   with_mocked_bindings(
     package_info = function(...) package_info_mock_results[["loaded"]],
     {
-      expect_btw_tool_result(btw_tool_session_package_info("loaded"))
+      expect_btw_tool_result(btw_tool_sessioninfo_package("loaded"))
       expect_snapshot(cat(
-        btw_tool_session_package_info("loaded")@value
+        btw_tool_sessioninfo_package("loaded")@value
       ))
     }
   )
@@ -88,10 +88,10 @@ test_that("btw_tool_session_package_info()", {
     },
     {
       expect_btw_tool_result(
-        btw_tool_session_package_info("dplyr,tidyr", "false"),
+        btw_tool_sessioninfo_package("dplyr,tidyr", "false"),
       )
       expect_snapshot(cat(
-        btw_tool_session_package_info("dplyr,tidyr", "false")@value
+        btw_tool_sessioninfo_package("dplyr,tidyr", "false")@value
       ))
     }
   )
@@ -101,7 +101,7 @@ test_that("btw_this('@attached_packages')", {
   expect_type(btw_this("@attached_packages"), "character")
   expect_equal(
     btw_this("@attached_packages"),
-    I(btw_tool_session_package_info("attached")@value)
+    I(btw_tool_sessioninfo_package("attached")@value)
   )
 })
 
@@ -109,7 +109,7 @@ test_that("btw_this('@loaded_packages')", {
   expect_type(btw_this("@loaded_packages"), "character")
   expect_equal(
     btw_this("@loaded_packages"),
-    I(btw_tool_session_package_info("loaded")@value)
+    I(btw_tool_sessioninfo_package("loaded")@value)
   )
 })
 
@@ -121,6 +121,6 @@ test_that("btw_this('@installed_packages')", {
   expect_type(btw_this("@installed_packages"), "character")
   expect_equal(
     btw_this("@installed_packages"),
-    I(btw_tool_session_package_info("installed")@value)
+    I(btw_tool_sessioninfo_package("installed")@value)
   )
 })

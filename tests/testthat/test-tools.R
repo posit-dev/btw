@@ -46,8 +46,8 @@ test_that("btw_tools works", {
 
 test_that("btw_tools() with character vector", {
   expect_equal(
-    btw_tools(c("docs", "env", "files_list_files")),
-    btw_tools("docs", "env", "files_list_files")
+    btw_tools(c("docs", "env", "files_list")),
+    btw_tools("docs", "env", "files_list")
   )
 })
 
