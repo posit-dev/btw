@@ -1,4 +1,9 @@
 use_latest_pandoc <- function(.envir = parent.frame()) {
+  if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
+    # On CRAN, don't attempt to do anything with pandoc
+    return()
+  }
+
   if (nzchar(Sys.getenv("CI"))) {
     if (!nzchar(Sys.getenv("BTW_TESTS_PANDOC_VERSION"))) {
       # ci installs latest pandoc for us
