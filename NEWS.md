@@ -1,5 +1,7 @@
 # btw (development version)
 
+* `btw_tool_files_read()` now correctly reads valid UTF-8 files containing non-ASCII characters (e.g., Cyrillic). Previously, these files were incorrectly rejected on Windows with non-English locales when `Encoding()` returned "unknown" even though they were valid UTF-8 (thanks @RKonstantinR, #160).
+
 * BREAKING CHANGE: Several tool groups and tool names have been renamed for clarity (#159):
 
 

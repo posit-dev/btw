@@ -30,7 +30,7 @@
       btw_tool_files_read("mtcars.rds")
     Condition
       Error in `btw_tool_files_read()`:
-      ! Path 'mtcars.rds' is not a path to a text file.
+      ! Path 'mtcars.rds' appears to be a binary file or cannot be read as text.
 
 ---
 

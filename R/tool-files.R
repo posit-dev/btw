@@ -184,7 +184,7 @@ btw_tool_files_read_impl <- function(
 
   if (!isTRUE(is_text_file(path))) {
     cli::cli_abort(
-      "Path {.path {path}} is not a path to a text file.",
+      "Path {.path {path}} appears to be a binary file or cannot be read as text.",
       call = parent.frame()
     )
   }
@@ -318,7 +318,7 @@ is_text_file <- function(file_path) {
       if (length(extended_chars) / length(bytes) > 0.3) {
         # Try to interpret as UTF-8
         text <- rawToChar(bytes)
-        if (Encoding(text) == "unknown" || !validUTF8(text)) {
+        if (Encoding(text) == "unknown" && !validUTF8(text)) {
           return(FALSE)
         }
       }

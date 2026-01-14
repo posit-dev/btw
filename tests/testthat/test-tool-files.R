@@ -89,6 +89,27 @@ test_that("btw_tool_files_read() works", {
   )
 })
 
+test_that("btw_tool_files_read() works with UTF-8 files containing non-ASCII characters", {
+  withr::local_dir(withr::local_tempdir())
+
+  # Create a file with Cyrillic characters (UTF-8)
+  writeLines(c("# Тест", "1 + 1"), "test.R", useBytes = FALSE)
+
+  # Verify the file is valid UTF-8
+  con <- file("test.R", "rb")
+  bytes <- readBin(con, what = "raw", n = file.size("test.R"))
+  close(con)
+  text <- rawToChar(bytes)
+  expect_true(validUTF8(text))
+
+  # Should be able to read the file
+  result <- btw_tool_files_read("test.R")
+  expect_btw_tool_result(result, has_data = FALSE)
+  expect_equal(result@extra$path, "test.R", ignore_attr = TRUE)
+
+  # Check that the content contains the Cyrillic text
+  expect_match(result@value, "Тест")
+})
 
 test_that("is_common_ignorable_files identifies ignorable files by name", {
   expect_true(is_common_ignorable_files(".DS_Store"))
