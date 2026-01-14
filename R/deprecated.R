@@ -1,17 +1,17 @@
-# Deprecated btw tool functions
-#
-# These functions have been renamed. The old names continue to work but emit
-# deprecation warnings. Use the new names for new code.
-
-# Session tools renamed to sessioninfo group --------------------------------
-
+#' Deprecated functions
+#'
 #' @description
 #' `r lifecycle::badge("deprecated")`
 #'
-#' `btw_tool_session_platform_info()` was renamed to
-#' [btw_tool_sessioninfo_platform()] in btw 1.2.0.
-#' @rdname btw_tool_sessioninfo_platform
+#' These functions have been renamed. The old names continue to work but emit
+#' deprecation warnings. Use the new names for new code.
+#'
 #' @keywords internal
+#' @name deprecated
+NULL
+
+#' @describeIn deprecated `btw_tool_session_platform_info()` was renamed to
+#'   [btw_tool_sessioninfo_platform()] in btw 1.2.0.
 #' @export
 btw_tool_session_platform_info <- function(`_intent` = NULL) {
   lifecycle::deprecate_warn(
@@ -22,18 +22,13 @@ btw_tool_session_platform_info <- function(`_intent` = NULL) {
   btw_tool_sessioninfo_platform_impl()
 }
 
-#' @description
-#' `r lifecycle::badge("deprecated")`
-#'
-#' `btw_tool_session_package_info()` was renamed to
-#' [btw_tool_sessioninfo_package()] in btw 1.2.0.
-#' @rdname btw_tool_sessioninfo_package
-#' @keywords internal
+#' @describeIn deprecated `btw_tool_session_package_info()` was renamed to
+#'   [btw_tool_sessioninfo_package()] in btw 1.2.0.
 #' @export
 btw_tool_session_package_info <- function(
-    packages = "attached",
-    dependencies = "",
-    `_intent` = NULL
+  packages = "attached",
+  dependencies = "",
+  `_intent` = NULL
 ) {
   lifecycle::deprecate_warn(
     "1.2.0",
@@ -46,17 +41,12 @@ btw_tool_session_package_info <- function(
   )
 }
 
-#' @description
-#' `r lifecycle::badge("deprecated")`
-#'
-#' `btw_tool_session_check_package_installed()` was renamed to
-#' [btw_tool_sessioninfo_is_package_installed()] in btw 1.2.0.
-#' @rdname btw_tool_sessioninfo_is_package_installed
-#' @keywords internal
+#' @describeIn deprecated `btw_tool_session_check_package_installed()` was
+#'   renamed to [btw_tool_sessioninfo_is_package_installed()] in btw 1.2.0.
 #' @export
 btw_tool_session_check_package_installed <- function(
-    package_name,
-    `_intent` = NULL
+  package_name,
+  `_intent` = NULL
 ) {
   lifecycle::deprecate_warn(
     "1.2.0",
@@ -68,21 +58,14 @@ btw_tool_session_check_package_installed <- function(
   )
 }
 
-# Search tools renamed to cran group ----------------------------------------
-
-#' @description
-#' `r lifecycle::badge("deprecated")`
-#'
-#' `btw_tool_search_packages()` was renamed to
-#' [btw_tool_cran_search()] in btw 1.2.0.
-#' @rdname btw_tool_cran_search
-#' @keywords internal
+#' @describeIn deprecated `btw_tool_search_packages()` was renamed to
+#'   [btw_tool_cran_search()] in btw 1.2.0.
 #' @export
 btw_tool_search_packages <- function(
-    query,
-    format = c("short", "long"),
-    n_results = NULL,
-    `_intent` = NULL
+  query,
+  format = c("short", "long"),
+  n_results = NULL,
+  `_intent` = NULL
 ) {
   lifecycle::deprecate_warn(
     "1.2.0",
@@ -96,13 +79,8 @@ btw_tool_search_packages <- function(
   )
 }
 
-#' @description
-#' `r lifecycle::badge("deprecated")`
-#'
-#' `btw_tool_search_package_info()` was renamed to
-#' [btw_tool_cran_package()] in btw 1.2.0.
-#' @rdname btw_tool_cran_package
-#' @keywords internal
+#' @describeIn deprecated `btw_tool_search_package_info()` was renamed to
+#'   [btw_tool_cran_package()] in btw 1.2.0.
 #' @export
 btw_tool_search_package_info <- function(package_name, `_intent` = NULL) {
   lifecycle::deprecate_warn(
@@ -113,21 +91,14 @@ btw_tool_search_package_info <- function(package_name, `_intent` = NULL) {
   btw_tool_cran_package_impl(package_name = package_name)
 }
 
-# Files tools renamed with simpler names ------------------------------------
-
-#' @description
-#' `r lifecycle::badge("deprecated")`
-#'
-#' `btw_tool_files_list_files()` was renamed to
-#' [btw_tool_files_list()] in btw 1.2.0.
-#' @rdname btw_tool_files_list
-#' @keywords internal
+#' @describeIn deprecated `btw_tool_files_list_files()` was renamed to
+#'   [btw_tool_files_list()] in btw 1.2.0.
 #' @export
 btw_tool_files_list_files <- function(
-    path = NULL,
-    type = c("any", "file", "directory"),
-    regexp = "",
-    `_intent` = NULL
+  path = NULL,
+  type = c("any", "file", "directory"),
+  regexp = "",
+  `_intent` = NULL
 ) {
   lifecycle::deprecate_warn(
     "1.2.0",
@@ -141,19 +112,14 @@ btw_tool_files_list_files <- function(
   )
 }
 
-#' @description
-#' `r lifecycle::badge("deprecated")`
-#'
-#' `btw_tool_files_read_text_file()` was renamed to
-#' [btw_tool_files_read()] in btw 1.2.0.
-#' @rdname btw_tool_files_read
-#' @keywords internal
+#' @describeIn deprecated `btw_tool_files_read_text_file()` was renamed to
+#'   [btw_tool_files_read()] in btw 1.2.0.
 #' @export
 btw_tool_files_read_text_file <- function(
-    path,
-    line_start = 1,
-    line_end = 1000,
-    `_intent` = NULL
+  path,
+  line_start = 1,
+  line_end = 1000,
+  `_intent` = NULL
 ) {
   lifecycle::deprecate_warn(
     "1.2.0",
@@ -167,18 +133,13 @@ btw_tool_files_read_text_file <- function(
   )
 }
 
-#' @description
-#' `r lifecycle::badge("deprecated")`
-#'
-#' `btw_tool_files_write_text_file()` was renamed to
-#' [btw_tool_files_write()] in btw 1.2.0.
-#' @rdname btw_tool_files_write
-#' @keywords internal
+#' @describeIn deprecated `btw_tool_files_write_text_file()` was renamed to
+#'   [btw_tool_files_write()] in btw 1.2.0.
 #' @export
 btw_tool_files_write_text_file <- function(
-    path,
-    content,
-    `_intent` = NULL
+  path,
+  content,
+  `_intent` = NULL
 ) {
   lifecycle::deprecate_warn(
     "1.2.0",
@@ -188,21 +149,16 @@ btw_tool_files_write_text_file <- function(
   btw_tool_files_write_impl(path = path, content = content)
 }
 
-#' @description
-#' `r lifecycle::badge("deprecated")`
-#'
-#' `btw_tool_files_code_search()` was renamed to
-#' [btw_tool_files_search()] in btw 1.2.0.
-#' @rdname btw_tool_files_search
-#' @keywords internal
+#' @describeIn deprecated `btw_tool_files_code_search()` was renamed to
+#'   [btw_tool_files_search()] in btw 1.2.0.
 #' @export
 btw_tool_files_code_search <- function(
-    term,
-    limit = 100,
-    case_sensitive = TRUE,
-    use_regex = FALSE,
-    show_lines = FALSE,
-    `_intent` = ""
+  term,
+  limit = 100,
+  case_sensitive = TRUE,
+  use_regex = FALSE,
+  show_lines = FALSE,
+  `_intent` = ""
 ) {
   lifecycle::deprecate_warn(
     "1.2.0",
