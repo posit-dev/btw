@@ -14,13 +14,13 @@ NULL
 #' @returns Returns a string describing the user's platform.
 #'
 #' @examples
-#' btw_tool_session_platform_info()
+#' btw_tool_sessioninfo_platform()
 #'
-#' @family session tools
+#' @family sessioninfo tools
 #' @export
-btw_tool_session_platform_info <- function(`_intent`) {}
+btw_tool_sessioninfo_platform <- function(`_intent`) {}
 
-btw_tool_session_platform_info_impl <- function() {
+btw_tool_sessioninfo_platform_impl <- function() {
   platform_list <- suppressWarnings(platform_info())
   platform <- trimws(capture.output(platform_list)[-1])
   platform <- sub(" +", " ", platform)
@@ -40,12 +40,14 @@ BtwSessionInfoToolResult <- S7::new_class(
 )
 
 .btw_add_to_tools(
-  name = "btw_tool_session_platform_info",
-  group = "session",
+  name = "btw_tool_sessioninfo_platform",
+  group = "sessioninfo",
+  alias_group = "session",
+  alias_name = "btw_tool_session_platform_info",
   tool = function() {
     ellmer::tool(
-      btw_tool_session_platform_info_impl,
-      name = "btw_tool_session_platform_info",
+      btw_tool_sessioninfo_platform_impl,
+      name = "btw_tool_sessioninfo_platform",
       description = paste(
         "Describes the R version, operating system, language and locale settings",
         "for the user's system."
@@ -101,7 +103,7 @@ platform_info <- function() {
 #' determine which packages are already in use in a session.
 #'
 #' @examples
-#' btw_tool_session_package_info("btw")
+#' btw_tool_sessioninfo_package("btw")
 #'
 #' @param packages Which packages to show, or `"loaded"` to show all loaded
 #'   packages, `"attached"` to show all attached packages, or `"installed"` to
@@ -112,12 +114,12 @@ platform_info <- function() {
 #'
 #' @returns Returns a string describing the selected packages.
 #'
-#' @seealso [btw_tools()], [btw_tool_session_platform_info()]
-#' @family session tools
+#' @seealso [btw_tools()], [btw_tool_sessioninfo_platform()]
+#' @family sessioninfo tools
 #' @export
-btw_tool_session_package_info <- function(packages, dependencies, `_intent`) {}
+btw_tool_sessioninfo_package <- function(packages, dependencies, `_intent`) {}
 
-btw_tool_session_package_info_impl <- function(
+btw_tool_sessioninfo_package_impl <- function(
   packages = "attached",
   dependencies = ""
 ) {
@@ -204,12 +206,14 @@ package_info <- function(pkgs = NULL, dependencies = NA) {
 }
 
 .btw_add_to_tools(
-  name = "btw_tool_session_package_info",
-  group = "session",
+  name = "btw_tool_sessioninfo_package",
+  group = "sessioninfo",
+  alias_group = "session",
+  alias_name = "btw_tool_session_package_info",
   tool = function() {
     ellmer::tool(
-      btw_tool_session_package_info_impl,
-      name = "btw_tool_session_package_info",
+      btw_tool_sessioninfo_package_impl,
+      name = "btw_tool_sessioninfo_package",
       description = paste(
         "Verify that a specific package is installed,",
         "or find out which packages are in use in the current session.",

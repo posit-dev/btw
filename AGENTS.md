@@ -88,6 +88,7 @@ Tools are defined in `R/tool-*.R` files following a consistent pattern:
 
 Tools are grouped by capability:
 - **agent** - Hierarchical workflows via `btw_tool_agent_subagent()` to delegate tasks to specialized subagents
+- **cran** - Search CRAN packages and retrieve package info
 - **docs** - Package documentation, help pages, vignettes, NEWS
 - **env** - Describe data frames and environments
 - **files** - Read, write, list files; search code
@@ -96,8 +97,7 @@ Tools are grouped by capability:
 - **ide** - Read current editor/selection in RStudio/Positron
 _ **pkg** - Package testing, checking and documentation tasks
 - **run** - Run R code
-- **search** - Search CRAN packages
-- **session** - Platform info, installed packages
+- **sessioninfo** - Platform info, installed packages
 - **web** - Read web pages as markdown
 
 ### The btw_this() Dispatch System

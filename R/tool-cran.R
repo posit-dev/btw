@@ -25,12 +25,12 @@ NULL
 #' @returns A listing of packages matching the search term.
 #'
 #' @seealso [btw_tools()]
-#' @family search tools
-#' @name btw_tool_search_packages
+#' @family cran tools
+#' @name btw_tool_cran_search
 #' @export
-btw_tool_search_packages <- function(query, format, n_results, `_intent`) {}
+btw_tool_cran_search <- function(query, format, n_results, `_intent`) {}
 
-btw_tool_search_packages_impl <- function(
+btw_tool_cran_search_impl <- function(
   query,
   format = c("short", "long"),
   n_results = NULL
@@ -122,12 +122,14 @@ BtwSearchPackageToolResult <- S7::new_class(
 )
 
 .btw_add_to_tools(
-  name = "btw_tool_search_packages",
-  group = "search",
+  name = "btw_tool_cran_search",
+  group = "cran",
+  alias_group = "search",
+  alias_name = "btw_tool_search_packages",
   tool = function() {
     ellmer::tool(
-      btw_tool_search_packages_impl,
-      name = "btw_tool_search_packages",
+      btw_tool_cran_search_impl,
+      name = "btw_tool_cran_search",
       description = 'Search for an R package on CRAN.
 
 ## Search Behavior
@@ -195,10 +197,11 @@ Bad: Search for `"statistical analysis tools for permutation test"`
 #' @inheritParams btw_tool_docs_package_news
 #'
 #' @returns An info sheet about the package.
+#' @family cran tools
 #' @export
-btw_tool_search_package_info <- function(package_name, `_intent`) {}
+btw_tool_cran_package <- function(package_name, `_intent`) {}
 
-btw_tool_search_package_info_impl <- function(package_name) {
+btw_tool_cran_package_impl <- function(package_name) {
   check_string(package_name)
 
   pkg <- cran_package(package_name)
@@ -298,12 +301,14 @@ btw_this.cran_package <- function(x, ...) {
 }
 
 .btw_add_to_tools(
-  name = "btw_tool_search_package_info",
-  group = "search",
+  name = "btw_tool_cran_package",
+  group = "cran",
+  alias_group = "search",
+  alias_name = "btw_tool_search_package_info",
   tool = function() {
     ellmer::tool(
-      btw_tool_search_package_info_impl,
-      name = "btw_tool_search_package_info",
+      btw_tool_cran_package_impl,
+      name = "btw_tool_cran_package",
       description = paste(
         "Describe a CRAN package.",
         "Shows the title, description, dependencies and author information for a package on CRAN, regardless of whether the package is installed or not."

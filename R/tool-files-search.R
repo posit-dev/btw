@@ -7,10 +7,10 @@
 #' You can configure which file extensions are included and which paths are
 #' excluded from code search by using two options:
 #'
-#' * `btw.files_code_search.extensions`: A character vector of file extensions
+#' * `btw.files_search.extensions`: A character vector of file extensions
 #'   to search in (default includes R, Python, JavaScript, TypeScript, Markdown,
 #'   SCSS, and CSS files).
-#' * `btw.files_code_search.exclusions`: A character vector of gitignore-style
+#' * `btw.files_search.exclusions`: A character vector of gitignore-style
 #'   patterns to exclude paths and directories from the search. The default
 #'   value includes a set of common version control, IDE, and cache folders.
 #'
@@ -21,9 +21,9 @@
 #' ---
 #' client:
 #'   provider: anthropic
-#' tools: [files_code_search]
+#' tools: [files_search]
 #' options:
-#'   files_code_search:
+#'   files_search:
 #'     extensions: ["R", "Rmd", "py", "qmd"]
 #'     exclusions: ["DEFAULT", ".quarto/"]
 #' ---
@@ -34,15 +34,15 @@
 #'
 #' If the \pkg{gert} package is installed and the project is a Git repository,
 #' the tool will also respect the `.gitignore` file and exclude any ignored
-#' paths, regardless of the `btw.files_code_search.exclusions` option.
+#' paths, regardless of the `btw.files_search.exclusions` option.
 #'
 #' @examplesIf identical(Sys.getenv("IN_PKGDOWN"), "true")
 #' withr::with_tempdir({
 #'   writeLines(state.name[1:25], "state_names_1.md")
 #'   writeLines(state.name[26:50], "state_names_2.md")
 #'
-#'   tools <- btw_tools("files_code_search")
-#'   tools$btw_tool_files_code_search(
+#'   tools <- btw_tools("files_search")
+#'   tools$btw_tool_files_search(
 #'     term = "kentucky",
 #'     case_sensitive = FALSE,
 #'     show_lines = TRUE
@@ -66,20 +66,20 @@
 #'
 #' @family files tools
 #' @export
-btw_tool_files_code_search <- function(
+btw_tool_files_search <- function(
   term,
   limit = 100,
   case_sensitive = TRUE,
   use_regex = FALSE,
   show_lines = FALSE,
-  .intent = ""
+  `_intent` = ""
 ) {}
 
 
-btw_tool_files_code_search_factory <- function(
+btw_tool_files_search_factory <- function(
   path = getwd(),
-  extensions = files_code_search_extensions(),
-  exclusions = files_code_search_exclusions()
+  extensions = files_search_extensions(),
+  exclusions = files_search_exclusions()
 ) {
   check_path_exists(path)
   check_path_within_current_wd(path)
@@ -163,10 +163,11 @@ btw_tool_files_code_search_factory <- function(
 }
 
 .btw_add_to_tools(
-  name = "btw_tool_files_code_search",
+  name = "btw_tool_files_search",
   group = "files",
+  alias_name = "btw_tool_files_code_search",
   tool = function() {
-    project_code_search <- btw_tool_files_code_search_factory()
+    project_code_search <- btw_tool_files_search_factory()
     ellmer::tool(
       function(
         term,
@@ -183,14 +184,14 @@ btw_tool_files_code_search_factory <- function(
           show_lines = show_lines
         )
       },
-      name = "btw_tool_files_code_search",
+      name = "btw_tool_files_search",
       description = r"---(Search code files in the project.
 
 Use this tool to find references to specific code or terms in the project.
 The tool returns a list of files and lines of code that match the search `term`.
 `term` is the only required argument, only adjust the arguments if necessary.
 
-Use the `btw_tool_files_read_text_file` tool, if available, to read the full content of a file found in this search.
+Use the `btw_tool_files_read` tool, if available, to read the full content of a file found in this search.
       )---",
       annotations = ellmer::tool_annotations(
         title = "Code Search",
@@ -229,8 +230,8 @@ Use the `btw_tool_files_read_text_file` tool, if available, to read the full con
 
 db_create_local_files <- function(
   path = getwd(),
-  extensions = files_code_search_extensions(),
-  exclusions = files_code_search_exclusions()
+  extensions = files_search_extensions(),
+  exclusions = files_search_exclusions()
 ) {
   check_path_within_current_wd(path)
   check_character(extensions, allow_na = FALSE)
@@ -313,15 +314,30 @@ ON code_files.filename = code_lines.filename;"
   invisible(con)
 }
 
-files_code_search_extensions <- function() {
-  getOption(
-    "btw.files_code_search.extensions",
-    # fmt: skip
-    c("R", "Rmd", "qmd", "py", "js", "ts", "md", "scss", "css")
-  )
+files_search_extensions <- function() {
+  # fmt: skip
+ default <- c("R", "Rmd", "qmd", "py", "js", "ts", "md", "scss", "css")
+
+  # Check new option name first, then fall back to deprecated name
+  res <- getOption("btw.files_search.extensions")
+  if (!is.null(res)) {
+    return(res)
+  }
+
+  res <- getOption("btw.files_code_search.extensions")
+  if (!is.null(res)) {
+    lifecycle::deprecate_warn(
+      "1.2.0",
+      I("option `btw.files_code_search.extensions`"),
+      I("option `btw.files_search.extensions`")
+    )
+    return(res)
+  }
+
+  default
 }
 
-files_code_search_exclusions <- function() {
+files_search_exclusions <- function() {
   # fmt: skip
   default <- c(
     # VCS / IDE / cache
@@ -336,7 +352,22 @@ files_code_search_exclusions <- function() {
     ".sass-cache/"
   )
 
-  res <- getOption("btw.files_code_search.exclusions", default)
+  # Check new option name first, then fall back to deprecated name
+  res <- getOption("btw.files_search.exclusions")
+  if (is.null(res)) {
+    res <- getOption("btw.files_code_search.exclusions")
+    if (!is.null(res)) {
+      lifecycle::deprecate_warn(
+        "1.2.0",
+        I("option `btw.files_code_search.exclusions`"),
+        I("option `btw.files_search.exclusions`")
+      )
+    }
+  }
+
+  if (is.null(res)) {
+    return(default)
+  }
 
   if ("DEFAULT" %in% res) {
     idx <- which(res == "DEFAULT")

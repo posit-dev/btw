@@ -145,7 +145,7 @@ btw_client <- function(
   skip_tools <- isFALSE(config$tools) || identical(config$tools, "none")
   withr::local_options(config$options)
 
-  session_info <- btw_tool_session_platform_info()@value
+  session_info <- btw_tool_sessioninfo_platform()@value
   client_system_prompt <- client$get_system_prompt()
 
   llms_txt <- read_llms_txt(path_llms_txt)
