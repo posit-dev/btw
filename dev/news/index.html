@@ -39,7 +39,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="btw-development-version">btw (development version)<a class="anchor" aria-label="anchor" href="#btw-development-version"></a></h2>
-<ul><li>
+<ul><li><p><code><a href="../reference/btw_tool_files_read.html">btw_tool_files_read()</a></code> now correctly reads valid UTF-8 files containing non-ASCII characters (e.g., Cyrillic). Previously, these files were incorrectly rejected on Windows with non-English locales when <code><a href="https://rdrr.io/r/base/Encoding.html" class="external-link">Encoding()</a></code> returned “unknown” even though they were valid UTF-8 (thanks <a href="https://github.com/RKonstantinR" class="external-link">@RKonstantinR</a>, <a href="https://github.com/posit-dev/btw/issues/160" class="external-link">#160</a>).</p></li>
+<li>
 <p>BREAKING CHANGE: Several tool groups and tool names have been renamed for clarity (<a href="https://github.com/posit-dev/btw/issues/159" class="external-link">#159</a>):</p>
 <table class="table"><colgroup><col width="50%"><col width="50%"></colgroup><thead><tr><th>Old Name</th>
 <th>New Name</th>

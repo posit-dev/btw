@@ -2,6 +2,15 @@
 
 ## btw (development version)
 
+- [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md)
+  now correctly reads valid UTF-8 files containing non-ASCII characters
+  (e.g., Cyrillic). Previously, these files were incorrectly rejected on
+  Windows with non-English locales when
+  [`Encoding()`](https://rdrr.io/r/base/Encoding.html) returned
+  “unknown” even though they were valid UTF-8 (thanks
+  [@RKonstantinR](https://github.com/RKonstantinR),
+  [\#160](https://github.com/posit-dev/btw/issues/160)).
+
 - BREAKING CHANGE: Several tool groups and tool names have been renamed
   for clarity ([\#159](https://github.com/posit-dev/btw/issues/159)):
 
