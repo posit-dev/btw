@@ -123,15 +123,13 @@ btw_tool_pkg_check_impl <- function(pkg = ".") {
 
 Use this tool to verify the package is ready for release or CRAN submission.
 
-Runs devtools::check() which builds the package and performs ~50 checks including:
-- Documentation completeness and validity
-- Code syntax and best practices
-- Example code execution
-- Test suite execution
-- Vignette building (if present)
-- CRAN policy compliance
+Runs devtools::check(). Use this tool when you want to:
+- Check that example code in documentation runs without errors
+- Verify CRAN policy compliance
+- Ensure documentation matches function signatures
+- Validate package structure and metadata
 
-This tool runs with CRAN-like settings and takes several minutes to complete. It always completes and reports findings even if errors are found.
+This tool runs with CRAN-like settings and can take one or more minutes to complete. It always completes and reports findings even if errors are found.
 
 For iterative development, use the `btw_tool_pkg_test` if available or `devtools::test()` to run only the test suite for faster feedback.",
       annotations = ellmer::tool_annotations(
