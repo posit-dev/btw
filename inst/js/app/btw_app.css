@@ -80,6 +80,13 @@ shiny-chat-message .message-icon {
   padding: 0;
 }
 
+.collapse-toggle-btn[aria-expanded=true] > .collapse-indicator {
+  transform: rotate(-90deg);
+}
+.collapse-toggle-btn[aria-expanded=true] > .collapse-indicator .horizontal {
+  transform: scale(0);
+}
+
 .btw-in-ide .btw-open-file.btn {
   --bs-btn-hover-color: var(--bs-emphasis-color);
   --_icon-size: var(--shiny-tool-card-icon-size, 16px);
