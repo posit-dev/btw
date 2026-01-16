@@ -525,7 +525,9 @@ btw_status_bar_server <- function(id, chat) {
       })
 
       shiny::observeEvent(input$show_sys_prompt, {
-        if (utils::packageVersion("bslib") < "0.9.0.9002") {
+        bslib_input_code_editor <- asNamespace("bslib")[["input_code_editor"]]
+
+        if (is.null(bslib_input_code_editor)) {
           input_sys_prompt <- shiny::textAreaInput(
             session$ns("system_prompt"),
             label = NULL,
@@ -541,7 +543,7 @@ btw_status_bar_server <- function(id, chat) {
             .cssSelector = "textarea"
           )
         } else {
-          input_sys_prompt <- bslib::input_code_editor(
+          input_sys_prompt <- bslib_input_code_editor(
             id = session$ns("system_prompt"),
             label = NULL,
             value = chat$client$get_system_prompt(),
@@ -575,10 +577,14 @@ btw_status_bar_server <- function(id, chat) {
 
       notifier <- function(icon, action, error = NULL) {
         error_body <- if (!is.null(error)) {
-          shiny::p(shiny::HTML(sprintf("<code>%s</code>", e$message)))
+          shiny::p(shiny::HTML(sprintf("<code>%s</code>", error$message)))
         }
 
-        if (utils::packageVersion("bslib") < "0.9.0.9002") {
+        bslib_toast <- asNamespace("bslib")[["toast"]]
+        bslib_show_toast <- asNamespace("bslib")[["show_toast"]]
+        bslib_toast_header <- asNamespace("bslib")[["toast_header"]]
+
+        if (is.null(bslib_toast) || is.null(bslib_show_toast)) {
           if (!is.null(error)) {
             body <- shiny::span(icon, action)
           } else {
@@ -598,15 +604,15 @@ btw_status_bar_server <- function(id, chat) {
           return()
         }
 
-        toast <- bslib::toast(
+        toast <- bslib_toast(
           if (is.null(error)) action else error_body,
           header = if (!is.null(error)) {
-            bslib::toast_header(action, icon = icon)
+            bslib_toast_header(action, icon = icon)
           },
           icon = if (is.null(error)) icon,
           position = "top-right"
         )
-        bslib::show_toast(toast)
+        bslib_show_toast(toast)
       }
 
       shiny::observeEvent(
