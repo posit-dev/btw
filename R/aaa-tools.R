@@ -1,12 +1,12 @@
 .btw_tools <- list()
 
 .btw_add_to_tools <- function(
-    name,
-    group = name,
-    tool,
-    can_register = NULL,
-    alias_group = NULL,
-    alias_name = NULL
+  name,
+  group = name,
+  tool,
+  can_register = NULL,
+  alias_group = NULL,
+  alias_name = NULL
 ) {
   check_string(name)
   check_string(group)

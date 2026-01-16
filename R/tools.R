@@ -63,7 +63,9 @@ btw_tools <- function(...) {
 
     # Add aliases to allowed names for arg_match validation
     alias_names <- unlist(compact(map(all_btw_tools, function(x) x$alias_name)))
-    alias_groups <- unlist(compact(map(all_btw_tools, function(x) x$alias_group)))
+    alias_groups <- unlist(compact(map(all_btw_tools, function(x) {
+      x$alias_group
+    })))
 
     allowed <- c(
       tool_groups,
@@ -110,7 +112,6 @@ is_tool_match <- function(tool, labels = NULL) {
   if (sub("btw_tool_", "", tool$name) %in% labels) {
     return(TRUE)
   }
-
 
   # Check alias_name with deprecation warning
   alias_names <- c(
@@ -209,6 +210,7 @@ tool_group_icon <- function(group, default = NULL) {
     group,
     "agent" = tool_icon("robot"),
     "cran" = tool_icon("search"),
+    "deprecated" = tool_icon("error"),
     "docs" = tool_icon("dictionary"),
     "env" = tool_icon("source-environment"),
     "eval" = tool_icon("play-circle"),

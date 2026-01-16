@@ -625,13 +625,33 @@ btw_tools_df <- function(tools = btw_tools()) {
 app_tool_group_inputs <- function(tools_df, initial_tool_names = NULL) {
   tools_df <- split(tools_df, tools_df$group)
 
-  # Reorder groups: agent, docs, files, env first, then alphabetical, then other
+  # Only show "deprecated" group if any deprecated tools are initially selected,
+
+  # and only show the specific deprecated tools that are selected
+  if ("deprecated" %in% names(tools_df)) {
+    deprecated_df <- tools_df[["deprecated"]]
+    selected_deprecated <- deprecated_df$name %in% initial_tool_names
+    if (!any(selected_deprecated)) {
+      tools_df[["deprecated"]] <- NULL
+    } else {
+      tools_df[["deprecated"]] <-
+        deprecated_df[selected_deprecated, , drop = FALSE]
+    }
+  }
+
+  # Reorder groups: agent, docs, files, env first, then alphabetical,
+
+  # then other, then deprecated (if shown)
   group_names <- names(tools_df)
   priority_groups <- c("agent", "docs", "files", "env")
+  trailing_groups <- c("other", "deprecated")
   priority_present <- intersect(priority_groups, group_names)
-  middle_groups <- sort(setdiff(group_names, c(priority_groups, "other")))
-  other_group <- if ("other" %in% group_names) "other" else character(0)
-  ordered_groups <- c(priority_present, middle_groups, other_group)
+  middle_groups <- sort(setdiff(
+    group_names,
+    c(priority_groups, trailing_groups)
+  ))
+  trailing_present <- intersect(trailing_groups, group_names)
+  ordered_groups <- c(priority_present, middle_groups, trailing_present)
 
   map2(
     ordered_groups,
@@ -658,6 +678,7 @@ app_tool_group_choice_input <- function(
     group,
     "agent" = shiny::span(label_icon, "Agents"),
     "cran" = shiny::span(label_icon, "CRAN"),
+    "deprecated" = shiny::span(label_icon, "Deprecated", class = "text-danger"),
     "docs" = shiny::span(label_icon, "Documentation"),
     "env" = shiny::span(label_icon, "Environment"),
     "eval" = shiny::span(label_icon, "Code Evaluation"),
