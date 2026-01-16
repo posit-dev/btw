@@ -13,40 +13,40 @@
 \alias{btw_tool_files_code_search}
 \title{Deprecated functions}
 \usage{
-btw_tool_session_platform_info(`_intent` = NULL)
+btw_tool_session_platform_info(`_intent` = "")
 
 btw_tool_session_package_info(
   packages = "attached",
   dependencies = "",
-  `_intent` = NULL
+  `_intent` = ""
 )
 
-btw_tool_session_check_package_installed(package_name, `_intent` = NULL)
+btw_tool_session_check_package_installed(package_name, `_intent` = "")
 
 btw_tool_search_packages(
   query,
   format = c("short", "long"),
   n_results = NULL,
-  `_intent` = NULL
+  `_intent` = ""
 )
 
-btw_tool_search_package_info(package_name, `_intent` = NULL)
+btw_tool_search_package_info(package_name, `_intent` = "")
 
 btw_tool_files_list_files(
   path = NULL,
   type = c("any", "file", "directory"),
   regexp = "",
-  `_intent` = NULL
+  `_intent` = ""
 )
 
 btw_tool_files_read_text_file(
   path,
   line_start = 1,
   line_end = 1000,
-  `_intent` = NULL
+  `_intent` = ""
 )
 
-btw_tool_files_write_text_file(path, content, `_intent` = NULL)
+btw_tool_files_write_text_file(path, content, `_intent` = "")
 
 btw_tool_files_code_search(
   term,
