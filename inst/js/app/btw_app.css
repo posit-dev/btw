@@ -35,6 +35,11 @@ shiny-chat-message .message-icon {
   background-color: var(--bs-body-bg);
 }
 
+.modal-body bslib-code-editor > .code-editor,
+.modal-body textarea {
+  border: 0;
+}
+
 /* ---------------- Status Bar ---------------- */
 .btw-status-recalculating {
   animation: blink 2s infinite;

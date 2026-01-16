@@ -525,27 +525,43 @@ btw_status_bar_server <- function(id, chat) {
       })
 
       shiny::observeEvent(input$show_sys_prompt, {
-        input_sys_prompt <- shiny::textAreaInput(
-          "system_prompt",
-          label = NULL,
-          placeholder = "Instructions for the AI assistant...",
-          value = chat$client$get_system_prompt(),
-          width = "100%",
-          autoresize = TRUE,
-          updateOn = "blur"
-        )
-        input_sys_prompt <- htmltools::tagAppendAttributes(
-          input_sys_prompt,
-          class = "font-monospace",
-          .cssSelector = "textarea"
-        )
+        if (utils::packageVersion("bslib") < "0.9.0.9002") {
+          input_sys_prompt <- shiny::textAreaInput(
+            session$ns("system_prompt"),
+            label = NULL,
+            placeholder = "Instructions for the AI assistant...",
+            value = chat$client$get_system_prompt(),
+            width = "100%",
+            autoresize = TRUE,
+            updateOn = "blur"
+          )
+          input_sys_prompt <- htmltools::tagAppendAttributes(
+            input_sys_prompt,
+            class = "font-monospace",
+            .cssSelector = "textarea"
+          )
+        } else {
+          input_sys_prompt <- bslib::input_code_editor(
+            id = session$ns("system_prompt"),
+            label = NULL,
+            value = chat$client$get_system_prompt(),
+            language = "markdown"
+          )
+        }
 
         modal <- shiny::modalDialog(
-          title = "System Prompt",
+          title = NULL,
           size = "xl",
           easyClose = TRUE,
           footer = shiny::modalButton("Close"),
-          input_sys_prompt
+          bslib::card(
+            style = "height: 100%",
+            bslib::card_header("Edit System Prompt"),
+            bslib::card_body(
+              padding = 4,
+              input_sys_prompt
+            ),
+          )
         )
 
         modal <- htmltools::tagAppendAttributes(
@@ -556,6 +572,42 @@ btw_status_bar_server <- function(id, chat) {
 
         shiny::showModal(modal)
       })
+
+      notifier <- function(icon, action, error = NULL) {
+        error_body <- if (!is.null(error)) {
+          shiny::p(shiny::HTML(sprintf("<code>%s</code>", e$message)))
+        }
+
+        if (utils::packageVersion("bslib") < "0.9.0.9002") {
+          if (!is.null(error)) {
+            body <- shiny::span(icon, action)
+          } else {
+            body <- shiny::tagList(
+              shiny::p(
+                shiny::icon("warning"),
+                "Failed to update system prompt",
+                class = "fw-bold"
+              ),
+              error_body
+            )
+          }
+          shiny::showNotification(
+            body,
+            type = if (is.null(error)) "message" else "error"
+          )
+          return()
+        }
+
+        toast <- bslib::toast(
+          if (is.null(error)) action else error_body,
+          header = if (!is.null(error)) {
+            bslib::toast_header(action, icon = icon)
+          },
+          icon = if (is.null(error)) icon,
+          position = "top-right"
+        )
+        bslib::show_toast(toast)
+      }
 
       shiny::observeEvent(
         input$system_prompt,
@@ -579,20 +631,10 @@ btw_status_bar_server <- function(id, chat) {
           tryCatch(
             {
               chat$client$set_system_prompt(new_system_prompt)
-              shiny::showNotification(shiny::span(icon, action))
+              notifier(icon, action)
             },
-            error = function(e) {
-              shiny::showNotification(
-                shiny::tagList(
-                  shiny::p(
-                    shiny::icon("warning"),
-                    "Failed to update system prompt",
-                    class = "fw-bold"
-                  ),
-                  shiny::p(shiny::HTML(sprintf("<code>%s</code>", e$message)))
-                ),
-                type = "error"
-              )
+            error = function(err) {
+              notifier(icon, "Error updating system prompt", error = err)
             }
           )
         }
