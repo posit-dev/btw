@@ -271,7 +271,7 @@ btw_tool_run_r_impl <- function(
       # We always return contents up to the error as `value` because `error`
       # cannot handle rich output. We'll show status separately in the UI.
       status = if (had_error) "error" else "success",
-      display = list(open = TRUE, copy_code = TRUE)
+      display = list(open = !had_error, copy_code = TRUE)
     )
   )
 }
