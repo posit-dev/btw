@@ -3,17 +3,17 @@
 can provide MCP clients like Claude Desktop or Claude Code with additional
 context. The function will block the R process it's called in and isn't
 intended for interactive use.
-To give the MCP server access to a specific R session, run btw_mcp_session()
-in that session. If there are no sessions configured, the server will run
-the tools in its own session, meaning that e.g. the
+To give the MCP server access to a specific R session, run
+btw_mcp_session() in that session. If there are no sessions configured, the
+server will run the tools in its own session, meaning that e.g. the
 btw_tools(tools = &quot;env&quot;) tools will describe R objects in that R
 environment."><meta property="og:description" content="btw_mcp_server() starts an MCP server with tools from btw_tools(), which
 can provide MCP clients like Claude Desktop or Claude Code with additional
 context. The function will block the R process it's called in and isn't
 intended for interactive use.
-To give the MCP server access to a specific R session, run btw_mcp_session()
-in that session. If there are no sessions configured, the server will run
-the tools in its own session, meaning that e.g. the
+To give the MCP server access to a specific R session, run
+btw_mcp_session() in that session. If there are no sessions configured, the
+server will run the tools in its own session, meaning that e.g. the
 btw_tools(tools = &quot;env&quot;) tools will describe R objects in that R
 environment."><meta property="og:image" content="https://posit-dev.github.io/btw/logo.png"><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -59,9 +59,9 @@ environment."><meta property="og:image" content="https://posit-dev.github.io/btw
 can provide MCP clients like Claude Desktop or Claude Code with additional
 context. The function will block the R process it's called in and isn't
 intended for interactive use.</p>
-<p>To give the MCP server access to a specific R session, run <code>btw_mcp_session()</code>
-in that session. If there are no sessions configured, the server will run
-the tools in its own session, meaning that e.g. the
+<p>To give the MCP server access to a specific R session, run
+<code>btw_mcp_session()</code> in that session. If there are no sessions configured, the
+server will run the tools in its own session, meaning that e.g. the
 <code>btw_tools(tools = "env")</code> tools will describe R objects in <em>that</em> R
 environment.</p>
     </div>
@@ -91,11 +91,33 @@ list of tools as supported by <code><a href="https://posit-dev.github.io/mcptool
 <code><a href="https://posit-dev.github.io/mcptools/reference/server.html" class="external-link">mcptools::mcp_session()</a></code>.</p>
     </div>
     <div class="section level2">
+    <h2 id="choosing-tool-groups">Choosing Tool Groups<a class="anchor" aria-label="anchor" href="#choosing-tool-groups"></a></h2>
+
+
+<p>When using btw with a coding agent that already has built-in tools for file
+operations, code execution, or other tasks, you may want to select a subset
+of btw's tools to avoid overlap. A recommended lightweight configuration for
+R package development is:</p>
+<p></p><div class="sourceCode r"><pre><code><span><span class="fu"><a href="../reference/mcp.html">btw_mcp_server</a></span><span class="op">(</span>tools <span class="op">=</span> <span class="fu"><a href="../reference/btw_tools.html">btw_tools</a></span><span class="op">(</span><span class="st">"docs"</span>, <span class="st">"pkg"</span><span class="op">)</span><span class="op">)</span></span></code></pre><p></p></div>
+<p>This gives the agent access to R documentation (help pages, vignettes, news)
+and package development tools (testing, checking, documenting) without
+duplicating file or code execution capabilities the agent may already have.</p>
+<p>Depending on your workflow, you may also want to include:</p><ul><li><p><code>"env"</code>: Tools to inspect R objects and data frames in the session</p></li>
+<li><p><code>"sessioninfo"</code>: Tools to check installed packages and platform details</p></li>
+<li><p><code>"cran"</code>: Tools to search for and describe CRAN packages</p></li>
+</ul><p>See <code><a href="btw_tools.html">btw_tools()</a></code> for a complete list of available tool groups and their
+contents.</p>
+    </div>
+    <div class="section level2">
     <h2 id="configuration">Configuration<a class="anchor" aria-label="anchor" href="#configuration"></a></h2>
 
 
 <p>To configure this server with MCP clients, use the command <code>Rscript</code> and the
-args <code>-e "btw::btw_mcp_server()"</code>. For example, in <a href="https://code.claude.com/docs/en/mcp#add-mcp-servers-from-json-configuration" class="external-link">Claude Desktop's configuration format</a>:</p>
+args <code>-e "btw::btw_mcp_server()"</code>. The examples below all use
+<code>btw_mcp_server()</code>, which includes <em>all of btw's tools</em> by default. We
+recommend customizing the tool set as described above to avoid overlap with
+your client's built-in capabilities.</p>
+<p>For <a href="https://code.claude.com/docs/en/mcp#add-mcp-servers-from-json-configuration" class="external-link">Claude Desktop's configuration format</a>:</p>
 <p></p><div class="sourceCode json"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">{</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="dt">"mcpServers"</span><span class="fu">:</span> <span class="fu">{</span></span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>    <span class="dt">"r-btw"</span><span class="fu">:</span> <span class="fu">{</span></span>
@@ -106,6 +128,22 @@ args <code>-e "btw::btw_mcp_server()"</code>. For example, in <a href="https://c
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">}</span></span></code></pre><p></p></div>
 <p>For <a href="https://code.claude.com/docs/en/overview" class="external-link">Claude Code</a>:</p>
 <p></p><div class="sourceCode bash"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">claude</span> mcp add <span class="at">-s</span> <span class="st">"user"</span> r-btw <span class="at">--</span> Rscript <span class="at">-e</span> <span class="st">"btw::btw_mcp_server()"</span></span></code></pre><p></p></div>
+<p>For <a href="https://positron.posit.co" class="external-link">Positron</a> or <a href="https://code.visualstudio.com/docs/copilot/chat/mcp-servers" class="external-link">VS Code</a>, add the
+following to <code>.vscode/mcp.json</code> (for workspace configuration) or to your
+user profile's <code>mcp.json</code> (for global configuration, accessible via Command
+Palette &gt; <strong>MCP: Open User Configuration</strong>):</p>
+<p></p><div class="sourceCode json"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="dt">"servers"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>    <span class="dt">"r-btw"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>      <span class="dt">"type"</span><span class="fu">:</span> <span class="st">"stdio"</span><span class="fu">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>      <span class="dt">"command"</span><span class="fu">:</span> <span class="st">"Rscript"</span><span class="fu">,</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>      <span class="dt">"args"</span><span class="fu">:</span> <span class="ot">[</span><span class="st">"-e"</span><span class="ot">,</span> <span class="st">"btw::btw_mcp_server()"</span><span class="ot">]</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">}</span></span></code></pre><p></p></div>
+<p>Alternatively, run the <strong>MCP: Add Server</strong> command from the Command Palette,
+choose <strong>stdio</strong>, then choose <strong>Workspace</strong> or <strong>Global</strong> to add the server
+configuration interactively.</p>
 <p>For <a href="https://www.continue.dev/" class="external-link">Continue</a>, include the following in your
 <a href="https://docs.continue.dev/customize/deep-dives/configuration" class="external-link">config file</a>:</p>
 <p></p><div class="sourceCode json"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="st">"experimental"</span><span class="er">:</span> <span class="fu">{</span></span>

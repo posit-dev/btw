@@ -42,11 +42,42 @@ Returns the result of
 or
 [`mcptools::mcp_session()`](https://posit-dev.github.io/mcptools/reference/server.html).
 
+## Choosing Tool Groups
+
+When using btw with a coding agent that already has built-in tools for
+file operations, code execution, or other tasks, you may want to select
+a subset of btw's tools to avoid overlap. A recommended lightweight
+configuration for R package development is:
+
+    btw_mcp_server(tools = btw_tools("docs", "pkg"))
+
+This gives the agent access to R documentation (help pages, vignettes,
+news) and package development tools (testing, checking, documenting)
+without duplicating file or code execution capabilities the agent may
+already have.
+
+Depending on your workflow, you may also want to include:
+
+- `"env"`: Tools to inspect R objects and data frames in the session
+
+- `"sessioninfo"`: Tools to check installed packages and platform
+  details
+
+- `"cran"`: Tools to search for and describe CRAN packages
+
+See
+[`btw_tools()`](https://posit-dev.github.io/btw/dev/reference/btw_tools.md)
+for a complete list of available tool groups and their contents.
+
 ## Configuration
 
 To configure this server with MCP clients, use the command `Rscript` and
-the args `-e "btw::btw_mcp_server()"`. For example, in [Claude Desktop's
-configuration
+the args `-e "btw::btw_mcp_server()"`. The examples below all use
+`btw_mcp_server()`, which includes *all of btw's tools* by default. We
+recommend customizing the tool set as described above to avoid overlap
+with your client's built-in capabilities.
+
+For [Claude Desktop's configuration
 format](https://code.claude.com/docs/en/mcp#add-mcp-servers-from-json-configuration):
 
     {
@@ -61,6 +92,26 @@ format](https://code.claude.com/docs/en/mcp#add-mcp-servers-from-json-configurat
 For [Claude Code](https://code.claude.com/docs/en/overview):
 
     claude mcp add -s "user" r-btw -- Rscript -e "btw::btw_mcp_server()"
+
+For [Positron](https://positron.posit.co) or [VS
+Code](https://code.visualstudio.com/docs/copilot/chat/mcp-servers), add
+the following to `.vscode/mcp.json` (for workspace configuration) or to
+your user profile's `mcp.json` (for global configuration, accessible via
+Command Palette \> **MCP: Open User Configuration**):
+
+    {
+      "servers": {
+        "r-btw": {
+          "type": "stdio",
+          "command": "Rscript",
+          "args": ["-e", "btw::btw_mcp_server()"]
+        }
+      }
+    }
+
+Alternatively, run the **MCP: Add Server** command from the Command
+Palette, choose **stdio**, then choose **Workspace** or **Global** to
+add the server configuration interactively.
 
 For [Continue](https://www.continue.dev/), include the following in your
 [config
