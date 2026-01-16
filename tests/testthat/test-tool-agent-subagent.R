@@ -66,6 +66,7 @@ test_that("subagent_client() clones clients from options", {
 # through btw_tool_agent_subagent registration tests below
 
 test_that("btw_tool_agent_subagent is registered in btw_tools", {
+  local_enable_tools()
   all_tools <- btw_tools()
 
   tool_names <- sapply(all_tools, function(t) t@name)
