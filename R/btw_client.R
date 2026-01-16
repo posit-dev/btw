@@ -569,19 +569,13 @@ read_single_btw_file <- function(path) {
     return(list())
   }
 
+  fm <- frontmatter::read_front_matter(path)
+
   # For CLAUDE.md files, ignore YAML frontmatter for config
   is_claude_md <- basename(path) == "CLAUDE.md"
+  config <- if (!is_claude_md) fm$data %||% list() else list()
 
-  config <- if (!is_claude_md) rmarkdown::yaml_front_matter(path) else list()
-
-  read_without_yaml <- function(path) {
-    pyfm <- asNamespace("rmarkdown")[["partition_yaml_front_matter"]]
-    pyfm(read_lines(path))$body
-  }
-
-  btw_system_prompt <- read_without_yaml(path)
-  btw_system_prompt <- remove_hidden_content(btw_system_prompt)
-  btw_system_prompt <- paste(btw_system_prompt, collapse = "\n")
+  btw_system_prompt <- remove_hidden_content(fm$body %||% "")
   btw_system_prompt <- trimws(btw_system_prompt)
   if (nzchar(btw_system_prompt)) {
     config$btw_system_prompt <- btw_system_prompt
@@ -650,10 +644,12 @@ read_llms_txt <- function(path = NULL) {
   if (nzchar(llms_txt)) llms_txt else NULL
 }
 
-remove_hidden_content <- function(lines) {
-  if (length(lines) == 0) {
-    return(character(0))
+remove_hidden_content <- function(text) {
+  if (!nzchar(text)) {
+    return("")
   }
+
+  lines <- strsplit(text, "\n", fixed = TRUE)[[1]]
 
   starts <- cumsum(trimws(lines) == "<!-- HIDE -->")
   ends <- trimws(lines) == "<!-- /HIDE -->"
@@ -663,5 +659,5 @@ remove_hidden_content <- function(lines) {
 
   ends[starts - cumsum(ends) < 0 & ends] <- FALSE
 
-  lines[starts - shift(cumsum(ends)) <= 0]
+  paste(lines[starts - shift(cumsum(ends)) <= 0], collapse = "\n")
 }
