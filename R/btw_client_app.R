@@ -625,9 +625,17 @@ btw_tools_df <- function(tools = btw_tools()) {
 app_tool_group_inputs <- function(tools_df, initial_tool_names = NULL) {
   tools_df <- split(tools_df, tools_df$group)
 
+  # Reorder groups: agent, docs, files, env first, then alphabetical, then other
+  group_names <- names(tools_df)
+  priority_groups <- c("agent", "docs", "files", "env")
+  priority_present <- intersect(priority_groups, group_names)
+  middle_groups <- sort(setdiff(group_names, c(priority_groups, "other")))
+  other_group <- if ("other" %in% group_names) "other" else character(0)
+  ordered_groups <- c(priority_present, middle_groups, other_group)
+
   map2(
-    names(tools_df),
-    tools_df,
+    ordered_groups,
+    tools_df[ordered_groups],
     app_tool_group_choice_input,
     initial_tool_names = initial_tool_names
   )
@@ -649,6 +657,7 @@ app_tool_group_choice_input <- function(
   label_text <- switch(
     group,
     "agent" = shiny::span(label_icon, "Agents"),
+    "cran" = shiny::span(label_icon, "CRAN"),
     "docs" = shiny::span(label_icon, "Documentation"),
     "env" = shiny::span(label_icon, "Environment"),
     "eval" = shiny::span(label_icon, "Code Evaluation"),
@@ -658,8 +667,7 @@ app_tool_group_choice_input <- function(
     "ide" = shiny::span(label_icon, "IDE"),
     "pkg" = shiny::span(label_icon, "Package Tools"),
     "run" = shiny::span(label_icon, "Run Code"),
-    "search" = shiny::span(label_icon, "Search"),
-    "session" = shiny::span(label_icon, "Session Info"),
+    "sessioninfo" = shiny::span(label_icon, "Session Info"),
     "web" = shiny::span(label_icon, "Web Tools"),
     "other" = shiny::span(label_icon, "Other Tools"),
     to_title_case(group)
