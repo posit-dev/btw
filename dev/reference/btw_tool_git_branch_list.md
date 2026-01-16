@@ -55,7 +55,7 @@ withr::with_tempdir({
   # What the LLM sees
   cat(btw_tool_git_branch_list()@value)
 })
-#> feature-1 [2026-01-16 19:08:01] 
-#> feature-2 [2026-01-16 19:08:01] 
-#> master [2026-01-16 19:08:01] 
+#> feature-1 [2026-01-16 20:04:42] 
+#> feature-2 [2026-01-16 20:04:42] 
+#> master [2026-01-16 20:04:42] 
 ```
