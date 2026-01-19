@@ -29,7 +29,7 @@ License: MIT + file LICENSE
 URL: https://github.com/posit-dev/btw, https://posit-dev.github.io/btw/
 BugReports: https://github.com/posit-dev/btw/issues
 Depends:
-    R (>= 4.1.0)
+    R (>= 4.2.0)
 Imports:
     brio,
     cli,
