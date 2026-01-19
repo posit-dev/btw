@@ -48,7 +48,6 @@ Imports:
     S7,
     sessioninfo,
     skimr,
-    tibble,
     utils,
     withr,
     xml2
@@ -72,6 +71,7 @@ Suggests:
     roxygen2,
     shiny,
     shinychat (>= 0.3.0),
+    tibble,
     testthat (>= 3.0.0),
     usethis
 Config/Needs/website: tidyverse/tidytemplate
