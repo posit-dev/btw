@@ -65,7 +65,7 @@ test_that("btw_tool_env_describe_data_frame() checks that the package is install
 })
 
 test_that("btw_this.tbl() works", {
-  tbl_data <- tibble::tibble(x = 1:5, y = letters[1:5])
+  tbl_data <- dplyr::tibble(x = 1:5, y = letters[1:5])
 
   expect_snapshot(cli::cat_line(btw_this(tbl_data)))
   expect_snapshot(cli::cat_line(btw_this(tbl_data, format = "glimpse")))

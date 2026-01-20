@@ -592,56 +592,39 @@ test_that("btw_client() throws for deprecated `model` and `provider` fields in b
 describe("remove_hidden_content()", {
   it("removes content after single HIDE comment", {
     expect_equal(
-      remove_hidden_content(c("one", "<!-- HIDE -->", "two")),
+      remove_hidden_content("one\n<!-- HIDE -->\ntwo"),
       "one"
     )
   })
 
   it("removes content after multiple HIDE comments", {
     expect_equal(
-      remove_hidden_content(c(
-        "one",
-        "<!-- HIDE -->",
-        "two",
-        "<!-- HIDE -->",
-        "three"
-      )),
+      remove_hidden_content("one\n<!-- HIDE -->\ntwo\n<!-- HIDE -->\nthree"),
       "one"
     )
   })
 
   it("removes content between HIDE and /HIDE with no closing", {
     expect_equal(
-      remove_hidden_content(c(
-        "one",
-        "<!-- HIDE -->",
-        "two",
-        "<!-- HIDE -->",
-        "three",
-        "<!-- /HIDE -->"
-      )),
+      remove_hidden_content(
+        "one\n<!-- HIDE -->\ntwo\n<!-- HIDE -->\nthree\n<!-- /HIDE -->"
+      ),
       "one"
     )
   })
 
   it("removes content with nested HIDE comments and single /HIDE", {
     expect_equal(
-      remove_hidden_content(c(
-        "one",
-        "<!-- HIDE -->",
-        "two",
-        "<!-- HIDE -->",
-        "three",
-        "<!-- /HIDE -->",
-        "four"
-      )),
+      remove_hidden_content(
+        "one\n<!-- HIDE -->\ntwo\n<!-- HIDE -->\nthree\n<!-- /HIDE -->\nfour"
+      ),
       "one"
     )
   })
 
   it("handles properly nested HIDE/HIDE blocks", {
     expect_equal(
-      remove_hidden_content(c(
+      remove_hidden_content(paste(
         "one",
         "<!-- HIDE -->",
         "two",
@@ -650,15 +633,16 @@ describe("remove_hidden_content()", {
         "<!-- /HIDE -->",
         "four",
         "<!-- /HIDE -->",
-        "five"
+        "five",
+        sep = "\n"
       )),
-      c("one", "five")
+      "one\nfive"
     )
   })
 
   it("removes all content when HIDE blocks are not properly closed", {
     expect_equal(
-      remove_hidden_content(c(
+      remove_hidden_content(paste(
         "one",
         "<!-- HIDE -->",
         "two",
@@ -666,43 +650,44 @@ describe("remove_hidden_content()", {
         "three",
         "<!-- /HIDE -->",
         "four",
-        "<!-- /HIDE -->"
+        "<!-- /HIDE -->",
+        sep = "\n"
       )),
       "one"
     )
   })
 
-  it("returns empty vector when input is empty", {
+  it("returns empty string when input is empty", {
     expect_equal(
-      remove_hidden_content(character(0)),
-      character(0)
+      remove_hidden_content(""),
+      ""
     )
   })
 
   it("returns original content when no HIDE comments present", {
     expect_equal(
-      remove_hidden_content(c("one", "two", "three", "four")),
-      c("one", "two", "three", "four")
+      remove_hidden_content("one\ntwo\nthree\nfour"),
+      "one\ntwo\nthree\nfour"
     )
   })
 
   it("handles single /HIDE without opening HIDE", {
     expect_equal(
-      remove_hidden_content(c("one", "two", "<!-- /HIDE -->", "three")),
-      c("one", "two", "<!-- /HIDE -->", "three")
+      remove_hidden_content("one\ntwo\n<!-- /HIDE -->\nthree"),
+      "one\ntwo\n<!-- /HIDE -->\nthree"
     )
   })
 
   it("removes everything when HIDE is at the beginning", {
     expect_equal(
-      remove_hidden_content(c("<!-- HIDE -->", "one", "two", "three")),
-      character(0)
+      remove_hidden_content("<!-- HIDE -->\none\ntwo\nthree"),
+      ""
     )
   })
 
   it("handles multiple separate HIDE/HIDE blocks", {
     expect_equal(
-      remove_hidden_content(c(
+      remove_hidden_content(paste(
         "one",
         "<!-- HIDE -->",
         "hidden1",
@@ -711,42 +696,37 @@ describe("remove_hidden_content()", {
         "<!-- HIDE -->",
         "hidden2",
         "<!-- /HIDE -->",
-        "three"
+        "three",
+        sep = "\n"
       )),
-      c("one", "two", "three")
+      "one\ntwo\nthree"
     )
   })
 
   it("handles HIDE comment as last element", {
     expect_equal(
-      remove_hidden_content(c("one", "two", "<!-- HIDE -->")),
-      c("one", "two")
+      remove_hidden_content("one\ntwo\n<!-- HIDE -->"),
+      "one\ntwo"
     )
   })
 
   it("handles /HIDE comment as first element", {
     expect_equal(
-      remove_hidden_content(c("<!-- /HIDE -->", "one", "two")),
-      c("<!-- /HIDE -->", "one", "two")
+      remove_hidden_content("<!-- /HIDE -->\none\ntwo"),
+      "<!-- /HIDE -->\none\ntwo"
     )
   })
 
   it("handles unmatched /HIDE comment", {
     expect_equal(
-      remove_hidden_content(c(
-        "one",
-        "<!-- /HIDE -->",
-        "two",
-        "<!-- HIDE -->",
-        "three"
-      )),
-      c("one", "<!-- /HIDE -->", "two")
+      remove_hidden_content("one\n<!-- /HIDE -->\ntwo\n<!-- HIDE -->\nthree"),
+      "one\n<!-- /HIDE -->\ntwo"
     )
   })
 
   it("preserves content between multiple closed HIDE blocks", {
     expect_equal(
-      remove_hidden_content(c(
+      remove_hidden_content(paste(
         "start",
         "<!-- HIDE -->",
         "hidden1",
@@ -755,9 +735,10 @@ describe("remove_hidden_content()", {
         "<!-- HIDE -->",
         "hidden2",
         "<!-- /HIDE -->",
-        "end"
+        "end",
+        sep = "\n"
       )),
-      c("start", "middle", "end")
+      "start\nmiddle\nend"
     )
   })
 })
@@ -921,7 +902,10 @@ describe("resolve_client_alias()", {
       Haiku = "anthropic/claude-haiku",
       Sonnet = list(provider = "anthropic", model = "claude-sonnet-4")
     )
-    expect_equal(resolve_client_alias("haiku", clients), "anthropic/claude-haiku")
+    expect_equal(
+      resolve_client_alias("haiku", clients),
+      "anthropic/claude-haiku"
+    )
     expect_equal(resolve_client_alias("SONNET", clients)$provider, "anthropic")
   })
 })
