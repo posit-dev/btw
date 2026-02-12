@@ -37,6 +37,7 @@ withr::with_tempdir({
 }
 \seealso{
 Other files tools: 
+\code{\link{btw_tool_files_edit}()},
 \code{\link{btw_tool_files_list}()},
 \code{\link{btw_tool_files_search}()},
 \code{\link{btw_tool_files_write}()}
