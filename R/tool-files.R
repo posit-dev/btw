@@ -674,8 +674,16 @@ btw_tool_files_edit_impl <- function(path, edits) {
   # Write back
   write_file(new_content, path)
 
+  # Build model-facing response with updated hashlines and shift hints
+  response_value <- build_edit_response(
+    path = path,
+    new_lines = new_lines,
+    old_line_count = length(file_lines),
+    edits_parsed = edits_parsed
+  )
+
   BtwEditFileToolResult(
-    sprintf("Successfully applied %d edit(s) to %s.", length(edits), path),
+    response_value,
     extra = list(
       path = path,
       content = new_content,
@@ -740,6 +748,13 @@ ACTIONS:
 - "replace": Replace a single line. Use `content: []` to delete a line.
 - "insert_after": Insert new lines after the referenced line. Use `line: "0:000"` to insert at the top of the file.
 - "replace_range": Replace a range of lines. Use `line: "start_line:hash,end_line:hash"`.
+
+RESPONSE FORMAT:
+The response includes hashline references for edited lines and surrounding
+context (1 line before and after each edit region). Nearby edits (within 10
+lines) are merged into a single region. If the edit changed the number of
+lines, a shift hint tells you how to update your cached line numbers for
+the rest of the file without re-reading.
 
 IMPORTANT:
 - Always read the file first with btw_tool_files_read to get current line hashes.
@@ -983,4 +998,204 @@ apply_edits <- function(file_lines, edits_parsed) {
   }
 
   file_lines
+}
+
+# Compute where each edit's content lands in the new file.
+# Returns list(regions = list of region info, total_delta = integer).
+compute_edit_regions <- function(edits_parsed) {
+  if (length(edits_parsed) == 0) {
+    return(list(regions = list(), total_delta = 0L))
+  }
+
+  # Sort by original start line ascending
+  start_lines <- vapply(
+    edits_parsed,
+    function(e) e$start$line,
+    numeric(1)
+  )
+  edits_sorted <- edits_parsed[order(start_lines)]
+
+  cumulative_delta <- 0L
+  regions <- vector("list", length(edits_sorted))
+
+  for (i in seq_along(edits_sorted)) {
+    edit <- edits_sorted[[i]]
+    orig_start <- edit$start$line
+    orig_end <- edit$end$line
+
+    # How many original lines does this edit consume?
+    orig_lines <- switch(
+      edit$action,
+      "replace" = 1L,
+      "insert_after" = 0L,
+      "replace_range" = orig_end - orig_start + 1L
+    )
+
+    new_lines_count <- length(edit$content)
+    delta <- as.integer(new_lines_count - orig_lines)
+
+    # Where does this edit's new content start in the new file?
+    new_start <- if (edit$action == "insert_after") {
+      if (orig_start == 0L) 1L else orig_start + cumulative_delta + 1L
+    } else {
+      orig_start + cumulative_delta
+    }
+
+    # Where does this edit's new content end?
+    new_end <- if (new_lines_count > 0L) {
+      new_start + new_lines_count - 1L
+    } else {
+      new_start - 1L # Zero-width region for deletions
+    }
+
+    # The old line number of the first unmodified line after this edit
+    old_line_after <- if (edit$action == "insert_after") {
+      orig_start + 1L
+    } else {
+      orig_end + 1L
+    }
+
+    cumulative_delta <- cumulative_delta + delta
+
+    regions[[i]] <- list(
+      new_start = new_start,
+      new_end = new_end,
+      delta = delta,
+      cumulative_delta_after = cumulative_delta,
+      old_line_after = old_line_after
+    )
+  }
+
+  list(regions = regions, total_delta = cumulative_delta)
+}
+
+# Expand edit regions by context lines, then merge regions within
+# gap_threshold lines of each other.
+merge_edit_regions <- function(
+  regions,
+  n_new_lines,
+  gap_threshold = 10L,
+  context_lines = 1L
+) {
+  if (length(regions) == 0 || n_new_lines == 0L) {
+    return(list())
+  }
+
+  # Expand each region by context lines
+  expanded <- lapply(regions, function(r) {
+    if (r$new_end >= r$new_start) {
+      # Normal region with content
+      ctx_start <- max(1L, r$new_start - context_lines)
+      ctx_end <- min(n_new_lines, r$new_end + context_lines)
+    } else {
+      # Zero-width region (deletion): show context around the deletion point
+      ctx_start <- max(1L, r$new_start - context_lines)
+      ctx_end <- min(n_new_lines, r$new_start + context_lines - 1L)
+    }
+
+    list(
+      start = ctx_start,
+      end = ctx_end,
+      cumulative_delta_after = r$cumulative_delta_after,
+      old_line_after = r$old_line_after
+    )
+  })
+
+  # Merge regions within gap_threshold
+  merged <- list(expanded[[1]])
+
+  for (i in seq_along(expanded)[-1]) {
+    last <- merged[[length(merged)]]
+    curr <- expanded[[i]]
+
+    if (curr$start - last$end <= gap_threshold) {
+      # Merge: extend end, update cumulative delta to the later region's
+      merged[[length(merged)]]$end <- curr$end
+      merged[[length(merged)]]$cumulative_delta_after <-
+        curr$cumulative_delta_after
+      merged[[length(merged)]]$old_line_after <- curr$old_line_after
+    } else {
+      merged <- c(merged, list(curr))
+    }
+  }
+
+  merged
+}
+
+# Build the model-facing response string for an edit operation.
+build_edit_response <- function(path, new_lines, old_line_count, edits_parsed) {
+  n_new <- length(new_lines)
+  n_old <- old_line_count
+  total_delta <- n_new - n_old
+
+  edit_result <- compute_edit_regions(edits_parsed)
+  merged <- merge_edit_regions(edit_result$regions, n_new_lines = n_new)
+
+  # Header
+  if (total_delta == 0L) {
+    header <- sprintf(
+      "Applied %d edit(s) to %s (%d lines).",
+      length(edits_parsed),
+      path,
+      n_new
+    )
+  } else {
+    header <- sprintf(
+      "Applied %d edit(s) to %s (now %d lines, previously %d).",
+      length(edits_parsed),
+      path,
+      n_new,
+      n_old
+    )
+  }
+
+  parts <- header
+
+  for (i in seq_along(merged)) {
+    region <- merged[[i]]
+
+    # Output hashlines for this region
+    if (region$start <= region$end && region$end <= n_new) {
+      region_lines <- new_lines[seq(region$start, region$end)]
+      hashlines <- format_hashlines(region_lines, start_line = region$start)
+      parts <- c(parts, "", hashlines)
+    }
+
+    # Shift hint (only when there's a non-zero shift and lines below)
+    cum_delta <- region$cumulative_delta_after
+    if (cum_delta != 0L && region$end < n_new) {
+      old_example <- region$old_line_after
+      new_example <- old_example + cum_delta
+
+      offset_str <- sprintf("%+d", cum_delta)
+
+      if (i < length(merged)) {
+        hint <- sprintf(
+          paste0(
+            "Content between here and the next edit region was not ",
+            "modified.\nCached hashes are still valid \u2014 update ",
+            "line numbers by %s (old line %d \u2192 new line %d)."
+          ),
+          offset_str,
+          old_example,
+          new_example
+        )
+      } else {
+        hint <- sprintf(
+          paste0(
+            "Content below line %d was not modified.\nCached hashes ",
+            "are still valid \u2014 update line numbers by %s ",
+            "(old line %d \u2192 new line %d)."
+          ),
+          region$end,
+          offset_str,
+          old_example,
+          new_example
+        )
+      }
+      parts <- c(parts, "", hint)
+    }
+  }
+
+  paste(parts, collapse = "\n")
 }
