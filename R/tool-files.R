@@ -181,7 +181,7 @@ btw_tool_files_read_impl <- function(
   line_start = 1,
   line_end = 1000,
   check_within_wd = TRUE,
-  include_hashline = TRUE
+  include_hashline = FALSE
 ) {
   if (check_within_wd) {
     check_path_within_current_wd(path, call = parent.frame())
@@ -203,7 +203,10 @@ btw_tool_files_read_impl <- function(
   contents <- read_lines(path, n = line_end)
   contents <- contents[seq(max(line_start, 1), min(line_end, length(contents)))]
 
-  display_md <- paste(md_code_block(fs::path_ext(path), contents), collapse = "\n")
+  display_md <- paste(
+    md_code_block(fs::path_ext(path), contents),
+    collapse = "\n"
+  )
 
   if (include_hashline) {
     value <- paste(
@@ -269,7 +272,8 @@ BtwTextFileToolResult <- S7::new_class(
           line_start = line_start,
           line_end = line_end,
           # LLM tool calls should be restricted to the working directory
-          check_within_wd = TRUE
+          check_within_wd = TRUE,
+          include_hashline = TRUE
         )
       },
       name = "btw_tool_files_read",
@@ -595,7 +599,9 @@ To modify an existing file, first read its content using `btw_tool_files_read`, 
 parse_line_ref <- function(ref) {
   parts <- strsplit(ref, ":", fixed = TRUE)[[1]]
   if (length(parts) != 2) {
-    cli::cli_abort("Invalid line reference: {.val {ref}}. Expected format: 'line_number:hash'.")
+    cli::cli_abort(
+      "Invalid line reference: {.val {ref}}. Expected format: 'line_number:hash'."
+    )
   }
   line_num <- suppressWarnings(as.integer(parts[1]))
   if (is.na(line_num)) {
@@ -613,7 +619,9 @@ parse_edit_line_field <- function(line_str) {
   } else if (length(refs) == 2) {
     list(start = parse_line_ref(refs[1]), end = parse_line_ref(refs[2]))
   } else {
-    cli::cli_abort("Invalid line field: {.val {line_str}}. Expected 'N:hash' or 'N:hash,M:hash'.")
+    cli::cli_abort(
+      "Invalid line field: {.val {line_str}}. Expected 'N:hash' or 'N:hash,M:hash'."
+    )
   }
 }
 
@@ -627,17 +635,28 @@ validate_edit_hashes <- function(edits_parsed, file_lines) {
     # Validate start line hash (skip for line 0 / insert at top)
     if (edit$start$line > 0) {
       if (edit$start$line > n_lines) {
-        mismatches <- c(mismatches, sprintf(
-          "Edit %d: line %d does not exist (file has %d lines).",
-          i, edit$start$line, n_lines
-        ))
+        mismatches <- c(
+          mismatches,
+          sprintf(
+            "Edit %d: line %d does not exist (file has %d lines).",
+            i,
+            edit$start$line,
+            n_lines
+          )
+        )
       } else {
         expected_hash <- hashline(file_lines[edit$start$line])
         if (expected_hash != edit$start$hash) {
-          mismatches <- c(mismatches, sprintf(
-            "Edit %d: hash mismatch on line %d (expected '%s', got '%s'). File may have changed since last read.",
-            i, edit$start$line, expected_hash, edit$start$hash
-          ))
+          mismatches <- c(
+            mismatches,
+            sprintf(
+              "Edit %d: hash mismatch on line %d (expected '%s', got '%s'). File may have changed since last read.",
+              i,
+              edit$start$line,
+              expected_hash,
+              edit$start$hash
+            )
+          )
         }
       }
     }
@@ -645,17 +664,28 @@ validate_edit_hashes <- function(edits_parsed, file_lines) {
     # Validate end line hash (for replace_range)
     if (edit$action == "replace_range" && edit$end$line != edit$start$line) {
       if (edit$end$line > n_lines) {
-        mismatches <- c(mismatches, sprintf(
-          "Edit %d: end line %d does not exist (file has %d lines).",
-          i, edit$end$line, n_lines
-        ))
+        mismatches <- c(
+          mismatches,
+          sprintf(
+            "Edit %d: end line %d does not exist (file has %d lines).",
+            i,
+            edit$end$line,
+            n_lines
+          )
+        )
       } else {
         expected_hash <- hashline(file_lines[edit$end$line])
         if (expected_hash != edit$end$hash) {
-          mismatches <- c(mismatches, sprintf(
-            "Edit %d: hash mismatch on end line %d (expected '%s', got '%s').",
-            i, edit$end$line, expected_hash, edit$end$hash
-          ))
+          mismatches <- c(
+            mismatches,
+            sprintf(
+              "Edit %d: hash mismatch on end line %d (expected '%s', got '%s').",
+              i,
+              edit$end$line,
+              expected_hash,
+              edit$end$hash
+            )
+          )
         }
       }
     }
@@ -672,7 +702,8 @@ validate_edit_hashes <- function(edits_parsed, file_lines) {
 check_edit_overlaps <- function(edits_parsed) {
   # Compute affected line ranges for each edit
   ranges <- lapply(edits_parsed, function(edit) {
-    switch(edit$action,
+    switch(
+      edit$action,
       "replace" = c(edit$start$line, edit$start$line),
       "insert_after" = c(edit$start$line, edit$start$line),
       "replace_range" = c(edit$start$line, edit$end$line)
@@ -682,14 +713,18 @@ check_edit_overlaps <- function(edits_parsed) {
   # Check each pair for overlaps (only for replace/replace_range, not inserts)
   for (i in seq_along(ranges)) {
     for (j in seq_along(ranges)) {
-      if (i >= j) next
+      if (i >= j) {
+        next
+      }
       ri <- ranges[[i]]
       rj <- ranges[[j]]
 
       # Two replace/replace_range operations overlap if their ranges intersect
       # insert_after doesn't "occupy" a range, so skip overlap check for inserts
-      if (edits_parsed[[i]]$action == "insert_after" ||
-          edits_parsed[[j]]$action == "insert_after") {
+      if (
+        edits_parsed[[i]]$action == "insert_after" ||
+          edits_parsed[[j]]$action == "insert_after"
+      ) {
         next
       }
 
@@ -705,21 +740,30 @@ check_edit_overlaps <- function(edits_parsed) {
 apply_edits <- function(file_lines, edits_parsed) {
   # Sort edits by start line in DESCENDING order (bottom-to-top)
   # For same line, process replace before insert_after
-  order_keys <- vapply(edits_parsed, function(e) {
-    # Primary: line number descending (negate for descending sort)
-    # Secondary: replace/replace_range before insert_after
-    priority <- if (e$action == "insert_after") 0 else 1
-    e$start$line * 10 + priority
-  }, numeric(1))
+  order_keys <- vapply(
+    edits_parsed,
+    function(e) {
+      # Primary: line number descending (negate for descending sort)
+      # Secondary: replace/replace_range before insert_after
+      priority <- if (e$action == "insert_after") 0 else 1
+      e$start$line * 10 + priority
+    },
+    numeric(1)
+  )
 
   edits_parsed <- edits_parsed[order(order_keys, decreasing = TRUE)]
 
   for (edit in edits_parsed) {
-    file_lines <- switch(edit$action,
+    file_lines <- switch(
+      edit$action,
       "replace" = {
         n <- edit$start$line
         before <- if (n > 1) file_lines[seq_len(n - 1)] else character()
-        after <- if (n < length(file_lines)) file_lines[seq(n + 1, length(file_lines))] else character()
+        after <- if (n < length(file_lines)) {
+          file_lines[seq(n + 1, length(file_lines))]
+        } else {
+          character()
+        }
         c(before, edit$content, after)
       },
       "insert_after" = {
@@ -729,15 +773,27 @@ apply_edits <- function(file_lines, edits_parsed) {
           c(edit$content, file_lines)
         } else {
           before <- file_lines[seq_len(n)]
-          after <- if (n < length(file_lines)) file_lines[seq(n + 1, length(file_lines))] else character()
+          after <- if (n < length(file_lines)) {
+            file_lines[seq(n + 1, length(file_lines))]
+          } else {
+            character()
+          }
           c(before, edit$content, after)
         }
       },
       "replace_range" = {
         start_n <- edit$start$line
         end_n <- edit$end$line
-        before <- if (start_n > 1) file_lines[seq_len(start_n - 1)] else character()
-        after <- if (end_n < length(file_lines)) file_lines[seq(end_n + 1, length(file_lines))] else character()
+        before <- if (start_n > 1) {
+          file_lines[seq_len(start_n - 1)]
+        } else {
+          character()
+        }
+        after <- if (end_n < length(file_lines)) {
+          file_lines[seq(end_n + 1, length(file_lines))]
+        } else {
+          character()
+        }
         c(before, edit$content, after)
       }
     )
@@ -771,7 +827,9 @@ btw_tool_files_edit_impl <- function(path, edits) {
   }
 
   if (!is.list(edits) || length(edits) == 0) {
-    cli::cli_abort("The `edits` parameter must be a non-empty list of edit operations.")
+    cli::cli_abort(
+      "The `edits` parameter must be a non-empty list of edit operations."
+    )
   }
 
   # Read current file
@@ -780,20 +838,26 @@ btw_tool_files_edit_impl <- function(path, edits) {
 
   # Parse all edits
   edits_parsed <- lapply(edits, function(edit) {
-    action <- edit$action %||% cli::cli_abort("Each edit must have an 'action' field.")
-    line_str <- edit$line %||% cli::cli_abort("Each edit must have a 'line' field.")
+    action <- edit$action %||%
+      cli::cli_abort("Each edit must have an 'action' field.")
+    line_str <- edit$line %||%
+      cli::cli_abort("Each edit must have a 'line' field.")
     content <- edit$content %||% character()
     # Ensure content is a character vector
     content <- as.character(content)
 
     if (!action %in% c("replace", "insert_after", "replace_range")) {
-      cli::cli_abort("Invalid action: {.val {action}}. Must be 'replace', 'insert_after', or 'replace_range'.")
+      cli::cli_abort(
+        "Invalid action: {.val {action}}. Must be 'replace', 'insert_after', or 'replace_range'."
+      )
     }
 
     parsed <- parse_edit_line_field(line_str)
 
     if (action == "replace_range" && parsed$start$line >= parsed$end$line) {
-      cli::cli_abort("For 'replace_range', start line must be less than end line. Got: {.val {line_str}}.")
+      cli::cli_abort(
+        "For 'replace_range', start line must be less than end line. Got: {.val {line_str}}."
+      )
     }
 
     list(
