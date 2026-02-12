@@ -961,6 +961,7 @@ IMPORTANT:
         idempotent_hint = FALSE,
         btw_can_register = function() TRUE
       ),
+      convert = FALSE, # avoid having edits be converted into a data.frame
       arguments = list(
         path = ellmer::type_string(
           "The relative path to the file to edit. Must have been previously read with btw_tool_files_read."
