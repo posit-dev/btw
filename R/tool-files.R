@@ -1,6 +1,16 @@
 #' @include tool-result.R
 NULL
 
+hashline <- function(line) {
+  substr(rlang::hash(substr(trimws(line), 1, 80)), 1, 3)
+}
+
+format_hashlines <- function(lines, start_line = 1L) {
+  hashes <- vapply(lines, hashline, character(1), USE.NAMES = FALSE)
+  line_nums <- seq(start_line, length.out = length(lines))
+  paste0(line_nums, ":", hashes, "|", lines)
+}
+
 #' Tool: List files
 #'
 #' @examples
@@ -192,15 +202,19 @@ btw_tool_files_read_impl <- function(
   contents <- read_lines(path, n = line_end)
   contents <- contents[seq(max(line_start, 1), min(line_end, length(contents)))]
 
-  value <- md_code_block(fs::path_ext(path), contents)
-  value <- paste(value, collapse = "\n")
+  # Model-facing output: hashline-annotated, no code fences
+  hashline_output <- format_hashlines(contents, start_line = max(line_start, 1))
+  value <- paste(hashline_output, collapse = "\n")
+
+  # User-facing display: clean code block with syntax highlighting (unchanged)
+  display_md <- paste(md_code_block(fs::path_ext(path), contents), collapse = "\n")
 
   BtwTextFileToolResult(
     value,
     extra = list(
       path = fs::path_rel(path),
       display = list(
-        markdown = value,
+        markdown = display_md,
         title = HTML(title_with_open_file_button("Read", path))
       )
     )
@@ -254,7 +268,24 @@ BtwTextFileToolResult <- S7::new_class(
         )
       },
       name = "btw_tool_files_read",
-      description = "Read an entire text file.",
+      description = paste(
+        "Read a text file. Returns content with hashline annotations.",
+        "",
+        "OUTPUT FORMAT:",
+        "Each line is prefixed with `line_number:hash|` where:",
+        "- `line_number` is the 1-based line number in the file",
+        "- `hash` is a 3-character content hash for edit validation",
+        "- `|` separates the prefix from the line content",
+        "",
+        "Example output:",
+        "  1:a3f|function hello() {",
+        "  2:b1c|    return(\"world\")",
+        "  3:d4e|}",
+        "",
+        "Use these line references with `btw_tool_files_edit` to make",
+        "targeted edits without rewriting the entire file.",
+        sep = "\n"
+      ),
       annotations = ellmer::tool_annotations(
         title = "Read File",
         read_only_hint = TRUE,
