@@ -53,8 +53,10 @@ test_that("btw_tool_files_read() works", {
     ignore_attr = TRUE
   )
 
+  # btw_this() returns clean code block (no hashlines)
+  # read tool @value has hashlines, display.markdown has clean code block
   expect_equal(
-    btw_tool_files_read("mtcars.csv")@value,
+    btw_tool_files_read("mtcars.csv")@extra$display$markdown,
     btw_this("./mtcars.csv")
   )
 

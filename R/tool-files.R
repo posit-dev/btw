@@ -180,7 +180,8 @@ btw_tool_files_read_impl <- function(
   path,
   line_start = 1,
   line_end = 1000,
-  check_within_wd = TRUE
+  check_within_wd = TRUE,
+  include_hashline = TRUE
 ) {
   if (check_within_wd) {
     check_path_within_current_wd(path, call = parent.frame())
@@ -202,12 +203,16 @@ btw_tool_files_read_impl <- function(
   contents <- read_lines(path, n = line_end)
   contents <- contents[seq(max(line_start, 1), min(line_end, length(contents)))]
 
-  # Model-facing output: hashline-annotated, no code fences
-  hashline_output <- format_hashlines(contents, start_line = max(line_start, 1))
-  value <- paste(hashline_output, collapse = "\n")
-
-  # User-facing display: clean code block with syntax highlighting (unchanged)
   display_md <- paste(md_code_block(fs::path_ext(path), contents), collapse = "\n")
+
+  if (include_hashline) {
+    value <- paste(
+      format_hashlines(contents, start_line = max(line_start, 1)),
+      collapse = "\n"
+    )
+  } else {
+    value <- display_md
+  }
 
   BtwTextFileToolResult(
     value,
