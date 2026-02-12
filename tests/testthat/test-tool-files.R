@@ -58,22 +58,22 @@ test_that("btw_tool_files_read() works", {
     btw_this("./mtcars.csv")
   )
 
-  expect_equal(
+  expect_match(
     btw_tool_files_read(
       "mtcars.csv",
       line_start = 1,
       line_end = 1
     )@value,
-    '```csv\n"mpg","cyl","disp","hp","drat","wt","qsec","vs","am","gear","carb"\n```'
+    "^1:[a-f0-9]{3}\\|"
   )
 
-  expect_equal(
+  expect_match(
     btw_tool_files_read(
       "mtcars.csv",
       line_start = 32,
       line_end = 35
     )@value,
-    "```csv\n15,8,301,335,3.54,3.57,14.6,0,1,5,8\n21.4,4,121,109,4.11,2.78,18.6,1,1,4,2\n```"
+    "^32:[a-f0-9]{3}\\|"
   )
 
   skip_if_not_snapshot_env()
@@ -110,6 +110,35 @@ test_that("btw_tool_files_read() works with UTF-8 files containing non-ASCII cha
   # Check that the file content was read (the main point of this test is that
   # the file can be read at all - previously this errored on Windows)
   expect_match(result@value, "1 \\+ 1")
+})
+
+test_that("btw_tool_files_read() returns hashline-annotated output", {
+  withr::local_dir(withr::local_tempdir())
+  writeLines(c("hello", "world", "foo"), "test.txt")
+
+  result <- btw_tool_files_read("test.txt")
+
+  # Value has hashlines (model-facing)
+  lines <- strsplit(result@value, "\n")[[1]]
+  expect_length(lines, 3)
+  expect_match(lines[1], "^1:[a-f0-9]{3}\\|hello$")
+  expect_match(lines[2], "^2:[a-f0-9]{3}\\|world$")
+  expect_match(lines[3], "^3:[a-f0-9]{3}\\|foo$")
+
+  # Display markdown is clean code block (user-facing)
+  expect_match(result@extra$display$markdown, "^```")
+  expect_no_match(result@extra$display$markdown, "^1:[a-f0-9]{3}\\|")
+})
+
+test_that("btw_tool_files_read() hashlines use actual line numbers for ranges", {
+  withr::local_dir(withr::local_tempdir())
+  writeLines(paste0("line", 1:50), "test.txt")
+
+  result <- btw_tool_files_read("test.txt", line_start = 10, line_end = 12)
+  lines <- strsplit(result@value, "\n")[[1]]
+  expect_match(lines[1], "^10:")
+  expect_match(lines[2], "^11:")
+  expect_match(lines[3], "^12:")
 })
 
 test_that("is_common_ignorable_files identifies ignorable files by name", {
