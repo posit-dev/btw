@@ -650,11 +650,9 @@ validate_edit_hashes <- function(edits_parsed, file_lines) {
           mismatches <- c(
             mismatches,
             sprintf(
-              "Edit %d: hash mismatch on line %d (expected '%s', got '%s'). File may have changed since last read.",
+              "Edit %d: hash mismatch on line %d. File may have changed since last read.",
               i,
-              edit$start$line,
-              expected_hash,
-              edit$start$hash
+              edit$start$line
             )
           )
         }
@@ -679,11 +677,9 @@ validate_edit_hashes <- function(edits_parsed, file_lines) {
           mismatches <- c(
             mismatches,
             sprintf(
-              "Edit %d: hash mismatch on end line %d (expected '%s', got '%s').",
+              "Edit %d: hash mismatch on end line %d.",
               i,
-              edit$end$line,
-              expected_hash,
-              edit$end$hash
+              edit$end$line
             )
           )
         }
