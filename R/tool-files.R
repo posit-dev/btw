@@ -595,6 +595,193 @@ To modify an existing file, first read its content using `btw_tool_files_read`, 
 
 # --- Edit Tool ---
 
+#' Tool: Edit a text file
+#'
+#' @param path Path to the file to edit. The `path` must be in the current
+#'   working directory.
+#' @param edits A list of edit operations. Each edit is a named list with
+#'   `action`, `line`, and `content` fields.
+#' @inheritParams btw_tool_docs_package_news
+#'
+#' @return Returns a message confirming the edits were applied.
+#'
+#' @family files tools
+#' @export
+btw_tool_files_edit <- function(path, edits, `_intent`) {}
+
+btw_tool_files_edit_impl <- function(path, edits) {
+  check_string(path)
+  check_path_within_current_wd(path)
+
+  if (!fs::is_file(path) || !fs::file_exists(path)) {
+    cli::cli_abort(
+      "Path {.path {path}} is not a file or does not exist."
+    )
+  }
+
+  if (!is.list(edits) || length(edits) == 0) {
+    cli::cli_abort(
+      "The `edits` parameter must be a non-empty list of edit operations."
+    )
+  }
+
+  # Read current file
+  file_lines <- read_lines(path)
+  previous_content <- paste(file_lines, collapse = "\n")
+
+  # Parse all edits
+  edits_parsed <- lapply(edits, function(edit) {
+    action <- edit$action %||%
+      cli::cli_abort("Each edit must have an 'action' field.")
+    line_str <- edit$line %||%
+      cli::cli_abort("Each edit must have a 'line' field.")
+    content <- edit$content %||% character()
+    # Ensure content is a character vector
+    content <- as.character(content)
+
+    if (!action %in% c("replace", "insert_after", "replace_range")) {
+      cli::cli_abort(
+        "Invalid action: {.val {action}}. Must be 'replace', 'insert_after', or 'replace_range'."
+      )
+    }
+
+    parsed <- parse_edit_line_field(line_str)
+
+    if (action == "replace_range" && parsed$start$line >= parsed$end$line) {
+      cli::cli_abort(
+        "For 'replace_range', start line must be less than end line. Got: {.val {line_str}}."
+      )
+    }
+
+    list(
+      action = action,
+      start = parsed$start,
+      end = parsed$end,
+      content = content
+    )
+  })
+
+  # Validate hashes against current file state
+  validate_edit_hashes(edits_parsed, file_lines)
+
+  # Check for overlapping edits
+  check_edit_overlaps(edits_parsed)
+
+  # Apply edits
+  new_lines <- apply_edits(file_lines, edits_parsed)
+  new_content <- paste(new_lines, collapse = "\n")
+
+  # Write back
+  write_file(new_content, path)
+
+  BtwEditFileToolResult(
+    sprintf("Successfully applied %d edit(s) to %s.", length(edits), path),
+    extra = list(
+      path = path,
+      content = new_content,
+      previous_content = previous_content,
+      display = list(
+        markdown = md_code_block(fs::path_ext(path), new_content),
+        title = HTML(title_with_open_file_button("Edit", path)),
+        show_request = FALSE,
+        icon = tool_icon("file-save")
+      )
+    )
+  )
+}
+
+BtwEditFileToolResult <- S7::new_class(
+  "BtwEditFileToolResult",
+  parent = BtwToolResult
+)
+
+S7::method(contents_shinychat, BtwEditFileToolResult) <- function(content) {
+  res <- shinychat::contents_shinychat(
+    S7::super(content, ellmer::ContentToolResult)
+  )
+
+  if (!is_installed("diffviewer")) {
+    return(res)
+  }
+
+  new <- content@extra$content
+  old <- content@extra$previous_content
+
+  dir <- withr::local_tempdir()
+  path_ext <- fs::path_ext(content@extra$path)
+  path_file <- fs::path_ext_remove(fs::path_file(content@extra$path))
+
+  path_old <- fs::path(dir, sprintf("%s", path_file), ext = path_ext)
+  path_new <- fs::path(dir, sprintf("%s.new", path_file), ext = path_ext)
+
+  write_file(old %||% "", path_old)
+  write_file(new %||% "", path_new)
+
+  res$value <- diffviewer::visual_diff(path_old, path_new)
+  res$value_type <- "html"
+  res$class <- "btw-tool-result-edit-file"
+  res
+}
+
+.btw_add_to_tools(
+  name = "btw_tool_files_edit",
+  group = "files",
+  tool = function() {
+    ellmer::tool(
+      btw_tool_files_edit_impl,
+      name = "btw_tool_files_edit",
+      description = 'Edit a text file using hashline references from btw_tool_files_read.
+
+WHEN TO USE:
+Use this tool to make targeted edits to a file after reading it with btw_tool_files_read.
+Each edit references lines by their `line_number:hash` identifier from the read output.
+
+ACTIONS:
+- "replace": Replace a single line. Use `content: []` to delete a line.
+- "insert_after": Insert new lines after the referenced line. Use `line: "0:000"` to insert at the top of the file.
+- "replace_range": Replace a range of lines. Use `line: "start_line:hash,end_line:hash"`.
+
+IMPORTANT:
+- Always read the file first with btw_tool_files_read to get current line hashes.
+- If an edit fails due to hash mismatch, re-read the file to get updated hashes.
+- The `content` array contains the new lines (one string per line, no trailing newlines).
+- Multiple edits in one call are applied atomically (all or nothing).
+',
+      annotations = ellmer::tool_annotations(
+        title = "Edit File",
+        read_only_hint = FALSE,
+        open_world_hint = FALSE,
+        idempotent_hint = FALSE,
+        btw_can_register = function() TRUE
+      ),
+      convert = FALSE, # avoid having edits be converted into a data.frame
+      arguments = list(
+        path = ellmer::type_string(
+          "The relative path to the file to edit. Must have been previously read with btw_tool_files_read."
+        ),
+        edits = ellmer::type_array(
+          description = "Array of edit operations to apply to the file.",
+          items = ellmer::type_object(
+            .description = "A single edit operation.",
+            action = ellmer::type_enum(
+              values = c("replace", "insert_after", "replace_range"),
+              description = 'The edit action: "replace" (single line), "insert_after" (insert new lines after reference), or "replace_range" (replace a range of lines).'
+            ),
+            line = ellmer::type_string(
+              'Line reference from btw_tool_files_read output. Format: "line_number:hash" for replace/insert_after, or "start_line:hash,end_line:hash" for replace_range. Use "0:000" with insert_after to insert at the top of the file.'
+            ),
+            content = ellmer::type_array(
+              description = "Array of new line strings. Each element is one line of content. Use an empty array [] to delete lines.",
+              items = ellmer::type_string()
+            )
+          )
+        )
+      )
+    )
+  }
+)
+
+
 # Parse a single line reference "N:hash" into list(line = N, hash = "abc")
 parse_line_ref <- function(ref) {
   parts <- strsplit(ref, ":", fixed = TRUE)[[1]]
@@ -797,189 +984,3 @@ apply_edits <- function(file_lines, edits_parsed) {
 
   file_lines
 }
-
-#' Tool: Edit a text file
-#'
-#' @param path Path to the file to edit. The `path` must be in the current
-#'   working directory.
-#' @param edits A list of edit operations. Each edit is a named list with
-#'   `action`, `line`, and `content` fields.
-#' @inheritParams btw_tool_docs_package_news
-#'
-#' @return Returns a message confirming the edits were applied.
-#'
-#' @family files tools
-#' @export
-btw_tool_files_edit <- function(path, edits, `_intent`) {}
-
-btw_tool_files_edit_impl <- function(path, edits) {
-  check_string(path)
-  check_path_within_current_wd(path)
-
-  if (!fs::is_file(path) || !fs::file_exists(path)) {
-    cli::cli_abort(
-      "Path {.path {path}} is not a file or does not exist."
-    )
-  }
-
-  if (!is.list(edits) || length(edits) == 0) {
-    cli::cli_abort(
-      "The `edits` parameter must be a non-empty list of edit operations."
-    )
-  }
-
-  # Read current file
-  file_lines <- read_lines(path)
-  previous_content <- paste(file_lines, collapse = "\n")
-
-  # Parse all edits
-  edits_parsed <- lapply(edits, function(edit) {
-    action <- edit$action %||%
-      cli::cli_abort("Each edit must have an 'action' field.")
-    line_str <- edit$line %||%
-      cli::cli_abort("Each edit must have a 'line' field.")
-    content <- edit$content %||% character()
-    # Ensure content is a character vector
-    content <- as.character(content)
-
-    if (!action %in% c("replace", "insert_after", "replace_range")) {
-      cli::cli_abort(
-        "Invalid action: {.val {action}}. Must be 'replace', 'insert_after', or 'replace_range'."
-      )
-    }
-
-    parsed <- parse_edit_line_field(line_str)
-
-    if (action == "replace_range" && parsed$start$line >= parsed$end$line) {
-      cli::cli_abort(
-        "For 'replace_range', start line must be less than end line. Got: {.val {line_str}}."
-      )
-    }
-
-    list(
-      action = action,
-      start = parsed$start,
-      end = parsed$end,
-      content = content
-    )
-  })
-
-  # Validate hashes against current file state
-  validate_edit_hashes(edits_parsed, file_lines)
-
-  # Check for overlapping edits
-  check_edit_overlaps(edits_parsed)
-
-  # Apply edits
-  new_lines <- apply_edits(file_lines, edits_parsed)
-  new_content <- paste(new_lines, collapse = "\n")
-
-  # Write back
-  write_file(new_content, path)
-
-  BtwEditFileToolResult(
-    sprintf("Successfully applied %d edit(s) to %s.", length(edits), path),
-    extra = list(
-      path = path,
-      content = new_content,
-      previous_content = previous_content,
-      display = list(
-        markdown = md_code_block(fs::path_ext(path), new_content),
-        title = HTML(title_with_open_file_button("Edit", path)),
-        show_request = FALSE,
-        icon = tool_icon("file-save")
-      )
-    )
-  )
-}
-
-BtwEditFileToolResult <- S7::new_class(
-  "BtwEditFileToolResult",
-  parent = BtwToolResult
-)
-
-S7::method(contents_shinychat, BtwEditFileToolResult) <- function(content) {
-  res <- shinychat::contents_shinychat(
-    S7::super(content, ellmer::ContentToolResult)
-  )
-
-  if (!is_installed("diffviewer")) {
-    return(res)
-  }
-
-  new <- content@extra$content
-  old <- content@extra$previous_content
-
-  dir <- withr::local_tempdir()
-  path_ext <- fs::path_ext(content@extra$path)
-  path_file <- fs::path_ext_remove(fs::path_file(content@extra$path))
-
-  path_old <- fs::path(dir, sprintf("%s", path_file), ext = path_ext)
-  path_new <- fs::path(dir, sprintf("%s.new", path_file), ext = path_ext)
-
-  write_file(old %||% "", path_old)
-  write_file(new %||% "", path_new)
-
-  res$value <- diffviewer::visual_diff(path_old, path_new)
-  res$value_type <- "html"
-  res$class <- "btw-tool-result-edit-file"
-  res
-}
-
-.btw_add_to_tools(
-  name = "btw_tool_files_edit",
-  group = "files",
-  tool = function() {
-    ellmer::tool(
-      btw_tool_files_edit_impl,
-      name = "btw_tool_files_edit",
-      description = 'Edit a text file using hashline references from btw_tool_files_read.
-
-WHEN TO USE:
-Use this tool to make targeted edits to a file after reading it with btw_tool_files_read.
-Each edit references lines by their `line_number:hash` identifier from the read output.
-
-ACTIONS:
-- "replace": Replace a single line. Use `content: []` to delete a line.
-- "insert_after": Insert new lines after the referenced line. Use `line: "0:000"` to insert at the top of the file.
-- "replace_range": Replace a range of lines. Use `line: "start_line:hash,end_line:hash"`.
-
-IMPORTANT:
-- Always read the file first with btw_tool_files_read to get current line hashes.
-- If an edit fails due to hash mismatch, re-read the file to get updated hashes.
-- The `content` array contains the new lines (one string per line, no trailing newlines).
-- Multiple edits in one call are applied atomically (all or nothing).
-',
-      annotations = ellmer::tool_annotations(
-        title = "Edit File",
-        read_only_hint = FALSE,
-        open_world_hint = FALSE,
-        idempotent_hint = FALSE,
-        btw_can_register = function() TRUE
-      ),
-      convert = FALSE, # avoid having edits be converted into a data.frame
-      arguments = list(
-        path = ellmer::type_string(
-          "The relative path to the file to edit. Must have been previously read with btw_tool_files_read."
-        ),
-        edits = ellmer::type_array(
-          description = "Array of edit operations to apply to the file.",
-          items = ellmer::type_object(
-            .description = "A single edit operation.",
-            action = ellmer::type_enum(
-              values = c("replace", "insert_after", "replace_range"),
-              description = 'The edit action: "replace" (single line), "insert_after" (insert new lines after reference), or "replace_range" (replace a range of lines).'
-            ),
-            line = ellmer::type_string(
-              'Line reference from btw_tool_files_read output. Format: "line_number:hash" for replace/insert_after, or "start_line:hash,end_line:hash" for replace_range. Use "0:000" with insert_after to insert at the top of the file.'
-            ),
-            content = ellmer::type_array(
-              description = "Array of new line strings. Each element is one line of content. Use an empty array [] to delete lines.",
-              items = ellmer::type_string()
-            )
-          )
-        )
-      )
-    )
-  }
-)
