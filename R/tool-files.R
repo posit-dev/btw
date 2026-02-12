@@ -583,3 +583,337 @@ To modify an existing file, first read its content using `btw_tool_files_read`, 
     )
   }
 )
+
+# --- Edit Tool ---
+
+# Parse a single line reference "N:hash" into list(line = N, hash = "abc")
+parse_line_ref <- function(ref) {
+  parts <- strsplit(ref, ":", fixed = TRUE)[[1]]
+  if (length(parts) != 2) {
+    cli::cli_abort("Invalid line reference: {.val {ref}}. Expected format: 'line_number:hash'.")
+  }
+  line_num <- suppressWarnings(as.integer(parts[1]))
+  if (is.na(line_num)) {
+    cli::cli_abort("Invalid line number in reference: {.val {ref}}.")
+  }
+  list(line = line_num, hash = parts[2])
+}
+
+# Parse the `line` field from an edit, which may be "N:hash" or "N:hash,M:hash"
+parse_edit_line_field <- function(line_str) {
+  refs <- strsplit(line_str, ",", fixed = TRUE)[[1]]
+  if (length(refs) == 1) {
+    start <- parse_line_ref(refs[1])
+    list(start = start, end = start)
+  } else if (length(refs) == 2) {
+    list(start = parse_line_ref(refs[1]), end = parse_line_ref(refs[2]))
+  } else {
+    cli::cli_abort("Invalid line field: {.val {line_str}}. Expected 'N:hash' or 'N:hash,M:hash'.")
+  }
+}
+
+validate_edit_hashes <- function(edits_parsed, file_lines) {
+  n_lines <- length(file_lines)
+  mismatches <- character()
+
+  for (i in seq_along(edits_parsed)) {
+    edit <- edits_parsed[[i]]
+
+    # Validate start line hash (skip for line 0 / insert at top)
+    if (edit$start$line > 0) {
+      if (edit$start$line > n_lines) {
+        mismatches <- c(mismatches, sprintf(
+          "Edit %d: line %d does not exist (file has %d lines).",
+          i, edit$start$line, n_lines
+        ))
+      } else {
+        expected_hash <- hashline(file_lines[edit$start$line])
+        if (expected_hash != edit$start$hash) {
+          mismatches <- c(mismatches, sprintf(
+            "Edit %d: hash mismatch on line %d (expected '%s', got '%s'). File may have changed since last read.",
+            i, edit$start$line, expected_hash, edit$start$hash
+          ))
+        }
+      }
+    }
+
+    # Validate end line hash (for replace_range)
+    if (edit$action == "replace_range" && edit$end$line != edit$start$line) {
+      if (edit$end$line > n_lines) {
+        mismatches <- c(mismatches, sprintf(
+          "Edit %d: end line %d does not exist (file has %d lines).",
+          i, edit$end$line, n_lines
+        ))
+      } else {
+        expected_hash <- hashline(file_lines[edit$end$line])
+        if (expected_hash != edit$end$hash) {
+          mismatches <- c(mismatches, sprintf(
+            "Edit %d: hash mismatch on end line %d (expected '%s', got '%s').",
+            i, edit$end$line, expected_hash, edit$end$hash
+          ))
+        }
+      }
+    }
+  }
+
+  if (length(mismatches) > 0) {
+    cli::cli_abort(c(
+      "Edit validation failed. Re-read the file to get updated line references.",
+      set_names(mismatches, rep("x", length(mismatches)))
+    ))
+  }
+}
+
+check_edit_overlaps <- function(edits_parsed) {
+  # Compute affected line ranges for each edit
+  ranges <- lapply(edits_parsed, function(edit) {
+    switch(edit$action,
+      "replace" = c(edit$start$line, edit$start$line),
+      "insert_after" = c(edit$start$line, edit$start$line),
+      "replace_range" = c(edit$start$line, edit$end$line)
+    )
+  })
+
+  # Check each pair for overlaps (only for replace/replace_range, not inserts)
+  for (i in seq_along(ranges)) {
+    for (j in seq_along(ranges)) {
+      if (i >= j) next
+      ri <- ranges[[i]]
+      rj <- ranges[[j]]
+
+      # Two replace/replace_range operations overlap if their ranges intersect
+      # insert_after doesn't "occupy" a range, so skip overlap check for inserts
+      if (edits_parsed[[i]]$action == "insert_after" ||
+          edits_parsed[[j]]$action == "insert_after") {
+        next
+      }
+
+      if (ri[1] <= rj[2] && rj[1] <= ri[2]) {
+        cli::cli_abort(
+          "Edits {i} and {j} have overlapping line ranges ({ri[1]}-{ri[2]} and {rj[1]}-{rj[2]})."
+        )
+      }
+    }
+  }
+}
+
+apply_edits <- function(file_lines, edits_parsed) {
+  # Sort edits by start line in DESCENDING order (bottom-to-top)
+  # For same line, process replace before insert_after
+  order_keys <- vapply(edits_parsed, function(e) {
+    # Primary: line number descending (negate for descending sort)
+    # Secondary: replace/replace_range before insert_after
+    priority <- if (e$action == "insert_after") 0 else 1
+    e$start$line * 10 + priority
+  }, numeric(1))
+
+  edits_parsed <- edits_parsed[order(order_keys, decreasing = TRUE)]
+
+  for (edit in edits_parsed) {
+    file_lines <- switch(edit$action,
+      "replace" = {
+        n <- edit$start$line
+        before <- if (n > 1) file_lines[seq_len(n - 1)] else character()
+        after <- if (n < length(file_lines)) file_lines[seq(n + 1, length(file_lines))] else character()
+        c(before, edit$content, after)
+      },
+      "insert_after" = {
+        n <- edit$start$line
+        if (n == 0) {
+          # Insert at top of file
+          c(edit$content, file_lines)
+        } else {
+          before <- file_lines[seq_len(n)]
+          after <- if (n < length(file_lines)) file_lines[seq(n + 1, length(file_lines))] else character()
+          c(before, edit$content, after)
+        }
+      },
+      "replace_range" = {
+        start_n <- edit$start$line
+        end_n <- edit$end$line
+        before <- if (start_n > 1) file_lines[seq_len(start_n - 1)] else character()
+        after <- if (end_n < length(file_lines)) file_lines[seq(end_n + 1, length(file_lines))] else character()
+        c(before, edit$content, after)
+      }
+    )
+  }
+
+  file_lines
+}
+
+#' Tool: Edit a text file
+#'
+#' @param path Path to the file to edit. The `path` must be in the current
+#'   working directory.
+#' @param edits A list of edit operations. Each edit is a named list with
+#'   `action`, `line`, and `content` fields.
+#' @inheritParams btw_tool_docs_package_news
+#'
+#' @return Returns a message confirming the edits were applied.
+#'
+#' @family files tools
+#' @export
+btw_tool_files_edit <- function(path, edits, `_intent`) {}
+
+btw_tool_files_edit_impl <- function(path, edits) {
+  check_string(path)
+  check_path_within_current_wd(path)
+
+  if (!fs::is_file(path) || !fs::file_exists(path)) {
+    cli::cli_abort(
+      "Path {.path {path}} is not a file or does not exist."
+    )
+  }
+
+  if (!is.list(edits) || length(edits) == 0) {
+    cli::cli_abort("The `edits` parameter must be a non-empty list of edit operations.")
+  }
+
+  # Read current file
+  file_lines <- read_lines(path)
+  previous_content <- paste(file_lines, collapse = "\n")
+
+  # Parse all edits
+  edits_parsed <- lapply(edits, function(edit) {
+    action <- edit$action %||% cli::cli_abort("Each edit must have an 'action' field.")
+    line_str <- edit$line %||% cli::cli_abort("Each edit must have a 'line' field.")
+    content <- edit$content %||% character()
+    # Ensure content is a character vector
+    content <- as.character(content)
+
+    if (!action %in% c("replace", "insert_after", "replace_range")) {
+      cli::cli_abort("Invalid action: {.val {action}}. Must be 'replace', 'insert_after', or 'replace_range'.")
+    }
+
+    parsed <- parse_edit_line_field(line_str)
+
+    if (action == "replace_range" && parsed$start$line >= parsed$end$line) {
+      cli::cli_abort("For 'replace_range', start line must be less than end line. Got: {.val {line_str}}.")
+    }
+
+    list(
+      action = action,
+      start = parsed$start,
+      end = parsed$end,
+      content = content
+    )
+  })
+
+  # Validate hashes against current file state
+  validate_edit_hashes(edits_parsed, file_lines)
+
+  # Check for overlapping edits
+  check_edit_overlaps(edits_parsed)
+
+  # Apply edits
+  new_lines <- apply_edits(file_lines, edits_parsed)
+  new_content <- paste(new_lines, collapse = "\n")
+
+  # Write back
+  write_file(new_content, path)
+
+  BtwEditFileToolResult(
+    sprintf("Successfully applied %d edit(s) to %s.", length(edits), path),
+    extra = list(
+      path = path,
+      content = new_content,
+      previous_content = previous_content,
+      display = list(
+        markdown = md_code_block(fs::path_ext(path), new_content),
+        title = HTML(title_with_open_file_button("Edit", path)),
+        show_request = FALSE,
+        icon = tool_icon("file-save")
+      )
+    )
+  )
+}
+
+BtwEditFileToolResult <- S7::new_class(
+  "BtwEditFileToolResult",
+  parent = BtwToolResult
+)
+
+S7::method(contents_shinychat, BtwEditFileToolResult) <- function(content) {
+  res <- shinychat::contents_shinychat(
+    S7::super(content, ellmer::ContentToolResult)
+  )
+
+  if (!is_installed("diffviewer")) {
+    return(res)
+  }
+
+  new <- content@extra$content
+  old <- content@extra$previous_content
+
+  dir <- withr::local_tempdir()
+  path_ext <- fs::path_ext(content@extra$path)
+  path_file <- fs::path_ext_remove(fs::path_file(content@extra$path))
+
+  path_old <- fs::path(dir, sprintf("%s", path_file), ext = path_ext)
+  path_new <- fs::path(dir, sprintf("%s.new", path_file), ext = path_ext)
+
+  write_file(old %||% "", path_old)
+  write_file(new %||% "", path_new)
+
+  res$value <- diffviewer::visual_diff(path_old, path_new)
+  res$value_type <- "html"
+  res$class <- "btw-tool-result-edit-file"
+  res
+}
+
+.btw_add_to_tools(
+  name = "btw_tool_files_edit",
+  group = "files",
+  tool = function() {
+    ellmer::tool(
+      btw_tool_files_edit_impl,
+      name = "btw_tool_files_edit",
+      description = 'Edit a text file using hashline references from btw_tool_files_read.
+
+WHEN TO USE:
+Use this tool to make targeted edits to a file after reading it with btw_tool_files_read.
+Each edit references lines by their `line_number:hash` identifier from the read output.
+
+ACTIONS:
+- "replace": Replace a single line. Use `content: []` to delete a line.
+- "insert_after": Insert new lines after the referenced line. Use `line: "0:000"` to insert at the top of the file.
+- "replace_range": Replace a range of lines. Use `line: "start_line:hash,end_line:hash"`.
+
+IMPORTANT:
+- Always read the file first with btw_tool_files_read to get current line hashes.
+- If an edit fails due to hash mismatch, re-read the file to get updated hashes.
+- The `content` array contains the new lines (one string per line, no trailing newlines).
+- Multiple edits in one call are applied atomically (all or nothing).
+',
+      annotations = ellmer::tool_annotations(
+        title = "Edit File",
+        read_only_hint = FALSE,
+        open_world_hint = FALSE,
+        idempotent_hint = FALSE,
+        btw_can_register = function() TRUE
+      ),
+      arguments = list(
+        path = ellmer::type_string(
+          "The relative path to the file to edit. Must have been previously read with btw_tool_files_read."
+        ),
+        edits = ellmer::type_array(
+          description = "Array of edit operations to apply to the file.",
+          items = ellmer::type_object(
+            .description = "A single edit operation.",
+            action = ellmer::type_enum(
+              values = c("replace", "insert_after", "replace_range"),
+              description = 'The edit action: "replace" (single line), "insert_after" (insert new lines after reference), or "replace_range" (replace a range of lines).'
+            ),
+            line = ellmer::type_string(
+              'Line reference from btw_tool_files_read output. Format: "line_number:hash" for replace/insert_after, or "start_line:hash,end_line:hash" for replace_range. Use "0:000" with insert_after to insert at the top of the file.'
+            ),
+            content = ellmer::type_array(
+              description = "Array of new line strings. Each element is one line of content. Use an empty array [] to delete lines.",
+              items = ellmer::type_string()
+            )
+          )
+        )
+      )
+    )
+  }
+)
