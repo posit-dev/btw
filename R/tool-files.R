@@ -709,6 +709,12 @@ S7::method(contents_shinychat, BtwEditFileToolResult) <- function(content) {
   )
 
   if (!is_installed("diffviewer")) {
+    cli::cli_warn(
+      "Install the {.pkg diffviewer} package for rich file diffs in {.fn btw::btw_app}: {.run install.packages('diffviewer')}",
+      call = quote(btw_tool_files_edit),
+      .frequency = "once",
+      .frequency_id = "btw-tool-files-edit-diffviewer"
+    )
     return(res)
   }
 
@@ -719,7 +725,7 @@ S7::method(contents_shinychat, BtwEditFileToolResult) <- function(content) {
   path_ext <- fs::path_ext(content@extra$path)
   path_file <- fs::path_ext_remove(fs::path_file(content@extra$path))
 
-  path_old <- fs::path(dir, sprintf("%s", path_file), ext = path_ext)
+  path_old <- fs::path(dir, path_file, ext = path_ext)
   path_new <- fs::path(dir, sprintf("%s.new", path_file), ext = path_ext)
 
   write_file(old %||% "", path_old)
@@ -827,8 +833,25 @@ parse_edit_line_field <- function(line_str) {
   }
 }
 
-validate_edit_hashes <- function(edits_parsed, file_lines) {
+validate_one_hash <- function(line_num, provided_hash, file_lines, label, edit_index) {
   n_lines <- length(file_lines)
+  if (line_num > n_lines) {
+    return(sprintf(
+      "Edit %d: %s %d does not exist (file has %d lines).",
+      edit_index, label, line_num, n_lines
+    ))
+  }
+  expected <- hashline(file_lines[line_num])
+  if (expected != provided_hash) {
+    return(sprintf(
+      "Edit %d: hash mismatch on %s %d. File may have changed since last read.",
+      edit_index, label, line_num
+    ))
+  }
+  NULL
+}
+
+validate_edit_hashes <- function(edits_parsed, file_lines) {
   mismatches <- character()
 
   for (i in seq_along(edits_parsed)) {
@@ -836,56 +859,18 @@ validate_edit_hashes <- function(edits_parsed, file_lines) {
 
     # Validate start line hash (skip for line 0 / insert at top)
     if (edit$start$line > 0) {
-      if (edit$start$line > n_lines) {
-        mismatches <- c(
-          mismatches,
-          sprintf(
-            "Edit %d: line %d does not exist (file has %d lines).",
-            i,
-            edit$start$line,
-            n_lines
-          )
-        )
-      } else {
-        expected_hash <- hashline(file_lines[edit$start$line])
-        if (expected_hash != edit$start$hash) {
-          mismatches <- c(
-            mismatches,
-            sprintf(
-              "Edit %d: hash mismatch on line %d. File may have changed since last read.",
-              i,
-              edit$start$line
-            )
-          )
-        }
-      }
+      msg <- validate_one_hash(
+        edit$start$line, edit$start$hash, file_lines, "line", i
+      )
+      if (!is.null(msg)) mismatches <- c(mismatches, msg)
     }
 
     # Validate end line hash (for replace_range)
     if (edit$action == "replace_range" && edit$end$line != edit$start$line) {
-      if (edit$end$line > n_lines) {
-        mismatches <- c(
-          mismatches,
-          sprintf(
-            "Edit %d: end line %d does not exist (file has %d lines).",
-            i,
-            edit$end$line,
-            n_lines
-          )
-        )
-      } else {
-        expected_hash <- hashline(file_lines[edit$end$line])
-        if (expected_hash != edit$end$hash) {
-          mismatches <- c(
-            mismatches,
-            sprintf(
-              "Edit %d: hash mismatch on end line %d.",
-              i,
-              edit$end$line
-            )
-          )
-        }
-      }
+      msg <- validate_one_hash(
+        edit$end$line, edit$end$hash, file_lines, "end line", i
+      )
+      if (!is.null(msg)) mismatches <- c(mismatches, msg)
     }
   }
 
@@ -898,34 +883,18 @@ validate_edit_hashes <- function(edits_parsed, file_lines) {
 }
 
 check_edit_overlaps <- function(edits_parsed) {
-  # Compute affected line ranges for each edit
-  ranges <- lapply(edits_parsed, function(edit) {
-    switch(
-      edit$action,
-      "replace" = c(edit$start$line, edit$start$line),
-      "insert_after" = c(edit$start$line, edit$start$line),
-      "replace_range" = c(edit$start$line, edit$end$line)
-    )
-  })
+  # Only check replace/replace_range ops (inserts don't occupy ranges)
+  replace_edits <- Filter(function(e) e$action != "insert_after", edits_parsed)
+  if (length(replace_edits) < 2) {
+    return(invisible())
+  }
 
-  # Check each pair for overlaps (only for replace/replace_range, not inserts)
-  for (i in seq_along(ranges)) {
-    for (j in seq_along(ranges)) {
-      if (i >= j) {
-        next
-      }
+  ranges <- lapply(replace_edits, function(e) c(e$start$line, e$end$line))
+
+  for (i in seq_len(length(ranges) - 1)) {
+    for (j in seq(i + 1, length(ranges))) {
       ri <- ranges[[i]]
       rj <- ranges[[j]]
-
-      # Two replace/replace_range operations overlap if their ranges intersect
-      # insert_after doesn't "occupy" a range, so skip overlap check for inserts
-      if (
-        edits_parsed[[i]]$action == "insert_after" ||
-          edits_parsed[[j]]$action == "insert_after"
-      ) {
-        next
-      }
-
       if (ri[1] <= rj[2] && rj[1] <= ri[2]) {
         cli::cli_abort(
           "Edits {i} and {j} have overlapping line ranges ({ri[1]}-{ri[2]} and {rj[1]}-{rj[2]})."
@@ -935,65 +904,55 @@ check_edit_overlaps <- function(edits_parsed) {
   }
 }
 
-apply_edits <- function(file_lines, edits_parsed) {
-  # Sort edits by start line in DESCENDING order (bottom-to-top)
-  # For same line, process replace before insert_after
+sort_edits_ascending <- function(edits_parsed) {
+  start_lines <- vapply(edits_parsed, function(e) e$start$line, numeric(1))
+  edits_parsed[order(start_lines)]
+}
+
+sort_edits_descending <- function(edits_parsed) {
+  # Primary: start line descending. Secondary: replace/replace_range before
+
+  # insert_after (so a replace on the same line is applied before an insert).
   order_keys <- vapply(
     edits_parsed,
     function(e) {
-      # Primary: line number descending (negate for descending sort)
-      # Secondary: replace/replace_range before insert_after
       priority <- if (e$action == "insert_after") 0 else 1
       e$start$line * 10 + priority
     },
     numeric(1)
   )
+  edits_parsed[order(order_keys, decreasing = TRUE)]
+}
 
-  edits_parsed <- edits_parsed[order(order_keys, decreasing = TRUE)]
+splice_lines <- function(file_lines, start, end, replacement) {
+  before <- if (start > 1) file_lines[seq_len(start - 1)] else character()
+  after <- if (end < length(file_lines)) {
+    file_lines[seq(end + 1, length(file_lines))]
+  } else {
+    character()
+  }
+  c(before, replacement, after)
+}
+
+apply_edits <- function(file_lines, edits_parsed) {
+  # Sort edits bottom-to-top so splicing doesn't shift later edit positions
+  edits_parsed <- sort_edits_descending(edits_parsed)
 
   for (edit in edits_parsed) {
+    n <- edit$start$line
     file_lines <- switch(
       edit$action,
-      "replace" = {
-        n <- edit$start$line
-        before <- if (n > 1) file_lines[seq_len(n - 1)] else character()
-        after <- if (n < length(file_lines)) {
-          file_lines[seq(n + 1, length(file_lines))]
-        } else {
-          character()
-        }
-        c(before, edit$content, after)
-      },
+      "replace" = splice_lines(file_lines, n, n, edit$content),
       "insert_after" = {
-        n <- edit$start$line
         if (n == 0) {
-          # Insert at top of file
           c(edit$content, file_lines)
         } else {
-          before <- file_lines[seq_len(n)]
-          after <- if (n < length(file_lines)) {
-            file_lines[seq(n + 1, length(file_lines))]
-          } else {
-            character()
-          }
-          c(before, edit$content, after)
+          splice_lines(file_lines, n + 1, n, edit$content)
         }
       },
-      "replace_range" = {
-        start_n <- edit$start$line
-        end_n <- edit$end$line
-        before <- if (start_n > 1) {
-          file_lines[seq_len(start_n - 1)]
-        } else {
-          character()
-        }
-        after <- if (end_n < length(file_lines)) {
-          file_lines[seq(end_n + 1, length(file_lines))]
-        } else {
-          character()
-        }
-        c(before, edit$content, after)
-      }
+      "replace_range" = splice_lines(
+        file_lines, n, edit$end$line, edit$content
+      )
     )
   }
 
@@ -1008,12 +967,7 @@ compute_edit_regions <- function(edits_parsed) {
   }
 
   # Sort by original start line ascending
-  start_lines <- vapply(
-    edits_parsed,
-    function(e) e$start$line,
-    numeric(1)
-  )
-  edits_sorted <- edits_parsed[order(start_lines)]
+  edits_sorted <- sort_edits_ascending(edits_parsed)
 
   cumulative_delta <- 0L
   regions <- vector("list", length(edits_sorted))

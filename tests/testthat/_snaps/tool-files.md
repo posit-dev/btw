@@ -48,7 +48,7 @@
       Error in `btw_tool_files_write()`:
       ! You are not allowed to list or read files outside of the project directory. Make sure that `path` is relative to the current working directory.
 
-# edit response: 1:1 replace has hashlines, no shift hint
+# edit response: multiple 1:1 replaces merged, no shift hint
 
     Code
       writeLines(edit_result@value)

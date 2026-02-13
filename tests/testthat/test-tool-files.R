@@ -465,6 +465,34 @@ test_that("btw_tool_files_edit rejects edits outside working directory", {
   )
 })
 
+test_that("btw_tool_files_edit replace works on last line of file", {
+  withr::local_dir(withr::local_tempdir())
+  writeLines(c("line1", "line2", "line3"), "test.txt")
+
+  read_result <- btw_tool_files_read("test.txt")
+  ref3 <- get_line_ref(read_result, 3)
+
+  btw_tool_files_edit(
+    "test.txt",
+    list(
+      list(action = "replace", line = ref3, content = list("replaced"))
+    )
+  )
+
+  expect_equal(read_lines("test.txt"), c("line1", "line2", "replaced"))
+})
+
+test_that("parse_line_ref rejects malformed references", {
+  expect_error(parse_line_ref("abc"), "Invalid line reference")
+  expect_error(parse_line_ref("1:ab:cd"), "Invalid line reference")
+  expect_error(parse_line_ref(""), "Invalid line reference")
+  expect_error(parse_line_ref(":abc"), "Invalid line number")
+})
+
+test_that("parse_edit_line_field rejects malformed line fields", {
+  expect_error(parse_edit_line_field("1:ab,2:cd,3:ef"), "Invalid line field")
+})
+
 # --- Edit response format tests ---
 
 test_that("edit response: 1:1 replace has hashlines, no shift hint", {
@@ -495,7 +523,7 @@ test_that("edit response: 1:1 replace has hashlines, no shift hint", {
   expect_no_match(val, "update line numbers")
 })
 
-test_that("edit response: 1:1 replace has hashlines, no shift hint", {
+test_that("edit response: multiple 1:1 replaces merged, no shift hint", {
   withr::local_dir(withr::local_tempdir())
   writeLines(c("aaa", "bbb", "ccc", "ddd", "eee"), "test.txt")
 
