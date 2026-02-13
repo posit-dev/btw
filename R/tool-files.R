@@ -744,11 +744,12 @@ S7::method(contents_shinychat, BtwEditFileToolResult) <- function(content) {
     ellmer::tool(
       btw_tool_files_edit_impl,
       name = "btw_tool_files_edit",
-      description = 'Edit a text file using hashline references from btw_tool_files_read.
+      description = 'Edit a text file using hashline references.
 
 WHEN TO USE:
-Use this tool to make targeted edits to a file after reading it with btw_tool_files_read.
-Each edit references lines by their `line_number:hash` identifier from the read output.
+Use this tool to make targeted edits to a file. Each edit references lines
+by their `line_number:hash` identifier. You can get these references from
+btw_tool_files_read or from the response of a previous edit.
 
 ACTIONS:
 - "replace": Replace a single line. Use `content: []` to delete a line.
@@ -760,10 +761,12 @@ The response includes hashline references for edited lines and surrounding
 context (1 line before and after each edit region). Nearby edits (within 10
 lines) are merged into a single region. If the edit changed the number of
 lines, a shift hint tells you how to update your cached line numbers for
-the rest of the file without re-reading.
+the rest of the file without re-reading. This means you can chain multiple
+edits without re-reading the file between each one.
 
 IMPORTANT:
-- Always read the file first with btw_tool_files_read to get current line hashes.
+- Read the file with btw_tool_files_read before your first edit to get line hashes.
+- For follow-up edits, use the hashlines and shift hints from the previous edit response.
 - If an edit fails due to hash mismatch, re-read the file to get updated hashes.
 - The `content` array contains the new lines (one string per line, no trailing newlines).
 - Multiple edits in one call are applied atomically (all or nothing).
@@ -778,7 +781,7 @@ IMPORTANT:
       convert = FALSE, # avoid having edits be converted into a data.frame
       arguments = list(
         path = ellmer::type_string(
-          "The relative path to the file to edit. Must have been previously read with btw_tool_files_read."
+          "The relative path to the file to edit."
         ),
         edits = ellmer::type_array(
           description = "Array of edit operations to apply to the file.",
@@ -789,7 +792,7 @@ IMPORTANT:
               description = 'The edit action: "replace" (single line), "insert_after" (insert new lines after reference), or "replace_range" (replace a range of lines).'
             ),
             line = ellmer::type_string(
-              'Line reference from btw_tool_files_read output. Format: "line_number:hash" for replace/insert_after, or "start_line:hash,end_line:hash" for replace_range. Use "0:000" with insert_after to insert at the top of the file.'
+              'Line reference from btw_tool_files_read or a previous edit response. Format: "line_number:hash" for replace/insert_after, or "start_line:hash,end_line:hash" for replace_range. Use "0:000" with insert_after to insert at the top of the file.'
             ),
             content = ellmer::type_array(
               description = "Array of new line strings. Each element is one line of content. Use an empty array [] to delete lines.",
