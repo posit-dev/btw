@@ -836,19 +836,30 @@ parse_edit_line_field <- function(line_str) {
   }
 }
 
-validate_one_hash <- function(line_num, provided_hash, file_lines, label, edit_index) {
+validate_one_hash <- function(
+  line_num,
+  provided_hash,
+  file_lines,
+  label,
+  edit_index
+) {
   n_lines <- length(file_lines)
   if (line_num > n_lines) {
     return(sprintf(
       "Edit %d: %s %d does not exist (file has %d lines).",
-      edit_index, label, line_num, n_lines
+      edit_index,
+      label,
+      line_num,
+      n_lines
     ))
   }
   expected <- hashline(file_lines[line_num])
   if (expected != provided_hash) {
     return(sprintf(
       "Edit %d: hash mismatch on %s %d. File may have changed since last read.",
-      edit_index, label, line_num
+      edit_index,
+      label,
+      line_num
     ))
   }
   NULL
@@ -863,7 +874,11 @@ validate_edit_hashes <- function(edits_parsed, file_lines) {
     # Validate start line hash (skip for line 0 / insert at top)
     if (edit$start$line > 0) {
       msg <- validate_one_hash(
-        edit$start$line, edit$start$hash, file_lines, "line", i
+        edit$start$line,
+        edit$start$hash,
+        file_lines,
+        "line",
+        i
       )
       if (!is.null(msg)) mismatches <- c(mismatches, msg)
     }
@@ -871,7 +886,11 @@ validate_edit_hashes <- function(edits_parsed, file_lines) {
     # Validate end line hash (for replace_range)
     if (edit$action == "replace_range" && edit$end$line != edit$start$line) {
       msg <- validate_one_hash(
-        edit$end$line, edit$end$hash, file_lines, "end line", i
+        edit$end$line,
+        edit$end$hash,
+        file_lines,
+        "end line",
+        i
       )
       if (!is.null(msg)) mismatches <- c(mismatches, msg)
     }
@@ -954,7 +973,10 @@ apply_edits <- function(file_lines, edits_parsed) {
         }
       },
       "replace_range" = splice_lines(
-        file_lines, n, edit$end$line, edit$content
+        file_lines,
+        n,
+        edit$end$line,
+        edit$content
       )
     )
   }
