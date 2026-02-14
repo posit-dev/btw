@@ -45,6 +45,7 @@ withr::with_tempdir({
 Other files tools: 
 \code{\link{btw_tool_files_edit}()},
 \code{\link{btw_tool_files_read}()},
+\code{\link{btw_tool_files_replace}()},
 \code{\link{btw_tool_files_search}()},
 \code{\link{btw_tool_files_write}()}
 }

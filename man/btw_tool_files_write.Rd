@@ -35,6 +35,7 @@ Other files tools:
 \code{\link{btw_tool_files_edit}()},
 \code{\link{btw_tool_files_list}()},
 \code{\link{btw_tool_files_read}()},
+\code{\link{btw_tool_files_replace}()},
 \code{\link{btw_tool_files_search}()}
 }
 \concept{files tools}
