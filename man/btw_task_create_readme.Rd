@@ -14,14 +14,15 @@ btw_task_create_readme(
 \item{...}{Additional context to provide to the AI. This can be any text or
 R objects that can be converted to text using \code{\link[=btw]{btw()}}.}
 
-\item{client}{An \link[ellmer:Chat]{ellmer::Chat} client or a \code{provider/model} string to be
-passed to \code{\link[ellmer:chat-any]{ellmer::chat()}} to create a chat client. Defaults to
-\code{\link[ellmer:chat_anthropic]{ellmer::chat_anthropic()}}. You can use the \code{btw.client} option to set a
+\item{client}{An \link[ellmer:Chat]{ellmer::Chat} client, or a \code{provider/model} string to be
+passed to \code{\link[ellmer:chat-any]{ellmer::chat()}} to create a chat client, or an alias to a client
+setting in your \code{btw.md} file (see "Multiple Providers" section). Defaults
+to \code{\link[ellmer:chat_anthropic]{ellmer::chat_anthropic()}}. You can use the \code{btw.client} option to set a
 default client for new \code{btw_client()} calls, or use a \code{btw.md} project file
 for default chat client settings, like provider and model. We check the
 \code{client} argument, then the \code{btw.client} R option, and finally the \code{btw.md}
-project file (falling back to user-level \code{btw.md} if needed), using only the
-client definition from the first of these that is available.}
+project file (falling back to user-level \code{btw.md} if needed), using only
+the client definition from the first of these that is available.}
 
 \item{mode}{The mode to run the task in, which affects what is returned from
 this function. \code{"app"} and \code{"console"} modes launch interactive sessions,

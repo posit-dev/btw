@@ -1,6 +1,6 @@
 Package: btw
 Title: A Toolkit for Connecting R and Large Language Models
-Version: 1.0.0.9000
+Version: 1.1.0.9000
 Authors@R: c(
     person("Garrick", "Aden-Buie", , "garrick@adenbuie.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-7111-0077")),
@@ -29,12 +29,14 @@ License: MIT + file LICENSE
 URL: https://github.com/posit-dev/btw, https://posit-dev.github.io/btw/
 BugReports: https://github.com/posit-dev/btw/issues
 Depends:
-    R (>= 4.1.0)
+    R (>= 4.2.0)
 Imports:
+    brio,
     cli,
     clipr,
     dplyr,
     ellmer (>= 0.3.0),
+    frontmatter,
     fs,
     jsonlite,
     lifecycle,
@@ -46,12 +48,12 @@ Imports:
     S7,
     sessioninfo,
     skimr,
-    tibble,
     utils,
     withr,
     xml2
 Suggests:
     bslib (>= 0.7.0),
+    callr,
     chromote,
     covr,
     DBI,
@@ -69,12 +71,14 @@ Suggests:
     roxygen2,
     shiny,
     shinychat (>= 0.3.0),
+    tibble,
     testthat (>= 3.0.0),
     usethis,
     yaml
 Config/Needs/website: tidyverse/tidytemplate
 Config/testthat/edition: 3
 Config/testthat/parallel: true
+Config/testthat/start-first: web, news, covr, search
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
@@ -87,6 +91,7 @@ Collate:
     'btw_client_app.R'
     'btw_this.R'
     'clipboard.R'
+    'deprecated.R'
     'edit_btw_md.R'
     'import-standalone-obj-type.R'
     'import-standalone-purrr.R'
@@ -95,11 +100,14 @@ Collate:
     'task_create_btw_md.R'
     'task_create_readme.R'
     'tool-result.R'
+    'tool-agent-subagent.R'
+    'tool-agent-custom.R'
+    'tool-cran.R'
     'tool-docs-news.R'
     'tool-docs.R'
     'tool-env-df.R'
     'tool-env.R'
-    'tool-files-code-search.R'
+    'tool-files-search.R'
     'tool-files.R'
     'tool-git.R'
     'tool-github.R'
@@ -107,9 +115,8 @@ Collate:
     'tool-pkg-covr.R'
     'tool-pkg-devtools.R'
     'tool-run.R'
-    'tool-search-packages.R'
-    'tool-session-info.R'
     'tool-session-package-installed.R'
+    'tool-sessioninfo.R'
     'tool-skills.R'
     'tool-web.R'
     'tools.R'

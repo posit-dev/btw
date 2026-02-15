@@ -9,13 +9,13 @@ pandoc_convert <- function(path, ..., from = "html", to = "markdown") {
     ...
   )
 
-  readLines(tmp_file)
+  read_lines(tmp_file)
 }
 
 pandoc_convert_text <- function(text, ..., from = "html", to = "markdown") {
   map_chr(text, function(x) {
     tmp_input <- withr::local_tempfile()
-    writeLines(x, tmp_input)
+    write_file(x, tmp_input)
     paste(pandoc_convert(tmp_input, from = from, to = to, ...), collapse = "\n")
   })
 }
@@ -33,7 +33,7 @@ pandoc_html_simplify <- function(
   html <- remove_base64_images(html)
 
   tmp_input <- withr::local_tempfile()
-  writeLines(html, tmp_input)
+  write_lines(html, tmp_input)
   pandoc_convert(tmp_input, from = "html", to = to, ...)
 }
 
@@ -177,6 +177,80 @@ detect_project_is_r_package <- function(dir = getwd()) {
   !is.null(path_find_in_project("DESCRIPTION", dir))
 }
 
+# Agent file discovery ---------------------------------------------------------
+
+# Find agent-*.md files in project .btw/ directory
+find_project_agent_files <- function(dir = getwd()) {
+  btw_dir <- path_find_in_project(".btw", dir)
+
+  if (is.null(btw_dir) || !fs::dir_exists(btw_dir)) {
+    return(character())
+  }
+
+  files <- fs::dir_ls(btw_dir, regexp = "agent-.*\\.md$", type = "file")
+  as.character(files)
+}
+
+# Find agent-*.md files in user config directories (~/.btw/, ~/.config/btw/)
+find_user_agent_files <- function() {
+  if (identical(Sys.getenv("TESTTHAT"), "true")) {
+    return(character())
+  }
+
+  user_dirs <- c(
+    fs::path_home(".btw"),
+    fs::path_home(".config", "btw")
+  )
+
+  files <- character()
+  for (dir in user_dirs) {
+    if (fs::dir_exists(dir)) {
+      found <- fs::dir_ls(dir, regexp = "agent-.*\\.md$", type = "file")
+      files <- c(files, as.character(found))
+    }
+  }
+
+  files
+}
+
+# Claude Code agent file discovery ---------------------------------------------
+
+# Find agent *.md files in project .claude/agents/ directory
+find_project_claude_code_agent_files <- function(dir = getwd()) {
+  agents_dir <- path_find_in_project(".claude/agents", dir)
+
+  if (is.null(agents_dir) || !fs::dir_exists(agents_dir)) {
+    # Also try .claude then agents subdirectory
+    claude_dir <- path_find_in_project(".claude", dir)
+    if (!is.null(claude_dir)) {
+      agents_dir <- fs::path(claude_dir, "agents")
+    }
+  }
+
+  if (is.null(agents_dir) || !fs::dir_exists(agents_dir)) {
+    return(character())
+  }
+
+  files <- fs::dir_ls(agents_dir, regexp = "\\.md$", type = "file")
+  as.character(files)
+}
+
+# Find agent *.md files in ~/.claude/agents/ directory
+find_user_claude_code_agent_files <- function() {
+  if (identical(Sys.getenv("TESTTHAT"), "true")) {
+    return(character())
+  }
+
+  agents_dir <- fs::path_home(".claude", "agents")
+
+  if (!fs::dir_exists(agents_dir)) {
+    return(character())
+  }
+
+  files <- fs::dir_ls(agents_dir, regexp = "\\.md$", type = "file")
+  as.character(files)
+}
+
 path_btw_cache <- function(...) {
   cache_base <- normalizePath(
     tools::R_user_dir("btw", which = "cache"),
@@ -223,7 +297,7 @@ local_reproducible_output <- function(
 
   withr::local_options(
     cli.dynamic = FALSE,
-    cli.spinner = FALSE,
+    cli.spinner = NULL,
     cli.hyperlink = FALSE,
     cli.hyperlink_run = FALSE,
     cli.hyperlink_help = FALSE,

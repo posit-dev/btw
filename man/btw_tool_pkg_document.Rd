@@ -27,6 +27,7 @@ Generate package documentation using \code{\link[devtools:document]{devtools::do
 Other pkg tools: 
 \code{\link{btw_tool_pkg_check}()},
 \code{\link{btw_tool_pkg_coverage}()},
+\code{\link{btw_tool_pkg_load_all}()},
 \code{\link{btw_tool_pkg_test}()}
 }
 \concept{pkg tools}

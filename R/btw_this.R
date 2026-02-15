@@ -56,8 +56,8 @@ as_btw_capture <- function(x) {
 #'
 #' * `"./path"` \cr
 #'   Any string starting with `./` is treated as a relative path.
-#'   If the path is a file, we call [btw_tool_files_read_text_file()] and if the path
-#'   is a directory we call [btw_tool_files_list_files()] on the path.
+#'   If the path is a file, we call [btw_tool_files_read()] and if the path
+#'   is a directory we call [btw_tool_files_list()] on the path.
 #'
 #'   * `btw_this("./data")` lists the files in `data/`.
 #'   * `btw_this("./R/load_data.R")` reads the source of the `R/load_data.R`
@@ -230,19 +230,19 @@ dispatch_at_command <- function(cmd, caller_env) {
   }
 
   if (cmd$command == "platform_info") {
-    return(btw_tool_session_platform_info_impl()@value)
+    return(btw_tool_sessioninfo_platform_impl()@value)
   }
 
   if (cmd$command == "attached_packages") {
-    return(I(btw_tool_session_package_info_impl("attached")@value))
+    return(I(btw_tool_sessioninfo_package_impl("attached")@value))
   }
 
   if (cmd$command == "loaded_packages") {
-    return(I(btw_tool_session_package_info_impl("loaded")@value))
+    return(I(btw_tool_sessioninfo_package_impl("loaded")@value))
   }
 
   if (cmd$command == "installed_packages") {
-    return(I(btw_tool_session_package_info_impl("installed")@value))
+    return(I(btw_tool_sessioninfo_package_impl("installed")@value))
   }
 
   if (cmd$command == "last_error") {
@@ -656,10 +656,10 @@ btw_this_file_path <- function(x) {
   }
   if (fs::is_file(path)) {
     return(
-      btw_tool_files_read_text_file_impl(path, check_within_wd = FALSE)@value
+      btw_tool_files_read_impl(path, check_within_wd = FALSE)@value
     )
   } else {
-    return(btw_tool_files_list_files_impl(path, check_within_wd = FALSE)@value)
+    return(btw_tool_files_list_impl(path, check_within_wd = FALSE)@value)
   }
 }
 

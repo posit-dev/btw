@@ -52,10 +52,10 @@ btw_task_create_readme <- function(
   client <- btw_client(
     client = client,
     tools = list(
-      "btw_tool_files_list_files",
-      "btw_tool_files_read_text_file",
-      "btw_tool_files_code_search",
-      "btw_tool_files_write_text_file",
+      "btw_tool_files_list",
+      "btw_tool_files_read",
+      "btw_tool_files_search",
+      "btw_tool_files_write",
       "docs",
       "btw_tool_env_describe_data_frame",
       readme_badge_tool,
@@ -189,10 +189,7 @@ tool_use_readme <- function() {
       success <- FALSE
 
       if (fs::file_exists(readme_path)) {
-        old_content <- paste(
-          readLines(readme_path, warn = FALSE),
-          collapse = "\n"
-        )
+        old_content <- read_file(readme_path)
         temp_path <- basename(tempfile(
           pattern = "README-",
           fileext = switch(type, md = ".md", rmd = ".Rmd")
@@ -241,10 +238,7 @@ tool_use_readme <- function() {
       use_readme_result <- cli::ansi_strip(use_readme_result)
 
       # Read the template
-      template_content <- paste(
-        readLines(readme_path, warn = FALSE),
-        collapse = "\n"
-      )
+      template_content <- read_file(readme_path)
 
       # Build the result message
       result_parts <- c(

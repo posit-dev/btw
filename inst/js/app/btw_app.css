@@ -1,3 +1,46 @@
+:root {
+  --bslib-sidebar-width: max(30vw, 275px);
+}
+
+.opacity-100-hover:hover {
+  opacity: 1 !important;
+}
+:hover > .opacity-100-hover-parent,
+.opacity-100-hover-parent:hover {
+  opacity: 1 !important;
+}
+.bslib-sidebar-layout > .main > main .sidebar-title {
+  display: none;
+}
+.sidebar-collapsed > .main > main .sidebar-title {
+  display: block;
+}
+.bslib-sidebar-layout.sidebar-collapsed > .collapse-toggle {
+  top: 1.8rem;
+}
+.bslib-page-main {
+  gap: 0.5rem;
+}
+
+aside#tools_sidebar {
+  box-shadow: 2px 2px 5px rgba(var(--bs-emphasis-color-rgb), 10%);
+}
+
+shiny-chat-message .message-icon {
+  background-color: var(--bs-white);
+  box-shadow: 2px 2px 5px rgba(var(--bs-emphasis-color-rgb), 10%);
+}
+
+[data-bs-theme="dark"] shiny-chat-message .message-icon {
+  background-color: var(--bs-body-bg);
+}
+
+.modal-body bslib-code-editor > .code-editor,
+.modal-body textarea {
+  border: 0;
+}
+
+/* ---------------- Status Bar ---------------- */
 .btw-status-recalculating {
   animation: blink 2s infinite;
 }
@@ -32,8 +75,16 @@
   --bs-modal-margin: min(2rem, 10%);
 }
 
+/* ---------------- Tool Results ---------------- */
 .btw-tool-result-write-file > .card > .card-body {
   padding: 0;
+}
+
+.collapse-toggle-btn[aria-expanded=true] > .collapse-indicator {
+  transform: rotate(-90deg);
+}
+.collapse-toggle-btn[aria-expanded=true] > .collapse-indicator .horizontal {
+  transform: scale(0);
 }
 
 .btw-in-ide .btw-open-file.btn {

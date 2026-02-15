@@ -7,7 +7,7 @@ NULL
 #' withr::with_tempdir({
 #'   write.csv(mtcars, "mtcars.csv")
 #'
-#'   btw_tool_files_list_files(type = "file")
+#'   btw_tool_files_list(type = "file")
 #' })
 #'
 #' @param path Path to a directory or file for which to get information. The
@@ -24,9 +24,9 @@ NULL
 #'
 #' @family files tools
 #' @export
-btw_tool_files_list_files <- function(path, type, regexp, `_intent`) {}
+btw_tool_files_list <- function(path, type, regexp, `_intent`) {}
 
-btw_tool_files_list_files_impl <- function(
+btw_tool_files_list_impl <- function(
   path = NULL,
   type = c("any", "file", "directory"),
   regexp = "",
@@ -79,12 +79,13 @@ btw_tool_files_list_files_impl <- function(
 }
 
 .btw_add_to_tools(
-  name = "btw_tool_files_list_files",
+  name = "btw_tool_files_list",
   group = "files",
+  alias_name = "btw_tool_files_list_files",
   tool = function() {
     ellmer::tool(
       function(path = NULL, type = c("any", "file", "directory"), regexp = "") {
-        btw_tool_files_list_files_impl(
+        btw_tool_files_list_impl(
           path = path,
           type = type,
           regexp = regexp,
@@ -92,7 +93,7 @@ btw_tool_files_list_files_impl <- function(
           check_within_wd = TRUE
         )
       },
-      name = "btw_tool_files_list_files",
+      name = "btw_tool_files_list",
       description = r"---(List files or directories in the project.
 
 WHEN TO USE:
@@ -142,7 +143,7 @@ CAUTION: Do not list all files in a project, instead prefer listing files in a s
 #' withr::with_tempdir({
 #'   write.csv(mtcars, "mtcars.csv")
 #'
-#'   btw_tool_files_read_text_file("mtcars.csv", line_end = 5)
+#'   btw_tool_files_read("mtcars.csv", line_end = 5)
 #' })
 #'
 #' @param path Path to a file for which to get information. The `path` must be
@@ -158,14 +159,14 @@ CAUTION: Do not list all files in a project, instead prefer listing files in a s
 #'
 #' @family files tools
 #' @export
-btw_tool_files_read_text_file <- function(
+btw_tool_files_read <- function(
   path,
   line_start,
   line_end,
   `_intent`
 ) {}
 
-btw_tool_files_read_text_file_impl <- function(
+btw_tool_files_read_impl <- function(
   path,
   line_start = 1,
   line_end = 1000,
@@ -183,12 +184,12 @@ btw_tool_files_read_text_file_impl <- function(
 
   if (!isTRUE(is_text_file(path))) {
     cli::cli_abort(
-      "Path {.path {path}} is not a path to a text file.",
+      "Path {.path {path}} appears to be a binary file or cannot be read as text.",
       call = parent.frame()
     )
   }
 
-  contents <- readLines(path, warn = FALSE, n = line_end)
+  contents <- read_lines(path, n = line_end)
   contents <- contents[seq(max(line_start, 1), min(line_end, length(contents)))]
 
   value <- md_code_block(fs::path_ext(path), contents)
@@ -238,12 +239,13 @@ BtwTextFileToolResult <- S7::new_class(
 )
 
 .btw_add_to_tools(
-  name = "btw_tool_files_read_text_file",
+  name = "btw_tool_files_read",
   group = "files",
+  alias_name = "btw_tool_files_read_text_file",
   tool = function() {
     ellmer::tool(
       function(path, line_start = 1, line_end = 1000) {
-        btw_tool_files_read_text_file_impl(
+        btw_tool_files_read_impl(
           path = path,
           line_start = line_start,
           line_end = line_end,
@@ -251,7 +253,7 @@ BtwTextFileToolResult <- S7::new_class(
           check_within_wd = TRUE
         )
       },
-      name = "btw_tool_files_read_text_file",
+      name = "btw_tool_files_read",
       description = "Read an entire text file.",
       annotations = ellmer::tool_annotations(
         title = "Read File",
@@ -316,7 +318,7 @@ is_text_file <- function(file_path) {
       if (length(extended_chars) / length(bytes) > 0.3) {
         # Try to interpret as UTF-8
         text <- rawToChar(bytes)
-        if (Encoding(text) == "unknown" || !validUTF8(text)) {
+        if (Encoding(text) == "unknown" && !validUTF8(text)) {
           return(FALSE)
         }
       }
@@ -419,7 +421,7 @@ is_common_ignorable_files <- function(paths) {
 #'
 #' @examples
 #' withr::with_tempdir({
-#'   btw_tool_files_write_text_file("example.txt", "Hello\nWorld!")
+#'   btw_tool_files_write("example.txt", "Hello\nWorld!")
 #'   readLines("example.txt")
 #' })
 #'
@@ -433,9 +435,9 @@ is_common_ignorable_files <- function(paths) {
 #'
 #' @family files tools
 #' @export
-btw_tool_files_write_text_file <- function(path, content, `_intent`) {}
+btw_tool_files_write <- function(path, content, `_intent`) {}
 
-btw_tool_files_write_text_file_impl <- function(path, content) {
+btw_tool_files_write_impl <- function(path, content) {
   check_string(path)
   check_string(content)
   check_path_within_current_wd(path)
@@ -452,11 +454,9 @@ btw_tool_files_write_text_file_impl <- function(path, content) {
     fs::dir_create(dir_path, recurse = TRUE)
   }
 
-  previous_content <- if (fs::file_exists(path)) {
-    paste(readLines(path, warn = FALSE), collapse = "\n")
-  }
+  previous_content <- if (fs::file_exists(path)) read_file(path)
 
-  writeLines(content, path)
+  write_file(content, path)
 
   BtwWriteFileToolResult(
     "Success",
@@ -504,8 +504,8 @@ S7::method(contents_shinychat, BtwWriteFileToolResult) <- function(content) {
   path_old <- fs::path(dir, sprintf("%s", path_file), ext = path_ext)
   path_new <- fs::path(dir, sprintf("%s.new", path_file), ext = path_ext)
 
-  writeLines(old %||% "", path_old)
-  writeLines(new %||% "", path_new)
+  write_file(old %||% "", path_old)
+  write_file(new %||% "", path_new)
 
   res$value <- diffviewer::visual_diff(path_old, path_new)
   res$value_type <- "html"
@@ -514,12 +514,13 @@ S7::method(contents_shinychat, BtwWriteFileToolResult) <- function(content) {
 }
 
 .btw_add_to_tools(
-  name = "btw_tool_files_write_text_file",
+  name = "btw_tool_files_write",
   group = "files",
+  alias_name = "btw_tool_files_write_text_file",
   tool = function() {
     ellmer::tool(
-      btw_tool_files_write_text_file_impl,
-      name = "btw_tool_files_write_text_file",
+      btw_tool_files_write_impl,
+      name = "btw_tool_files_write",
       description = 'Write content to a text file.
 
 If the file doesn\'t exist, it will be created, along with any necessary parent directories.
@@ -531,7 +532,7 @@ Consider checking with the user to ensure that the file path is correct and that
 
 CAUTION:
 This completely overwrites any existing file content.
-To modify an existing file, first read its content using `btw_tool_files_read_text_file`, make your changes to the text, then write back the complete modified content.
+To modify an existing file, first read its content using `btw_tool_files_read`, make your changes to the text, then write back the complete modified content.
 ',
       annotations = ellmer::tool_annotations(
         title = "Write File",

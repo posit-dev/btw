@@ -27,16 +27,46 @@ can provide MCP clients like Claude Desktop or Claude Code with additional
 context. The function will block the R process it's called in and isn't
 intended for interactive use.
 
-To give the MCP server access to a specific R session, run \code{btw_mcp_session()}
-in that session. If there are no sessions configured, the server will run
-the tools in its own session, meaning that e.g. the
+To give the MCP server access to a specific R session, run
+\code{btw_mcp_session()} in that session. If there are no sessions configured, the
+server will run the tools in its own session, meaning that e.g. the
 \code{btw_tools(tools = "env")} tools will describe R objects in \emph{that} R
 environment.
 }
+\section{Choosing Tool Groups}{
+
+When using btw with a coding agent that already has built-in tools for file
+operations, code execution, or other tasks, you may want to select a subset
+of btw's tools to avoid overlap. A recommended lightweight configuration for
+R package development is:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{btw_mcp_server(tools = btw_tools("docs", "pkg"))
+}\if{html}{\out{</div>}}
+
+This gives the agent access to R documentation (help pages, vignettes, news)
+and package development tools (testing, checking, documenting) without
+duplicating file or code execution capabilities the agent may already have.
+
+Depending on your workflow, you may also want to include:
+\itemize{
+\item \code{"env"}: Tools to inspect R objects and data frames in the session
+\item \code{"sessioninfo"}: Tools to check installed packages and platform details
+\item \code{"cran"}: Tools to search for and describe CRAN packages
+}
+
+See \code{\link[=btw_tools]{btw_tools()}} for a complete list of available tool groups and their
+contents.
+}
+
 \section{Configuration}{
 
 To configure this server with MCP clients, use the command \code{Rscript} and the
-args \verb{-e "btw::btw_mcp_server()"}. For example, in \href{https://docs.claude.com/en/docs/claude-code/mcp#add-mcp-servers-from-json-configuration}{Claude Desktop's configuration format}:
+args \verb{-e "btw::btw_mcp_server()"}. The examples below all use
+\code{btw_mcp_server()}, which includes \emph{all of btw's tools} by default. We
+recommend customizing the tool set as described above to avoid overlap with
+your client's built-in capabilities.
+
+For \href{https://code.claude.com/docs/en/mcp#add-mcp-servers-from-json-configuration}{Claude Desktop's configuration format}:
 
 \if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
   "mcpServers": \{
@@ -48,10 +78,30 @@ args \verb{-e "btw::btw_mcp_server()"}. For example, in \href{https://docs.claud
 \}
 }\if{html}{\out{</div>}}
 
-For \href{https://docs.claude.com/en/docs/claude-code/overview}{Claude Code}:
+For \href{https://code.claude.com/docs/en/overview}{Claude Code}:
 
 \if{html}{\out{<div class="sourceCode bash">}}\preformatted{claude mcp add -s "user" r-btw -- Rscript -e "btw::btw_mcp_server()"
 }\if{html}{\out{</div>}}
+
+For \href{https://positron.posit.co}{Positron} or \href{https://code.visualstudio.com/docs/copilot/chat/mcp-servers}{VS Code}, add the
+following to \code{.vscode/mcp.json} (for workspace configuration) or to your
+user profile's \code{mcp.json} (for global configuration, accessible via Command
+Palette > \strong{MCP: Open User Configuration}):
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "servers": \{
+    "r-btw": \{
+      "type": "stdio",
+      "command": "Rscript",
+      "args": ["-e", "btw::btw_mcp_server()"]
+    \}
+  \}
+\}
+}\if{html}{\out{</div>}}
+
+Alternatively, run the \strong{MCP: Add Server} command from the Command Palette,
+choose \strong{stdio}, then choose \strong{Workspace} or \strong{Global} to add the server
+configuration interactively.
 
 For \href{https://www.continue.dev/}{Continue}, include the following in your
 \href{https://docs.continue.dev/customize/deep-dives/configuration}{config file}:

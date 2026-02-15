@@ -87,12 +87,17 @@ Tools are defined in `R/tool-*.R` files following a consistent pattern:
 3. **Tool registration** - Called via `.btw_add_to_tools()` to register with ellmer
 
 Tools are grouped by capability:
+- **agent** - Hierarchical workflows via `btw_tool_agent_subagent()` to delegate tasks to specialized subagents
+- **cran** - Search CRAN packages and retrieve package info
 - **docs** - Package documentation, help pages, vignettes, NEWS
 - **env** - Describe data frames and environments
 - **files** - Read, write, list files; search code
+- **git** - Git repository status, diffs, logs
+- **github** - GitHub issues and pull requests
 - **ide** - Read current editor/selection in RStudio/Positron
-- **search** - Search CRAN packages
-- **session** - Platform info, installed packages
+_ **pkg** - Package testing, checking and documentation tasks
+- **run** - Run R code
+- **sessioninfo** - Platform info, installed packages
 - **web** - Read web pages as markdown
 
 ### The btw_this() Dispatch System

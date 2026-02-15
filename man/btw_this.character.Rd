@@ -26,8 +26,8 @@ character string as R code and return the appropriate object description.
 \itemize{
 \item \code{"./path"} \cr
 Any string starting with \verb{./} is treated as a relative path.
-If the path is a file, we call \code{\link[=btw_tool_files_read_text_file]{btw_tool_files_read_text_file()}} and if the path
-is a directory we call \code{\link[=btw_tool_files_list_files]{btw_tool_files_list_files()}} on the path.
+If the path is a file, we call \code{\link[=btw_tool_files_read]{btw_tool_files_read()}} and if the path
+is a directory we call \code{\link[=btw_tool_files_list]{btw_tool_files_list()}} on the path.
 \itemize{
 \item \code{btw_this("./data")} lists the files in \verb{data/}.
 \item \code{btw_this("./R/load_data.R")} reads the source of the \code{R/load_data.R}

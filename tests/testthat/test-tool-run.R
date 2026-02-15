@@ -311,6 +311,7 @@ describe("btw_tool_run_r() in btw_tools()", {
 
   it("can be enabled via environment variable", {
     withr::local_envvar(BTW_RUN_R_ENABLED = "TRUE")
+    local_enable_tools(btw_can_register_run_r_tool = NULL)
     tools <- btw_tools()
     expect_true("btw_tool_run_r" %in% names(tools))
   })

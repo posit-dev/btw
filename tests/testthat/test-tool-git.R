@@ -267,7 +267,8 @@ test_that("git tools require gert to be installed", {
   local_temp_git_repo()
 
   local_mocked_bindings(
-    is_installed = function(pkg) pkg != "gert"
+    is_installed = function(pkg) pkg != "gert",
+    find_package_candidates = function(...) character()
   )
 
   expect_error(

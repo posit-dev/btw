@@ -21,18 +21,59 @@ btw_app <- function(
     cli::cli_alert("Starting up {.fn btw::btw_app} ...")
   }
 
-  if (!inherits(client, "AsIs")) {
+  # Get reference tools for the app
+  if (inherits(client, "AsIs")) {
+    # When client is AsIs (pre-configured), use btw_tools() as reference
+    reference_tools <- btw_tools()
+  } else {
     client <- btw_client(
       client = client,
       tools = tools,
       path_btw = path_btw
     )
+
+    # Create a reference client to get the full tool set
+    withr::with_options(list(btw.client.quiet = TRUE), {
+      bare_client <- client$clone()
+      bare_client$set_tools(list())
+
+      reference_client <- btw_client(
+        client = bare_client,
+        tools = names(btw_tools()),
+        path_btw = path_btw
+      )
+      reference_tools <- reference_client$get_tools()
+    })
   }
 
-  btw_app_from_client(client, messages = messages, ...)
+  btw_app_from_client(
+    client,
+    messages = messages,
+    allowed_tools = reference_tools,
+    ...
+  )
 }
 
-btw_app_from_client <- function(client, messages = list(), ...) {
+btw_app_html_dep <- function() {
+  htmltools::htmlDependency(
+    name = "btw",
+    version = utils::packageVersion("btw"),
+    package = "btw",
+    src = "js/app",
+    script = list(
+      list(src = "btw_app.js", type = "module")
+    ),
+    stylesheet = "btw_app.css",
+    all_files = TRUE
+  )
+}
+
+btw_app_from_client <- function(
+  client,
+  messages = list(),
+  allowed_tools = btw_tools(),
+  ...
+) {
   path_figures_installed <- system.file("help", "figures", package = "btw")
   path_figures_dev <- system.file("man", "figures", package = "btw")
   path_logo <- "btw_figures/logo.png"
@@ -42,6 +83,13 @@ btw_app_from_client <- function(client, messages = list(), ...) {
     client$get_provider()@name,
     client$get_model()
   )
+
+  # Store original client tools (preserves configuration like closures)
+  # $get_tools() returns a named list where names are tool names
+  original_client_tools <- client$get_tools()
+
+  # Union: all tools to show in UI preferring original client tools
+  all_available_tools <- utils::modifyList(allowed_tools, original_client_tools)
 
   if (nzchar(path_figures_installed)) {
     shiny::addResourcePath("btw_figures", path_figures_installed)
@@ -105,8 +153,8 @@ btw_app_from_client <- function(client, messages = list(), ...) {
         shiny::div(
           class = "overflow-y-auto overflow-x-visible",
           app_tool_group_inputs(
-            btw_tools_df(),
-            initial_tool_names = map_chr(client$get_tools(), S7::prop, "name")
+            btw_tools_df(all_available_tools),
+            initial_tool_names = names(original_client_tools)
           ),
           shiny::uiOutput("ui_other_tools")
         ),
@@ -136,26 +184,7 @@ btw_app_from_client <- function(client, messages = list(), ...) {
       if (utils::packageVersion("shinychat") >= "0.2.0.9000") {
         btw_status_bar_ui("status_bar", provider_model)
       },
-      shiny::tags$head(
-        shiny::tags$style(shiny::HTML(
-          "
-        :root { --bslib-sidebar-width: max(30vw, 275px); }
-        .opacity-100-hover:hover { opacity: 1 !important; }
-        :hover > .opacity-100-hover-parent, .opacity-100-hover-parent:hover { opacity: 1 !important; }
-        .bslib-sidebar-layout > .main > main .sidebar-title { display: none; }
-        .sidebar-collapsed > .main > main .sidebar-title { display: block; }
-        .bslib-sidebar-layout.sidebar-collapsed>.collapse-toggle { top: 1.8rem; }
-        .bslib-page-main { gap: 0.5rem; }
-        aside#tools_sidebar {
-            box-shadow: 2px 2px 5px rgba(var(--bs-emphasis-color-rgb), 10%);
-        }
-        shiny-chat-message .message-icon {
-          background-color: var(--bs-white);
-          box-shadow: 2px 2px 5px rgba(var(--bs-emphasis-color-rgb), 10%);
-        }
-      "
-        )),
-      )
+      btw_app_html_dep(),
     )
   }
 
@@ -170,8 +199,13 @@ btw_app_from_client <- function(client, messages = list(), ...) {
       bslib::toggle_sidebar("tools_sidebar")
     })
 
-    tool_groups <- unique(btw_tools_df()$group)
-    other_tools <- keep(client$get_tools(), function(tool) {
+    tool_groups <- unique(btw_tools_df(all_available_tools)$group)
+
+    # Split tools: btw tools and other (non-btw) tools
+    btw_available_tools <- keep(all_available_tools, function(tool) {
+      identical(substring(tool@name, 1, 9), "btw_tool_")
+    })
+    other_tools <- keep(all_available_tools, function(tool) {
       !identical(substring(tool@name, 1, 9), "btw_tool_")
     })
 
@@ -183,7 +217,7 @@ btw_app_from_client <- function(client, messages = list(), ...) {
     })
 
     shiny::observeEvent(input$select_all, {
-      tools <- btw_tools_df()
+      tools <- btw_tools_df(all_available_tools)
       for (group in tool_groups) {
         shiny::updateCheckboxGroupInput(
           session = session,
@@ -194,7 +228,7 @@ btw_app_from_client <- function(client, messages = list(), ...) {
     })
 
     shiny::observeEvent(input$deselect_all, {
-      tools <- btw_tools_df()
+      tools <- btw_tools_df(all_available_tools)
       for (group in tool_groups) {
         shiny::updateCheckboxGroupInput(
           session = session,
@@ -207,7 +241,7 @@ btw_app_from_client <- function(client, messages = list(), ...) {
     lapply(tool_groups, function(group) {
       shiny::observeEvent(input[[paste0("tools_toggle_", group)]], {
         current <- input[[paste0("tools_", group)]]
-        all_tools <- btw_tools_df()
+        all_tools <- btw_tools_df(all_available_tools)
         group_tools <- all_tools[all_tools$group == group, ][["name"]]
         if (length(current) == length(group_tools)) {
           # All selected, so deselect all
@@ -231,15 +265,7 @@ btw_app_from_client <- function(client, messages = list(), ...) {
       if (!length(selected_tools())) {
         client$set_tools(list())
       } else {
-        sel_btw_tools <- btw_tools(
-          intersect(names(.btw_tools), selected_tools())
-        )
-        sel_other_tools <- keep(other_tools, function(tool) {
-          tool@name %in% selected_tools()
-        })
-        sel_tools <- c(sel_btw_tools, sel_other_tools)
-        # tool_names <- map_chr(tools, S7::prop, "name")
-        # cli::cli_inform("Setting {.field client} tools to: {.val {tool_names}}")
+        sel_tools <- all_available_tools[selected_tools()]
         client$set_tools(sel_tools)
       }
     })
@@ -383,6 +409,7 @@ btw_status_bar_ui <- function(id, provider_model) {
       shiny::div(
         class = "ms-auto status-tokens font-monospace",
         bslib::tooltip(
+          id = ns("status_tokens_input_tooltip"),
           shiny::span(
             id = ns("status_tokens_input"),
             class = "status-countup",
@@ -410,20 +437,6 @@ btw_status_bar_ui <- function(id, provider_model) {
           ),
           "Estimated cost"
         )
-      ),
-      htmltools::htmlDependency(
-        name = "countup.js",
-        version = readLines(
-          system.file("js/countupjs/VERSION", package = "btw")
-        ),
-        package = "btw",
-        src = "js/countupjs",
-        script = list(
-          list(src = "countUp.min.js", type = "module"),
-          list(src = "btw_app.js", type = "module")
-        ),
-        stylesheet = "btw_app.css",
-        all_files = FALSE
       )
     )
   )
@@ -433,75 +446,18 @@ btw_status_bar_server <- function(id, chat) {
   shiny::moduleServer(
     id,
     function(input, output, session) {
-      chat_get_tokens <- function() {
-        tokens <- tryCatch(
-          chat$client$get_tokens(),
-          error = function(e) NULL
-        )
-        if (is.null(tokens)) {
-          return(NULL)
-        }
-
-        input_tokens <- 0
-        output_tokens <- 0
-        cached_tokens <- 0
-
-        if (!is.null(tokens) && nrow(tokens) > 0) {
-          if (utils::packageVersion("ellmer") <= "0.3.0") {
-            last_user <- tokens[tokens$role == "user", ]
-            if (nrow(last_user) > 0) {
-              input_tokens <- as.integer(utils::tail(last_user$tokens_total, 1))
-            }
-            tokens_assistant <- tokens[tokens$role == "assistant", ]
-            if (nrow(tokens_assistant) > 0) {
-              output_tokens <- as.integer(sum(tokens_assistant$tokens))
-            }
-          } else {
-            # output tokens this far are the sum of all output tokens
-            if ("output" %in% colnames(tokens)) {
-              output_tokens <- sum(tokens$output)
-            }
-            # input and cached tokens are accumulated in the last API call
-            if ("input" %in% colnames(tokens)) {
-              input_tokens <-
-                tokens$input[[length(tokens$input)]] +
-                # include output tokens that will be part of next API call
-                tokens$output[[length(tokens$output)]]
-            }
-            if ("cached_input" %in% colnames(tokens)) {
-              cached_tokens <- tokens$cached_input[[
-                length(tokens$cached_input)
-              ]]
-            }
-          }
-        }
-
-        list(
-          input = input_tokens,
-          output = output_tokens,
-          cached = cached_tokens
-        )
-      }
-
-      chat_get_cost <- function() {
-        tryCatch(
-          chat$client$get_cost(),
-          error = function(e) NA
-        )
-      }
-
       chat_tokens <- shiny::reactiveVal(
-        chat_get_tokens(),
+        chat_get_tokens(chat$client),
         label = "btw_app_tokens"
       )
       chat_cost <- shiny::reactiveVal(
-        chat_get_cost(),
+        chat_get_cost(chat$client),
         label = "btw_app_cost"
       )
 
       shiny::observeEvent(chat$last_turn(), {
-        chat_tokens(chat_get_tokens())
-        chat_cost(chat_get_cost())
+        chat_tokens(chat_get_tokens(chat$client))
+        chat_cost(chat_get_cost(chat$client))
       })
 
       send_status_message <- function(id, status, ...) {
@@ -531,8 +487,18 @@ btw_status_bar_server <- function(id, chat) {
         send_status_message(
           "status_tokens_input",
           "ready",
-          value = tokens$input
+          # show input + cached tokens to get total tokens
+          value = tokens$input + tokens$cached
         )
+        if (tokens$cached > 0) {
+          bslib::update_tooltip(
+            "status_tokens_input_tooltip",
+            sprintf(
+              "Input tokens (%s cached)",
+              format(tokens$cached, big.mark = ",")
+            )
+          )
+        }
         send_status_message(
           "status_tokens_output",
           "ready",
@@ -559,27 +525,45 @@ btw_status_bar_server <- function(id, chat) {
       })
 
       shiny::observeEvent(input$show_sys_prompt, {
-        input_sys_prompt <- shiny::textAreaInput(
-          "system_prompt",
-          label = NULL,
-          placeholder = "Instructions for the AI assistant...",
-          value = chat$client$get_system_prompt(),
-          width = "100%",
-          autoresize = TRUE,
-          updateOn = "blur"
-        )
-        input_sys_prompt <- htmltools::tagAppendAttributes(
-          input_sys_prompt,
-          class = "font-monospace",
-          .cssSelector = "textarea"
-        )
+        bslib_input_code_editor <- asNamespace("bslib")[["input_code_editor"]]
+
+        if (is.null(bslib_input_code_editor)) {
+          input_sys_prompt <- shiny::textAreaInput(
+            session$ns("system_prompt"),
+            label = NULL,
+            placeholder = "Instructions for the AI assistant...",
+            value = chat$client$get_system_prompt(),
+            width = "100%",
+            autoresize = TRUE,
+            updateOn = "blur"
+          )
+          input_sys_prompt <- htmltools::tagAppendAttributes(
+            input_sys_prompt,
+            class = "font-monospace",
+            .cssSelector = "textarea"
+          )
+        } else {
+          input_sys_prompt <- bslib_input_code_editor(
+            id = session$ns("system_prompt"),
+            label = NULL,
+            value = chat$client$get_system_prompt(),
+            language = "markdown"
+          )
+        }
 
         modal <- shiny::modalDialog(
-          title = "System Prompt",
+          title = NULL,
           size = "xl",
           easyClose = TRUE,
           footer = shiny::modalButton("Close"),
-          input_sys_prompt
+          bslib::card(
+            style = "height: 100%",
+            bslib::card_header("Edit System Prompt"),
+            bslib::card_body(
+              padding = 4,
+              input_sys_prompt
+            ),
+          )
         )
 
         modal <- htmltools::tagAppendAttributes(
@@ -590,6 +574,46 @@ btw_status_bar_server <- function(id, chat) {
 
         shiny::showModal(modal)
       })
+
+      notifier <- function(icon, action, error = NULL) {
+        error_body <- if (!is.null(error)) {
+          shiny::p(shiny::HTML(sprintf("<code>%s</code>", error$message)))
+        }
+
+        bslib_toast <- asNamespace("bslib")[["toast"]]
+        bslib_show_toast <- asNamespace("bslib")[["show_toast"]]
+        bslib_toast_header <- asNamespace("bslib")[["toast_header"]]
+
+        if (is.null(bslib_toast) || is.null(bslib_show_toast)) {
+          if (!is.null(error)) {
+            body <- shiny::span(icon, action)
+          } else {
+            body <- shiny::tagList(
+              shiny::p(
+                shiny::icon("warning"),
+                "Failed to update system prompt",
+                class = "fw-bold"
+              ),
+              error_body
+            )
+          }
+          shiny::showNotification(
+            body,
+            type = if (is.null(error)) "message" else "error"
+          )
+          return()
+        }
+
+        toast <- bslib_toast(
+          if (is.null(error)) action else error_body,
+          header = if (!is.null(error)) {
+            bslib_toast_header(action, icon = icon)
+          },
+          icon = if (is.null(error)) icon,
+          position = "top-right"
+        )
+        bslib_show_toast(toast)
+      }
 
       shiny::observeEvent(
         input$system_prompt,
@@ -613,20 +637,10 @@ btw_status_bar_server <- function(id, chat) {
           tryCatch(
             {
               chat$client$set_system_prompt(new_system_prompt)
-              shiny::showNotification(shiny::span(icon, action))
+              notifier(icon, action)
             },
-            error = function(e) {
-              shiny::showNotification(
-                shiny::tagList(
-                  shiny::p(
-                    shiny::icon("warning"),
-                    "Failed to update system prompt",
-                    class = "fw-bold"
-                  ),
-                  shiny::p(shiny::HTML(sprintf("<code>%s</code>", e$message)))
-                ),
-                type = "error"
-              )
+            error = function(err) {
+              notifier(icon, "Error updating system prompt", error = err)
             }
           )
         }
@@ -637,18 +651,15 @@ btw_status_bar_server <- function(id, chat) {
 
 # Tools in sidebar ----
 
-btw_tools_df <- function() {
-  .btw_tools <- map(.btw_tools, function(def) {
-    tool <- def$tool()
-    if (is.null(tool)) {
-      return()
-    }
-    if (def$group == "env" && isTRUE(getOption("btw.app.in_addin"))) {
+btw_tools_df <- function(tools = btw_tools()) {
+  all_btw_tools <- map(tools, function(tool) {
+    group <- tool@annotations$btw_group %||% "other"
+    if (group == "env" && isTRUE(getOption("btw.app.in_addin"))) {
       # TODO: Remove this check when the addin can reach the global env
       return()
     }
     dplyr::tibble(
-      group = def$group,
+      group = group,
       name = tool@name,
       description = tool@description,
       title = tool@annotations$title,
@@ -656,15 +667,43 @@ btw_tools_df <- function() {
       is_open_world = tool@annotations$open_world_hint %||% NA
     )
   })
-  dplyr::bind_rows(.btw_tools)
+  dplyr::bind_rows(all_btw_tools)
 }
 
 app_tool_group_inputs <- function(tools_df, initial_tool_names = NULL) {
   tools_df <- split(tools_df, tools_df$group)
 
+  # Only show "deprecated" group if any deprecated tools are initially selected,
+
+  # and only show the specific deprecated tools that are selected
+  if ("deprecated" %in% names(tools_df)) {
+    deprecated_df <- tools_df[["deprecated"]]
+    selected_deprecated <- deprecated_df$name %in% initial_tool_names
+    if (!any(selected_deprecated)) {
+      tools_df[["deprecated"]] <- NULL
+    } else {
+      tools_df[["deprecated"]] <-
+        deprecated_df[selected_deprecated, , drop = FALSE]
+    }
+  }
+
+  # Reorder groups: agent, docs, files, env first, then alphabetical,
+
+  # then other, then deprecated (if shown)
+  group_names <- names(tools_df)
+  priority_groups <- c("agent", "docs", "files", "env")
+  trailing_groups <- c("other", "deprecated")
+  priority_present <- intersect(priority_groups, group_names)
+  middle_groups <- sort(setdiff(
+    group_names,
+    c(priority_groups, trailing_groups)
+  ))
+  trailing_present <- intersect(trailing_groups, group_names)
+  ordered_groups <- c(priority_present, middle_groups, trailing_present)
+
   map2(
-    names(tools_df),
-    tools_df,
+    ordered_groups,
+    tools_df[ordered_groups],
     app_tool_group_choice_input,
     initial_tool_names = initial_tool_names
   )
@@ -685,6 +724,9 @@ app_tool_group_choice_input <- function(
 
   label_text <- switch(
     group,
+    "agent" = shiny::span(label_icon, "Agents"),
+    "cran" = shiny::span(label_icon, "CRAN"),
+    "deprecated" = shiny::span(label_icon, "Deprecated", class = "text-danger"),
     "docs" = shiny::span(label_icon, "Documentation"),
     "env" = shiny::span(label_icon, "Environment"),
     "eval" = shiny::span(label_icon, "Code Evaluation"),
@@ -694,8 +736,7 @@ app_tool_group_choice_input <- function(
     "ide" = shiny::span(label_icon, "IDE"),
     "pkg" = shiny::span(label_icon, "Package Tools"),
     "run" = shiny::span(label_icon, "Run Code"),
-    "search" = shiny::span(label_icon, "Search"),
-    "session" = shiny::span(label_icon, "Session Info"),
+    "sessioninfo" = shiny::span(label_icon, "Session Info"),
     "web" = shiny::span(label_icon, "Web Tools"),
     "other" = shiny::span(label_icon, "Other Tools"),
     to_title_case(group)

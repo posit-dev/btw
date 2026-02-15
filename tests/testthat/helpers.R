@@ -1,4 +1,9 @@
 use_latest_pandoc <- function(.envir = parent.frame()) {
+  if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
+    # On CRAN, don't attempt to do anything with pandoc
+    return()
+  }
+
   if (nzchar(Sys.getenv("CI"))) {
     if (!nzchar(Sys.getenv("BTW_TESTS_PANDOC_VERSION"))) {
       # ci installs latest pandoc for us
@@ -93,18 +98,56 @@ local_enable_tools <- function(
   btw_can_register_git_tool = TRUE,
   btw_can_register_gh_tool = TRUE,
   btw_can_register_run_r_tool = TRUE,
+  btw_can_register_subagent_tool = TRUE,
   .env = caller_env()
 ) {
-  local_mocked_bindings(
-    has_chromote = function() has_chromote,
-    has_devtools = function() has_devtools,
-    has_roxygen2 = function() has_roxygen2,
-    rstudioapi_has_source_editor_context = function() {
+  maybe_set <- function(value) {
+    if (is.null(value)) {
+      return(NULL)
+    }
+    function() value
+  }
+
+  bindings <- compact(list(
+    has_chromote = maybe_set(has_chromote),
+    has_devtools = maybe_set(has_devtools),
+    has_roxygen2 = maybe_set(has_roxygen2),
+    rstudioapi_has_source_editor_context = maybe_set(
       rstudioapi_has_source_editor_context
+    ),
+    btw_can_register_git_tool = maybe_set(btw_can_register_git_tool),
+    btw_can_register_gh_tool = maybe_set(btw_can_register_gh_tool),
+    btw_can_register_run_r_tool = maybe_set(btw_can_register_run_r_tool),
+    btw_can_register_subagent_tool = maybe_set(btw_can_register_subagent_tool)
+  ))
+
+  local_mocked_bindings(!!!bindings, .env = .env)
+}
+
+local_sessioninfo_quarto_version <- function(.env = caller_env()) {
+  local_mocked_bindings(
+    get_quarto_version = function() "99.9.9 @ /Applications/quarto/bin/quarto",
+    .package = "sessioninfo",
+    .env = .env
+  )
+}
+
+local_skip_pandoc_convert_text <- function(.env = caller_env()) {
+  local_mocked_bindings(
+    pandoc_convert_text = function(text, ...) {
+      # Skip actual pandoc conversion for speed
+      text
     },
-    btw_can_register_git_tool = function() btw_can_register_git_tool,
-    btw_can_register_gh_tool = function() btw_can_register_gh_tool,
-    btw_can_register_run_r_tool = function() btw_can_register_run_r_tool,
+    .env = .env
+  )
+}
+
+local_skip_pandoc_convert <- function(.env = caller_env()) {
+  local_mocked_bindings(
+    pandoc_convert = function(path, ...) {
+      # Skip actual pandoc conversion for speed
+      read_file(path)
+    },
     .env = .env
   )
 }

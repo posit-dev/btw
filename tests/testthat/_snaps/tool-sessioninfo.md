@@ -1,4 +1,4 @@
-# btw_tool_session_platform_info() works
+# btw_tool_sessioninfo_platform() works
 
     Code
       cat(platform_description@value)
@@ -15,10 +15,10 @@
       DATE: DAY OF WEEK, MONTH DAY, YEAR (YYYY-MM-DD)
       </system_info>
 
-# btw_tool_session_package_info()
+# btw_tool_sessioninfo_package()
 
     Code
-      cat(btw_tool_session_package_info("dplyr")@value)
+      cat(btw_tool_sessioninfo_package("dplyr")@value)
     Output
       ```
        package    * version date (UTC) lib source
@@ -46,7 +46,7 @@
 ---
 
     Code
-      cat(btw_tool_session_package_info("digest", c("Imports", "Suggests"))@value)
+      cat(btw_tool_sessioninfo_package("digest", c("Imports", "Suggests"))@value)
     Output
       ```
        ! package         * version date (UTC) lib source
@@ -63,7 +63,7 @@
 ---
 
     Code
-      cat(btw_tool_session_package_info("attached")@value)
+      cat(btw_tool_sessioninfo_package("attached")@value)
     Output
       ### Attached Packages
       
@@ -84,7 +84,7 @@
 ---
 
     Code
-      cat(btw_tool_session_package_info("loaded")@value)
+      cat(btw_tool_sessioninfo_package("loaded")@value)
     Output
       ### Loaded Packages
       
@@ -168,7 +168,7 @@
 ---
 
     Code
-      cat(btw_tool_session_package_info("dplyr,tidyr", "false")@value)
+      cat(btw_tool_sessioninfo_package("dplyr,tidyr", "false")@value)
     Output
       ```
        package * version date (UTC) lib source

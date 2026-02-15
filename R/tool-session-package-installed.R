@@ -5,10 +5,10 @@
 #' similar names to help the LLM resolve typos.
 #'
 #' @examples
-#' btw_tool_session_check_package_installed("dplyr")@value
+#' btw_tool_sessioninfo_is_package_installed("dplyr")@value
 #'
 #' tryCatch(
-#'   btw_tool_session_check_package_installed("dplry"),
+#'   btw_tool_sessioninfo_is_package_installed("dplry"),
 #'   error = function(err) {
 #'     cat(conditionMessage(err))
 #'   }
@@ -21,11 +21,11 @@
 #'   its version, or an error indicating that the package is not installed.
 #'
 #' @seealso [btw_tools()]
-#' @family session tools
+#' @family sessioninfo tools
 #' @export
-btw_tool_session_check_package_installed <- function(package_name, `_intent`) {}
+btw_tool_sessioninfo_is_package_installed <- function(package_name, `_intent`) {}
 
-btw_tool_session_check_package_installed_impl <- function(package_name) {
+btw_tool_sessioninfo_is_package_installed_impl <- function(package_name) {
   check_installed(package_name)
 
   version <- package_version(package_name)
@@ -42,12 +42,14 @@ btw_tool_session_check_package_installed_impl <- function(package_name) {
 }
 
 .btw_add_to_tools(
-  "btw_tool_session_check_package_installed",
-  group = "session",
+  name = "btw_tool_sessioninfo_is_package_installed",
+  group = "sessioninfo",
+  alias_group = "session",
+  alias_name = "btw_tool_session_check_package_installed",
   tool = function() {
     ellmer::tool(
-      btw_tool_session_check_package_installed_impl,
-      name = "btw_tool_session_check_package_installed",
+      btw_tool_sessioninfo_is_package_installed_impl,
+      name = "btw_tool_sessioninfo_is_package_installed",
       description = "Check if a package is installed in the current session.",
       annotations = ellmer::tool_annotations(
         title = "Package Check",

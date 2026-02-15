@@ -44,7 +44,11 @@ btw_can_register_git_tool <- function() {
 #'
 #' @family git tools
 #' @export
-btw_tool_git_status <- function(include, pathspec, `_intent`) {}
+btw_tool_git_status <- function(
+  include = c("both", "staged", "unstaged"),
+  pathspec = NULL,
+  `_intent` = ""
+) {}
 
 btw_tool_git_status_impl <- function(
   include = c("both", "staged", "unstaged"),
@@ -81,6 +85,7 @@ btw_tool_git_status_impl <- function(
 .btw_add_to_tools(
   name = "btw_tool_git_status",
   group = "git",
+  can_register = function() btw_can_register_git_tool(),
   tool = function() {
     ellmer::tool(
       btw_tool_git_status_impl,
@@ -98,8 +103,7 @@ RETURNS: A list of file paths, their status (new, modified, deleted, etc.), and 
         title = "Git Status",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
-        idempotent_hint = FALSE,
-        btw_can_register = btw_can_register_git_tool
+        idempotent_hint = FALSE
       ),
       arguments = list(
         include = ellmer::type_enum(
@@ -147,7 +151,7 @@ RETURNS: A list of file paths, their status (new, modified, deleted, etc.), and 
 #'
 #' @family git tools
 #' @export
-btw_tool_git_diff <- function(ref, `_intent`) {}
+btw_tool_git_diff <- function(ref = NULL, `_intent` = "") {}
 
 btw_tool_git_diff_impl <- function(ref = NULL) {
   check_installed("gert")
@@ -182,6 +186,7 @@ btw_tool_git_diff_impl <- function(ref = NULL) {
 .btw_add_to_tools(
   name = "btw_tool_git_diff",
   group = "git",
+  can_register = function() btw_can_register_git_tool(),
   tool = function() {
     ellmer::tool(
       btw_tool_git_diff_impl,
@@ -201,8 +206,7 @@ LIMITATION: This tool does not support diffing between two arbitrary commits.
         title = "Git Diff",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
-        idempotent_hint = TRUE,
-        btw_can_register = btw_can_register_git_tool
+        idempotent_hint = TRUE
       ),
       arguments = list(
         ref = ellmer::type_string(
@@ -250,7 +254,12 @@ LIMITATION: This tool does not support diffing between two arbitrary commits.
 #'
 #' @family git tools
 #' @export
-btw_tool_git_log <- function(ref, max, after, `_intent`) {}
+btw_tool_git_log <- function(
+  ref = "HEAD",
+  max = 10,
+  after = NULL,
+  `_intent` = ""
+) {}
 
 btw_tool_git_log_impl <- function(
   ref = "HEAD",
@@ -302,6 +311,7 @@ btw_tool_git_log_impl <- function(
 .btw_add_to_tools(
   name = "btw_tool_git_log",
   group = "git",
+  can_register = function() btw_can_register_git_tool(),
   tool = function() {
     ellmer::tool(
       btw_tool_git_log_impl,
@@ -319,8 +329,7 @@ RETURNS: A list of commits with SHA (short), author, timestamp, number of files,
         title = "Git Log",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
-        idempotent_hint = FALSE,
-        btw_can_register = btw_can_register_git_tool
+        idempotent_hint = FALSE
       ),
       arguments = list(
         ref = ellmer::type_string(
@@ -372,7 +381,7 @@ RETURNS: A list of commits with SHA (short), author, timestamp, number of files,
 #'
 #' @family git tools
 #' @export
-btw_tool_git_commit <- function(message, files, `_intent`) {}
+btw_tool_git_commit <- function(message, files = NULL, `_intent` = "") {}
 
 btw_tool_git_commit_impl <- function(
   message,
@@ -409,6 +418,7 @@ btw_tool_git_commit_impl <- function(
 .btw_add_to_tools(
   name = "btw_tool_git_commit",
   group = "git",
+  can_register = function() btw_can_register_git_tool(),
   tool = function() {
     ellmer::tool(
       btw_tool_git_commit_impl,
@@ -431,8 +441,7 @@ RETURNS: The commit SHA and confirmation message.
         title = "Git Commit",
         read_only_hint = FALSE,
         open_world_hint = FALSE,
-        idempotent_hint = FALSE,
-        btw_can_register = btw_can_register_git_tool
+        idempotent_hint = FALSE
       ),
       arguments = list(
         message = ellmer::type_string(
@@ -480,7 +489,10 @@ RETURNS: The commit SHA and confirmation message.
 #'
 #' @family git tools
 #' @export
-btw_tool_git_branch_list <- function(include, `_intent`) {}
+btw_tool_git_branch_list <- function(
+  include = c("local", "remote", "all"),
+  `_intent` = ""
+) {}
 
 btw_tool_git_branch_list_impl <- function(
   include = c("local", "remote", "all")
@@ -515,6 +527,7 @@ btw_tool_git_branch_list_impl <- function(
 .btw_add_to_tools(
   name = "btw_tool_git_branch_list",
   group = "git",
+  can_register = function() btw_can_register_git_tool(),
   tool = function() {
     ellmer::tool(
       btw_tool_git_branch_list_impl,
@@ -531,8 +544,7 @@ RETURNS: A table of branch names, upstream tracking, and last update time.
         title = "Git Branches",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
-        idempotent_hint = TRUE,
-        btw_can_register = btw_can_register_git_tool
+        idempotent_hint = TRUE
       ),
       arguments = list(
         include = ellmer::type_enum(
@@ -579,7 +591,12 @@ RETURNS: A table of branch names, upstream tracking, and last update time.
 #'
 #' @family git tools
 #' @export
-btw_tool_git_branch_create <- function(branch, ref, checkout, `_intent`) {}
+btw_tool_git_branch_create <- function(
+  branch,
+  ref = "HEAD",
+  checkout = TRUE,
+  `_intent` = ""
+) {}
 
 btw_tool_git_branch_create_impl <- function(
   branch,
@@ -615,6 +632,7 @@ btw_tool_git_branch_create_impl <- function(
 .btw_add_to_tools(
   name = "btw_tool_git_branch_create",
   group = "git",
+  can_register = function() btw_can_register_git_tool(),
   tool = function() {
     ellmer::tool(
       btw_tool_git_branch_create_impl,
@@ -636,8 +654,7 @@ RETURNS: Confirmation message with branch name and ref.
         title = "Git Branch Create",
         read_only_hint = FALSE,
         open_world_hint = FALSE,
-        idempotent_hint = FALSE,
-        btw_can_register = btw_can_register_git_tool
+        idempotent_hint = FALSE
       ),
       arguments = list(
         branch = ellmer::type_string(
@@ -693,7 +710,11 @@ RETURNS: Confirmation message with branch name and ref.
 #'
 #' @family git tools
 #' @export
-btw_tool_git_branch_checkout <- function(branch, force, `_intent`) {}
+btw_tool_git_branch_checkout <- function(
+  branch,
+  force = FALSE,
+  `_intent` = ""
+) {}
 
 btw_tool_git_branch_checkout_impl <- function(
   branch,
@@ -719,6 +740,7 @@ btw_tool_git_branch_checkout_impl <- function(
 .btw_add_to_tools(
   name = "btw_tool_git_branch_checkout",
   group = "git",
+  can_register = function() btw_can_register_git_tool(),
   tool = function() {
     ellmer::tool(
       btw_tool_git_branch_checkout_impl,
@@ -741,8 +763,7 @@ RETURNS: Confirmation message with branch name.
         title = "Git Checkout",
         read_only_hint = FALSE,
         open_world_hint = FALSE,
-        idempotent_hint = FALSE,
-        btw_can_register = btw_can_register_git_tool
+        idempotent_hint = FALSE
       ),
       arguments = list(
         branch = ellmer::type_string(

@@ -3,6 +3,11 @@
 
 ## usethis namespace: start
 #' @import rlang
+#' @importFrom brio read_file
+#' @importFrom brio read_lines
+#' @importFrom brio write_file
+#' @importFrom brio write_lines
+#' @importFrom lifecycle deprecated
 ## usethis namespace: end
 NULL
 

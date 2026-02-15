@@ -3,9 +3,11 @@
   S7::methods_register()
 
   pkg_env <- rlang::fn_env(btw_tools)
-  for (tool_def in as_ellmer_tools(.btw_tools)) {
+  for (tool_def in as_ellmer_tools(.btw_tools, force = TRUE)) {
     assign(tool_def@name, tool_def, envir = pkg_env)
   }
+
+  rlang::run_on_load()
 }
 
 # enable usage of <S7_object>@name in package code

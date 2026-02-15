@@ -251,7 +251,7 @@ describe_data_frame_print <- function(x) {
   withr::local_options(pillar.advice = FALSE, pillar.min_title_chars = Inf)
 
   res <- cli::ansi_strip(
-    capture.output(tibble::as_tibble(x, width = 1000, n = Inf))
+    capture.output(dplyr::as_tibble(x, width = 1000, n = Inf))
   )
   as_btw_capture(res[2:length(res)])
 }

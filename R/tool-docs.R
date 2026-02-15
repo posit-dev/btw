@@ -261,11 +261,11 @@ format_help_page_markdown <- function(
   tools::Rd2HTML(rd_obj, out = tmp_rd_file)
 
   # Simplify HTML tables before converting to markdown
-  html <- readLines(tmp_rd_file)
+  html <- read_lines(tmp_rd_file)
   html <- simplify_help_page_arguments(html)
 
   tmp_simplified <- withr::local_tempfile()
-  writeLines(html, tmp_simplified)
+  write_lines(html, tmp_simplified)
 
   pandoc_convert(
     tmp_simplified,
@@ -279,7 +279,7 @@ format_help_page_html <- function(help_page) {
   tmp_rd_file <- withr::local_tempfile()
 
   html <- tools::Rd2HTML(rd_obj, out = tmp_rd_file)
-  readLines(html)
+  read_lines(html)
 }
 
 format_help_page_text <- function(help_page) {
@@ -298,7 +298,7 @@ format_help_page_text <- function(help_page) {
     out = tmp_rd_file,
     outputEncoding = "utf-8"
   )
-  readLines(tmp_rd_file)
+  read_lines(tmp_rd_file)
 }
 
 .btw_add_to_tools(

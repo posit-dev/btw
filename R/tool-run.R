@@ -92,7 +92,7 @@
 #' ```
 #'
 #' @param code A character string containing R code to run.
-#' @param _intent Intent description (automatically added by ellmer).
+#' @inheritParams btw_tool_docs_package_news
 #'
 #' @returns A list of ellmer Content objects:
 #'   - `ContentText`: visible return values and text output
@@ -116,7 +116,7 @@
 #' @seealso [btw_tools()]
 #' @family run tools
 #' @export
-btw_tool_run_r <- function(code, `_intent`) {}
+btw_tool_run_r <- function(code, `_intent` = "") {}
 
 btw_tool_run_r_impl <- function(
   code,
@@ -203,13 +203,13 @@ btw_tool_run_r_impl <- function(
     },
     warning = function(warn) {
       append_last_plot()
-      append_content(ContentWarning(conditionMessage(warn)))
+      append_content(ContentWarning(conditionMessage(warn), condition = warn))
       warn
     },
     error = function(err) {
       append_last_plot()
       had_error <<- TRUE
-      append_content(ContentError(conditionMessage(err)))
+      append_content(ContentError(conditionMessage(err), condition = err))
       err
     },
     value = function(value, visible) {
@@ -253,6 +253,7 @@ btw_tool_run_r_impl <- function(
     } else {
       "(The code ran successfully but did not produce any output.)"
     }
+    value <- structure(value, class = c("btw_run_r_no_output", "character"))
   } else if (every(value, S7::S7_inherits, ellmer::ContentText)) {
     # Flatten text-only output into a single string
     value <- paste(
@@ -270,7 +271,7 @@ btw_tool_run_r_impl <- function(
       # We always return contents up to the error as `value` because `error`
       # cannot handle rich output. We'll show status separately in the UI.
       status = if (had_error) "error" else "success",
-      display = list(open = TRUE, copy_code = TRUE)
+      display = list(open = !had_error, copy_code = TRUE)
     )
   )
 }
@@ -382,6 +383,7 @@ fansi_to_html <- function(text) {
 .btw_add_to_tools(
   name = "btw_tool_run_r",
   group = "run",
+  can_register = function() btw_can_register_run_r_tool(),
   tool = function() {
     ellmer::tool(
       function(code) {
@@ -425,8 +427,7 @@ Executes R code and captures printed values, text output, plots, messages, warni
       annotations = ellmer::tool_annotations(
         title = "Run R Code",
         read_only_hint = FALSE,
-        open_world_hint = FALSE,
-        btw_can_register = btw_can_register_run_r_tool
+        open_world_hint = FALSE
       ),
       arguments = list(
         code = ellmer::type_string("The R code to run")
@@ -453,12 +454,18 @@ ContentMessage <- S7::new_class(
 
 ContentWarning <- S7::new_class(
   "ContentWarning",
-  parent = ellmer::ContentText
+  parent = ellmer::ContentText,
+  properties = list(
+    condition = S7::class_any
+  )
 )
 
 ContentError <- S7::new_class(
   "ContentError",
-  parent = ellmer::ContentText
+  parent = ellmer::ContentText,
+  properties = list(
+    condition = S7::class_any
+  )
 )
 
 BtwRunToolResult <- S7::new_class(

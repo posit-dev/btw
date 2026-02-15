@@ -19,14 +19,15 @@ btw_app(..., client = NULL, tools = NULL, path_btw = NULL, messages = list())
 \item{...}{In \code{btw_app()}, additional arguments are passed to
 \code{\link[shiny:shinyApp]{shiny::shinyApp()}}. In \code{btw_client()}, additional arguments are ignored.}
 
-\item{client}{An \link[ellmer:Chat]{ellmer::Chat} client or a \code{provider/model} string to be
-passed to \code{\link[ellmer:chat-any]{ellmer::chat()}} to create a chat client. Defaults to
-\code{\link[ellmer:chat_anthropic]{ellmer::chat_anthropic()}}. You can use the \code{btw.client} option to set a
+\item{client}{An \link[ellmer:Chat]{ellmer::Chat} client, or a \code{provider/model} string to be
+passed to \code{\link[ellmer:chat-any]{ellmer::chat()}} to create a chat client, or an alias to a client
+setting in your \code{btw.md} file (see "Multiple Providers" section). Defaults
+to \code{\link[ellmer:chat_anthropic]{ellmer::chat_anthropic()}}. You can use the \code{btw.client} option to set a
 default client for new \code{btw_client()} calls, or use a \code{btw.md} project file
 for default chat client settings, like provider and model. We check the
 \code{client} argument, then the \code{btw.client} R option, and finally the \code{btw.md}
-project file (falling back to user-level \code{btw.md} if needed), using only the
-client definition from the first of these that is available.}
+project file (falling back to user-level \code{btw.md} if needed), using only
+the client definition from the first of these that is available.}
 
 \item{tools}{A list of tools to include in the chat, defaults to
 \code{\link[=btw_tools]{btw_tools()}}. Join \code{\link[=btw_tools]{btw_tools()}} with additional tools defined by
@@ -40,11 +41,12 @@ alternatively in the shorter form \code{tools = "docs_help_page"}. Finally,
 set \code{tools = FALSE} to skip registering \pkg{btw} tools with the chat
 client.}
 
-\item{path_btw}{A path to a \code{btw.md} or \code{AGENTS.md} project context file. If
-\code{NULL}, btw will find a project-specific \code{btw.md} or \code{AGENTS.md} file in
-the parents of the current working directory, with fallback to user-level
-\code{btw.md} if no project file is found. Set \code{path_btw = FALSE} to
-create a chat client without using a \code{btw.md} file.}
+\item{path_btw}{A path to a \code{btw.md}, \code{AGENTS.md}, or \code{CLAUDE.md} project
+context file. If \code{NULL}, btw will find a project-specific \code{btw.md},
+\code{AGENTS.md}, or \code{CLAUDE.md} file in the parents of the current working
+directory, with fallback to user-level \code{btw.md} if no project file is
+found. Set \code{path_btw = FALSE} to create a chat client without using a
+\code{btw.md} file.}
 
 \item{path_llms_txt}{A path to an \code{llms.txt} file containing context about
 the current project. By default, btw will look for an \code{llms.txt} file in
@@ -67,10 +69,11 @@ local workspace.
 \subsection{Project Context}{
 
 You can keep track of project-specific rules, guidance and context by adding
-a \code{btw.md} file or \href{https://agents.md/}{\code{AGENTS.md}} in your project
-directory. See \code{\link[=use_btw_md]{use_btw_md()}} for help creating a \code{btw.md} file in your
-project, or use \code{path_btw} to tell \code{btw_client()} to use a specific context
-file.
+a \code{btw.md} file, \href{https://agents.md/}{\code{AGENTS.md}}, or \code{CLAUDE.md} in your
+project directory. See \code{\link[=use_btw_md]{use_btw_md()}} for help creating a \code{btw.md} file in
+your project, or use \code{path_btw} to tell \code{btw_client()} to use a specific
+context file. Note that \code{CLAUDE.md} files will have their YAML frontmatter
+stripped but not used for configuration.
 
 \code{btw_client()} will also include context from an \code{llms.txt} file in the
 system prompt, if one is found in your project directory or as specified by
@@ -102,6 +105,34 @@ take precedence over settings in a \code{btw.md} file:
 \item \code{btw.tools}: The btw tools to include by default when starting a new
 btw chat, see \code{\link[=btw_tools]{btw_tools()}} for details.`
 }
+}
+
+\subsection{Multiple Providers and Models}{
+
+You can configure multiple client options in your \code{btw.md} file. When
+\code{btw_client()} is called interactively from the console, you'll be presented
+with a menu to choose which client to use. In non-interactive contexts, the
+first client is used automatically.
+
+\strong{Array format} (unnamed list):
+
+\if{html}{\out{<div class="sourceCode yaml">}}\preformatted{client:
+  - anthropic/claude-sonnet-4
+  - openai/gpt-4.1
+  - aws_bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0
+}\if{html}{\out{</div>}}
+
+\strong{Alias format} (named list):
+
+\if{html}{\out{<div class="sourceCode yaml">}}\preformatted{client:
+  haiku: aws_bedrock/us.anthropic.claude-haiku-4-5-20251001-v1:0
+  sonnet:
+    provider: aws_bedrock
+    model: us.anthropic.claude-sonnet-4-5-20250929-v1:0
+}\if{html}{\out{</div>}}
+
+With aliases, you can select a client by name in the interactive menu or pass
+the alias directly: \code{btw_client(client = "sonnet")}.
 }
 }
 \section{Functions}{

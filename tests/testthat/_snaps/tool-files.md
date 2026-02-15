@@ -1,7 +1,7 @@
-# btw_tool_files_list_files() works
+# btw_tool_files_list() works
 
     Code
-      writeLines(btw_tool_files_list_files()@value)
+      writeLines(btw_tool_files_list()@value)
     Output
       | path | type | size | modification_time |
       |------|------|------|-------------------|
@@ -11,40 +11,40 @@
 ---
 
     Code
-      btw_tool_files_list_files("/")
+      btw_tool_files_list("/")
     Condition
-      Error in `btw_tool_files_list_files()`:
+      Error in `btw_tool_files_list()`:
       ! You are not allowed to list or read files outside of the project directory. Make sure that `path` is relative to the current working directory.
 
 ---
 
     Code
-      btw_tool_files_list_files("../")
+      btw_tool_files_list("../")
     Condition
-      Error in `btw_tool_files_list_files()`:
+      Error in `btw_tool_files_list()`:
       ! You are not allowed to list or read files outside of the project directory. Make sure that `path` is relative to the current working directory.
 
-# btw_tool_files_read_text_file() works
+# btw_tool_files_read() works
 
     Code
-      btw_tool_files_read_text_file("mtcars.rds")
+      btw_tool_files_read("mtcars.rds")
     Condition
-      Error in `btw_tool_files_read_text_file()`:
-      ! Path 'mtcars.rds' is not a path to a text file.
+      Error in `btw_tool_files_read()`:
+      ! Path 'mtcars.rds' appears to be a binary file or cannot be read as text.
 
 ---
 
     Code
-      btw_tool_files_read_text_file("../mtcars.rds")
+      btw_tool_files_read("../mtcars.rds")
     Condition
-      Error in `btw_tool_files_read_text_file()`:
+      Error in `btw_tool_files_read()`:
       ! You are not allowed to list or read files outside of the project directory. Make sure that `path` is relative to the current working directory.
 
-# btw_tool_files_write_text_file() works
+# btw_tool_files_write() works
 
     Code
-      btw_tool_files_write_text_file("../test.txt", "content")
+      btw_tool_files_write("../test.txt", "content")
     Condition
-      Error in `btw_tool_files_write_text_file()`:
+      Error in `btw_tool_files_write()`:
       ! You are not allowed to list or read files outside of the project directory. Make sure that `path` is relative to the current working directory.
 

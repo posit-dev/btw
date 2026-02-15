@@ -30,6 +30,22 @@ The \code{btw_tools()} function provides a list of tools that can be registered
 with an ellmer chat via \code{chat$register_tools()} that allow the chat to
 interface with your computational environment. Chats returned by
 this function have access to the tools:
+\subsection{Group: agent}{\tabular{ll}{
+   Name \tab Description \cr
+   \code{\link[=btw_tool_agent_subagent]{btw_tool_agent_subagent()}} \tab  \cr
+   Delegate a task to a specialized assistant that can work independently with its own conversation thread. \tab  \cr
+}
+
+}
+
+\subsection{Group: cran}{\tabular{ll}{
+   Name \tab Description \cr
+   \code{\link[=btw_tool_cran_package]{btw_tool_cran_package()}} \tab Describe a CRAN package. \cr
+   \code{\link[=btw_tool_cran_search]{btw_tool_cran_search()}} \tab Search for an R package on CRAN. \cr
+}
+
+}
+
 \subsection{Group: docs}{\tabular{ll}{
    Name \tab Description \cr
    \code{\link[=btw_tool_docs_available_vignettes]{btw_tool_docs_available_vignettes()}} \tab List available vignettes for an R package. \cr
@@ -51,10 +67,10 @@ this function have access to the tools:
 
 \subsection{Group: files}{\tabular{ll}{
    Name \tab Description \cr
-   \code{\link[=btw_tool_files_code_search]{btw_tool_files_code_search()}} \tab Search code files in the project. \cr
-   \code{\link[=btw_tool_files_list_files]{btw_tool_files_list_files()}} \tab List files or directories in the project. \cr
-   \code{\link[=btw_tool_files_read_text_file]{btw_tool_files_read_text_file()}} \tab Read an entire text file. \cr
-   \code{\link[=btw_tool_files_write_text_file]{btw_tool_files_write_text_file()}} \tab Write content to a text file. \cr
+   \code{\link[=btw_tool_files_list]{btw_tool_files_list()}} \tab List files or directories in the project. \cr
+   \code{\link[=btw_tool_files_read]{btw_tool_files_read()}} \tab Read an entire text file. \cr
+   \code{\link[=btw_tool_files_search]{btw_tool_files_search()}} \tab Search code files in the project. \cr
+   \code{\link[=btw_tool_files_write]{btw_tool_files_write()}} \tab Write content to a text file. \cr
 }
 
 }
@@ -91,6 +107,7 @@ this function have access to the tools:
    \code{\link[=btw_tool_pkg_check]{btw_tool_pkg_check()}} \tab Run comprehensive package checks. \cr
    \code{\link[=btw_tool_pkg_coverage]{btw_tool_pkg_coverage()}} \tab Compute test coverage for an R package. \cr
    \code{\link[=btw_tool_pkg_document]{btw_tool_pkg_document()}} \tab Generate package documentation. \cr
+   \code{\link[=btw_tool_pkg_load_all]{btw_tool_pkg_load_all()}} \tab Load package code to verify it loads correctly. \cr
    \code{\link[=btw_tool_pkg_test]{btw_tool_pkg_test()}} \tab Run testthat tests for an R package. \cr
 }
 
@@ -103,19 +120,11 @@ this function have access to the tools:
 
 }
 
-\subsection{Group: search}{\tabular{ll}{
+\subsection{Group: sessioninfo}{\tabular{ll}{
    Name \tab Description \cr
-   \code{\link[=btw_tool_search_package_info]{btw_tool_search_package_info()}} \tab Describe a CRAN package. \cr
-   \code{\link[=btw_tool_search_packages]{btw_tool_search_packages()}} \tab Search for an R package on CRAN. \cr
-}
-
-}
-
-\subsection{Group: session}{\tabular{ll}{
-   Name \tab Description \cr
-   \code{\link[=btw_tool_session_check_package_installed]{btw_tool_session_check_package_installed()}} \tab Check if a package is installed in the current session. \cr
-   \code{\link[=btw_tool_session_package_info]{btw_tool_session_package_info()}} \tab Verify that a specific package is installed, or find out which packages are in use in the current session. \cr
-   \code{\link[=btw_tool_session_platform_info]{btw_tool_session_platform_info()}} \tab Describes the R version, operating system, language and locale settings for the user's system. \cr
+   \code{\link[=btw_tool_sessioninfo_is_package_installed]{btw_tool_sessioninfo_is_package_installed()}} \tab Check if a package is installed in the current session. \cr
+   \code{\link[=btw_tool_sessioninfo_package]{btw_tool_sessioninfo_package()}} \tab Verify that a specific package is installed, or find out which packages are in use in the current session. \cr
+   \code{\link[=btw_tool_sessioninfo_platform]{btw_tool_sessioninfo_platform()}} \tab Describes the R version, operating system, language and locale settings for the user's system. \cr
 }
 
 }

@@ -264,7 +264,35 @@ test_that("btw_find_test_file handles different source file patterns", {
   expect_match(result2, "test-utils.R$")
 })
 
+# Helpers ----------------------------------------------------------------------
+
+test_that("has_devtools checks for devtools package", {
+  local_mocked_bindings(
+    is_installed = function(pkg) pkg == "devtools"
+  )
+  expect_true(has_devtools())
+
+  local_mocked_bindings(
+    is_installed = function(pkg) FALSE
+  )
+  expect_false(has_devtools())
+})
+
+test_that("has_roxygen2 checks for roxygen2 package", {
+  local_mocked_bindings(
+    is_installed = function(pkg) pkg == "roxygen2"
+  )
+  expect_true(has_roxygen2())
+
+  local_mocked_bindings(
+    is_installed = function(pkg) FALSE
+  )
+  expect_false(has_roxygen2())
+})
+
 # Integration tests with mock package ------------------------------------------
+
+skip_on_cran()
 
 test_that("btw_coverage_package works with minimal package", {
   skip_if_not_installed("covr")
@@ -380,28 +408,4 @@ test_that("btw_coverage_file reports uncovered lines", {
   # Should mention multiply_numbers as uncovered (it has no tests)
   output_text <- result@value
   expect_match(output_text, "multiply_numbers", ignore.case = TRUE)
-})
-
-test_that("has_devtools checks for devtools package", {
-  local_mocked_bindings(
-    is_installed = function(pkg) pkg == "devtools"
-  )
-  expect_true(has_devtools())
-
-  local_mocked_bindings(
-    is_installed = function(pkg) FALSE
-  )
-  expect_false(has_devtools())
-})
-
-test_that("has_roxygen2 checks for roxygen2 package", {
-  local_mocked_bindings(
-    is_installed = function(pkg) pkg == "roxygen2"
-  )
-  expect_true(has_roxygen2())
-
-  local_mocked_bindings(
-    is_installed = function(pkg) FALSE
-  )
-  expect_false(has_roxygen2())
 })

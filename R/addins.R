@@ -8,7 +8,7 @@ btw_app_addin <- function() {
     'btw::btw_app()'
   )
   tmp <- tempfile("btw_app_job_", fileext = ".R")
-  writeLines(code, tmp)
+  write_lines(code, tmp)
   rstudioapi::jobRunScript(tmp, name = "btw_app()", workingDir = getwd())
   rstudioapi::executeCommand("activateConsole")
 
