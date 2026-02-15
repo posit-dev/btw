@@ -132,16 +132,36 @@ btw_list_skills <- function() {
 
     for (subdir in subdirs) {
       skill_md_path <- file.path(subdir, "SKILL.md")
-      if (file.exists(skill_md_path)) {
-        metadata <- extract_skill_metadata(skill_md_path)
-        skill_name <- basename(subdir)
-
-        all_skills[[skill_name]] <- list(
-          name = skill_name,
-          description = metadata$description %||% "No description available",
-          path = skill_md_path
-        )
+      if (!file.exists(skill_md_path)) {
+        next
       }
+
+      validation <- validate_skill(subdir)
+      if (!validation$valid) {
+        cli::cli_warn(c(
+          "Skipping invalid skill in {.path {subdir}}.",
+          set_names(validation$issues, rep("!" , length(validation$issues)))
+        ))
+        next
+      }
+
+      metadata <- extract_skill_metadata(skill_md_path)
+      skill_name <- basename(subdir)
+
+      skill_entry <- list(
+        name = skill_name,
+        description = metadata$description %||% "No description available",
+        path = skill_md_path
+      )
+
+      if (!is.null(metadata$compatibility)) {
+        skill_entry$compatibility <- metadata$compatibility
+      }
+      if (!is.null(metadata[["allowed-tools"]])) {
+        skill_entry$allowed_tools <- metadata[["allowed-tools"]]
+      }
+
+      all_skills[[skill_name]] <- skill_entry
     }
   }
 
@@ -175,6 +195,111 @@ extract_skill_metadata <- function(skill_path) {
   )
 }
 
+# Skill Validation ---------------------------------------------------------
+
+validate_skill <- function(skill_dir) {
+  skill_dir <- normalizePath(skill_dir, mustWork = FALSE)
+  issues <- character()
+
+  skill_md_path <- file.path(skill_dir, "SKILL.md")
+  if (!file.exists(skill_md_path)) {
+    return(list(
+      valid = FALSE,
+      issues = "SKILL.md not found."
+    ))
+  }
+
+  metadata <- tryCatch(
+    {
+      fm <- frontmatter::read_front_matter(skill_md_path)
+      fm$data
+    },
+    error = function(e) {
+      issues <<- c(issues, sprintf("Failed to parse frontmatter: %s", e$message))
+      NULL
+    }
+  )
+
+  if (is.null(metadata)) {
+    issues <- c(issues, "No YAML frontmatter found.")
+    return(list(valid = FALSE, issues = issues))
+  }
+
+  if (!is.list(metadata)) {
+    return(list(
+      valid = FALSE,
+      issues = "Frontmatter must be a YAML mapping."
+    ))
+  }
+
+  # Check for unexpected properties
+  allowed_fields <- c("name", "description", "license", "compatibility", "metadata", "allowed-tools")
+  unexpected <- setdiff(names(metadata), allowed_fields)
+  if (length(unexpected) > 0) {
+    issues <- c(issues, sprintf(
+      "Unexpected frontmatter field(s): %s. Allowed fields: %s.",
+      paste(unexpected, collapse = ", "),
+      paste(allowed_fields, collapse = ", ")
+    ))
+  }
+
+  # Validate name
+  name <- metadata$name
+  dir_name <- basename(skill_dir)
+  if (is.null(name) || !is.character(name) || !nzchar(name)) {
+    issues <- c(issues, "Missing or empty 'name' field in frontmatter.")
+  } else {
+    if (nchar(name) > 64) {
+      issues <- c(issues, sprintf("Name is too long (%d characters, max 64).", nchar(name)))
+    }
+    if (!grepl("^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$", name)) {
+      issues <- c(issues, sprintf(
+        "Name '%s' must contain only lowercase letters, numbers, and hyphens, and must not start or end with a hyphen.",
+        name
+      ))
+    }
+    if (grepl("--", name)) {
+      issues <- c(issues, sprintf("Name '%s' must not contain consecutive hyphens.", name))
+    }
+    if (name != dir_name) {
+      issues <- c(issues, sprintf(
+        "Name '%s' in frontmatter does not match directory name '%s'.",
+        name, dir_name
+      ))
+    }
+  }
+
+  # Validate description
+  description <- metadata$description
+  if (is.null(description) || !is.character(description) || !nzchar(description)) {
+    issues <- c(issues, "Missing or empty 'description' field in frontmatter.")
+  } else if (nchar(description) > 1024) {
+    issues <- c(issues, sprintf(
+      "Description is too long (%d characters, max 1024).",
+      nchar(description)
+    ))
+  }
+
+  # Validate optional fields
+  if (!is.null(metadata$compatibility) && is.character(metadata$compatibility)) {
+    if (nchar(metadata$compatibility) > 500) {
+      issues <- c(issues, sprintf(
+        "Compatibility field is too long (%d characters, max 500).",
+        nchar(metadata$compatibility)
+      ))
+    }
+  }
+
+  if (!is.null(metadata$metadata) && !is.list(metadata$metadata)) {
+    issues <- c(issues, "The 'metadata' field must be a key-value mapping.")
+  }
+
+  list(
+    valid = length(issues) == 0,
+    issues = issues
+  )
+}
+
 # Skill Resources ----------------------------------------------------------
 
 list_skill_resources <- function(skill_dir) {
@@ -190,7 +315,7 @@ list_files_in_subdir <- function(base_dir, subdir) {
   if (!dir.exists(full_path)) {
     return(character(0))
   }
-  list.files(full_path, full.names = FALSE)
+  list.files(full_path, full.names = FALSE, recursive = TRUE)
 }
 
 has_skill_resources <- function(resources) {
@@ -248,11 +373,18 @@ btw_skills_system_prompt <- function() {
   skill_items <- vapply(
     skills,
     function(skill) {
-      sprintf(
-        "<skill>\n<name>%s</name>\n<description>%s</description>\n</skill>",
+      parts <- sprintf(
+        "<skill>\n<name>%s</name>\n<description>%s</description>",
         skill$name,
         skill$description
       )
+      if (!is.null(skill$compatibility)) {
+        parts <- paste0(parts, sprintf("\n<compatibility>%s</compatibility>", skill$compatibility))
+      }
+      if (!is.null(skill$allowed_tools)) {
+        parts <- paste0(parts, sprintf("\n<allowed-tools>%s</allowed-tools>", skill$allowed_tools))
+      }
+      paste0(parts, "\n</skill>")
     },
     character(1)
   )
