@@ -106,21 +106,23 @@ BtwTextFileToolResult <- S7::new_class(
       },
       name = "btw_tool_files_read",
       description = paste(
-        "Read a text file. Returns content with hashline annotations.",
+        "Read the contents of a text file and return it with hashline annotations.",
         "",
         "OUTPUT FORMAT:",
         "Each line is prefixed with `line_number:hash|` where:",
-        "- `line_number` is the 1-based line number in the file",
-        "- `hash` is a 3-character content hash for edit validation",
-        "- `|` separates the prefix from the line content",
+        "- `line_number` is the 1-based line number",
+        "- `hash` is a 3-character content hash used for edit validation",
+        "- `|` separates the prefix from the actual line content",
         "",
         "Example output:",
-        "  1:a3f|function hello() {",
-        "  2:b1c|    return(\"world\")",
-        "  3:d4e|}",
+        "  1:a3f|library(dplyr)",
+        "  2:b1c|data <- read_csv('input.csv')",
+        "  3:d4e|result <- data |> filter(x > 0)",
         "",
-        "Use these line references with `btw_tool_files_edit` to make",
-        "targeted edits without rewriting the entire file.",
+        "USAGE NOTES:",
+        "- Use line references (e.g., '2:b1c') with btw_tool_files_edit to make targeted edits.",
+        "- For large files, use line_start and line_end to read specific sections.",
+        "- Binary files (images, compiled code, etc.) cannot be read with this tool.",
         sep = "\n"
       ),
       annotations = ellmer::tool_annotations(
@@ -132,18 +134,14 @@ BtwTextFileToolResult <- S7::new_class(
       ),
       arguments = list(
         path = ellmer::type_string(
-          "The relative path to a file that can be read as text, such as a CSV, JSON, HTML, markdown file, etc.",
+          "Relative path to a text file (e.g., 'R/utils.R', 'data/input.csv'). Must be within the current working directory."
         ),
         line_start = ellmer::type_number(
-          "Starting line to read, defaults to 1 (starting from the first line).",
+          "First line to read (1-based, inclusive). Defaults to 1.",
           required = FALSE
         ),
         line_end = ellmer::type_number(
-          paste(
-            "Ending line to read, defaults to 1000.",
-            "Change only this value if you want to read more or fewer lines.",
-            "Use in combination with `line_start` to read a specific line range of the file."
-          ),
+          "Last line to read (1-based, inclusive). Defaults to 1000. Adjust to read more lines or combine with line_start to read a specific range.",
           required = FALSE
         )
       )

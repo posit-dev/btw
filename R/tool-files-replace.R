@@ -98,21 +98,24 @@ btw_tool_files_replace_impl <- function(
     ellmer::tool(
       btw_tool_files_replace_impl,
       name = "btw_tool_files_replace",
-      description = 'Replace exact string occurrences in a text file.
+      description = r"---(Find and replace exact string occurrences in a text file.
 
 WHEN TO USE:
-Use this tool to find and replace exact strings in a file. This is ideal for
-targeted text changes when you know the exact content to replace. For
-line-based edits using hashline references, use btw_tool_files_edit instead.
+Use this tool for simple, exact text replacements when you know the precise string to
+change. Ideal for renaming variables, updating values, or making repetitive changes.
+For line-based structural edits, use btw_tool_files_edit instead.
 
-IMPORTANT:
-- The `old_string` must match EXACTLY, including whitespace and indentation.
-- By default, `old_string` must appear exactly once in the file. Provide
-  enough surrounding context to make the match unique.
-- Set `replace_all` to true to replace all occurrences.
-- `old_string` and `new_string` must be different.
-- Use an empty `new_string` ("") to delete the matched text.
-',
+HOW IT WORKS:
+1. Searches for `old_string` as an exact literal match (not a regex).
+2. By default, requires exactly one match to prevent unintended changes.
+3. Use `replace_all: true` to replace all occurrences when intentional.
+
+TIPS FOR SUCCESS:
+- Include enough surrounding context in `old_string` to make it unique.
+- Whitespace and indentation must match exactly.
+- To delete text, use an empty string for `new_string`.
+- If the match is ambiguous, add more context rather than using replace_all.
+---)",
       annotations = ellmer::tool_annotations(
         title = "Replace in File",
         read_only_hint = FALSE,
@@ -122,18 +125,19 @@ IMPORTANT:
       ),
       arguments = list(
         path = ellmer::type_string(
-          "The relative path to the file to edit."
+          "Relative path to the file to edit. Must be within the current working directory."
         ),
         old_string = ellmer::type_string(
-          "The exact string to find in the file. Must be unique unless replace_all is true."
+          "The exact string to find. Must match character-for-character, including whitespace. Must be unique in the file unless replace_all is true."
         ),
         new_string = ellmer::type_string(
-          "The replacement string. Use an empty string to delete the matched text."
+          "The replacement text. Use an empty string (\"\") to delete the matched text."
         ),
         replace_all = ellmer::type_boolean(
-          "If true, replace all occurrences of old_string. Default is false, which requires exactly one match.",
+          "Replace all occurrences instead of requiring exactly one match. Defaults to false.",
           required = FALSE
         )
+      )
       )
     )
   }
