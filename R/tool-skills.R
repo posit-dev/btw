@@ -38,20 +38,8 @@ btw_tool_fetch_skill_impl <- function(skill_name) {
     )
   }
 
-  skill_content <- readLines(skill_info$path, warn = FALSE)
-
-  content_start <- 1
-  if (length(skill_content) > 0 && skill_content[1] == "---") {
-    yaml_end <- which(skill_content == "---")
-    if (length(yaml_end) >= 2) {
-      content_start <- yaml_end[2] + 1
-    }
-  }
-
-  skill_text <- paste(
-    skill_content[content_start:length(skill_content)],
-    collapse = "\n"
-  )
+  fm <- frontmatter::read_front_matter(skill_info$path)
+  skill_text <- fm$body %||% ""
 
   resources <- list_skill_resources(skill_info$base_dir)
   resources_listing <- format_resources_listing(resources, skill_info$base_dir)
@@ -64,6 +52,7 @@ btw_tool_fetch_skill_impl <- function(skill_name) {
       name = skill_name,
       path = skill_info$path,
       base_dir = skill_info$base_dir,
+      metadata = fm$data,
       resources = resources
     ),
     display = list(
@@ -177,23 +166,11 @@ find_skill <- function(skill_name) {
 }
 
 extract_skill_metadata <- function(skill_path) {
-  lines <- readLines(skill_path, warn = FALSE)
-
-  if (length(lines) == 0 || lines[1] != "---") {
-    return(list())
-  }
-
-  yaml_end_indices <- which(lines == "---")
-  if (length(yaml_end_indices) < 2) {
-    return(list())
-  }
-
-  yaml_lines <- lines[2:(yaml_end_indices[2] - 1)]
-  yaml_text <- paste(yaml_lines, collapse = "\n")
-
-  check_installed("yaml")
   tryCatch(
-    yaml::yaml.load(yaml_text),
+    {
+      fm <- frontmatter::read_front_matter(skill_path)
+      fm$data %||% list()
+    },
     error = function(e) list()
   )
 }
