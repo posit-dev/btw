@@ -396,3 +396,243 @@ btw_skills_system_prompt <- function() {
     "\n</available_skills>"
   )
 }
+
+# User-Facing Skill Management ---------------------------------------------
+
+#' Create a new skill
+#'
+#' @description
+#' Initialize a new skill directory following the
+#' [Agent Skills specification](https://agentskills.io). Creates a `SKILL.md`
+#' file with proper YAML frontmatter and optionally creates resource
+#' directories (`scripts/`, `references/`, `assets/`).
+#'
+#' @param name The skill name. Must be a valid skill name: lowercase letters,
+#'   numbers, and hyphens only, 1-64 characters, must not start or end with a
+#'   hyphen, and must not contain consecutive hyphens.
+#' @param description A description of what the skill does and when to use it.
+#'   Maximum 1024 characters.
+#' @param scope Where to create the skill. One of:
+#'   - `"project"` (default): Creates in `.btw/skills/` in the current
+#'     working directory
+#'   - `"user"`: Creates in the user-level skills directory
+#'   - A directory path: Creates the skill directory inside this path
+#' @param resources Logical. If `TRUE` (the default), creates empty
+#'   `scripts/`, `references/`, and `assets/` subdirectories.
+#'
+#' @return The path to the created skill directory, invisibly.
+#'
+#' @family skills
+#' @export
+btw_skill_create <- function(
+  name,
+  description = "",
+  scope = "project",
+  resources = TRUE
+) {
+  check_name(name)
+  check_string(description)
+  check_string(scope)
+  check_bool(resources)
+
+  # Validate name format
+  if (nchar(name) > 64) {
+    cli::cli_abort("Skill name must be at most 64 characters (got {nchar(name)}).")
+  }
+  if (!grepl("^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$", name)) {
+    cli::cli_abort(
+      "Skill name must contain only lowercase letters, numbers, and hyphens, and must not start or end with a hyphen."
+    )
+  }
+  if (grepl("--", name)) {
+    cli::cli_abort("Skill name must not contain consecutive hyphens.")
+  }
+
+  # Resolve target directory
+  parent_dir <- switch(
+    scope,
+    project = file.path(getwd(), ".btw", "skills"),
+    user = file.path(tools::R_user_dir("btw", "config"), "skills"),
+    scope
+  )
+
+  skill_dir <- file.path(parent_dir, name)
+
+  if (dir.exists(skill_dir)) {
+    cli::cli_abort("Skill directory already exists: {.path {skill_dir}}")
+  }
+
+  dir.create(skill_dir, recursive = TRUE, showWarnings = FALSE)
+
+  # Generate SKILL.md
+  skill_title <- gsub("-", " ", name)
+  skill_title <- paste0(
+    toupper(substring(skill_title, 1, 1)),
+    substring(skill_title, 2)
+  )
+
+  description_line <- if (nzchar(description)) {
+    description
+  } else {
+    "TODO: Describe what this skill does and when to use it."
+  }
+
+  skill_md_content <- paste0(
+    "---\n",
+    "name: ", name, "\n",
+    "description: ", description_line, "\n",
+    "---\n",
+    "\n",
+    "# ", skill_title, "\n",
+    "\n",
+    "TODO: Add skill instructions here.\n"
+  )
+
+  write_lines(skill_md_content, file.path(skill_dir, "SKILL.md"))
+
+  if (resources) {
+    dir.create(file.path(skill_dir, "scripts"), showWarnings = FALSE)
+    dir.create(file.path(skill_dir, "references"), showWarnings = FALSE)
+    dir.create(file.path(skill_dir, "assets"), showWarnings = FALSE)
+  }
+
+  cli::cli_inform(c(
+    "v" = "Created skill {.val {name}} at {.path {skill_dir}}",
+    "i" = "Edit {.file {file.path(skill_dir, 'SKILL.md')}} to add instructions."
+  ))
+
+  invisible(skill_dir)
+}
+
+#' Validate a skill
+#'
+#' @description
+#' Validate a skill directory against the
+#' [Agent Skills specification](https://agentskills.io). Checks that the
+#' `SKILL.md` file exists, has valid YAML frontmatter, and that required
+#' fields follow the specification's naming and format rules.
+#'
+#' @param path Path to a skill directory (containing a `SKILL.md` file).
+#'
+#' @return A list with `valid` (logical) and `issues` (character vector of
+#'   validation messages), invisibly. Issues are also printed to the console.
+#'
+#' @family skills
+#' @export
+btw_skill_validate <- function(path = ".") {
+  check_string(path)
+
+  path <- normalizePath(path, mustWork = FALSE)
+  if (!dir.exists(path)) {
+    cli::cli_abort("Directory does not exist: {.path {path}}")
+  }
+
+  result <- validate_skill(path)
+
+  if (result$valid) {
+    cli::cli_inform(c("v" = "Skill at {.path {path}} is valid."))
+  } else {
+    cli::cli_inform(c(
+      "x" = "Skill at {.path {path}} has validation issues:",
+      set_names(result$issues, rep("!", length(result$issues)))
+    ))
+  }
+
+  invisible(result)
+}
+
+#' Install a skill
+#'
+#' @description
+#' Install a skill from a `.skill` file (ZIP archive) or a directory into
+#' a skill location where btw can discover it.
+#'
+#' @param source Path to a `.skill` file or a skill directory.
+#' @param scope Where to install the skill. One of:
+#'   - `"project"` (default): Installs to `.btw/skills/` in the current
+#'     working directory
+#'   - `"user"`: Installs to the user-level skills directory
+#'
+#' @return The path to the installed skill directory, invisibly.
+#'
+#' @family skills
+#' @export
+btw_skill_install <- function(source, scope = "project") {
+  check_string(source)
+  check_string(scope)
+
+  source <- normalizePath(source, mustWork = FALSE)
+  if (!file.exists(source) && !dir.exists(source)) {
+    cli::cli_abort("Source not found: {.path {source}}")
+  }
+
+  # Determine target directory
+  target_parent <- switch(
+    scope,
+    project = file.path(getwd(), ".btw", "skills"),
+    user = file.path(tools::R_user_dir("btw", "config"), "skills"),
+    cli::cli_abort("scope must be {.val project} or {.val user}, not {.val {scope}}.")
+  )
+
+  if (file.info(source)$isdir) {
+    # Directory source: copy it
+    skill_name <- basename(source)
+    target_dir <- file.path(target_parent, skill_name)
+
+    if (dir.exists(target_dir)) {
+      cli::cli_abort("Skill {.val {skill_name}} already exists at {.path {target_dir}}.")
+    }
+
+    # Validate before installing
+    validation <- validate_skill(source)
+    if (!validation$valid) {
+      cli::cli_abort(c(
+        "Cannot install invalid skill:",
+        set_names(validation$issues, rep("!", length(validation$issues)))
+      ))
+    }
+
+    dir.create(target_parent, recursive = TRUE, showWarnings = FALSE)
+    fs::dir_copy(source, target_dir)
+  } else {
+    # File source: must be .skill (ZIP)
+    if (!grepl("\\.skill$", source)) {
+      cli::cli_abort("File source must be a {.file .skill} file (ZIP archive).")
+    }
+
+    # Extract to temp, validate, then move to target
+    tmp_dir <- tempfile("btw_skill_")
+    on.exit(unlink(tmp_dir, recursive = TRUE), add = TRUE)
+    utils::unzip(source, exdir = tmp_dir)
+
+    # Find the skill directory inside the extracted archive
+    extracted_dirs <- list.dirs(tmp_dir, full.names = TRUE, recursive = FALSE)
+    if (length(extracted_dirs) != 1) {
+      cli::cli_abort("Expected exactly one directory in the .skill archive, found {length(extracted_dirs)}.")
+    }
+
+    skill_name <- basename(extracted_dirs[[1]])
+    target_dir <- file.path(target_parent, skill_name)
+
+    if (dir.exists(target_dir)) {
+      cli::cli_abort("Skill {.val {skill_name}} already exists at {.path {target_dir}}.")
+    }
+
+    validation <- validate_skill(extracted_dirs[[1]])
+    if (!validation$valid) {
+      cli::cli_abort(c(
+        "Cannot install invalid skill from {.file {source}}:",
+        set_names(validation$issues, rep("!", length(validation$issues)))
+      ))
+    }
+
+    dir.create(target_parent, recursive = TRUE, showWarnings = FALSE)
+    fs::dir_copy(extracted_dirs[[1]], target_dir)
+  }
+
+  cli::cli_inform(c(
+    "v" = "Installed skill {.val {skill_name}} to {.path {target_dir}}"
+  ))
+
+  invisible(target_dir)
+}

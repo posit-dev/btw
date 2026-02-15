@@ -25,4 +25,10 @@ specialized knowledge, workflows, and tools. Each skill is a directory
 containing a \code{SKILL.md} file with instructions and optional bundled
 resources (scripts, references, assets).
 }
+\seealso{
+Other skills: 
+\code{\link{btw_skill_create}()},
+\code{\link{btw_skill_install}()},
+\code{\link{btw_skill_validate}()}
+}
 \concept{skills}
