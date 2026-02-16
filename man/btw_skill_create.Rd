@@ -36,7 +36,8 @@ directories (\verb{scripts/}, \verb{references/}, \verb{assets/}).
 }
 \seealso{
 Other skills: 
-\code{\link{btw_skill_install}()},
+\code{\link{btw_skill_install_github}()},
+\code{\link{btw_skill_install_package}()},
 \code{\link{btw_skill_validate}()},
 \code{\link{btw_tool_fetch_skill}()}
 }

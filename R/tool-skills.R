@@ -584,13 +584,65 @@ btw_skill_validate <- function(path = ".") {
   invisible(result)
 }
 
-#' Install a skill
+select_skill_dir <- function(skill_dirs, skill = NULL, source_label = "source") {
+  if (length(skill_dirs) == 0) {
+    cli::cli_abort("No skills found in {source_label}.")
+  }
+
+  if (!is.null(skill)) {
+    check_string(skill)
+    match_idx <- match(skill, basename(skill_dirs))
+    if (is.na(match_idx)) {
+      available <- basename(skill_dirs)
+      cli::cli_abort(c(
+        "Skill {.val {skill}} not found in {source_label}.",
+        "i" = "Available skills: {.val {available}}"
+      ))
+    }
+    return(skill_dirs[[match_idx]])
+  }
+
+  if (length(skill_dirs) == 1) {
+    return(skill_dirs[[1]])
+  }
+
+  # Multiple skills, no name specified
+
+  if (!is_interactive()) {
+    available <- basename(skill_dirs)
+    cli::cli_abort(c(
+      "Multiple skills found in {source_label}.",
+      "i" = "Available skills: {.val {available}}",
+      "i" = "Use the {.arg skill} argument to select one."
+    ))
+  }
+
+  cli::cli_inform("Multiple skills found in {source_label}:")
+  choice <- utils::menu(
+    choices = basename(skill_dirs),
+    graphics = FALSE,
+    title = "Which skill would you like to install?"
+  )
+
+  if (choice == 0) {
+    cli::cli_abort("Aborted by user.")
+  }
+
+  skill_dirs[[choice]]
+}
+
+#' Install a skill from GitHub
 #'
 #' @description
-#' Install a skill from a `.skill` file (ZIP archive) or a directory into
-#' a skill location where btw can discover it.
+#' Download and install a skill from a GitHub repository. The repository
+#' should contain one or more skill directories, each with a `SKILL.md` file.
 #'
-#' @param source Path to a `.skill` file or a skill directory.
+#' @param repo GitHub repository in `"owner/repo"` format.
+#' @param skill Optional skill name. If `NULL` and the repository contains
+#'   multiple skills, an interactive picker is shown (or an error in
+#'   non-interactive sessions).
+#' @param ref Git reference (branch, tag, or SHA) to download. Defaults to
+#'   `"HEAD"`.
 #' @param scope Where to install the skill. One of:
 #'   - `"project"` (default): Installs to `.btw/skills/` in the current
 #'     working directory
@@ -600,13 +652,128 @@ btw_skill_validate <- function(path = ".") {
 #'
 #' @family skills
 #' @export
-btw_skill_install <- function(source, scope = "project") {
-  check_string(source)
+btw_skill_install_github <- function(repo, skill = NULL, ref = "HEAD", scope = "project") {
+  check_string(repo)
+  if (!is.null(skill)) check_string(skill)
+  check_string(ref)
   check_string(scope)
 
-  source <- normalizePath(source, mustWork = FALSE)
-  if (!file.exists(source) && !dir.exists(source)) {
-    cli::cli_abort("Source not found: {.path {source}}")
+  rlang::check_installed("gh", reason = "to install skills from GitHub.")
+
+  # Validate repo format
+  parts <- strsplit(repo, "/", fixed = TRUE)[[1]]
+  if (length(parts) != 2 || !nzchar(parts[[1]]) || !nzchar(parts[[2]])) {
+    cli::cli_abort(
+      '{.arg repo} must be in {.val owner/repo} format, not {.val {repo}}.'
+    )
+  }
+  owner <- parts[[1]]
+  repo_name <- parts[[2]]
+
+  # Download zipball
+  tmp_zip <- tempfile(fileext = ".zip")
+  on.exit(unlink(tmp_zip), add = TRUE)
+
+  tryCatch(
+    gh::gh(
+      "/repos/{owner}/{repo}/zipball/{ref}",
+      owner = owner,
+      repo = repo_name,
+      ref = ref,
+      .destfile = tmp_zip
+    ),
+    error = function(e) {
+      cli::cli_abort(
+        "Failed to download from GitHub repository {.val {repo}}: {e$message}",
+        parent = e
+      )
+    }
+  )
+
+  # Extract to temp dir
+  tmp_dir <- tempfile("btw_gh_skill_")
+  on.exit(unlink(tmp_dir, recursive = TRUE), add = TRUE)
+  utils::unzip(tmp_zip, exdir = tmp_dir)
+
+  # Find all SKILL.md files
+  skill_files <- list.files(
+    tmp_dir,
+    pattern = "^SKILL\\.md$",
+    recursive = TRUE,
+    full.names = TRUE
+  )
+
+  if (length(skill_files) == 0) {
+    cli::cli_abort("No skills found in GitHub repository {.val {repo}}.")
+  }
+
+  skill_dirs <- dirname(skill_files)
+
+  selected <- select_skill_dir(
+    skill_dirs,
+    skill = skill,
+    source_label = paste0("GitHub repository ", repo)
+  )
+
+  install_skill_from_dir(selected, scope = scope)
+}
+
+#' Install a skill from an R package
+#'
+#' @description
+#' Install a skill bundled in an R package. Packages can bundle skills in
+#' their `inst/skills/` directory, where each subdirectory containing a
+#' `SKILL.md` file is a skill.
+#'
+#' @param package Name of an installed R package that bundles skills.
+#' @param skill Optional skill name. If `NULL` and the package contains
+#'   multiple skills, an interactive picker is shown (or an error in
+#'   non-interactive sessions).
+#' @param scope Where to install the skill. One of:
+#'   - `"project"` (default): Installs to `.btw/skills/` in the current
+#'     working directory
+#'   - `"user"`: Installs to the user-level skills directory
+#'
+#' @return The path to the installed skill directory, invisibly.
+#'
+#' @family skills
+#' @export
+btw_skill_install_package <- function(package, skill = NULL, scope = "project") {
+  check_string(package)
+  if (!is.null(skill)) check_string(skill)
+  check_string(scope)
+
+  rlang::check_installed(package, reason = "to install skills from it.")
+
+  skills_dir <- system.file("skills", package = package)
+  if (!nzchar(skills_dir) || !dir.exists(skills_dir)) {
+    cli::cli_abort("Package {.pkg {package}} does not bundle any skills.")
+  }
+
+  # Find subdirectories that contain SKILL.md
+  subdirs <- list.dirs(skills_dir, full.names = TRUE, recursive = FALSE)
+  skill_dirs <- subdirs[file.exists(file.path(subdirs, "SKILL.md"))]
+
+  if (length(skill_dirs) == 0) {
+    cli::cli_abort("Package {.pkg {package}} does not bundle any skills.")
+  }
+
+  selected <- select_skill_dir(
+    skill_dirs,
+    skill = skill,
+    source_label = paste0("package ", package)
+  )
+
+  install_skill_from_dir(selected, scope = scope)
+}
+
+install_skill_from_dir <- function(source_dir, scope = "project") {
+  check_string(source_dir)
+  check_string(scope)
+
+  source_dir <- normalizePath(source_dir, mustWork = FALSE)
+  if (!dir.exists(source_dir)) {
+    cli::cli_abort("Source directory not found: {.path {source_dir}}")
   }
 
   # Determine target directory
@@ -617,61 +784,24 @@ btw_skill_install <- function(source, scope = "project") {
     cli::cli_abort("scope must be {.val project} or {.val user}, not {.val {scope}}.")
   )
 
-  if (file.info(source)$isdir) {
-    # Directory source: copy it
-    skill_name <- basename(source)
-    target_dir <- file.path(target_parent, skill_name)
+  skill_name <- basename(source_dir)
+  target_dir <- file.path(target_parent, skill_name)
 
-    if (dir.exists(target_dir)) {
-      cli::cli_abort("Skill {.val {skill_name}} already exists at {.path {target_dir}}.")
-    }
-
-    # Validate before installing
-    validation <- validate_skill(source)
-    if (!validation$valid) {
-      cli::cli_abort(c(
-        "Cannot install invalid skill:",
-        set_names(validation$issues, rep("!", length(validation$issues)))
-      ))
-    }
-
-    dir.create(target_parent, recursive = TRUE, showWarnings = FALSE)
-    fs::dir_copy(source, target_dir)
-  } else {
-    # File source: must be .skill (ZIP)
-    if (!grepl("\\.skill$", source)) {
-      cli::cli_abort("File source must be a {.file .skill} file (ZIP archive).")
-    }
-
-    # Extract to temp, validate, then move to target
-    tmp_dir <- tempfile("btw_skill_")
-    on.exit(unlink(tmp_dir, recursive = TRUE), add = TRUE)
-    utils::unzip(source, exdir = tmp_dir)
-
-    # Find the skill directory inside the extracted archive
-    extracted_dirs <- list.dirs(tmp_dir, full.names = TRUE, recursive = FALSE)
-    if (length(extracted_dirs) != 1) {
-      cli::cli_abort("Expected exactly one directory in the .skill archive, found {length(extracted_dirs)}.")
-    }
-
-    skill_name <- basename(extracted_dirs[[1]])
-    target_dir <- file.path(target_parent, skill_name)
-
-    if (dir.exists(target_dir)) {
-      cli::cli_abort("Skill {.val {skill_name}} already exists at {.path {target_dir}}.")
-    }
-
-    validation <- validate_skill(extracted_dirs[[1]])
-    if (!validation$valid) {
-      cli::cli_abort(c(
-        "Cannot install invalid skill from {.file {source}}:",
-        set_names(validation$issues, rep("!", length(validation$issues)))
-      ))
-    }
-
-    dir.create(target_parent, recursive = TRUE, showWarnings = FALSE)
-    fs::dir_copy(extracted_dirs[[1]], target_dir)
+  if (dir.exists(target_dir)) {
+    cli::cli_abort("Skill {.val {skill_name}} already exists at {.path {target_dir}}.")
   }
+
+  # Validate before installing
+  validation <- validate_skill(source_dir)
+  if (!validation$valid) {
+    cli::cli_abort(c(
+      "Cannot install invalid skill:",
+      set_names(validation$issues, rep("!", length(validation$issues)))
+    ))
+  }
+
+  dir.create(target_parent, recursive = TRUE, showWarnings = FALSE)
+  fs::dir_copy(source_dir, target_dir)
 
   cli::cli_inform(c(
     "v" = "Installed skill {.val {skill_name}} to {.path {target_dir}}"

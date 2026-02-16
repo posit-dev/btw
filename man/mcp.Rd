@@ -6,7 +6,7 @@
 \alias{btw_mcp_session}
 \title{Start a Model Context Protocol server with btw tools}
 \usage{
-btw_mcp_server(tools = btw_tools())
+btw_mcp_server(tools = btw_mcp_tools())
 
 btw_mcp_session()
 }

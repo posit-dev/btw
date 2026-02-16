@@ -22,7 +22,8 @@ fields follow the specification's naming and format rules.
 \seealso{
 Other skills: 
 \code{\link{btw_skill_create}()},
-\code{\link{btw_skill_install}()},
+\code{\link{btw_skill_install_github}()},
+\code{\link{btw_skill_install_package}()},
 \code{\link{btw_tool_fetch_skill}()}
 }
 \concept{skills}

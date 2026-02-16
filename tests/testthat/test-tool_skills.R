@@ -449,49 +449,81 @@ test_that("btw_skill_validate() errors for nonexistent directory", {
   expect_error(btw_skill_validate("/nonexistent/path"), "does not exist")
 })
 
-# btw_skill_install --------------------------------------------------------
+# select_skill_dir ----------------------------------------------------------
 
-test_that("btw_skill_install() installs from directory", {
-  # Create source skill
+test_that("select_skill_dir() returns single dir directly", {
+  dir <- withr::local_tempdir()
+  skill_dir <- create_temp_skill(name = "only-skill", dir = dir)
+  result <- select_skill_dir(skill_dir)
+  expect_equal(result, skill_dir)
+})
+
+test_that("select_skill_dir() matches named skill", {
+  dir <- withr::local_tempdir()
+  skill_a <- create_temp_skill(name = "skill-a", dir = dir)
+  skill_b <- create_temp_skill(name = "skill-b", dir = dir)
+  result <- select_skill_dir(c(skill_a, skill_b), skill = "skill-b")
+  expect_equal(result, skill_b)
+})
+
+test_that("select_skill_dir() aborts when named skill not found", {
+  dir <- withr::local_tempdir()
+  skill_a <- create_temp_skill(name = "skill-a", dir = dir)
+  expect_error(
+    select_skill_dir(skill_a, skill = "nonexistent"),
+    "not found"
+  )
+})
+
+test_that("select_skill_dir() aborts for multiple dirs non-interactively", {
+  dir <- withr::local_tempdir()
+  skill_a <- create_temp_skill(name = "skill-a", dir = dir)
+  skill_b <- create_temp_skill(name = "skill-b", dir = dir)
+  local_mocked_bindings(is_interactive = function() FALSE)
+  expect_error(
+    select_skill_dir(c(skill_a, skill_b)),
+    "Multiple skills found"
+  )
+})
+
+test_that("select_skill_dir() uses menu for multiple dirs interactively", {
+  dir <- withr::local_tempdir()
+  skill_a <- create_temp_skill(name = "skill-a", dir = dir)
+  skill_b <- create_temp_skill(name = "skill-b", dir = dir)
+  local_mocked_bindings(is_interactive = function() TRUE)
+  local_mocked_bindings(menu = function(...) 2L, .package = "utils")
+  expect_message(
+    result <- select_skill_dir(c(skill_a, skill_b)),
+    "Multiple skills found"
+  )
+  expect_equal(result, skill_b)
+})
+
+test_that("select_skill_dir() aborts when no dirs provided", {
+  expect_error(select_skill_dir(character()), "No skills found")
+})
+
+# install_skill_from_dir ---------------------------------------------------
+
+test_that("install_skill_from_dir() installs from directory", {
   source_dir <- withr::local_tempdir()
   create_temp_skill(name = "installable", dir = source_dir)
 
-  # Install to target
   target_base <- withr::local_tempdir()
-  target_dir <- file.path(target_base, ".btw", "skills")
-
   withr::local_dir(target_base)
-  path <- btw_skill_install(
-    file.path(source_dir, "installable"),
-    scope = "project"
+  expect_message(
+    path <- install_skill_from_dir(
+      file.path(source_dir, "installable"),
+      scope = "project"
+    ),
+    "Installed skill"
   )
 
   expect_true(dir.exists(path))
   expect_true(file.exists(file.path(path, "SKILL.md")))
 })
 
-test_that("btw_skill_install() installs from .skill file", {
-  # Create source skill
-  source_dir <- withr::local_tempdir()
-  create_temp_skill(name = "zipped", dir = source_dir)
-
-  # Create .skill archive
-  skill_file <- file.path(withr::local_tempdir(), "zipped.skill")
-  zip_wd <- source_dir
-  withr::with_dir(zip_wd, {
-    utils::zip(skill_file, "zipped", flags = "-r9Xq")
-  })
-
-  # Install
-  target_base <- withr::local_tempdir()
-  withr::local_dir(target_base)
-  path <- btw_skill_install(skill_file, scope = "project")
-
-  expect_true(dir.exists(path))
-  expect_true(file.exists(file.path(path, "SKILL.md")))
-})
-
-test_that("btw_skill_install() refuses invalid skill", {
+test_that("install_skill_from_dir() refuses invalid skill", {
   source_dir <- withr::local_tempdir()
   bad_dir <- file.path(source_dir, "bad-skill")
   dir.create(bad_dir)
@@ -500,11 +532,302 @@ test_that("btw_skill_install() refuses invalid skill", {
   target_base <- withr::local_tempdir()
   withr::local_dir(target_base)
 
-  expect_error(btw_skill_install(bad_dir, scope = "project"), "Cannot install invalid")
+  expect_error(install_skill_from_dir(bad_dir, scope = "project"), "Cannot install invalid")
 })
 
-test_that("btw_skill_install() errors for nonexistent source", {
-  expect_error(btw_skill_install("/nonexistent/path"), "not found")
+test_that("install_skill_from_dir() errors for nonexistent source", {
+  expect_error(install_skill_from_dir("/nonexistent/path"), "not found")
+})
+
+# btw_skill_install_github -------------------------------------------------
+
+# Helper: create a zip mimicking GitHub's zipball format
+create_github_zipball <- function(skills, zip_path = NULL) {
+  tmp <- withr::local_tempdir(.local_envir = parent.frame())
+  repo_dir <- file.path(tmp, "owner-repo-abc1234")
+  dir.create(repo_dir)
+
+  for (skill in skills) {
+    skill_dir <- file.path(repo_dir, skill$name)
+    dir.create(skill_dir, recursive = TRUE)
+    writeLines(
+      paste0(
+        "---\nname: ", skill$name,
+        "\ndescription: ", skill$description %||% "A test skill.",
+        "\n---\n\n# ", skill$name, "\n\nInstructions.\n"
+      ),
+      file.path(skill_dir, "SKILL.md")
+    )
+  }
+
+  if (is.null(zip_path)) {
+    zip_path <- tempfile(fileext = ".zip", tmpdir = tmp)
+  }
+  withr::with_dir(tmp, {
+    utils::zip(zip_path, basename(repo_dir), flags = "-r9Xq")
+  })
+  zip_path
+}
+
+test_that("btw_skill_install_github() errors for invalid repo format", {
+  expect_error(btw_skill_install_github("badformat"), "owner/repo")
+  expect_error(btw_skill_install_github("a/b/c"), "owner/repo")
+  expect_error(btw_skill_install_github("/repo"), "owner/repo")
+  expect_error(btw_skill_install_github("owner/"), "owner/repo")
+})
+
+test_that("btw_skill_install_github() installs single skill", {
+  zip_path <- create_github_zipball(list(
+    list(name = "gh-skill", description = "A GitHub skill.")
+  ))
+
+  local_mocked_bindings(
+    check_installed = function(...) invisible(),
+    .package = "rlang"
+  )
+
+  mock_gh <- function(..., .destfile = NULL) {
+    file.copy(zip_path, .destfile)
+  }
+
+  local_mocked_bindings(gh = mock_gh, .package = "gh")
+
+  target_base <- withr::local_tempdir()
+  withr::local_dir(target_base)
+
+  expect_message(
+    path <- btw_skill_install_github("owner/repo", scope = "project"),
+    "Installed skill"
+  )
+  expect_true(dir.exists(path))
+  expect_true(file.exists(file.path(path, "SKILL.md")))
+  expect_equal(basename(path), "gh-skill")
+})
+
+test_that("btw_skill_install_github() selects named skill from multiple", {
+  zip_path <- create_github_zipball(list(
+    list(name = "skill-a", description = "Skill A."),
+    list(name = "skill-b", description = "Skill B.")
+  ))
+
+  local_mocked_bindings(
+    check_installed = function(...) invisible(),
+    .package = "rlang"
+  )
+
+  mock_gh <- function(..., .destfile = NULL) {
+    file.copy(zip_path, .destfile)
+  }
+
+  local_mocked_bindings(gh = mock_gh, .package = "gh")
+
+  target_base <- withr::local_tempdir()
+  withr::local_dir(target_base)
+
+  expect_message(
+    path <- btw_skill_install_github("owner/repo", skill = "skill-b", scope = "project"),
+    "Installed skill"
+  )
+  expect_equal(basename(path), "skill-b")
+})
+
+test_that("btw_skill_install_github() errors when named skill not found", {
+  zip_path <- create_github_zipball(list(
+    list(name = "skill-a", description = "Skill A.")
+  ))
+
+  local_mocked_bindings(
+    check_installed = function(...) invisible(),
+    .package = "rlang"
+  )
+
+  mock_gh <- function(..., .destfile = NULL) {
+    file.copy(zip_path, .destfile)
+  }
+
+  local_mocked_bindings(gh = mock_gh, .package = "gh")
+
+  target_base <- withr::local_tempdir()
+  withr::local_dir(target_base)
+
+  expect_error(
+    btw_skill_install_github("owner/repo", skill = "nonexistent"),
+    "not found"
+  )
+})
+
+test_that("btw_skill_install_github() errors when no skills in repo", {
+  # Create a zip with no SKILL.md
+  tmp <- withr::local_tempdir()
+  repo_dir <- file.path(tmp, "owner-repo-abc1234")
+  dir.create(repo_dir)
+  writeLines("Just a README.", file.path(repo_dir, "README.md"))
+  zip_path <- file.path(tmp, "empty.zip")
+  withr::with_dir(tmp, {
+    utils::zip(zip_path, basename(repo_dir), flags = "-r9Xq")
+  })
+
+  local_mocked_bindings(
+    check_installed = function(...) invisible(),
+    .package = "rlang"
+  )
+
+  mock_gh <- function(..., .destfile = NULL) {
+    file.copy(zip_path, .destfile)
+  }
+
+  local_mocked_bindings(gh = mock_gh, .package = "gh")
+
+  target_base <- withr::local_tempdir()
+  withr::local_dir(target_base)
+
+  expect_error(
+    btw_skill_install_github("owner/repo"),
+    "No skills found"
+  )
+})
+
+test_that("btw_skill_install_github() aborts non-interactively with multiple skills", {
+  zip_path <- create_github_zipball(list(
+    list(name = "skill-a", description = "Skill A."),
+    list(name = "skill-b", description = "Skill B.")
+  ))
+
+  local_mocked_bindings(
+    check_installed = function(...) invisible(),
+    .package = "rlang"
+  )
+
+  mock_gh <- function(..., .destfile = NULL) {
+    file.copy(zip_path, .destfile)
+  }
+
+  local_mocked_bindings(gh = mock_gh, .package = "gh")
+  local_mocked_bindings(is_interactive = function() FALSE)
+
+  target_base <- withr::local_tempdir()
+  withr::local_dir(target_base)
+
+  expect_error(
+    btw_skill_install_github("owner/repo"),
+    "Multiple skills found"
+  )
+})
+
+test_that("btw_skill_install_github() wraps download errors", {
+  local_mocked_bindings(
+    check_installed = function(...) invisible(),
+    .package = "rlang"
+  )
+
+  mock_gh <- function(...) {
+    stop("GitHub API error: Not Found")
+  }
+
+  local_mocked_bindings(gh = mock_gh, .package = "gh")
+
+  expect_error(
+    btw_skill_install_github("owner/nonexistent"),
+    "Failed to download"
+  )
+})
+
+# btw_skill_install_package ------------------------------------------------
+
+test_that("btw_skill_install_package() installs single skill from package", {
+  # Create a mock package skills directory
+  pkg_skills <- withr::local_tempdir()
+  skill_dir <- file.path(pkg_skills, "pkg-skill")
+  dir.create(skill_dir)
+  writeLines(
+    "---\nname: pkg-skill\ndescription: A package skill.\n---\n\n# Pkg Skill\n",
+    file.path(skill_dir, "SKILL.md")
+  )
+
+  local_mocked_bindings(
+    check_installed = function(...) invisible(),
+    .package = "rlang"
+  )
+  local_mocked_bindings(
+    system.file = function(..., package = NULL) pkg_skills,
+    .package = "base"
+  )
+
+  target_base <- withr::local_tempdir()
+  withr::local_dir(target_base)
+
+  expect_message(
+    path <- btw_skill_install_package("mypkg", scope = "project"),
+    "Installed skill"
+  )
+  expect_true(dir.exists(path))
+  expect_equal(basename(path), "pkg-skill")
+})
+
+test_that("btw_skill_install_package() selects named skill", {
+  pkg_skills <- withr::local_tempdir()
+  for (nm in c("alpha", "beta")) {
+    d <- file.path(pkg_skills, nm)
+    dir.create(d)
+    writeLines(
+      paste0("---\nname: ", nm, "\ndescription: Skill ", nm, ".\n---\n\n# ", nm, "\n"),
+      file.path(d, "SKILL.md")
+    )
+  }
+
+  local_mocked_bindings(
+    check_installed = function(...) invisible(),
+    .package = "rlang"
+  )
+  local_mocked_bindings(
+    system.file = function(..., package = NULL) pkg_skills,
+    .package = "base"
+  )
+
+  target_base <- withr::local_tempdir()
+  withr::local_dir(target_base)
+
+  expect_message(
+    path <- btw_skill_install_package("mypkg", skill = "beta", scope = "project"),
+    "Installed skill"
+  )
+  expect_equal(basename(path), "beta")
+})
+
+test_that("btw_skill_install_package() errors when no skills dir", {
+  local_mocked_bindings(
+    check_installed = function(...) invisible(),
+    .package = "rlang"
+  )
+  local_mocked_bindings(
+    system.file = function(..., package = NULL) "",
+    .package = "base"
+  )
+
+  expect_error(
+    btw_skill_install_package("emptypkg"),
+    "does not bundle any skills"
+  )
+})
+
+test_that("btw_skill_install_package() errors when no SKILL.md in subdirs", {
+  pkg_skills <- withr::local_tempdir()
+  dir.create(file.path(pkg_skills, "not-a-skill"))
+  writeLines("just a file", file.path(pkg_skills, "not-a-skill", "README.md"))
+
+  local_mocked_bindings(
+    check_installed = function(...) invisible(),
+    .package = "rlang"
+  )
+  local_mocked_bindings(
+    system.file = function(..., package = NULL) pkg_skills,
+    .package = "base"
+  )
+
+  expect_error(
+    btw_skill_install_package("mypkg"),
+    "does not bundle any skills"
+  )
 })
 
 # Snapshot test for system prompt (existing) --------------------------------
