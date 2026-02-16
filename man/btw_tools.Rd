@@ -67,10 +67,10 @@ this function have access to the tools:
 
 \subsection{Group: files}{\tabular{ll}{
    Name \tab Description \cr
-   \code{\link[=btw_tool_files_edit]{btw_tool_files_edit()}} \tab Edit a text file using hashline references. \cr
+   \code{\link[=btw_tool_files_edit]{btw_tool_files_edit()}} \tab Edit a text file using hashline references for precise, targeted modifications. \cr
    \code{\link[=btw_tool_files_list]{btw_tool_files_list()}} \tab List files or directories in the project. \cr
-   \code{\link[=btw_tool_files_read]{btw_tool_files_read()}} \tab Read a text file. \cr
-   \code{\link[=btw_tool_files_replace]{btw_tool_files_replace()}} \tab Replace exact string occurrences in a text file. \cr
+   \code{\link[=btw_tool_files_read]{btw_tool_files_read()}} \tab Read the contents of a text file. \cr
+   \code{\link[=btw_tool_files_replace]{btw_tool_files_replace()}} \tab Find and replace exact string occurrences in a text file. \cr
    \code{\link[=btw_tool_files_search]{btw_tool_files_search()}} \tab Search code files in the project. \cr
    \code{\link[=btw_tool_files_write]{btw_tool_files_write()}} \tab Write content to a text file. \cr
 }

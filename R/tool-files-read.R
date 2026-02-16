@@ -106,7 +106,7 @@ BtwTextFileToolResult <- S7::new_class(
       },
       name = "btw_tool_files_read",
       description = paste(
-        "Read the contents of a text file and return it with hashline annotations.",
+        "Read the contents of a text file.",
         "",
         "OUTPUT FORMAT:",
         "Each line is prefixed with `line_number:hash|` where:",
