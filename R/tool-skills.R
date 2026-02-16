@@ -93,16 +93,15 @@ btw_tool_fetch_skill_impl <- function(skill_name) {
 # Skill Discovery ----------------------------------------------------------
 
 btw_skill_directories <- function() {
-
   dirs <- character()
 
-
+  # Package-bundled skills
   package_skills <- system.file("skills", package = "btw")
   if (nzchar(package_skills) && dir.exists(package_skills)) {
     dirs <- c(dirs, package_skills)
   }
 
-
+  # User-level skills (global installation)
   user_skills_dir <- file.path(
     tools::R_user_dir("btw", "config"),
     "skills"
@@ -111,12 +110,55 @@ btw_skill_directories <- function() {
     dirs <- c(dirs, user_skills_dir)
   }
 
-  project_skills_dir <- file.path(getwd(), ".btw", "skills")
-  if (dir.exists(project_skills_dir)) {
-    dirs <- c(dirs, project_skills_dir)
+  # Project-level skills from multiple conventions
+  for (project_subdir in project_skill_subdirs()) {
+    project_skills_dir <- file.path(getwd(), project_subdir)
+    if (dir.exists(project_skills_dir)) {
+      dirs <- c(dirs, project_skills_dir)
+    }
   }
 
   dirs
+}
+
+project_skill_subdirs <- function() {
+  c(
+    file.path(".btw", "skills"),
+    file.path(".agents", "skills"),
+    file.path(".claude", "skills")
+  )
+}
+
+resolve_project_skill_dir <- function() {
+  candidates <- file.path(getwd(), project_skill_subdirs())
+  existing <- candidates[dir.exists(candidates)]
+
+  if (length(existing) == 0) {
+    # None exist yet, default to .btw/skills
+    return(candidates[[1]])
+  }
+
+  if (length(existing) == 1) {
+    return(existing[[1]])
+  }
+
+  # Multiple exist — if interactive, let the user choose
+  if (!is_interactive()) {
+    return(existing[[1]])
+  }
+
+  cli::cli_inform("Multiple project skill directories found:")
+  choice <- utils::menu(
+    choices = existing,
+    graphics = FALSE,
+    title = "Which directory should be used?"
+  )
+
+  if (choice == 0) {
+    cli::cli_abort("Aborted by user.")
+  }
+
+  existing[[choice]]
 }
 
 btw_list_skills <- function() {
@@ -451,7 +493,7 @@ btw_skill_create <- function(
   # Resolve target directory
   parent_dir <- switch(
     scope,
-    project = file.path(getwd(), ".btw", "skills"),
+    project = resolve_project_skill_dir(),
     user = file.path(tools::R_user_dir("btw", "config"), "skills"),
     scope
   )
@@ -569,7 +611,7 @@ btw_skill_install <- function(source, scope = "project") {
   # Determine target directory
   target_parent <- switch(
     scope,
-    project = file.path(getwd(), ".btw", "skills"),
+    project = resolve_project_skill_dir(),
     user = file.path(tools::R_user_dir("btw", "config"), "skills"),
     cli::cli_abort("scope must be {.val project} or {.val user}, not {.val {scope}}.")
   )

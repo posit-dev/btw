@@ -212,6 +212,70 @@ test_that("btw_list_skills() includes compatibility and allowed-tools", {
   expect_equal(skills[["fancy-skill"]]$allowed_tools, "Read Bash")
 })
 
+test_that("btw_skill_directories() discovers skills from multiple project dirs", {
+  project <- withr::local_tempdir()
+  withr::local_dir(project)
+  project <- getwd()  # resolve symlinks (e.g. /private/var on macOS)
+
+  # Create skills in .btw/skills and .claude/skills
+  btw_dir <- file.path(project, ".btw", "skills")
+  claude_dir <- file.path(project, ".claude", "skills")
+  dir.create(btw_dir, recursive = TRUE)
+  dir.create(claude_dir, recursive = TRUE)
+
+  dirs <- btw_skill_directories()
+  expect_true(btw_dir %in% dirs)
+  expect_true(claude_dir %in% dirs)
+})
+
+test_that("btw_skill_directories() discovers .agents/skills", {
+  project <- withr::local_tempdir()
+  withr::local_dir(project)
+  project <- getwd()
+
+  agents_dir <- file.path(project, ".agents", "skills")
+  dir.create(agents_dir, recursive = TRUE)
+
+  dirs <- btw_skill_directories()
+  expect_true(agents_dir %in% dirs)
+})
+
+test_that("resolve_project_skill_dir() defaults to .btw/skills when none exist", {
+  project <- withr::local_tempdir()
+  withr::local_dir(project)
+  project <- getwd()
+
+  result <- resolve_project_skill_dir()
+  expect_equal(result, file.path(project, ".btw", "skills"))
+})
+
+test_that("resolve_project_skill_dir() returns the one that exists", {
+  project <- withr::local_tempdir()
+  withr::local_dir(project)
+  project <- getwd()
+
+  agents_dir <- file.path(project, ".agents", "skills")
+  dir.create(agents_dir, recursive = TRUE)
+
+  result <- resolve_project_skill_dir()
+  expect_equal(result, agents_dir)
+})
+
+test_that("resolve_project_skill_dir() returns first existing when non-interactive", {
+  project <- withr::local_tempdir()
+  withr::local_dir(project)
+  project <- getwd()
+
+  btw_dir <- file.path(project, ".btw", "skills")
+  agents_dir <- file.path(project, ".agents", "skills")
+  dir.create(btw_dir, recursive = TRUE)
+  dir.create(agents_dir, recursive = TRUE)
+
+  local_mocked_bindings(is_interactive = function() FALSE)
+  result <- resolve_project_skill_dir()
+  expect_equal(result, btw_dir)
+})
+
 test_that("find_skill() returns NULL for nonexistent skill", {
   dir <- withr::local_tempdir()
   local_skill_dirs(dir)
