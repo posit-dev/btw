@@ -135,7 +135,7 @@ NOTES:
 - Multiple edits in one call are applied atomically (all succeed or all fail).
 - Edits must not have overlapping line ranges.
 - Each element in `content` is one line; do not include trailing newlines.
----)",
+    )---",
       annotations = ellmer::tool_annotations(
         title = "Edit File",
         read_only_hint = FALSE,

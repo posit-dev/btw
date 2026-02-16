@@ -115,7 +115,7 @@ TIPS FOR SUCCESS:
 - Whitespace and indentation must match exactly.
 - To delete text, use an empty string for `new_string`.
 - If the match is ambiguous, add more context rather than using replace_all.
----)",
+    )---",
       annotations = ellmer::tool_annotations(
         title = "Replace in File",
         read_only_hint = FALSE,
@@ -137,7 +137,6 @@ TIPS FOR SUCCESS:
           "Replace all occurrences instead of requiring exactly one match. Defaults to false.",
           required = FALSE
         )
-      )
       )
     )
   }
