@@ -863,7 +863,10 @@ test_that("btw_tool_files_replace works with multi-line old_string", {
   withr::local_dir(withr::local_tempdir())
   writeLines(c("line1", "line2", "line3"), "test.txt")
 
-  btw_tool_files_replace("test.txt", "line1\nline2", "replaced")
+  # Use actual line separator from the file (handles both LF and CRLF)
+  content <- brio::read_file("test.txt")
+  line_sep <- if (grepl("\r\n", content)) "\r\n" else "\n"
+  btw_tool_files_replace("test.txt", paste0("line1", line_sep, "line2"), "replaced")
   expect_equal(read_lines("test.txt"), c("replaced", "line3"))
 })
 
@@ -872,8 +875,8 @@ test_that("btw_tool_files_replace stores previous_content for diffs", {
   writeLines(c("hello", "world"), "test.txt")
 
   result <- btw_tool_files_replace("test.txt", "hello", "goodbye")
-  expect_match(result@extra$previous_content, "^hello\nworld")
-  expect_match(result@extra$content, "^goodbye\nworld")
+  expect_match(result@extra$previous_content, "^hello\r?\nworld")
+  expect_match(result@extra$content, "^goodbye\r?\nworld")
   expect_equal(result@extra$path, "test.txt")
 })
 
