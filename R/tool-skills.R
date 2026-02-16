@@ -416,9 +416,10 @@ btw_skills_system_prompt <- function() {
     skills,
     function(skill) {
       parts <- sprintf(
-        "<skill>\n<name>%s</name>\n<description>%s</description>",
+        "<skill>\n<name>%s</name>\n<description>%s</description>\n<location>%s</location>",
         skill$name,
-        skill$description
+        skill$description,
+        skill$path
       )
       if (!is.null(skill$compatibility)) {
         parts <- paste0(parts, sprintf("\n<compatibility>%s</compatibility>", skill$compatibility))

@@ -511,7 +511,12 @@ test_that("btw_skill_install() errors for nonexistent source", {
 
 test_that("btw_skills_system_prompt() works", {
   skip_if_not_snapshot_env()
-  expect_snapshot(cat(btw_skills_system_prompt()))
+  expect_snapshot(
+    cat(btw_skills_system_prompt()),
+    transform = function(x) {
+      gsub("<location>.*?</location>", "<location>SKILL_PATH</location>", x)
+    }
+  )
 })
 
 test_that("skills prompt is included in btw_client() system prompt", {
