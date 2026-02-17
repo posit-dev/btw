@@ -1,38 +1,3 @@
-# Helper to create a temp skill directory with valid SKILL.md
-create_temp_skill <- function(
-  name = "test-skill",
-  description = "A test skill for unit testing.",
-  extra_frontmatter = "",
-  body = "\n# Test Skill\n\nInstructions here.\n",
-  dir = NULL
-) {
-  if (is.null(dir)) {
-    dir <- withr::local_tempdir(.local_envir = parent.frame())
-  }
-
-  skill_dir <- file.path(dir, name)
-  dir.create(skill_dir, recursive = TRUE, showWarnings = FALSE)
-
-  frontmatter <- paste0(
-    "---\n",
-    "name: ", name, "\n",
-    "description: ", description, "\n",
-    extra_frontmatter,
-    "---\n"
-  )
-
-  writeLines(paste0(frontmatter, body), file.path(skill_dir, "SKILL.md"))
-  skill_dir
-}
-
-# Helper to mock skill directories for discovery
-local_skill_dirs <- function(dirs, .env = parent.frame()) {
-  local_mocked_bindings(
-    btw_skill_directories = function() dirs,
-    .env = .env
-  )
-}
-
 # Validation ---------------------------------------------------------------
 
 test_that("validate_skill() passes for valid skill", {
@@ -53,7 +18,10 @@ test_that("validate_skill() fails for missing name field", {
   dir <- withr::local_tempdir()
   skill_dir <- file.path(dir, "test-skill")
   dir.create(skill_dir)
-  writeLines("---\ndescription: A skill.\n---\nBody.", file.path(skill_dir, "SKILL.md"))
+  writeLines(
+    "---\ndescription: A skill.\n---\nBody.",
+    file.path(skill_dir, "SKILL.md")
+  )
   result <- validate_skill(skill_dir)
   expect_false(result$valid)
   expect_match(result$issues, "Missing or empty 'name'", all = FALSE)
@@ -63,7 +31,10 @@ test_that("validate_skill() fails for missing description field", {
   dir <- withr::local_tempdir()
   skill_dir <- file.path(dir, "test-skill")
   dir.create(skill_dir)
-  writeLines("---\nname: test-skill\n---\nBody.", file.path(skill_dir, "SKILL.md"))
+  writeLines(
+    "---\nname: test-skill\n---\nBody.",
+    file.path(skill_dir, "SKILL.md")
+  )
   result <- validate_skill(skill_dir)
   expect_false(result$valid)
   expect_match(result$issues, "Missing or empty 'description'", all = FALSE)
@@ -91,7 +62,11 @@ test_that("validate_skill() fails for name starting with hyphen", {
   )
   result <- validate_skill(skill_dir)
   expect_false(result$valid)
-  expect_match(result$issues, "must not start or end with a hyphen", all = FALSE)
+  expect_match(
+    result$issues,
+    "must not start or end with a hyphen",
+    all = FALSE
+  )
 })
 
 test_that("validate_skill() fails for consecutive hyphens", {
@@ -141,7 +116,7 @@ test_that("validate_skill() fails for description exceeding 1024 characters", {
 })
 
 test_that("validate_skill() flags unexpected frontmatter fields", {
-  skill_dir <- create_temp_skill(extra_frontmatter = "bogus: true\n")
+  skill_dir <- create_temp_skill(extra_frontmatter = list(bogus = TRUE))
   result <- validate_skill(skill_dir)
   expect_false(result$valid)
   expect_match(result$issues, "Unexpected frontmatter", all = FALSE)
@@ -149,7 +124,12 @@ test_that("validate_skill() flags unexpected frontmatter fields", {
 
 test_that("validate_skill() accepts optional fields", {
   skill_dir <- create_temp_skill(
-    extra_frontmatter = "license: MIT\ncompatibility: Requires git\nallowed-tools: Read Bash\nmetadata:\n  author: test\n"
+    extra_frontmatter = list(
+      license = "MIT",
+      compatibility = "Requires git",
+      "allowed-tools" = "Read Bash",
+      metadata = list(author = "test")
+    )
   )
   result <- validate_skill(skill_dir)
   expect_true(result$valid)
@@ -158,7 +138,7 @@ test_that("validate_skill() accepts optional fields", {
 test_that("validate_skill() fails for compatibility exceeding 500 chars", {
   long_compat <- paste(rep("a", 501), collapse = "")
   skill_dir <- create_temp_skill(
-    extra_frontmatter = paste0("compatibility: ", long_compat, "\n")
+    extra_frontmatter = list(compatibility = long_compat)
   )
   result <- validate_skill(skill_dir)
   expect_false(result$valid)
@@ -186,7 +166,10 @@ test_that("btw_list_skills() skips invalid skills with warning", {
   # Create an invalid skill (missing description)
   bad_dir <- file.path(dir, "bad-skill")
   dir.create(bad_dir)
-  writeLines("---\nname: bad-skill\n---\nBody.", file.path(bad_dir, "SKILL.md"))
+  frontmatter::write_front_matter(
+    list(data = list(name = "bad-skill"), body = "Body."),
+    file.path(bad_dir, "SKILL.md")
+  )
 
   local_skill_dirs(dir)
 
@@ -203,7 +186,10 @@ test_that("btw_list_skills() includes compatibility and allowed-tools", {
   create_temp_skill(
     name = "fancy-skill",
     dir = dir,
-    extra_frontmatter = "compatibility: Requires Python 3\nallowed-tools: Read Bash\n"
+    extra_frontmatter = list(
+      compatibility = "Requires Python 3",
+      `allowed-tools` = "Read Bash"
+    )
   )
   local_skill_dirs(dir)
 
@@ -215,17 +201,17 @@ test_that("btw_list_skills() includes compatibility and allowed-tools", {
 test_that("btw_skill_directories() discovers skills from multiple project dirs", {
   project <- withr::local_tempdir()
   withr::local_dir(project)
-  project <- getwd()  # resolve symlinks (e.g. /private/var on macOS)
+  project <- getwd() # resolve symlinks (e.g. /private/var on macOS)
 
-  # Create skills in .btw/skills and .claude/skills
+  # Create skills in .btw/skills and .agents/skills
   btw_dir <- file.path(project, ".btw", "skills")
-  claude_dir <- file.path(project, ".claude", "skills")
+  agents_dir <- file.path(project, ".agents", "skills")
   dir.create(btw_dir, recursive = TRUE)
-  dir.create(claude_dir, recursive = TRUE)
+  dir.create(agents_dir, recursive = TRUE)
 
   dirs <- btw_skill_directories()
   expect_true(btw_dir %in% dirs)
-  expect_true(claude_dir %in% dirs)
+  expect_true(agents_dir %in% dirs)
 })
 
 test_that("btw_skill_directories() discovers .agents/skills", {
@@ -296,7 +282,7 @@ test_that("find_skill() finds a valid skill", {
 
 test_that("extract_skill_metadata() returns parsed frontmatter", {
   skill_dir <- create_temp_skill(
-    extra_frontmatter = "license: MIT\n"
+    extra_frontmatter = list(license = "MIT")
   )
   metadata <- extract_skill_metadata(file.path(skill_dir, "SKILL.md"))
   expect_equal(metadata$name, "test-skill")
@@ -317,7 +303,10 @@ test_that("list_skill_resources() finds files recursively", {
   dir.create(file.path(skill_dir, "scripts"), recursive = TRUE)
   dir.create(file.path(skill_dir, "assets", "templates"), recursive = TRUE)
   writeLines("print('hi')", file.path(skill_dir, "scripts", "run.py"))
-  writeLines("template", file.path(skill_dir, "assets", "templates", "base.html"))
+  writeLines(
+    "template",
+    file.path(skill_dir, "assets", "templates", "base.html")
+  )
 
   resources <- list_skill_resources(skill_dir)
   expect_equal(resources$scripts, "run.py")
@@ -325,7 +314,11 @@ test_that("list_skill_resources() finds files recursively", {
 })
 
 test_that("format_resources_listing() returns empty string for no resources", {
-  resources <- list(scripts = character(0), references = character(0), assets = character(0))
+  resources <- list(
+    scripts = character(0),
+    references = character(0),
+    assets = character(0)
+  )
   expect_equal(format_resources_listing(resources, "/tmp"), "")
 })
 
@@ -367,7 +360,7 @@ test_that("btw_skills_system_prompt() includes skill metadata", {
     name = "prompt-test",
     description = "A skill for testing prompts.",
     dir = dir,
-    extra_frontmatter = "compatibility: Needs R 4.2\n"
+    extra_frontmatter = list(compatibility = "Needs R 4.2")
   )
   local_skill_dirs(dir)
 
@@ -381,11 +374,14 @@ test_that("btw_skills_system_prompt() includes skill metadata", {
 
 test_that("btw_skill_create() creates valid skill directory", {
   dir <- withr::local_tempdir()
-  path <- btw_skill_create(
-    name = "my-new-skill",
-    description = "A new skill.",
-    scope = dir,
-    resources = TRUE
+  expect_message(
+    path <- btw_skill_create(
+      name = "my-new-skill",
+      description = "A new skill.",
+      scope = dir,
+      resources = TRUE
+    ),
+    "Created skill"
   )
 
   expect_true(dir.exists(path))
@@ -401,11 +397,14 @@ test_that("btw_skill_create() creates valid skill directory", {
 
 test_that("btw_skill_create() without resources omits directories", {
   dir <- withr::local_tempdir()
-  path <- btw_skill_create(
-    name = "minimal-skill",
-    description = "Minimal.",
-    scope = dir,
-    resources = FALSE
+  expect_message(
+    path <- btw_skill_create(
+      name = "minimal-skill",
+      description = "Minimal.",
+      scope = dir,
+      resources = FALSE
+    ),
+    "Created skill"
   )
 
   expect_true(file.exists(file.path(path, "SKILL.md")))
@@ -421,7 +420,10 @@ test_that("btw_skill_create() errors for invalid name", {
 
 test_that("btw_skill_create() errors if skill already exists", {
   dir <- withr::local_tempdir()
-  btw_skill_create(name = "existing", description = "First.", scope = dir)
+  expect_message(
+    btw_skill_create(name = "existing", description = "First.", scope = dir),
+    "Created skill"
+  )
   expect_error(
     btw_skill_create(name = "existing", description = "Second.", scope = dir),
     "already exists"
@@ -430,10 +432,13 @@ test_that("btw_skill_create() errors if skill already exists", {
 
 test_that("btw_skill_create() treats I('project') as literal directory name", {
   dir <- withr::local_tempdir()
-  path <- btw_skill_create(
-    name = "literal-test",
-    description = "Literal scope test.",
-    scope = I(file.path(dir, "project"))
+  expect_message(
+    path <- btw_skill_create(
+      name = "literal-test",
+      description = "Literal scope test.",
+      scope = I(file.path(dir, "project"))
+    ),
+    "Created skill"
   )
 
   expect_true(dir.exists(path))
@@ -452,7 +457,10 @@ test_that("btw_skill_validate() reports issues", {
   dir <- withr::local_tempdir()
   skill_dir <- file.path(dir, "bad-skill")
   dir.create(skill_dir)
-  writeLines("---\nname: bad-skill\n---\nBody.", file.path(skill_dir, "SKILL.md"))
+  writeLines(
+    "---\nname: bad-skill\n---\nBody.",
+    file.path(skill_dir, "SKILL.md")
+  )
   expect_message(result <- btw_skill_validate(skill_dir), "validation issues")
   expect_false(result$valid)
 })
@@ -544,7 +552,10 @@ test_that("install_skill_from_dir() refuses invalid skill", {
   target_base <- withr::local_tempdir()
   withr::local_dir(target_base)
 
-  expect_error(install_skill_from_dir(bad_dir, scope = "project"), "Cannot install invalid")
+  expect_error(
+    install_skill_from_dir(bad_dir, scope = "project"),
+    "Cannot install invalid"
+  )
 })
 
 test_that("install_skill_from_dir() errors for nonexistent source", {
@@ -598,9 +609,13 @@ create_github_zipball <- function(skills, zip_path = NULL) {
     dir.create(skill_dir, recursive = TRUE)
     writeLines(
       paste0(
-        "---\nname: ", skill$name,
-        "\ndescription: ", skill$description %||% "A test skill.",
-        "\n---\n\n# ", skill$name, "\n\nInstructions.\n"
+        "---\nname: ",
+        skill$name,
+        "\ndescription: ",
+        skill$description %||% "A test skill.",
+        "\n---\n\n# ",
+        skill$name,
+        "\n\nInstructions.\n"
       ),
       file.path(skill_dir, "SKILL.md")
     )
@@ -671,7 +686,11 @@ test_that("btw_skill_install_github() selects named skill from multiple", {
   withr::local_dir(target_base)
 
   expect_message(
-    path <- btw_skill_install_github("owner/repo", skill = "skill-b", scope = "project"),
+    path <- btw_skill_install_github(
+      "owner/repo",
+      skill = "skill-b",
+      scope = "project"
+    ),
     "Installed skill"
   )
   expect_equal(basename(path), "skill-b")
@@ -816,7 +835,15 @@ test_that("btw_skill_install_package() selects named skill", {
     d <- file.path(pkg_skills, nm)
     dir.create(d)
     writeLines(
-      paste0("---\nname: ", nm, "\ndescription: Skill ", nm, ".\n---\n\n# ", nm, "\n"),
+      paste0(
+        "---\nname: ",
+        nm,
+        "\ndescription: Skill ",
+        nm,
+        ".\n---\n\n# ",
+        nm,
+        "\n"
+      ),
       file.path(d, "SKILL.md")
     )
   }
@@ -834,7 +861,11 @@ test_that("btw_skill_install_package() selects named skill", {
   withr::local_dir(target_base)
 
   expect_message(
-    path <- btw_skill_install_package("mypkg", skill = "beta", scope = "project"),
+    path <- btw_skill_install_package(
+      "mypkg",
+      skill = "beta",
+      scope = "project"
+    ),
     "Installed skill"
   )
   expect_equal(basename(path), "beta")
@@ -894,7 +925,10 @@ test_that("validate_skill() accepts single-character name", {
   dir <- withr::local_tempdir()
   skill_dir <- file.path(dir, "a")
   dir.create(skill_dir)
-  writeLines("---\nname: a\ndescription: A minimal skill.\n---\nBody.", file.path(skill_dir, "SKILL.md"))
+  writeLines(
+    "---\nname: a\ndescription: A minimal skill.\n---\nBody.",
+    file.path(skill_dir, "SKILL.md")
+  )
   result <- validate_skill(skill_dir)
   expect_true(result$valid)
   expect_length(result$issues, 0)
@@ -933,7 +967,14 @@ test_that("btw_skill_create() warns on long description", {
   dir <- withr::local_tempdir()
   long_desc <- paste(rep("a", 1025), collapse = "")
   expect_warning(
-    btw_skill_create(name = "long-desc", description = long_desc, scope = dir),
+    expect_message(
+      btw_skill_create(
+        name = "long-desc",
+        description = long_desc,
+        scope = dir
+      ),
+      "Created skill"
+    ),
     "long"
   )
 })
@@ -942,7 +983,11 @@ test_that("btw_skill_create() warns on long description", {
 
 test_that("install_skill_from_dir() overwrites with overwrite = TRUE", {
   source_dir <- withr::local_tempdir()
-  create_temp_skill(name = "overwrite-me", description = "Version 1.", dir = source_dir)
+  create_temp_skill(
+    name = "overwrite-me",
+    description = "Version 1.",
+    dir = source_dir
+  )
 
   target_base <- withr::local_tempdir()
   withr::local_dir(target_base)

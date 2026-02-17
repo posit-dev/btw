@@ -123,8 +123,7 @@ btw_skill_directories <- function() {
 project_skill_subdirs <- function() {
   c(
     file.path(".btw", "skills"),
-    file.path(".agents", "skills"),
-    file.path(".claude", "skills")
+    file.path(".agents", "skills")
   )
 }
 
@@ -146,11 +145,11 @@ resolve_project_skill_dir <- function() {
     return(existing[[1]])
   }
 
-  cli::cli_inform("Multiple project skill directories found:")
+  cli::cli_alert_success("Multiple skill directories found in project:")
   choice <- utils::menu(
     choices = existing,
     graphics = FALSE,
-    title = "Which directory should be used?"
+    title = "\u276F Which directory should be used?"
   )
 
   if (choice == 0) {
@@ -544,7 +543,7 @@ resolve_skill_scope <- function(scope, error_call = caller_env()) {
 #'   Maximum 1024 characters.
 #' @param scope Where to create the skill. One of:
 #'   - `"project"` (default): Creates in a project-level skills directory,
-#'     chosen from `.btw/skills/`, `.agents/skills/`, or `.claude/skills/`
+#'     chosen from `.btw/skills/` or `.agents/skills/`
 #'     in that order. If one already exists, it is used; otherwise
 #'     `.btw/skills/` is created.
 #'   - `"user"`: Creates in the user-level skills directory
@@ -744,7 +743,7 @@ select_skill_dir <- function(
 #'   `"HEAD"`.
 #' @param scope Where to install the skill. One of:
 #'   - `"project"` (default): Installs to a project-level skills directory,
-#'     chosen from `.btw/skills/`, `.agents/skills/`, or `.claude/skills/`
+#'     chosen from `.btw/skills/` or `.agents/skills/`
 #'     in that order. If one already exists, it is used; otherwise
 #'     `.btw/skills/` is created.
 #'   - `"user"`: Installs to the user-level skills directory
@@ -847,7 +846,7 @@ btw_skill_install_github <- function(
 #'   non-interactive sessions).
 #' @param scope Where to install the skill. One of:
 #'   - `"project"` (default): Installs to a project-level skills directory,
-#'     chosen from `.btw/skills/`, `.agents/skills/`, or `.claude/skills/`
+#'     chosen from `.btw/skills/` or `.agents/skills/`
 #'     in that order. If one already exists, it is used; otherwise
 #'     `.btw/skills/` is created.
 #'   - `"user"`: Installs to the user-level skills directory
