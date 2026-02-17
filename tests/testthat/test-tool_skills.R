@@ -635,6 +635,36 @@ test_that("btw_skill_install_github() errors for invalid repo format", {
   expect_error(btw_skill_install_github("a/b/c"), "owner/repo")
   expect_error(btw_skill_install_github("/repo"), "owner/repo")
   expect_error(btw_skill_install_github("owner/"), "owner/repo")
+  expect_error(btw_skill_install_github("owner/repo@"), "empty ref")
+})
+
+test_that("btw_skill_install_github() parses @ref from repo string", {
+  zip_path <- create_github_zipball(list(
+    list(name = "gh-skill", description = "A GitHub skill.")
+  ))
+
+  local_mocked_bindings(
+    check_installed = function(...) invisible(),
+    .package = "rlang"
+  )
+
+  captured_ref <- NULL
+  mock_gh <- function(..., .destfile = NULL) {
+    args <- list(...)
+    captured_ref <<- args$ref
+    file.copy(zip_path, .destfile)
+  }
+
+  local_mocked_bindings(gh = mock_gh, .package = "gh")
+
+  target_base <- withr::local_tempdir()
+  withr::local_dir(target_base)
+
+  expect_message(
+    btw_skill_install_github("owner/repo@v1.0", scope = "project"),
+    "Installed skill"
+  )
+  expect_equal(captured_ref, "v1.0")
 })
 
 test_that("btw_skill_install_github() installs single skill", {

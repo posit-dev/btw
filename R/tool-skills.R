@@ -735,12 +735,13 @@ select_skill_dir <- function(
 #' Download and install a skill from a GitHub repository. The repository
 #' should contain one or more skill directories, each with a `SKILL.md` file.
 #'
-#' @param repo GitHub repository in `"owner/repo"` format.
+#' @param repo GitHub repository in `"owner/repo"` format. Optionally include
+#'   a Git reference (branch, tag, or SHA) as `"owner/repo@ref"`, following the
+#'   convention used by [pak::pak()] and [remotes::install_github()]. Defaults to
+#'   `"HEAD"` when no ref is specified.
 #' @param skill Optional skill name. If `NULL` and the repository contains
 #'   multiple skills, an interactive picker is shown (or an error in
 #'   non-interactive sessions).
-#' @param ref Git reference (branch, tag, or SHA) to download. Defaults to
-#'   `"HEAD"`.
 #' @param scope Where to install the skill. One of:
 #'   - `"project"` (default): Installs to a project-level skills directory,
 #'     chosen from `.btw/skills/` or `.agents/skills/`
@@ -761,7 +762,6 @@ select_skill_dir <- function(
 btw_skill_install_github <- function(
   repo,
   skill = NULL,
-  ref = "HEAD",
   scope = "project",
   overwrite = FALSE
 ) {
@@ -769,21 +769,13 @@ btw_skill_install_github <- function(
   if (!is.null(skill)) {
     check_string(skill)
   }
-  check_string(ref)
   check_string(scope)
   check_bool(overwrite)
 
   rlang::check_installed("gh", reason = "to install skills from GitHub.")
 
-  # Validate repo format
-  parts <- strsplit(repo, "/", fixed = TRUE)[[1]]
-  if (length(parts) != 2 || !nzchar(parts[[1]]) || !nzchar(parts[[2]])) {
-    cli::cli_abort(
-      '{.arg repo} must be in {.val owner/repo} format, not {.val {repo}}.'
-    )
-  }
-  owner <- parts[[1]]
-  repo_name <- parts[[2]]
+  repo_og <- repo
+  repo <- parse_github_repo(repo)
 
   # Download zipball
   tmp_zip <- tempfile(fileext = ".zip")
@@ -792,14 +784,14 @@ btw_skill_install_github <- function(
   tryCatch(
     gh::gh(
       "/repos/{owner}/{repo}/zipball/{ref}",
-      owner = owner,
-      repo = repo_name,
-      ref = ref,
+      owner = repo$owner,
+      repo = repo$repo,
+      ref = repo$ref,
       .destfile = tmp_zip
     ),
     error = function(e) {
       cli::cli_abort(
-        "Failed to download from GitHub repository {.val {repo}}: {e$message}",
+        "Failed to download from GitHub repository {.val {repo_og}}: {e$message}",
         parent = e
       )
     }
@@ -819,7 +811,7 @@ btw_skill_install_github <- function(
   )
 
   if (length(skill_files) == 0) {
-    cli::cli_abort("No skills found in GitHub repository {.val {repo}}.")
+    cli::cli_abort("No skills found in GitHub repository {.val {repo_og}}.")
   }
 
   skill_dirs <- dirname(skill_files)
@@ -827,7 +819,7 @@ btw_skill_install_github <- function(
   selected <- select_skill_dir(
     skill_dirs,
     skill = skill,
-    source_label = cli::format_inline("GitHub repository {.field {repo}}")
+    source_label = cli::format_inline("GitHub repository {.field {repo_og}}")
   )
 
   install_skill_from_dir(selected, scope = scope, overwrite = overwrite)

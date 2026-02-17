@@ -17,7 +17,7 @@ Maximum 1024 characters.}
 \item{scope}{Where to create the skill. One of:
 \itemize{
 \item \code{"project"} (default): Creates in a project-level skills directory,
-chosen from \verb{.btw/skills/}, \verb{.agents/skills/}, or \verb{.claude/skills/}
+chosen from \verb{.btw/skills/} or \verb{.agents/skills/}
 in that order. If one already exists, it is used; otherwise
 \verb{.btw/skills/} is created.
 \item \code{"user"}: Creates in the user-level skills directory

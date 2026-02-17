@@ -22,6 +22,59 @@ test_that("check_inherits() works", {
   expect_error(check_inherits(as_btw_docs_package("btw"), "not_this_class"))
 })
 
+# Tests for parse_github_repo() --------------------------------------------
+
+describe("parse_github_repo()", {
+  it("parses owner/repo", {
+    result <- parse_github_repo("owner/repo")
+    expect_equal(result$owner, "owner")
+    expect_equal(result$repo, "repo")
+    expect_equal(result$ref, "HEAD")
+  })
+
+  it("parses owner/repo@ref", {
+    result <- parse_github_repo("owner/repo@v1.0")
+    expect_equal(result$owner, "owner")
+    expect_equal(result$repo, "repo")
+    expect_equal(result$ref, "v1.0")
+  })
+
+  it("parses owner/repo@branch", {
+    result <- parse_github_repo("owner/repo@main")
+    expect_equal(result$ref, "main")
+  })
+
+  it("parses owner/repo@sha", {
+    result <- parse_github_repo("owner/repo@abc1234")
+    expect_equal(result$ref, "abc1234")
+  })
+
+  it("errors for empty ref after @", {
+    expect_error(parse_github_repo("owner/repo@"), "empty ref")
+  })
+
+  it("errors for missing slash", {
+    expect_error(parse_github_repo("badformat"), "owner/repo")
+  })
+
+  it("errors for too many slashes", {
+    expect_error(parse_github_repo("a/b/c"), "owner/repo")
+  })
+
+  it("errors for empty owner", {
+    expect_error(parse_github_repo("/repo"), "owner/repo")
+  })
+
+  it("errors for empty repo", {
+    expect_error(parse_github_repo("owner/"), "owner/repo")
+  })
+
+  it("errors for non-string input", {
+    expect_error(parse_github_repo(123))
+    expect_error(parse_github_repo(NULL))
+  })
+})
+
 # Tests for remove_base64_images() -----------------------------------------
 
 describe("remove_base64_images()", {

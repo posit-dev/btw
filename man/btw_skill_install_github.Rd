@@ -7,25 +7,24 @@
 btw_skill_install_github(
   repo,
   skill = NULL,
-  ref = "HEAD",
   scope = "project",
   overwrite = FALSE
 )
 }
 \arguments{
-\item{repo}{GitHub repository in \code{"owner/repo"} format.}
+\item{repo}{GitHub repository in \code{"owner/repo"} format. Optionally include
+a Git reference (branch, tag, or SHA) as \code{"owner/repo@ref"}, following the
+convention used by \code{\link[pak:pak]{pak::pak()}} and \code{\link[remotes:install_github]{remotes::install_github()}}. Defaults to
+\code{"HEAD"} when no ref is specified.}
 
 \item{skill}{Optional skill name. If \code{NULL} and the repository contains
 multiple skills, an interactive picker is shown (or an error in
 non-interactive sessions).}
 
-\item{ref}{Git reference (branch, tag, or SHA) to download. Defaults to
-\code{"HEAD"}.}
-
 \item{scope}{Where to install the skill. One of:
 \itemize{
 \item \code{"project"} (default): Installs to a project-level skills directory,
-chosen from \verb{.btw/skills/}, \verb{.agents/skills/}, or \verb{.claude/skills/}
+chosen from \verb{.btw/skills/} or \verb{.agents/skills/}
 in that order. If one already exists, it is used; otherwise
 \verb{.btw/skills/} is created.
 \item \code{"user"}: Installs to the user-level skills directory
