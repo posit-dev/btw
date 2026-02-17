@@ -4,7 +4,12 @@
 \alias{btw_skill_install_package}
 \title{Install a skill from an R package}
 \usage{
-btw_skill_install_package(package, skill = NULL, scope = "project")
+btw_skill_install_package(
+  package,
+  skill = NULL,
+  scope = "project",
+  overwrite = FALSE
+)
 }
 \arguments{
 \item{package}{Name of an installed R package that bundles skills.}
@@ -19,6 +24,9 @@ non-interactive sessions).}
 working directory
 \item \code{"user"}: Installs to the user-level skills directory
 }}
+
+\item{overwrite}{If \code{TRUE}, overwrite an existing skill with the same name.
+Defaults to \code{FALSE}, which errors if the skill already exists.}
 }
 \value{
 The path to the installed skill directory, invisibly.

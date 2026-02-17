@@ -217,6 +217,10 @@ find_skill <- function(skill_name) {
     skill_dir <- file.path(dir, skill_name)
     skill_md_path <- file.path(skill_dir, "SKILL.md")
     if (dir.exists(skill_dir) && file.exists(skill_md_path)) {
+      validation <- validate_skill(skill_dir)
+      if (!validation$valid) {
+        return(NULL)
+      }
       return(list(
         path = skill_md_path,
         base_dir = skill_dir
@@ -233,11 +237,46 @@ extract_skill_metadata <- function(skill_path) {
       fm <- frontmatter::read_front_matter(skill_path)
       fm$data %||% list()
     },
-    error = function(e) list()
+    error = function(e) {
+      cli::cli_warn(
+        "Failed to parse frontmatter in {.path {skill_path}}: {e$message}"
+      )
+      list()
+    }
   )
 }
 
 # Skill Validation ---------------------------------------------------------
+
+validate_skill_name <- function(name, dir_name = NULL) {
+  issues <- character()
+
+  if (is.null(name) || !is.character(name) || !nzchar(name)) {
+    issues <- c(issues, "Missing or empty 'name' field in frontmatter.")
+    return(issues)
+  }
+
+  if (nchar(name) > 64) {
+    issues <- c(issues, sprintf("Name is too long (%d characters, max 64).", nchar(name)))
+  }
+  if (!grepl("^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$", name)) {
+    issues <- c(issues, sprintf(
+      "Name '%s' must contain only lowercase letters, numbers, and hyphens, and must not start or end with a hyphen.",
+      name
+    ))
+  }
+  if (grepl("--", name)) {
+    issues <- c(issues, sprintf("Name '%s' must not contain consecutive hyphens.", name))
+  }
+  if (!is.null(dir_name) && name != dir_name) {
+    issues <- c(issues, sprintf(
+      "Name '%s' in frontmatter does not match directory name '%s'.",
+      name, dir_name
+    ))
+  }
+
+  issues
+}
 
 validate_skill <- function(skill_dir) {
   skill_dir <- normalizePath(skill_dir, mustWork = FALSE)
@@ -286,30 +325,7 @@ validate_skill <- function(skill_dir) {
   }
 
   # Validate name
-  name <- metadata$name
-  dir_name <- basename(skill_dir)
-  if (is.null(name) || !is.character(name) || !nzchar(name)) {
-    issues <- c(issues, "Missing or empty 'name' field in frontmatter.")
-  } else {
-    if (nchar(name) > 64) {
-      issues <- c(issues, sprintf("Name is too long (%d characters, max 64).", nchar(name)))
-    }
-    if (!grepl("^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$", name)) {
-      issues <- c(issues, sprintf(
-        "Name '%s' must contain only lowercase letters, numbers, and hyphens, and must not start or end with a hyphen.",
-        name
-      ))
-    }
-    if (grepl("--", name)) {
-      issues <- c(issues, sprintf("Name '%s' must not contain consecutive hyphens.", name))
-    }
-    if (name != dir_name) {
-      issues <- c(issues, sprintf(
-        "Name '%s' in frontmatter does not match directory name '%s'.",
-        name, dir_name
-      ))
-    }
-  }
+  issues <- c(issues, validate_skill_name(metadata$name, basename(skill_dir)))
 
   # Validate description
   description <- metadata$description
@@ -323,8 +339,10 @@ validate_skill <- function(skill_dir) {
   }
 
   # Validate optional fields
-  if (!is.null(metadata$compatibility) && is.character(metadata$compatibility)) {
-    if (nchar(metadata$compatibility) > 500) {
+  if (!is.null(metadata$compatibility)) {
+    if (!is.character(metadata$compatibility)) {
+      issues <- c(issues, "The 'compatibility' field must be a character string.")
+    } else if (nchar(metadata$compatibility) > 500) {
       issues <- c(issues, sprintf(
         "Compatibility field is too long (%d characters, max 500).",
         nchar(metadata$compatibility)
@@ -395,6 +413,13 @@ format_resources_listing <- function(resources, base_dir) {
   paste(parts, collapse = "")
 }
 
+xml_escape <- function(x) {
+  x <- gsub("&", "&amp;", x, fixed = TRUE)
+  x <- gsub("<", "&lt;", x, fixed = TRUE)
+  x <- gsub(">", "&gt;", x, fixed = TRUE)
+  x
+}
+
 # System Prompt ------------------------------------------------------------
 
 btw_skills_system_prompt <- function() {
@@ -417,15 +442,15 @@ btw_skills_system_prompt <- function() {
     function(skill) {
       parts <- sprintf(
         "<skill>\n<name>%s</name>\n<description>%s</description>\n<location>%s</location>",
-        skill$name,
-        skill$description,
-        skill$path
+        xml_escape(skill$name),
+        xml_escape(skill$description),
+        xml_escape(skill$path)
       )
       if (!is.null(skill$compatibility)) {
-        parts <- paste0(parts, sprintf("\n<compatibility>%s</compatibility>", skill$compatibility))
+        parts <- paste0(parts, sprintf("\n<compatibility>%s</compatibility>", xml_escape(skill$compatibility)))
       }
       if (!is.null(skill$allowed_tools)) {
-        parts <- paste0(parts, sprintf("\n<allowed-tools>%s</allowed-tools>", skill$allowed_tools))
+        parts <- paste0(parts, sprintf("\n<allowed-tools>%s</allowed-tools>", xml_escape(skill$allowed_tools)))
       }
       paste0(parts, "\n</skill>")
     },
@@ -478,17 +503,19 @@ btw_skill_create <- function(
   check_string(scope)
   check_bool(resources)
 
-  # Validate name format
-  if (nchar(name) > 64) {
-    cli::cli_abort("Skill name must be at most 64 characters (got {nchar(name)}).")
-  }
-  if (!grepl("^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$", name)) {
-    cli::cli_abort(
-      "Skill name must contain only lowercase letters, numbers, and hyphens, and must not start or end with a hyphen."
+  if (nchar(description) > 1024) {
+    cli::cli_warn(
+      "Skill description is long ({nchar(description)} characters, recommended max 1024)."
     )
   }
-  if (grepl("--", name)) {
-    cli::cli_abort("Skill name must not contain consecutive hyphens.")
+
+  # Validate name format
+  name_issues <- validate_skill_name(name)
+  if (length(name_issues) > 0) {
+    cli::cli_abort(c(
+      "Invalid skill name {.val {name}}:",
+      set_names(name_issues, rep("!", length(name_issues)))
+    ))
   }
 
   # Resolve target directory
@@ -647,16 +674,19 @@ select_skill_dir <- function(skill_dirs, skill = NULL, source_label = "source") 
 #'   - `"project"` (default): Installs to `.btw/skills/` in the current
 #'     working directory
 #'   - `"user"`: Installs to the user-level skills directory
+#' @param overwrite If `TRUE`, overwrite an existing skill with the same name.
+#'   Defaults to `FALSE`, which errors if the skill already exists.
 #'
 #' @return The path to the installed skill directory, invisibly.
 #'
 #' @family skills
 #' @export
-btw_skill_install_github <- function(repo, skill = NULL, ref = "HEAD", scope = "project") {
+btw_skill_install_github <- function(repo, skill = NULL, ref = "HEAD", scope = "project", overwrite = FALSE) {
   check_string(repo)
   if (!is.null(skill)) check_string(skill)
   check_string(ref)
   check_string(scope)
+  check_bool(overwrite)
 
   rlang::check_installed("gh", reason = "to install skills from GitHub.")
 
@@ -715,7 +745,7 @@ btw_skill_install_github <- function(repo, skill = NULL, ref = "HEAD", scope = "
     source_label = paste0("GitHub repository ", repo)
   )
 
-  install_skill_from_dir(selected, scope = scope)
+  install_skill_from_dir(selected, scope = scope, overwrite = overwrite)
 }
 
 #' Install a skill from an R package
@@ -733,15 +763,18 @@ btw_skill_install_github <- function(repo, skill = NULL, ref = "HEAD", scope = "
 #'   - `"project"` (default): Installs to `.btw/skills/` in the current
 #'     working directory
 #'   - `"user"`: Installs to the user-level skills directory
+#' @param overwrite If `TRUE`, overwrite an existing skill with the same name.
+#'   Defaults to `FALSE`, which errors if the skill already exists.
 #'
 #' @return The path to the installed skill directory, invisibly.
 #'
 #' @family skills
 #' @export
-btw_skill_install_package <- function(package, skill = NULL, scope = "project") {
+btw_skill_install_package <- function(package, skill = NULL, scope = "project", overwrite = FALSE) {
   check_string(package)
   if (!is.null(skill)) check_string(skill)
   check_string(scope)
+  check_bool(overwrite)
 
   rlang::check_installed(package, reason = "to install skills from it.")
 
@@ -764,12 +797,13 @@ btw_skill_install_package <- function(package, skill = NULL, scope = "project") 
     source_label = paste0("package ", package)
   )
 
-  install_skill_from_dir(selected, scope = scope)
+  install_skill_from_dir(selected, scope = scope, overwrite = overwrite)
 }
 
-install_skill_from_dir <- function(source_dir, scope = "project") {
+install_skill_from_dir <- function(source_dir, scope = "project", overwrite = FALSE) {
   check_string(source_dir)
   check_string(scope)
+  check_bool(overwrite)
 
   source_dir <- normalizePath(source_dir, mustWork = FALSE)
   if (!dir.exists(source_dir)) {
@@ -788,7 +822,11 @@ install_skill_from_dir <- function(source_dir, scope = "project") {
   target_dir <- file.path(target_parent, skill_name)
 
   if (dir.exists(target_dir)) {
-    cli::cli_abort("Skill {.val {skill_name}} already exists at {.path {target_dir}}.")
+    if (overwrite) {
+      unlink(target_dir, recursive = TRUE)
+    } else {
+      cli::cli_abort("Skill {.val {skill_name}} already exists at {.path {target_dir}}.")
+    }
   }
 
   # Validate before installing

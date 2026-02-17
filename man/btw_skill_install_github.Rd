@@ -4,7 +4,13 @@
 \alias{btw_skill_install_github}
 \title{Install a skill from GitHub}
 \usage{
-btw_skill_install_github(repo, skill = NULL, ref = "HEAD", scope = "project")
+btw_skill_install_github(
+  repo,
+  skill = NULL,
+  ref = "HEAD",
+  scope = "project",
+  overwrite = FALSE
+)
 }
 \arguments{
 \item{repo}{GitHub repository in \code{"owner/repo"} format.}
@@ -22,6 +28,9 @@ non-interactive sessions).}
 working directory
 \item \code{"user"}: Installs to the user-level skills directory
 }}
+
+\item{overwrite}{If \code{TRUE}, overwrite an existing skill with the same name.
+Defaults to \code{FALSE}, which errors if the skill already exists.}
 }
 \value{
 The path to the installed skill directory, invisibly.

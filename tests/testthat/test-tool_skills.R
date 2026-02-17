@@ -842,6 +842,112 @@ test_that("btw_skills_system_prompt() works", {
   )
 })
 
+# validate_skill_name() ----------------------------------------------------
+
+test_that("validate_skill() accepts single-character name", {
+  dir <- withr::local_tempdir()
+  skill_dir <- file.path(dir, "a")
+  dir.create(skill_dir)
+  writeLines("---\nname: a\ndescription: A minimal skill.\n---\nBody.", file.path(skill_dir, "SKILL.md"))
+  result <- validate_skill(skill_dir)
+  expect_true(result$valid)
+  expect_length(result$issues, 0)
+})
+
+test_that("validate_skill() flags non-character compatibility", {
+  dir <- withr::local_tempdir()
+  skill_dir <- file.path(dir, "test-skill")
+  dir.create(skill_dir)
+  writeLines(
+    "---\nname: test-skill\ndescription: A test.\ncompatibility: true\n---\nBody.",
+    file.path(skill_dir, "SKILL.md")
+  )
+
+  result <- validate_skill(skill_dir)
+  expect_false(result$valid)
+  expect_match(result$issues, "must be a character string", all = FALSE)
+})
+
+# find_skill() with invalid skill ------------------------------------------
+
+test_that("find_skill() returns NULL for invalid skill on disk", {
+  dir <- withr::local_tempdir()
+  # Create a skill that exists on disk but fails validation (missing description)
+  bad_dir <- file.path(dir, "bad-skill")
+  dir.create(bad_dir)
+  writeLines("---\nname: bad-skill\n---\nBody.", file.path(bad_dir, "SKILL.md"))
+
+  local_skill_dirs(dir)
+  expect_null(find_skill("bad-skill"))
+})
+
+# btw_skill_create() long description warning -------------------------------
+
+test_that("btw_skill_create() warns on long description", {
+  dir <- withr::local_tempdir()
+  long_desc <- paste(rep("a", 1025), collapse = "")
+  expect_warning(
+    btw_skill_create(name = "long-desc", description = long_desc, scope = dir),
+    "long"
+  )
+})
+
+# install_skill_from_dir() overwrite ----------------------------------------
+
+test_that("install_skill_from_dir() overwrites with overwrite = TRUE", {
+  source_dir <- withr::local_tempdir()
+  create_temp_skill(name = "overwrite-me", description = "Version 1.", dir = source_dir)
+
+  target_base <- withr::local_tempdir()
+  withr::local_dir(target_base)
+
+  # First install
+  expect_message(
+    path <- install_skill_from_dir(
+      file.path(source_dir, "overwrite-me"),
+      scope = "project"
+    ),
+    "Installed skill"
+  )
+
+  # Update source
+  writeLines(
+    "---\nname: overwrite-me\ndescription: Version 2.\n---\nUpdated.",
+    file.path(source_dir, "overwrite-me", "SKILL.md")
+  )
+
+  # Re-install with overwrite
+  expect_message(
+    path2 <- install_skill_from_dir(
+      file.path(source_dir, "overwrite-me"),
+      scope = "project",
+      overwrite = TRUE
+    ),
+    "Installed skill"
+  )
+
+  expect_equal(path, path2)
+  content <- readLines(file.path(path2, "SKILL.md"))
+  expect_true(any(grepl("Version 2", content)))
+})
+
+# xml_escape() in system prompt ---------------------------------------------
+
+test_that("btw_skills_system_prompt() escapes XML special characters", {
+  dir <- withr::local_tempdir()
+  create_temp_skill(
+    name = "esc-test",
+    description = "Uses <tags> & ampersands.",
+    dir = dir
+  )
+  local_skill_dirs(dir)
+
+  prompt <- btw_skills_system_prompt()
+  expect_match(prompt, "&lt;tags&gt;", fixed = TRUE)
+  expect_match(prompt, "&amp; ampersands", fixed = TRUE)
+  expect_no_match(prompt, "<tags>", fixed = TRUE)
+})
+
 test_that("skills prompt is included in btw_client() system prompt", {
   withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
 
