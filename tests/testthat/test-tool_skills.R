@@ -40,7 +40,7 @@ test_that("validate_skill() fails for missing description field", {
   expect_match(result$issues, "Missing or empty 'description'", all = FALSE)
 })
 
-test_that("validate_skill() fails for name with uppercase", {
+test_that("validate_skill() warns for name with uppercase", {
   skill_dir <- create_temp_skill(name = "test-skill")
   # Manually override the name in SKILL.md to have uppercase
   writeLines(
@@ -48,11 +48,11 @@ test_that("validate_skill() fails for name with uppercase", {
     file.path(skill_dir, "SKILL.md")
   )
   result <- validate_skill(skill_dir)
-  expect_false(result$valid)
-  expect_match(result$issues, "lowercase letters", all = FALSE)
+  expect_true(result$valid)
+  expect_match(result$warnings, "lowercase letters", all = FALSE)
 })
 
-test_that("validate_skill() fails for name starting with hyphen", {
+test_that("validate_skill() warns for name starting with hyphen", {
   dir <- withr::local_tempdir()
   skill_dir <- file.path(dir, "-bad-name")
   dir.create(skill_dir)
@@ -61,15 +61,15 @@ test_that("validate_skill() fails for name starting with hyphen", {
     file.path(skill_dir, "SKILL.md")
   )
   result <- validate_skill(skill_dir)
-  expect_false(result$valid)
+  expect_true(result$valid)
   expect_match(
-    result$issues,
+    result$warnings,
     "must not start or end with a hyphen",
     all = FALSE
   )
 })
 
-test_that("validate_skill() fails for consecutive hyphens", {
+test_that("validate_skill() warns for consecutive hyphens", {
   dir <- withr::local_tempdir()
   skill_dir <- file.path(dir, "bad--name")
   dir.create(skill_dir)
@@ -78,11 +78,11 @@ test_that("validate_skill() fails for consecutive hyphens", {
     file.path(skill_dir, "SKILL.md")
   )
   result <- validate_skill(skill_dir)
-  expect_false(result$valid)
-  expect_match(result$issues, "consecutive hyphens", all = FALSE)
+  expect_true(result$valid)
+  expect_match(result$warnings, "consecutive hyphens", all = FALSE)
 })
 
-test_that("validate_skill() fails for name exceeding 64 characters", {
+test_that("validate_skill() warns for name exceeding 64 characters", {
   long_name <- paste(rep("a", 65), collapse = "")
   dir <- withr::local_tempdir()
   skill_dir <- file.path(dir, long_name)
@@ -92,34 +92,34 @@ test_that("validate_skill() fails for name exceeding 64 characters", {
     file.path(skill_dir, "SKILL.md")
   )
   result <- validate_skill(skill_dir)
-  expect_false(result$valid)
-  expect_match(result$issues, "too long", all = FALSE)
+  expect_true(result$valid)
+  expect_match(result$warnings, "too long", all = FALSE)
 })
 
-test_that("validate_skill() fails when name doesn't match directory", {
+test_that("validate_skill() warns when name doesn't match directory", {
   skill_dir <- create_temp_skill(name = "test-skill")
   writeLines(
     "---\nname: other-name\ndescription: A test.\n---\nBody.",
     file.path(skill_dir, "SKILL.md")
   )
   result <- validate_skill(skill_dir)
-  expect_false(result$valid)
-  expect_match(result$issues, "does not match directory name", all = FALSE)
+  expect_true(result$valid)
+  expect_match(result$warnings, "does not match directory name", all = FALSE)
 })
 
-test_that("validate_skill() fails for description exceeding 1024 characters", {
+test_that("validate_skill() warns for description exceeding 1024 characters", {
   long_desc <- paste(rep("a", 1025), collapse = "")
   skill_dir <- create_temp_skill(description = long_desc)
   result <- validate_skill(skill_dir)
-  expect_false(result$valid)
-  expect_match(result$issues, "Description is too long", all = FALSE)
+  expect_true(result$valid)
+  expect_match(result$warnings, "Description is too long", all = FALSE)
 })
 
-test_that("validate_skill() flags unexpected frontmatter fields", {
+test_that("validate_skill() warns for unexpected frontmatter fields", {
   skill_dir <- create_temp_skill(extra_frontmatter = list(bogus = TRUE))
   result <- validate_skill(skill_dir)
-  expect_false(result$valid)
-  expect_match(result$issues, "Unexpected frontmatter", all = FALSE)
+  expect_true(result$valid)
+  expect_match(result$warnings, "Unexpected frontmatter", all = FALSE)
 })
 
 test_that("validate_skill() accepts optional fields", {
@@ -135,14 +135,14 @@ test_that("validate_skill() accepts optional fields", {
   expect_true(result$valid)
 })
 
-test_that("validate_skill() fails for compatibility exceeding 500 chars", {
+test_that("validate_skill() warns for compatibility exceeding 500 chars", {
   long_compat <- paste(rep("a", 501), collapse = "")
   skill_dir <- create_temp_skill(
     extra_frontmatter = list(compatibility = long_compat)
   )
   result <- validate_skill(skill_dir)
-  expect_false(result$valid)
-  expect_match(result$issues, "Compatibility field is too long", all = FALSE)
+  expect_true(result$valid)
+  expect_match(result$warnings, "Compatibility field is too long", all = FALSE)
 })
 
 # Discovery ----------------------------------------------------------------
@@ -179,6 +179,31 @@ test_that("btw_list_skills() skips invalid skills with warning", {
   )
   expect_length(skills, 1)
   expect_equal(skills[["good-skill"]]$name, "good-skill")
+})
+
+test_that("btw_list_skills() later directories override earlier by name", {
+  dir1 <- withr::local_tempdir()
+  dir2 <- withr::local_tempdir()
+
+  create_temp_skill(
+    name = "shared-skill",
+    description = "From dir1.",
+    dir = dir1
+  )
+  create_temp_skill(
+    name = "shared-skill",
+    description = "From dir2.",
+    dir = dir2
+  )
+
+  local_skill_dirs(c(dir1, dir2))
+
+  expect_message(
+    skills <- btw_list_skills(),
+    "overrides earlier skill"
+  )
+  expect_length(skills, 1)
+  expect_equal(skills[["shared-skill"]]$description, "From dir2.")
 })
 
 test_that("btw_list_skills() includes compatibility and allowed-tools", {
@@ -292,6 +317,17 @@ test_that("extract_skill_metadata() returns parsed frontmatter", {
 test_that("extract_skill_metadata() returns empty list for bad files", {
   tmp <- withr::local_tempfile(lines = "No frontmatter here", fileext = ".md")
   metadata <- extract_skill_metadata(tmp)
+  expect_equal(metadata, list())
+})
+
+test_that("extract_skill_metadata() warns on parse failure", {
+  tmp <- withr::local_tempfile(fileext = ".md")
+  # Write invalid YAML frontmatter
+  writeLines("---\n: invalid yaml: [\n---\nBody.", tmp)
+  expect_warning(
+    metadata <- extract_skill_metadata(tmp),
+    "Failed to parse frontmatter"
+  )
   expect_equal(metadata, list())
 })
 
@@ -461,7 +497,7 @@ test_that("btw_skill_validate() reports issues", {
     "---\nname: bad-skill\n---\nBody.",
     file.path(skill_dir, "SKILL.md")
   )
-  expect_message(result <- btw_skill_validate(skill_dir), "validation issues")
+  expect_message(result <- btw_skill_validate(skill_dir), "validation errors")
   expect_false(result$valid)
 })
 
@@ -974,13 +1010,13 @@ test_that("validate_skill() flags non-character compatibility", {
   )
 
   result <- validate_skill(skill_dir)
-  expect_false(result$valid)
-  expect_match(result$issues, "must be a character string", all = FALSE)
+  expect_true(result$valid)
+  expect_match(result$warnings, "must be a character string", all = FALSE)
 })
 
 # find_skill() with invalid skill ------------------------------------------
 
-test_that("find_skill() returns NULL for invalid skill on disk", {
+test_that("find_skill() returns validation errors for invalid skill on disk", {
   dir <- withr::local_tempdir()
   # Create a skill that exists on disk but fails validation (missing description)
   bad_dir <- file.path(dir, "bad-skill")
@@ -988,7 +1024,10 @@ test_that("find_skill() returns NULL for invalid skill on disk", {
   writeLines("---\nname: bad-skill\n---\nBody.", file.path(bad_dir, "SKILL.md"))
 
   local_skill_dirs(dir)
-  expect_null(find_skill("bad-skill"))
+  result <- find_skill("bad-skill")
+  expect_type(result, "list")
+  expect_false(result$validation$valid)
+  expect_match(result$validation$errors, "description", all = FALSE)
 })
 
 # btw_skill_create() long description warning -------------------------------

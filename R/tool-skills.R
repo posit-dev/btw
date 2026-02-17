@@ -37,6 +37,18 @@ btw_tool_fetch_skill_impl <- function(skill_name) {
     )
   }
 
+  if (!skill_info$validation$valid) {
+    cli::cli_abort(
+      c(
+        "Skill {.val {skill_name}} exists but has validation errors:",
+        set_names(
+          skill_info$validation$errors,
+          rep("!", length(skill_info$validation$errors))
+        )
+      )
+    )
+  }
+
   fm <- frontmatter::read_front_matter(skill_info$path)
   skill_text <- fm$body %||% ""
 
@@ -78,7 +90,7 @@ btw_tool_fetch_skill_impl <- function(skill_name) {
         title = "Fetch Skill",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
-        btw_can_register = function() length(btw_list_skills()) > 0
+        btw_can_register = function() any_skills_exist()
       ),
       arguments = list(
         skill_name = ellmer::type_string(
@@ -91,7 +103,7 @@ btw_tool_fetch_skill_impl <- function(skill_name) {
 
 # Skill Discovery ----------------------------------------------------------
 
-btw_skill_directories <- function() {
+btw_skill_directories <- function(project_dir = getwd()) {
   dirs <- character()
 
   # Package-bundled skills
@@ -111,13 +123,26 @@ btw_skill_directories <- function() {
 
   # Project-level skills from multiple conventions
   for (project_subdir in project_skill_subdirs()) {
-    project_skills_dir <- file.path(getwd(), project_subdir)
+    project_skills_dir <- file.path(project_dir, project_subdir)
     if (dir.exists(project_skills_dir)) {
       dirs <- c(dirs, project_skills_dir)
     }
   }
 
   dirs
+}
+
+any_skills_exist <- function() {
+  for (dir in btw_skill_directories()) {
+    if (!dir.exists(dir)) next
+    subdirs <- list.dirs(dir, full.names = TRUE, recursive = FALSE)
+    for (subdir in subdirs) {
+      if (file.exists(file.path(subdir, "SKILL.md"))) {
+        return(TRUE)
+      }
+    }
+  }
+  FALSE
 }
 
 project_skill_subdirs <- function() {
@@ -145,7 +170,7 @@ resolve_project_skill_dir <- function() {
     return(existing[[1]])
   }
 
-  cli::cli_alert_success("Multiple skill directories found in project:")
+  cli::cli_alert_info("Multiple skill directories found in project:")
   choice <- utils::menu(
     choices = existing,
     graphics = FALSE,
@@ -180,9 +205,19 @@ btw_list_skills <- function() {
       if (!validation$valid) {
         cli::cli_warn(c(
           "Skipping invalid skill in {.path {subdir}}.",
-          set_names(validation$issues, rep("!", length(validation$issues)))
+          set_names(validation$errors, rep("!", length(validation$errors)))
         ))
         next
+      }
+
+      if (length(validation$warnings) > 0) {
+        cli::cli_warn(c(
+          "Skill in {.path {subdir}} has validation warnings.",
+          set_names(
+            validation$warnings,
+            rep("!", length(validation$warnings))
+          )
+        ))
       }
 
       metadata <- extract_skill_metadata(skill_md_path)
@@ -201,6 +236,12 @@ btw_list_skills <- function() {
         skill_entry$allowed_tools <- metadata[["allowed-tools"]]
       }
 
+      if (skill_name %in% names(all_skills)) {
+        cli::cli_inform(
+          "Skill {.val {skill_name}} in {.path {subdir}} overrides earlier skill at {.path {all_skills[[skill_name]]$path}}."
+        )
+      }
+
       all_skills[[skill_name]] <- skill_entry
     }
   }
@@ -217,11 +258,16 @@ find_skill <- function(skill_name) {
     if (dir.exists(skill_dir) && file.exists(skill_md_path)) {
       validation <- validate_skill(skill_dir)
       if (!validation$valid) {
-        return(NULL)
+        return(list(
+          path = skill_md_path,
+          base_dir = skill_dir,
+          validation = validation
+        ))
       }
       return(list(
         path = skill_md_path,
-        base_dir = skill_dir
+        base_dir = skill_dir,
+        validation = validation
       ))
     }
   }
@@ -254,6 +300,25 @@ validate_skill_name <- function(name, dir_name = NULL) {
     return(issues)
   }
 
+  issues <- c(issues, validate_skill_name_format(name))
+
+  if (!is.null(dir_name) && name != dir_name) {
+    issues <- c(
+      issues,
+      sprintf(
+        "Name '%s' in frontmatter does not match directory name '%s'.",
+        name,
+        dir_name
+      )
+    )
+  }
+
+  issues
+}
+
+validate_skill_name_format <- function(name) {
+  issues <- character()
+
   if (nchar(name) > 64) {
     issues <- c(
       issues,
@@ -275,57 +340,81 @@ validate_skill_name <- function(name, dir_name = NULL) {
       sprintf("Name '%s' must not contain consecutive hyphens.", name)
     )
   }
-  if (!is.null(dir_name) && name != dir_name) {
-    issues <- c(
-      issues,
-      sprintf(
-        "Name '%s' in frontmatter does not match directory name '%s'.",
-        name,
-        dir_name
-      )
-    )
-  }
 
   issues
 }
 
 validate_skill <- function(skill_dir) {
   skill_dir <- normalizePath(skill_dir, mustWork = FALSE)
-  issues <- character()
+  errors <- character()
+  warnings <- character()
 
   skill_md_path <- file.path(skill_dir, "SKILL.md")
   if (!file.exists(skill_md_path)) {
-    return(list(
-      valid = FALSE,
-      issues = "SKILL.md not found."
+    return(skill_validation(errors = "SKILL.md not found."))
+  }
+
+  # Parse frontmatter — return the result or the error, never use <<-
+  parse_result <- tryCatch(
+    frontmatter::read_front_matter(skill_md_path),
+    error = function(e) e
+  )
+
+  if (inherits(parse_result, "error")) {
+    return(skill_validation(
+      errors = sprintf("Failed to parse frontmatter: %s", parse_result$message)
     ))
   }
 
-  metadata <- tryCatch(
-    {
-      fm <- frontmatter::read_front_matter(skill_md_path)
-      fm$data
-    },
-    error = function(e) {
-      issues <<- c(
-        issues,
-        sprintf("Failed to parse frontmatter: %s", e$message)
-      )
-      NULL
-    }
-  )
+  metadata <- parse_result$data
 
   if (is.null(metadata)) {
-    issues <- c(issues, "No YAML frontmatter found.")
-    return(list(valid = FALSE, issues = issues))
+    return(skill_validation(errors = "No YAML frontmatter found."))
   }
 
   if (!is.list(metadata)) {
-    return(list(
-      valid = FALSE,
-      issues = "Frontmatter must be a YAML mapping."
-    ))
+    return(skill_validation(errors = "Frontmatter must be a YAML mapping."))
   }
+
+  # --- Hard errors: things that prevent the skill from working ---
+
+  # Validate name (missing/empty is an error, format issues are warnings)
+  name <- metadata$name
+  if (is.null(name) || !is.character(name) || !nzchar(name)) {
+    errors <- c(errors, "Missing or empty 'name' field in frontmatter.")
+  } else {
+    name_format_issues <- validate_skill_name_format(name)
+    warnings <- c(warnings, name_format_issues)
+
+    if (!is.null(skill_dir) && name != basename(skill_dir)) {
+      warnings <- c(
+        warnings,
+        sprintf(
+          "Name '%s' in frontmatter does not match directory name '%s'.",
+          name,
+          basename(skill_dir)
+        )
+      )
+    }
+  }
+
+  # Validate description (missing/empty is an error, too long is a warning)
+  description <- metadata$description
+  if (
+    is.null(description) || !is.character(description) || !nzchar(description)
+  ) {
+    errors <- c(errors, "Missing or empty 'description' field in frontmatter.")
+  } else if (nchar(description) > 1024) {
+    warnings <- c(
+      warnings,
+      sprintf(
+        "Description is too long (%d characters, max 1024).",
+        nchar(description)
+      )
+    )
+  }
+
+  # --- Soft warnings: spec compliance that doesn't break functionality ---
 
   # Check for unexpected properties
   allowed_fields <- c(
@@ -338,8 +427,8 @@ validate_skill <- function(skill_dir) {
   )
   unexpected <- setdiff(names(metadata), allowed_fields)
   if (length(unexpected) > 0) {
-    issues <- c(
-      issues,
+    warnings <- c(
+      warnings,
       sprintf(
         "Unexpected frontmatter field(s): %s. Allowed fields: %s.",
         paste(unexpected, collapse = ", "),
@@ -348,35 +437,16 @@ validate_skill <- function(skill_dir) {
     )
   }
 
-  # Validate name
-  issues <- c(issues, validate_skill_name(metadata$name, basename(skill_dir)))
-
-  # Validate description
-  description <- metadata$description
-  if (
-    is.null(description) || !is.character(description) || !nzchar(description)
-  ) {
-    issues <- c(issues, "Missing or empty 'description' field in frontmatter.")
-  } else if (nchar(description) > 1024) {
-    issues <- c(
-      issues,
-      sprintf(
-        "Description is too long (%d characters, max 1024).",
-        nchar(description)
-      )
-    )
-  }
-
   # Validate optional fields
   if (!is.null(metadata$compatibility)) {
     if (!is.character(metadata$compatibility)) {
-      issues <- c(
-        issues,
+      warnings <- c(
+        warnings,
         "The 'compatibility' field must be a character string."
       )
     } else if (nchar(metadata$compatibility) > 500) {
-      issues <- c(
-        issues,
+      warnings <- c(
+        warnings,
         sprintf(
           "Compatibility field is too long (%d characters, max 500).",
           nchar(metadata$compatibility)
@@ -386,12 +456,22 @@ validate_skill <- function(skill_dir) {
   }
 
   if (!is.null(metadata$metadata) && !is.list(metadata$metadata)) {
-    issues <- c(issues, "The 'metadata' field must be a key-value mapping.")
+    warnings <- c(
+      warnings,
+      "The 'metadata' field must be a key-value mapping."
+    )
   }
 
+  skill_validation(errors = errors, warnings = warnings)
+}
+
+skill_validation <- function(errors = character(), warnings = character()) {
   list(
-    valid = length(issues) == 0,
-    issues = issues
+    valid = length(errors) == 0,
+    errors = errors,
+    warnings = warnings,
+    # Combined for backward compatibility with callers using $issues
+    issues = c(errors, warnings)
   )
 }
 
@@ -608,24 +688,14 @@ btw_skill_create <- function(
     "TODO: Describe what this skill does and when to use it."
   }
 
-  skill_md_content <- paste0(
-    "---\n",
-    "name: ",
-    name,
-    "\n",
-    "description: ",
-    description_line,
-    "\n",
-    "---\n",
-    "\n",
-    "# ",
-    skill_title,
-    "\n",
-    "\n",
-    "TODO: Add skill instructions here.\n"
+  body <- paste0("\n# ", skill_title, "\n\nTODO: Add skill instructions here.\n")
+  frontmatter::write_front_matter(
+    list(
+      data = list(name = name, description = description_line),
+      body = body
+    ),
+    file.path(skill_dir, "SKILL.md")
   )
-
-  write_lines(skill_md_content, file.path(skill_dir, "SKILL.md"))
 
   if (resources) {
     dir.create(file.path(skill_dir, "scripts"), showWarnings = FALSE)
@@ -666,12 +736,22 @@ btw_skill_validate <- function(path = ".") {
 
   result <- validate_skill(path)
 
-  if (result$valid) {
+  if (result$valid && length(result$warnings) == 0) {
     cli::cli_inform(c("v" = "Skill at {.path {path}} is valid."))
+  } else if (result$valid) {
+    cli::cli_inform(c(
+      "v" = "Skill at {.path {path}} is valid with warnings:",
+      set_names(result$warnings, rep("!", length(result$warnings)))
+    ))
   } else {
     cli::cli_inform(c(
-      "x" = "Skill at {.path {path}} has validation issues:",
-      set_names(result$issues, rep("!", length(result$issues)))
+      "x" = "Skill at {.path {path}} has validation errors:",
+      set_names(result$errors, rep("!", length(result$errors))),
+      if (length(result$warnings) > 0) {
+        c(
+          set_names(result$warnings, rep("!", length(result$warnings)))
+        )
+      }
     ))
   }
 
@@ -925,7 +1005,17 @@ install_skill_from_dir <- function(
   if (!validation$valid) {
     cli::cli_abort(c(
       "Cannot install invalid skill:",
-      set_names(validation$issues, rep("!", length(validation$issues)))
+      set_names(validation$errors, rep("!", length(validation$errors)))
+    ))
+  }
+
+  if (length(validation$warnings) > 0) {
+    cli::cli_warn(c(
+      "Installing skill {.val {skill_name}} with validation warnings:",
+      set_names(
+        validation$warnings,
+        rep("!", length(validation$warnings))
+      )
     ))
   }
 
