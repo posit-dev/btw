@@ -8,7 +8,7 @@ btw_skill_install_github(
   repo,
   skill = NULL,
   scope = "project",
-  overwrite = FALSE
+  overwrite = NULL
 )
 }
 \arguments{
@@ -34,8 +34,10 @@ in that order. If one already exists, it is used; otherwise
 if you need a literal directory with those names.
 }}
 
-\item{overwrite}{If \code{TRUE}, overwrite an existing skill with the same name.
-Defaults to \code{FALSE}, which errors if the skill already exists.}
+\item{overwrite}{Whether to overwrite an existing skill with the same name.
+If \code{NULL} (default), prompts interactively when a conflict exists; in
+non-interactive sessions defaults to \code{FALSE}, which errors. Set to \code{TRUE}
+to always overwrite, or \code{FALSE} to always error on conflict.}
 }
 \value{
 The path to the installed skill directory, invisibly.

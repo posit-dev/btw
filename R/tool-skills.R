@@ -849,8 +849,10 @@ select_skill_dir <- function(
 #'   - A directory path: Installs to a custom directory, e.g.
 #'     `scope = ".openhands/skills"`. Use `I("project")` or `I("user")`
 #'     if you need a literal directory with those names.
-#' @param overwrite If `TRUE`, overwrite an existing skill with the same name.
-#'   Defaults to `FALSE`, which errors if the skill already exists.
+#' @param overwrite Whether to overwrite an existing skill with the same name.
+#'   If `NULL` (default), prompts interactively when a conflict exists; in
+#'   non-interactive sessions defaults to `FALSE`, which errors. Set to `TRUE`
+#'   to always overwrite, or `FALSE` to always error on conflict.
 #'
 #' @return The path to the installed skill directory, invisibly.
 #'
@@ -860,14 +862,14 @@ btw_skill_install_github <- function(
   repo,
   skill = NULL,
   scope = "project",
-  overwrite = FALSE
+  overwrite = NULL
 ) {
   check_string(repo)
   if (!is.null(skill)) {
     check_string(skill)
   }
   check_string(scope)
-  check_bool(overwrite)
+  if (!is.null(overwrite)) check_bool(overwrite)
 
   rlang::check_installed("gh", reason = "to install skills from GitHub.")
 
@@ -943,8 +945,10 @@ btw_skill_install_github <- function(
 #'   - A directory path: Installs to a custom directory, e.g.
 #'     `scope = ".openhands/skills"`. Use `I("project")` or `I("user")`
 #'     if you need a literal directory with those names.
-#' @param overwrite If `TRUE`, overwrite an existing skill with the same name.
-#'   Defaults to `FALSE`, which errors if the skill already exists.
+#' @param overwrite Whether to overwrite an existing skill with the same name.
+#'   If `NULL` (default), prompts interactively when a conflict exists; in
+#'   non-interactive sessions defaults to `FALSE`, which errors. Set to `TRUE`
+#'   to always overwrite, or `FALSE` to always error on conflict.
 #'
 #' @return The path to the installed skill directory, invisibly.
 #'
@@ -954,14 +958,14 @@ btw_skill_install_package <- function(
   package,
   skill = NULL,
   scope = "project",
-  overwrite = FALSE
+  overwrite = NULL
 ) {
   check_string(package)
   if (!is.null(skill)) {
     check_string(skill)
   }
   check_string(scope)
-  check_bool(overwrite)
+  if (!is.null(overwrite)) check_bool(overwrite)
 
   rlang::check_installed(package, reason = "to install skills from it.")
 
@@ -990,11 +994,11 @@ btw_skill_install_package <- function(
 install_skill_from_dir <- function(
   source_dir,
   scope = "project",
-  overwrite = FALSE
+  overwrite = NULL
 ) {
   check_string(source_dir)
   check_string(scope)
-  check_bool(overwrite)
+  if (!is.null(overwrite)) check_bool(overwrite)
 
   source_dir <- normalizePath(source_dir, mustWork = FALSE)
   if (!dir.exists(source_dir)) {
@@ -1008,7 +1012,23 @@ install_skill_from_dir <- function(
   target_dir <- file.path(target_parent, skill_name)
 
   if (dir.exists(target_dir)) {
-    if (overwrite) {
+    do_overwrite <- if (is.null(overwrite)) {
+      if (rlang::is_interactive()) {
+        choice <- utils::menu(
+          c("Yes", "No"),
+          title = cli::format_inline(
+            "Skill {.val {skill_name}} already exists at {.path {target_dir}}. Overwrite?"
+          )
+        )
+        choice == 1L
+      } else {
+        FALSE
+      }
+    } else {
+      overwrite
+    }
+
+    if (do_overwrite) {
       unlink(target_dir, recursive = TRUE)
     } else {
       cli::cli_abort(
