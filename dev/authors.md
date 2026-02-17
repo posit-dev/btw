@@ -12,13 +12,13 @@
 
 - **Posit Software, PBC**. Copyright holder, funder.
 
-- **Google**. Copyright holder.  
+- **Google**. Copyright holder.\
   Material Design Icons
 
-- **Microsoft**. Copyright holder.  
+- **Microsoft**. Copyright holder.\
   @vscode/codicons
 
-- **Jamie Perkins**. Copyright holder.  
+- **Jamie Perkins**. Copyright holder.\
   countUp.js author
 
 ## Citation

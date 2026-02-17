@@ -39,7 +39,7 @@ Other sessioninfo tools:
 
 ``` r
 btw_tool_sessioninfo_is_package_installed("dplyr")@value
-#> [1] "Package `dplyr` version 1.1.4 is installed."
+#> [1] "Package `dplyr` version 1.2.0 is installed."
 
 tryCatch(
   btw_tool_sessioninfo_is_package_installed("dplry"),

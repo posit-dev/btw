@@ -2,6 +2,24 @@
 
 ## btw (development version)
 
+- New
+  [`btw_tool_files_edit()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_edit.md)
+  tool makes targeted, validated line-based edits to files using
+  `replace`, `insert_after`, and `replace_range` actions. Edits are
+  anchored to content hashes, so stale edits are rejected if the file
+  has changed. To support this,
+  [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md)
+  now annotates each line with a short hash
+  (e.g. `2:f1a| return("world")`) when called as a tool
+  ([\#167](https://github.com/posit-dev/btw/issues/167)).
+
+- New
+  [`btw_tool_files_replace()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_replace.md)
+  tool finds and replaces exact string occurrences in a file. By default
+  it requires the string to appear exactly once to prevent unintended
+  changes; set `replace_all = TRUE` to replace all occurrences
+  ([\#167](https://github.com/posit-dev/btw/issues/167)).
+
 - [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md)
   now correctly reads valid UTF-8 files containing non-ASCII characters
   (e.g., Cyrillic). Previously, these files were incorrectly rejected on

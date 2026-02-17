@@ -34,7 +34,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Tool: Read a file</h1>
-      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/main/R/tool-files.R" class="external-link"><code>R/tool-files.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/main/R/tool-files-read.R" class="external-link"><code>R/tool-files-read.R</code></a></small>
       <div class="d-none name"><code>btw_tool_files_read.Rd</code></div>
     </div>
 
@@ -80,7 +80,9 @@ explain why it called the tool.</p></dd>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other files tools:
+<code><a href="btw_tool_files_edit.html">btw_tool_files_edit()</a></code>,
 <code><a href="btw_tool_files_list.html">btw_tool_files_list()</a></code>,
+<code><a href="btw_tool_files_replace.html">btw_tool_files_replace()</a></code>,
 <code><a href="btw_tool_files_search.html">btw_tool_files_search()</a></code>,
 <code><a href="btw_tool_files_write.html">btw_tool_files_write()</a></code></p></div>
     </div>
@@ -93,7 +95,7 @@ explain why it called the tool.</p></dd>
 <span class="r-in"><span>  <span class="fu">btw_tool_files_read</span><span class="op">(</span><span class="st">"mtcars.csv"</span>, line_end <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;btw::BtwTextFileToolResult&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  @ value  : chr "```csv\n\"\",\"mpg\",\"cyl\",\"disp\",\"hp\",\"drat\",\"wt\",\"qsec\",\"vs\",\"am\",\"gear\",\"carb\"\n\"Mazda "| __truncated__</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  @ value  : chr "1:8e0|\"\",\"mpg\",\"cyl\",\"disp\",\"hp\",\"drat\",\"wt\",\"qsec\",\"vs\",\"am\",\"gear\",\"carb\"\n2:847|\"Ma"| __truncated__</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ error  : NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ extra  :List of 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ path   : 'fs_path' chr "mtcars.csv"</span>

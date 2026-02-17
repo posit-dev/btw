@@ -91,8 +91,10 @@ paths, regardless of the `btw.files_search.exclusions` option.
 ## See also
 
 Other files tools:
+[`btw_tool_files_edit()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_edit.md),
 [`btw_tool_files_list()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_list.md),
 [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md),
+[`btw_tool_files_replace()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_replace.md),
 [`btw_tool_files_write()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_write.md)
 
 ## Examples
@@ -109,14 +111,14 @@ withr::with_tempdir({
     show_lines = TRUE
   )
 })
-#> ℹ Indexing files in /tmp/RtmpCPQ922/file25446154d485 for code search
-#> ✔ Indexing files in /tmp/RtmpCPQ922/file25446154d485 for code search [592ms]
+#> ℹ Indexing files in /tmp/RtmpxmJyHc/file20f8624bfe76 for code search
+#> ✔ Indexing files in /tmp/RtmpxmJyHc/file20f8624bfe76 for code search [513ms]
 #> 
 #> <btw::BtwToolResult>
 #>  @ value  :'data.frame': 1 obs. of  5 variables:
 #>  .. $ filename     : chr "state_names_1.md"
 #>  .. $ size         : 'fs_bytes' num 219
-#>  .. $ last_modified: POSIXct, format: "2026-01-20 14:48:52"
+#>  .. $ last_modified: POSIXct, format: "2026-02-17 20:38:52"
 #>  .. $ content      : chr "Kentucky"
 #>  .. $ line         : num 17
 #>  @ error  : NULL

@@ -234,10 +234,14 @@ and to avoid name clashes with other tools.
   : Tool: Describe data frame
 - [`btw_tool_env_describe_environment()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_env_describe_environment.md)
   : Tool: Describe an environment
+- [`btw_tool_files_edit()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_edit.md)
+  : Tool: Edit a text file
 - [`btw_tool_files_list()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_list.md)
   : Tool: List files
 - [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md)
   : Tool: Read a file
+- [`btw_tool_files_replace()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_replace.md)
+  : Tool: Replace exact strings in a text file
 - [`btw_tool_files_search()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_search.md)
   : Tool: Code Search in Project
 - [`btw_tool_files_write()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_write.md)

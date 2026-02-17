@@ -11,7 +11,7 @@ code and return the appropriate object description.
 [`btw_this()`](https://posit-dev.github.io/btw/dev/reference/btw_this.md)
 knows about the following special character string formats:
 
-- `"./path"`  
+- `"./path"`\
   Any string starting with `./` is treated as a relative path. If the
   path is a file, we call
   [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md)
@@ -24,7 +24,7 @@ knows about the following special character string formats:
   - `btw_this("./R/load_data.R")` reads the source of the
     `R/load_data.R` file.
 
-- `"{pkgName}"` or `"@pkg pkgName"`  
+- `"{pkgName}"` or `"@pkg pkgName"`\
   A package name wrapped in braces, or using the `@pkg` command. Returns
   the list of help topics
   ([`btw_tool_docs_package_help_topics()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_package_docs.md))
@@ -37,7 +37,7 @@ knows about the following special character string formats:
   - `btw_this("{btw}")` returns only the package help index (because
     `btw` doesn't have an intro vignette, yet).
 
-- `"?help_topic"` or `"@help topic"`  
+- `"?help_topic"` or `"@help topic"`\
   When the string starts with `?` or `@help`, btw searches R's help
   topics using
   [`btw_tool_docs_help_page()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_package_docs.md).
@@ -49,17 +49,17 @@ knows about the following special character string formats:
 
   - `btw_this("@help across")` - searches all packages
 
-- `"@news {{package_name}} {{search_term}}"`  
+- `"@news {{package_name}} {{search_term}}"`\
   Include the release notes (NEWS) from the latest package release, e.g.
   `"@news dplyr"`, or that match a search term, e.g.
   `"@news dplyr join_by"`.
 
-- `"@url {{url}}"`  
+- `"@url {{url}}"`\
   Include the contents of a web page at the specified URL as markdown,
   e.g. `"@url https://cran.r-project.org/doc/FAQ/R-FAQ.html"`. Requires
   the chromote package to be installed.
 
-- `"@git status"`, `"@git diff"`, `"@git log"`  
+- `"@git status"`, `"@git diff"`, `"@git log"`\
   Git commands for viewing repository status, diffs, and commit history.
   Requires gert package and a git repository.
 
@@ -75,7 +75,7 @@ knows about the following special character string formats:
 
   - `btw_this("@git log main 20")` - show 20 commits from main branch
 
-- `"@issue #number"` or `"@pr #number"`  
+- `"@issue #number"` or `"@pr #number"`\
   Fetch a GitHub issue or pull request. Automatically detects the
   current repository, or you can specify `owner/repo#number` or
   `owner/repo number`. Requires gh package and GitHub authentication.
@@ -86,33 +86,32 @@ knows about the following special character string formats:
 
   - `btw_this("@issue tidyverse/dplyr 1234")` - space-separated format
 
-- `"@current_file"` or `"@current_selection"`  
+- `"@current_file"` or `"@current_selection"`\
   When used in RStudio or Positron, or anywhere else that the rstudioapi
   is supported, `btw("@current_file")` includes the contents of the file
   currently open in the editor using
   [`rstudioapi::getSourceEditorContext()`](https://rstudio.github.io/rstudioapi/reference/rstudio-editors.html).
 
-- `"@clipboard"`  
+- `"@clipboard"`\
   Includes the contents currently stored in your clipboard.
 
-- `"@platform_info"`  
+- `"@platform_info"`\
   Includes information about the current platform, such as the R
   version, operating system, IDE or UI being used, as well as language,
   locale, timezone and current date.
 
-- `"@attached_packages"`, `"@loaded_packages"`,
-  `"@installed_packages"`  
+- `"@attached_packages"`, `"@loaded_packages"`, `"@installed_packages"`\
   Includes information about the attached, loaded, or installed packages
   in your R session, using
   [`sessioninfo::package_info()`](https://sessioninfo.r-lib.org/reference/package_info.html).
 
-- `"@last_error"`  
+- `"@last_error"`\
   Includes the message from the last error that occurred in your
   session. To reliably capture the last error, you need to enable
   [`rlang::global_entrace()`](https://rlang.r-lib.org/reference/global_entrace.html)
   in your session.
 
-- `"@last_value"`  
+- `"@last_value"`\
   Includes the `.Last.value`, i.e. the result of the last expression
   evaluated in your R console.
 

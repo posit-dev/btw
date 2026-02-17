@@ -45,8 +45,10 @@ returned by this function have access to the tools:
 |  |  |
 |----|----|
 | Name | Description |
+| [`btw_tool_files_edit()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_edit.md) | Edit a text file using hashline references for precise, targeted modifications. |
 | [`btw_tool_files_list()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_list.md) | List files or directories in the project. |
-| [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md) | Read an entire text file. |
+| [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md) | Read the contents of a text file. |
+| [`btw_tool_files_replace()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_replace.md) | Find and replace exact string occurrences in a text file. |
 | [`btw_tool_files_search()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_search.md) | Search code files in the project. |
 | [`btw_tool_files_write()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_write.md) | Write content to a text file. |
 
@@ -178,9 +180,11 @@ ch$register_tools(c(ch$get_tools(), btw_tools()))
 #> Replacing existing btw_tool_docs_vignette tool.
 #> Replacing existing btw_tool_env_describe_data_frame tool.
 #> Replacing existing btw_tool_env_describe_environment tool.
-#> Replacing existing btw_tool_files_search tool.
+#> Replacing existing btw_tool_files_edit tool.
 #> Replacing existing btw_tool_files_list tool.
 #> Replacing existing btw_tool_files_read tool.
+#> Replacing existing btw_tool_files_replace tool.
+#> Replacing existing btw_tool_files_search tool.
 #> Replacing existing btw_tool_files_write tool.
 #> Replacing existing btw_tool_git_status tool.
 #> Replacing existing btw_tool_git_diff tool.
@@ -209,9 +213,11 @@ ch$register_tools(c(ch$get_tools(), btw_tools()))
 #> Replacing existing btw_tool_docs_vignette tool.
 #> Replacing existing btw_tool_env_describe_data_frame tool.
 #> Replacing existing btw_tool_env_describe_environment tool.
-#> Replacing existing btw_tool_files_search tool.
+#> Replacing existing btw_tool_files_edit tool.
 #> Replacing existing btw_tool_files_list tool.
 #> Replacing existing btw_tool_files_read tool.
+#> Replacing existing btw_tool_files_replace tool.
+#> Replacing existing btw_tool_files_search tool.
 #> Replacing existing btw_tool_files_write tool.
 #> Replacing existing btw_tool_git_status tool.
 #> Replacing existing btw_tool_git_diff tool.

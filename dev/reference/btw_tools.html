@@ -57,8 +57,10 @@ btw_tool_env_describe_environment()List and describe items in the R session's gl
 Group: files
 
 NameDescription
+btw_tool_files_edit()Edit a text file using hashline references for precise, targeted modifications.
 btw_tool_files_list()List files or directories in the project.
-btw_tool_files_read()Read an entire text file.
+btw_tool_files_read()Read the contents of a text file.
+btw_tool_files_replace()Find and replace exact string occurrences in a text file.
 btw_tool_files_search()Search code files in the project.
 btw_tool_files_write()Write content to a text file.
 
@@ -213,8 +215,10 @@ btw_tool_env_describe_environment()List and describe items in the R session's gl
 Group: files
 
 NameDescription
+btw_tool_files_edit()Edit a text file using hashline references for precise, targeted modifications.
 btw_tool_files_list()List files or directories in the project.
-btw_tool_files_read()Read an entire text file.
+btw_tool_files_read()Read the contents of a text file.
+btw_tool_files_replace()Find and replace exact string occurrences in a text file.
 btw_tool_files_search()Search code files in the project.
 btw_tool_files_write()Write content to a text file.
 
@@ -372,7 +376,7 @@ this function have access to the tools:</p><div class="section">
 
 <div class="section">
 <h3 id="group-files">Group: files<a class="anchor" aria-label="anchor" href="#group-files"></a></h3>
-<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_files_list.html">btw_tool_files_list()</a></code></td><td>List files or directories in the project.</td></tr><tr><td><code><a href="btw_tool_files_read.html">btw_tool_files_read()</a></code></td><td>Read an entire text file.</td></tr><tr><td><code><a href="btw_tool_files_search.html">btw_tool_files_search()</a></code></td><td>Search code files in the project.</td></tr><tr><td><code><a href="btw_tool_files_write.html">btw_tool_files_write()</a></code></td><td>Write content to a text file.</td></tr></table></div>
+<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_files_edit.html">btw_tool_files_edit()</a></code></td><td>Edit a text file using hashline references for precise, targeted modifications.</td></tr><tr><td><code><a href="btw_tool_files_list.html">btw_tool_files_list()</a></code></td><td>List files or directories in the project.</td></tr><tr><td><code><a href="btw_tool_files_read.html">btw_tool_files_read()</a></code></td><td>Read the contents of a text file.</td></tr><tr><td><code><a href="btw_tool_files_replace.html">btw_tool_files_replace()</a></code></td><td>Find and replace exact string occurrences in a text file.</td></tr><tr><td><code><a href="btw_tool_files_search.html">btw_tool_files_search()</a></code></td><td>Search code files in the project.</td></tr><tr><td><code><a href="btw_tool_files_write.html">btw_tool_files_write()</a></code></td><td>Write content to a text file.</td></tr></table></div>
 
 <div class="section">
 <h3 id="group-git">Group: git<a class="anchor" aria-label="anchor" href="#group-git"></a></h3>
@@ -467,9 +471,11 @@ place. The <code>chat</code> input is returned invisibly.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_vignette tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_env_describe_data_frame tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_env_describe_environment tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_search tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_edit tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_list tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_read tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_replace tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_search tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_write tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_status tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_diff tool.</span>
@@ -498,9 +504,11 @@ place. The <code>chat</code> input is returned invisibly.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_vignette tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_env_describe_data_frame tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_env_describe_environment tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_search tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_edit tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_list tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_read tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_replace tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_search tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_write tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_status tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_diff tool.</span>

@@ -38,7 +38,9 @@ Returns a character vector of lines from the file.
 ## See also
 
 Other files tools:
+[`btw_tool_files_edit()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_edit.md),
 [`btw_tool_files_list()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_list.md),
+[`btw_tool_files_replace()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_replace.md),
 [`btw_tool_files_search()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_search.md),
 [`btw_tool_files_write()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_write.md)
 
@@ -51,7 +53,7 @@ withr::with_tempdir({
   btw_tool_files_read("mtcars.csv", line_end = 5)
 })
 #> <btw::BtwTextFileToolResult>
-#>  @ value  : chr "```csv\n\"\",\"mpg\",\"cyl\",\"disp\",\"hp\",\"drat\",\"wt\",\"qsec\",\"vs\",\"am\",\"gear\",\"carb\"\n\"Mazda "| __truncated__
+#>  @ value  : chr "1:8e0|\"\",\"mpg\",\"cyl\",\"disp\",\"hp\",\"drat\",\"wt\",\"qsec\",\"vs\",\"am\",\"gear\",\"carb\"\n2:847|\"Ma"| __truncated__
 #>  @ error  : NULL
 #>  @ extra  :List of 2
 #>  .. $ path   : 'fs_path' chr "mtcars.csv"
