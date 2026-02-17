@@ -134,7 +134,6 @@ btw_skill_directories <- function(project_dir = getwd()) {
 
 any_skills_exist <- function() {
   for (dir in btw_skill_directories()) {
-    if (!dir.exists(dir)) next
     subdirs <- list.dirs(dir, full.names = TRUE, recursive = FALSE)
     for (subdir in subdirs) {
       if (file.exists(file.path(subdir, "SKILL.md"))) {
@@ -152,7 +151,7 @@ project_skill_subdirs <- function() {
   )
 }
 
-resolve_project_skill_dir <- function() {
+resolve_project_skill_dir <- function(error_call = caller_env()) {
   candidates <- file.path(getwd(), project_skill_subdirs())
   existing <- candidates[dir.exists(candidates)]
 
@@ -178,7 +177,7 @@ resolve_project_skill_dir <- function() {
   )
 
   if (choice == 0) {
-    cli::cli_abort("Aborted by user.")
+    cli::cli_abort("Aborted by user.", call = error_call)
   }
 
   existing[[choice]]
@@ -220,12 +219,12 @@ btw_list_skills <- function() {
         ))
       }
 
-      metadata <- extract_skill_metadata(skill_md_path)
-      skill_name <- basename(subdir)
+      metadata <- validation$metadata
+      skill_name <- metadata$name
 
       skill_entry <- list(
         name = skill_name,
-        description = metadata$description %||% "No description available",
+        description = metadata$description,
         path = skill_md_path
       )
 
@@ -252,23 +251,35 @@ btw_list_skills <- function() {
 find_skill <- function(skill_name) {
   skill_dirs <- btw_skill_directories()
 
+  # Fast path: directory named skill_name
   for (dir in skill_dirs) {
     skill_dir <- file.path(dir, skill_name)
     skill_md_path <- file.path(skill_dir, "SKILL.md")
     if (dir.exists(skill_dir) && file.exists(skill_md_path)) {
       validation <- validate_skill(skill_dir)
-      if (!validation$valid) {
-        return(list(
-          path = skill_md_path,
-          base_dir = skill_dir,
-          validation = validation
-        ))
-      }
       return(list(
         path = skill_md_path,
         base_dir = skill_dir,
         validation = validation
       ))
+    }
+  }
+
+  # Slow path: scan all skills for a matching metadata$name (handles name/dir mismatch)
+  for (dir in skill_dirs) {
+    subdirs <- list.dirs(dir, full.names = TRUE, recursive = FALSE)
+    for (subdir in subdirs) {
+      skill_md_path <- file.path(subdir, "SKILL.md")
+      if (!file.exists(skill_md_path)) next
+      validation <- validate_skill(subdir)
+      if (!is.null(validation$metadata$name) &&
+          validation$metadata$name == skill_name) {
+        return(list(
+          path = skill_md_path,
+          base_dir = subdir,
+          validation = validation
+        ))
+      }
     }
   }
 
@@ -390,9 +401,10 @@ validate_skill <- function(skill_dir) {
       warnings <- c(
         warnings,
         sprintf(
-          "Name '%s' in frontmatter does not match directory name '%s'.",
+          "Name '%s' in frontmatter does not match directory name '%s'. Consider renaming the directory to '%s'.",
           name,
-          basename(skill_dir)
+          basename(skill_dir),
+          name
         )
       )
     }
@@ -462,16 +474,21 @@ validate_skill <- function(skill_dir) {
     )
   }
 
-  skill_validation(errors = errors, warnings = warnings)
+  skill_validation(errors = errors, warnings = warnings, metadata = metadata)
 }
 
-skill_validation <- function(errors = character(), warnings = character()) {
+skill_validation <- function(
+  errors = character(),
+  warnings = character(),
+  metadata = NULL
+) {
   list(
     valid = length(errors) == 0,
     errors = errors,
     warnings = warnings,
     # Combined for backward compatibility with callers using $issues
-    issues = c(errors, warnings)
+    issues = c(errors, warnings),
+    metadata = metadata
   )
 }
 
@@ -508,7 +525,7 @@ format_resources_listing <- function(resources, base_dir) {
   parts <- c(parts, "\n\n---\n\n## Bundled Resources\n")
 
   if (length(resources$scripts) > 0) {
-    parts <- c(parts, "\n**Scripts:**\n")
+    parts <- c(parts, "\n\n**Scripts:**\n")
     script_paths <- file.path(base_dir, "scripts", resources$scripts)
     parts <- c(parts, paste0("- ", script_paths, collapse = "\n"))
   }
@@ -600,7 +617,7 @@ resolve_skill_scope <- function(scope, error_call = caller_env()) {
 
   switch(
     scope,
-    project = resolve_project_skill_dir(),
+    project = resolve_project_skill_dir(error_call = error_call),
     user = file.path(tools::R_user_dir("btw", "config"), "skills"),
     scope
   )
