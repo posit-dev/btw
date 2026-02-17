@@ -737,6 +737,7 @@ app_tool_group_choice_input <- function(
     "pkg" = shiny::span(label_icon, "Package Tools"),
     "run" = shiny::span(label_icon, "Run Code"),
     "sessioninfo" = shiny::span(label_icon, "Session Info"),
+    "skills" = shiny::span(label_icon, "Skills"),
     "web" = shiny::span(label_icon, "Web Tools"),
     "other" = shiny::span(label_icon, "Other Tools"),
     to_title_case(group)
