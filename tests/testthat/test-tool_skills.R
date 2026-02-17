@@ -478,7 +478,7 @@ test_that("btw_skill_create() treats I('project') as literal directory name", {
   )
 
   expect_true(dir.exists(path))
-  expect_equal(dirname(path), file.path(dir, "project"))
+  expect_equal(normalizePath(dirname(path)), normalizePath(file.path(dir, "project")))
 })
 
 # btw_skill_validate -------------------------------------------------------
@@ -612,7 +612,7 @@ test_that("install_skill_from_dir() accepts custom path as scope", {
     ),
     "Installed skill"
   )
-  expect_equal(dirname(path), custom_dir)
+  expect_equal(normalizePath(dirname(path)), normalizePath(custom_dir))
   expect_true(file.exists(file.path(path, "SKILL.md")))
 })
 
@@ -629,7 +629,7 @@ test_that("install_skill_from_dir() treats I('project') as literal path", {
     ),
     "Installed skill"
   )
-  expect_equal(dirname(path), file.path(target, "project"))
+  expect_equal(normalizePath(dirname(path)), normalizePath(file.path(target, "project")))
 })
 
 # btw_skill_install_github -------------------------------------------------
