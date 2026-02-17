@@ -1,5 +1,17 @@
 # btw (development version)
 
+* New `btw_tool_files_edit()` tool makes targeted, validated line-based edits
+  to files using `replace`, `insert_after`, and `replace_range` actions. Edits
+  are anchored to content hashes, so stale edits are rejected if the file has
+  changed. To support this, `btw_tool_files_read()` now annotates each line
+  with a short hash (e.g. `2:f1a|  return("world")`) when called as a tool
+  (#167).
+
+* New `btw_tool_files_replace()` tool finds and replaces exact string
+  occurrences in a file. By default it requires the string to appear exactly
+  once to prevent unintended changes; set `replace_all = TRUE` to replace all
+  occurrences (#167).
+
 * `btw_tool_files_read()` now correctly reads valid UTF-8 files containing non-ASCII characters (e.g., Cyrillic). Previously, these files were incorrectly rejected on Windows with non-English locales when `Encoding()` returned "unknown" even though they were valid UTF-8 (thanks @RKonstantinR, #160).
 
 * BREAKING CHANGE: Several tool groups and tool names have been renamed for clarity (#159):
