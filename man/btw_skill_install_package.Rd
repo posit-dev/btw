@@ -20,9 +20,15 @@ non-interactive sessions).}
 
 \item{scope}{Where to install the skill. One of:
 \itemize{
-\item \code{"project"} (default): Installs to \verb{.btw/skills/} in the current
-working directory
+\item \code{"project"} (default): Installs to a project-level skills directory,
+chosen from \verb{.btw/skills/}, \verb{.agents/skills/}, or \verb{.claude/skills/}
+in that order. If one already exists, it is used; otherwise
+\verb{.btw/skills/} is created.
 \item \code{"user"}: Installs to the user-level skills directory
+(\code{tools::R_user_dir("btw", "config")/skills}).
+\item A directory path: Installs to a custom directory, e.g.
+\code{scope = ".openhands/skills"}. Use \code{I("project")} or \code{I("user")}
+if you need a literal directory with those names.
 }}
 
 \item{overwrite}{If \code{TRUE}, overwrite an existing skill with the same name.

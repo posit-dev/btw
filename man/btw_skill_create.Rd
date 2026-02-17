@@ -16,10 +16,15 @@ Maximum 1024 characters.}
 
 \item{scope}{Where to create the skill. One of:
 \itemize{
-\item \code{"project"} (default): Creates in \verb{.btw/skills/} in the current
-working directory
+\item \code{"project"} (default): Creates in a project-level skills directory,
+chosen from \verb{.btw/skills/}, \verb{.agents/skills/}, or \verb{.claude/skills/}
+in that order. If one already exists, it is used; otherwise
+\verb{.btw/skills/} is created.
 \item \code{"user"}: Creates in the user-level skills directory
-\item A directory path: Creates the skill directory inside this path
+(\code{tools::R_user_dir("btw", "config")/skills}).
+\item A directory path: Creates the skill inside this path, e.g.
+\code{scope = ".openhands/skills"}. Use \code{I("project")} or \code{I("user")}
+if you need a literal directory with those names.
 }}
 
 \item{resources}{Logical. If \code{TRUE} (the default), creates empty

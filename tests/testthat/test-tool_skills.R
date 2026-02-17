@@ -428,6 +428,18 @@ test_that("btw_skill_create() errors if skill already exists", {
   )
 })
 
+test_that("btw_skill_create() treats I('project') as literal directory name", {
+  dir <- withr::local_tempdir()
+  path <- btw_skill_create(
+    name = "literal-test",
+    description = "Literal scope test.",
+    scope = I(file.path(dir, "project"))
+  )
+
+  expect_true(dir.exists(path))
+  expect_equal(dirname(path), file.path(dir, "project"))
+})
+
 # btw_skill_validate -------------------------------------------------------
 
 test_that("btw_skill_validate() reports valid skill", {
@@ -537,6 +549,40 @@ test_that("install_skill_from_dir() refuses invalid skill", {
 
 test_that("install_skill_from_dir() errors for nonexistent source", {
   expect_error(install_skill_from_dir("/nonexistent/path"), "not found")
+})
+
+test_that("install_skill_from_dir() accepts custom path as scope", {
+  source_dir <- withr::local_tempdir()
+  create_temp_skill(name = "custom-install", dir = source_dir)
+
+  target <- withr::local_tempdir()
+  custom_dir <- file.path(target, ".openhands", "skills")
+
+  expect_message(
+    path <- install_skill_from_dir(
+      file.path(source_dir, "custom-install"),
+      scope = custom_dir
+    ),
+    "Installed skill"
+  )
+  expect_equal(dirname(path), custom_dir)
+  expect_true(file.exists(file.path(path, "SKILL.md")))
+})
+
+test_that("install_skill_from_dir() treats I('project') as literal path", {
+  source_dir <- withr::local_tempdir()
+  create_temp_skill(name = "literal-test", dir = source_dir)
+
+  target <- withr::local_tempdir()
+
+  expect_message(
+    path <- install_skill_from_dir(
+      file.path(source_dir, "literal-test"),
+      scope = I(file.path(target, "project"))
+    ),
+    "Installed skill"
+  )
+  expect_equal(dirname(path), file.path(target, "project"))
 })
 
 # btw_skill_install_github -------------------------------------------------

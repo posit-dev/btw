@@ -1,6 +1,6 @@
 # Agent Skills in btw — Feature Documentation
 
-> Current state as of 2026-02-16, branch `feat/skills`.
+> Current state as of 2026-02-17, branch `feat/skills`.
 
 ## Overview
 
@@ -38,6 +38,7 @@ Agent activates a skill
     │
     ├── btw_tool_fetch_skill(skill_name)
     │       ├── find_skill()               → locate by name across all dirs
+    │       │       └── validate_skill()   → return NULL if invalid
     │       ├── frontmatter::read_front_matter() → body content
     │       ├── list_skill_resources()      → recursive file listing
     │       └── returns SKILL.md body + resource paths as btw_tool_result
@@ -84,7 +85,9 @@ The XML format follows the Agent Skills integration guide:
 ```
 
 Optional fields `<compatibility>` and `<allowed-tools>` are included when
-present in the skill's frontmatter.
+present in the skill's frontmatter. All interpolated values are XML-escaped
+via `xml_escape()` to prevent special characters (`&`, `<`, `>`) in skill
+metadata from breaking the XML structure.
 
 The explanation text before the XML comes from `inst/prompts/skills.md`.
 
@@ -98,16 +101,21 @@ Claude Code) can read SKILL.md files directly via their `<location>` paths.
 
 ### Validation
 
-`validate_skill()` (`R/tool-skills.R:242-343`) implements the full spec:
+`validate_skill()` implements the full spec. Name validation rules are
+extracted into `validate_skill_name()`, shared by both `validate_skill()` and
+`btw_skill_create()`:
 
 - `name`: required, max 64 chars, `^[a-z0-9][a-z0-9-]*[a-z0-9]$`, no `--`, must match directory name
 - `description`: required, max 1024 chars
-- `compatibility`: optional, max 500 chars
+- `compatibility`: optional, must be character, max 500 chars
 - `metadata`: optional, must be a key-value mapping
 - `allowed-tools`: optional (experimental, not enforced)
 - No unexpected frontmatter fields allowed
 
 Invalid skills are **warned about and skipped** during discovery (not errors).
+`find_skill()` also validates and returns `NULL` for invalid skills.
+`extract_skill_metadata()` warns on parse failure (rather than silently
+returning an empty list).
 
 ### Tool Registration
 
@@ -130,7 +138,7 @@ The fetch skill tool is registered via `.btw_add_to_tools()` at
 | `inst/skills/skill-creator/SKILL.md` | Comprehensive guide (~356 lines) |
 | `inst/skills/skill-creator/scripts/` | Python helpers: `init_skill.py`, `quick_validate.py`, `package_skill.py` |
 | `inst/skills/skill-creator/references/` | `workflows.md`, `output-patterns.md` |
-| `tests/testthat/test-tool_skills.R` | 110 tests covering all functionality |
+| `tests/testthat/test-tool_skills.R` | 123 tests covering all functionality |
 | `tests/testthat/_snaps/tool_skills.md` | Snapshot for system prompt output |
 | `man/btw_tool_fetch_skill.Rd` | Tool documentation |
 | `man/btw_skill_create.Rd` | `btw_skill_create()` docs |
@@ -149,15 +157,18 @@ The fetch skill tool is registered via `.btw_add_to_tools()` at
 ### For users (interactive R)
 
 - **`btw_skill_create(name, description, scope, resources)`** — Initialize a
-  new skill directory with SKILL.md template. Validates name format.
+  new skill directory with SKILL.md template. Validates name format via
+  `validate_skill_name()`. Warns (does not error) if description exceeds 1024
+  characters.
 - **`btw_skill_validate(path)`** — Validate a skill against the spec. Returns
   `list(valid, issues)`.
-- **`btw_skill_install_github(repo, skill, ref, scope)`** — Install a skill
-  from a GitHub repository. Downloads the repo zipball, discovers skills
-  (directories containing `SKILL.md`), and installs. Requires the `gh` package.
-- **`btw_skill_install_package(package, skill, scope)`** — Install a skill
-  bundled in an R package's `inst/skills/` directory. Requires the target
-  package to be installed.
+- **`btw_skill_install_github(repo, skill, ref, scope, overwrite)`** — Install
+  a skill from a GitHub repository. Downloads the repo zipball, discovers
+  skills (directories containing `SKILL.md`), and installs. Requires the `gh`
+  package. Set `overwrite = TRUE` to replace an existing skill.
+- **`btw_skill_install_package(package, skill, scope, overwrite)`** — Install a
+  skill bundled in an R package's `inst/skills/` directory. Requires the target
+  package to be installed. Set `overwrite = TRUE` to replace an existing skill.
 
 ## Internal Functions
 
@@ -166,12 +177,14 @@ The fetch skill tool is registered via `.btw_add_to_tools()` at
 | `btw_skill_directories()` | Returns all directories to scan for skills |
 | `project_skill_subdirs()` | Returns the three project-level subdir paths |
 | `resolve_project_skill_dir()` | Picks one project dir for install/create (interactive prompt if ambiguous) |
-| `install_skill_from_dir(source_dir, scope)` | Validates and copies a skill directory to the target scope |
+| `install_skill_from_dir(source_dir, scope, overwrite)` | Validates and copies a skill directory to the target scope; `overwrite = TRUE` deletes existing first |
 | `select_skill_dir(skill_dirs, skill, source_label)` | Shared selection logic: match by name, auto-select single, interactive menu |
 | `btw_list_skills()` | Scans all dirs, validates, returns metadata list |
-| `find_skill(name)` | Finds a specific skill by name across all dirs |
-| `extract_skill_metadata(path)` | Parses YAML frontmatter from a SKILL.md file |
+| `find_skill(name)` | Finds a specific skill by name across all dirs; validates and returns `NULL` if invalid |
+| `extract_skill_metadata(path)` | Parses YAML frontmatter from a SKILL.md file; warns on parse failure |
 | `validate_skill(dir)` | Full spec validation, returns `list(valid, issues)` |
+| `validate_skill_name(name, dir_name)` | Name format validation shared by `validate_skill()` and `btw_skill_create()` |
+| `xml_escape(x)` | Escapes `&`, `<`, `>` for safe XML interpolation in system prompt |
 | `list_skill_resources(dir)` | Lists files in scripts/, references/, assets/ |
 | `list_files_in_subdir(base, sub)` | Recursive file listing helper |
 | `has_skill_resources(resources)` | Checks if any resources exist |

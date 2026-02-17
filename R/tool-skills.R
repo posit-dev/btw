@@ -22,7 +22,6 @@ NULL
 btw_tool_fetch_skill <- function(skill_name, `_intent`) {}
 
 btw_tool_fetch_skill_impl <- function(skill_name) {
-
   check_string(skill_name)
 
   skill_info <- find_skill(skill_name)
@@ -182,7 +181,7 @@ btw_list_skills <- function() {
       if (!validation$valid) {
         cli::cli_warn(c(
           "Skipping invalid skill in {.path {subdir}}.",
-          set_names(validation$issues, rep("!" , length(validation$issues)))
+          set_names(validation$issues, rep("!", length(validation$issues)))
         ))
         next
       }
@@ -257,22 +256,35 @@ validate_skill_name <- function(name, dir_name = NULL) {
   }
 
   if (nchar(name) > 64) {
-    issues <- c(issues, sprintf("Name is too long (%d characters, max 64).", nchar(name)))
+    issues <- c(
+      issues,
+      sprintf("Name is too long (%d characters, max 64).", nchar(name))
+    )
   }
   if (!grepl("^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$", name)) {
-    issues <- c(issues, sprintf(
-      "Name '%s' must contain only lowercase letters, numbers, and hyphens, and must not start or end with a hyphen.",
-      name
-    ))
+    issues <- c(
+      issues,
+      sprintf(
+        "Name '%s' must contain only lowercase letters, numbers, and hyphens, and must not start or end with a hyphen.",
+        name
+      )
+    )
   }
   if (grepl("--", name)) {
-    issues <- c(issues, sprintf("Name '%s' must not contain consecutive hyphens.", name))
+    issues <- c(
+      issues,
+      sprintf("Name '%s' must not contain consecutive hyphens.", name)
+    )
   }
   if (!is.null(dir_name) && name != dir_name) {
-    issues <- c(issues, sprintf(
-      "Name '%s' in frontmatter does not match directory name '%s'.",
-      name, dir_name
-    ))
+    issues <- c(
+      issues,
+      sprintf(
+        "Name '%s' in frontmatter does not match directory name '%s'.",
+        name,
+        dir_name
+      )
+    )
   }
 
   issues
@@ -296,7 +308,10 @@ validate_skill <- function(skill_dir) {
       fm$data
     },
     error = function(e) {
-      issues <<- c(issues, sprintf("Failed to parse frontmatter: %s", e$message))
+      issues <<- c(
+        issues,
+        sprintf("Failed to parse frontmatter: %s", e$message)
+      )
       NULL
     }
   )
@@ -314,14 +329,24 @@ validate_skill <- function(skill_dir) {
   }
 
   # Check for unexpected properties
-  allowed_fields <- c("name", "description", "license", "compatibility", "metadata", "allowed-tools")
+  allowed_fields <- c(
+    "name",
+    "description",
+    "license",
+    "compatibility",
+    "metadata",
+    "allowed-tools"
+  )
   unexpected <- setdiff(names(metadata), allowed_fields)
   if (length(unexpected) > 0) {
-    issues <- c(issues, sprintf(
-      "Unexpected frontmatter field(s): %s. Allowed fields: %s.",
-      paste(unexpected, collapse = ", "),
-      paste(allowed_fields, collapse = ", ")
-    ))
+    issues <- c(
+      issues,
+      sprintf(
+        "Unexpected frontmatter field(s): %s. Allowed fields: %s.",
+        paste(unexpected, collapse = ", "),
+        paste(allowed_fields, collapse = ", ")
+      )
+    )
   }
 
   # Validate name
@@ -329,24 +354,35 @@ validate_skill <- function(skill_dir) {
 
   # Validate description
   description <- metadata$description
-  if (is.null(description) || !is.character(description) || !nzchar(description)) {
+  if (
+    is.null(description) || !is.character(description) || !nzchar(description)
+  ) {
     issues <- c(issues, "Missing or empty 'description' field in frontmatter.")
   } else if (nchar(description) > 1024) {
-    issues <- c(issues, sprintf(
-      "Description is too long (%d characters, max 1024).",
-      nchar(description)
-    ))
+    issues <- c(
+      issues,
+      sprintf(
+        "Description is too long (%d characters, max 1024).",
+        nchar(description)
+      )
+    )
   }
 
   # Validate optional fields
   if (!is.null(metadata$compatibility)) {
     if (!is.character(metadata$compatibility)) {
-      issues <- c(issues, "The 'compatibility' field must be a character string.")
+      issues <- c(
+        issues,
+        "The 'compatibility' field must be a character string."
+      )
     } else if (nchar(metadata$compatibility) > 500) {
-      issues <- c(issues, sprintf(
-        "Compatibility field is too long (%d characters, max 500).",
-        nchar(metadata$compatibility)
-      ))
+      issues <- c(
+        issues,
+        sprintf(
+          "Compatibility field is too long (%d characters, max 500).",
+          nchar(metadata$compatibility)
+        )
+      )
     }
   }
 
@@ -429,7 +465,6 @@ btw_skills_system_prompt <- function() {
     return("")
   }
 
-
   skills_prompt_path <- system.file("prompts", "skills.md", package = "btw")
   explanation <- if (file.exists(skills_prompt_path)) {
     paste(readLines(skills_prompt_path, warn = FALSE), collapse = "\n")
@@ -447,10 +482,22 @@ btw_skills_system_prompt <- function() {
         xml_escape(skill$path)
       )
       if (!is.null(skill$compatibility)) {
-        parts <- paste0(parts, sprintf("\n<compatibility>%s</compatibility>", xml_escape(skill$compatibility)))
+        parts <- paste0(
+          parts,
+          sprintf(
+            "\n<compatibility>%s</compatibility>",
+            xml_escape(skill$compatibility)
+          )
+        )
       }
       if (!is.null(skill$allowed_tools)) {
-        parts <- paste0(parts, sprintf("\n<allowed-tools>%s</allowed-tools>", xml_escape(skill$allowed_tools)))
+        parts <- paste0(
+          parts,
+          sprintf(
+            "\n<allowed-tools>%s</allowed-tools>",
+            xml_escape(skill$allowed_tools)
+          )
+        )
       }
       paste0(parts, "\n</skill>")
     },
@@ -462,6 +509,21 @@ btw_skills_system_prompt <- function() {
     "\n\n<available_skills>\n",
     paste(skill_items, collapse = "\n"),
     "\n</available_skills>"
+  )
+}
+
+# Scope Resolution ---------------------------------------------------------
+
+resolve_skill_scope <- function(scope, error_call = caller_env()) {
+  if (inherits(scope, "AsIs")) {
+    return(as.character(scope))
+  }
+
+  switch(
+    scope,
+    project = resolve_project_skill_dir(),
+    user = file.path(tools::R_user_dir("btw", "config"), "skills"),
+    scope
   )
 }
 
@@ -481,10 +543,15 @@ btw_skills_system_prompt <- function() {
 #' @param description A description of what the skill does and when to use it.
 #'   Maximum 1024 characters.
 #' @param scope Where to create the skill. One of:
-#'   - `"project"` (default): Creates in `.btw/skills/` in the current
-#'     working directory
+#'   - `"project"` (default): Creates in a project-level skills directory,
+#'     chosen from `.btw/skills/`, `.agents/skills/`, or `.claude/skills/`
+#'     in that order. If one already exists, it is used; otherwise
+#'     `.btw/skills/` is created.
 #'   - `"user"`: Creates in the user-level skills directory
-#'   - A directory path: Creates the skill directory inside this path
+#'     (`tools::R_user_dir("btw", "config")/skills`).
+#'   - A directory path: Creates the skill inside this path, e.g.
+#'     `scope = ".openhands/skills"`. Use `I("project")` or `I("user")`
+#'     if you need a literal directory with those names.
 #' @param resources Logical. If `TRUE` (the default), creates empty
 #'   `scripts/`, `references/`, and `assets/` subdirectories.
 #'
@@ -519,12 +586,7 @@ btw_skill_create <- function(
   }
 
   # Resolve target directory
-  parent_dir <- switch(
-    scope,
-    project = resolve_project_skill_dir(),
-    user = file.path(tools::R_user_dir("btw", "config"), "skills"),
-    scope
-  )
+  parent_dir <- resolve_skill_scope(scope)
 
   skill_dir <- file.path(parent_dir, name)
 
@@ -549,11 +611,17 @@ btw_skill_create <- function(
 
   skill_md_content <- paste0(
     "---\n",
-    "name: ", name, "\n",
-    "description: ", description_line, "\n",
+    "name: ",
+    name,
+    "\n",
+    "description: ",
+    description_line,
+    "\n",
     "---\n",
     "\n",
-    "# ", skill_title, "\n",
+    "# ",
+    skill_title,
+    "\n",
     "\n",
     "TODO: Add skill instructions here.\n"
   )
@@ -611,7 +679,11 @@ btw_skill_validate <- function(path = ".") {
   invisible(result)
 }
 
-select_skill_dir <- function(skill_dirs, skill = NULL, source_label = "source") {
+select_skill_dir <- function(
+  skill_dirs,
+  skill = NULL,
+  source_label = "source"
+) {
   if (length(skill_dirs) == 0) {
     cli::cli_abort("No skills found in {source_label}.")
   }
@@ -644,11 +716,11 @@ select_skill_dir <- function(skill_dirs, skill = NULL, source_label = "source") 
     ))
   }
 
-  cli::cli_inform("Multiple skills found in {source_label}:")
+  cli::cli_alert_info("Multiple skills found in {source_label}:")
   choice <- utils::menu(
     choices = basename(skill_dirs),
     graphics = FALSE,
-    title = "Which skill would you like to install?"
+    title = "\u276F Which skill would you like to install?"
   )
 
   if (choice == 0) {
@@ -671,9 +743,15 @@ select_skill_dir <- function(skill_dirs, skill = NULL, source_label = "source") 
 #' @param ref Git reference (branch, tag, or SHA) to download. Defaults to
 #'   `"HEAD"`.
 #' @param scope Where to install the skill. One of:
-#'   - `"project"` (default): Installs to `.btw/skills/` in the current
-#'     working directory
+#'   - `"project"` (default): Installs to a project-level skills directory,
+#'     chosen from `.btw/skills/`, `.agents/skills/`, or `.claude/skills/`
+#'     in that order. If one already exists, it is used; otherwise
+#'     `.btw/skills/` is created.
 #'   - `"user"`: Installs to the user-level skills directory
+#'     (`tools::R_user_dir("btw", "config")/skills`).
+#'   - A directory path: Installs to a custom directory, e.g.
+#'     `scope = ".openhands/skills"`. Use `I("project")` or `I("user")`
+#'     if you need a literal directory with those names.
 #' @param overwrite If `TRUE`, overwrite an existing skill with the same name.
 #'   Defaults to `FALSE`, which errors if the skill already exists.
 #'
@@ -681,9 +759,17 @@ select_skill_dir <- function(skill_dirs, skill = NULL, source_label = "source") 
 #'
 #' @family skills
 #' @export
-btw_skill_install_github <- function(repo, skill = NULL, ref = "HEAD", scope = "project", overwrite = FALSE) {
+btw_skill_install_github <- function(
+  repo,
+  skill = NULL,
+  ref = "HEAD",
+  scope = "project",
+  overwrite = FALSE
+) {
   check_string(repo)
-  if (!is.null(skill)) check_string(skill)
+  if (!is.null(skill)) {
+    check_string(skill)
+  }
   check_string(ref)
   check_string(scope)
   check_bool(overwrite)
@@ -742,7 +828,7 @@ btw_skill_install_github <- function(repo, skill = NULL, ref = "HEAD", scope = "
   selected <- select_skill_dir(
     skill_dirs,
     skill = skill,
-    source_label = paste0("GitHub repository ", repo)
+    source_label = cli::format_inline("GitHub repository {.field {repo}}")
   )
 
   install_skill_from_dir(selected, scope = scope, overwrite = overwrite)
@@ -760,9 +846,15 @@ btw_skill_install_github <- function(repo, skill = NULL, ref = "HEAD", scope = "
 #'   multiple skills, an interactive picker is shown (or an error in
 #'   non-interactive sessions).
 #' @param scope Where to install the skill. One of:
-#'   - `"project"` (default): Installs to `.btw/skills/` in the current
-#'     working directory
+#'   - `"project"` (default): Installs to a project-level skills directory,
+#'     chosen from `.btw/skills/`, `.agents/skills/`, or `.claude/skills/`
+#'     in that order. If one already exists, it is used; otherwise
+#'     `.btw/skills/` is created.
 #'   - `"user"`: Installs to the user-level skills directory
+#'     (`tools::R_user_dir("btw", "config")/skills`).
+#'   - A directory path: Installs to a custom directory, e.g.
+#'     `scope = ".openhands/skills"`. Use `I("project")` or `I("user")`
+#'     if you need a literal directory with those names.
 #' @param overwrite If `TRUE`, overwrite an existing skill with the same name.
 #'   Defaults to `FALSE`, which errors if the skill already exists.
 #'
@@ -770,9 +862,16 @@ btw_skill_install_github <- function(repo, skill = NULL, ref = "HEAD", scope = "
 #'
 #' @family skills
 #' @export
-btw_skill_install_package <- function(package, skill = NULL, scope = "project", overwrite = FALSE) {
+btw_skill_install_package <- function(
+  package,
+  skill = NULL,
+  scope = "project",
+  overwrite = FALSE
+) {
   check_string(package)
-  if (!is.null(skill)) check_string(skill)
+  if (!is.null(skill)) {
+    check_string(skill)
+  }
   check_string(scope)
   check_bool(overwrite)
 
@@ -794,13 +893,17 @@ btw_skill_install_package <- function(package, skill = NULL, scope = "project", 
   selected <- select_skill_dir(
     skill_dirs,
     skill = skill,
-    source_label = paste0("package ", package)
+    source_label = cli::format_inline("package {.pkg {package}}")
   )
 
   install_skill_from_dir(selected, scope = scope, overwrite = overwrite)
 }
 
-install_skill_from_dir <- function(source_dir, scope = "project", overwrite = FALSE) {
+install_skill_from_dir <- function(
+  source_dir,
+  scope = "project",
+  overwrite = FALSE
+) {
   check_string(source_dir)
   check_string(scope)
   check_bool(overwrite)
@@ -811,12 +914,7 @@ install_skill_from_dir <- function(source_dir, scope = "project", overwrite = FA
   }
 
   # Determine target directory
-  target_parent <- switch(
-    scope,
-    project = resolve_project_skill_dir(),
-    user = file.path(tools::R_user_dir("btw", "config"), "skills"),
-    cli::cli_abort("scope must be {.val project} or {.val user}, not {.val {scope}}.")
-  )
+  target_parent <- resolve_skill_scope(scope)
 
   skill_name <- basename(source_dir)
   target_dir <- file.path(target_parent, skill_name)
@@ -825,7 +923,9 @@ install_skill_from_dir <- function(source_dir, scope = "project", overwrite = FA
     if (overwrite) {
       unlink(target_dir, recursive = TRUE)
     } else {
-      cli::cli_abort("Skill {.val {skill_name}} already exists at {.path {target_dir}}.")
+      cli::cli_abort(
+        "Skill {.val {skill_name}} already exists at {.path {target_dir}}."
+      )
     }
   }
 
