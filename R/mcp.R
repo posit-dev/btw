@@ -176,7 +176,6 @@ btw_mcp_session <- function() {
 btw_mcp_tools <- function() {
   # Skills are excluded from MCP by default: the skill system prompt
   # (with <available_skills> metadata) is injected by btw_client(), not by
-
   # MCP. Without that context the model has no way to know which skills are
   # available. Filesystem-based agents (e.g. Claude Code) can read SKILL.md
   # files directly via their <location> paths in the system prompt.
