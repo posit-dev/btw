@@ -729,7 +729,7 @@ app_tool_group_inputs <- function(tools_df, initial_tool_names = NULL) {
 
   # then other, then deprecated (if shown)
   group_names <- names(tools_df)
-  priority_groups <- c("agent", "docs", "files", "env")
+  priority_groups <- c("agent", "skills", "docs", "files", "env")
   trailing_groups <- c("other", "deprecated")
   priority_present <- intersect(priority_groups, group_names)
   middle_groups <- sort(setdiff(
