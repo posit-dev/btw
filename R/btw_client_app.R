@@ -278,12 +278,32 @@ btw_app_from_client <- function(
     shiny::observeEvent(skills_read_file_mismatch(), {
       if (isTRUE(skills_read_file_mismatch())) {
         notifier(
-          shiny::icon("triangle-exclamation"),
-          shiny::HTML(
-            "The <strong>Fetch Skill tool</strong> works best with the <strong>Read File tool</strong> enabled"
-          ),
-          type = "warning"
+          id = "skills_read_file_mismatch",
+          shiny::icon("triangle-exclamation", class = "text-warning"),
+          shiny::tagList(
+            shiny::HTML(
+              "The <strong>Fetch Skill tool</strong> works best with the <strong>Read File tool</strong> enabled"
+            ),
+            shiny::actionButton(
+              class = "btn-sm mt-2",
+              "enable_read_file_tool",
+              "Enable Read File Tool"
+            )
+          )
         )
+      }
+    })
+
+    shiny::observeEvent(input$enable_read_file_tool, {
+      file_tools <- c(input$tools_files, "btw_tool_files_read")
+      shiny::updateCheckboxGroupInput(
+        session = session,
+        inputId = "tools_files",
+        selected = file_tools
+      )
+      bslib_hide_toast <- asNamespace("bslib")[["hide_toast"]]
+      if (!is.null(bslib_hide_toast)) {
+        bslib_hide_toast("skills_read_file_mismatch")
       }
     })
 
