@@ -279,7 +279,10 @@ btw_app_from_client <- function(
       if (isTRUE(skills_read_file_mismatch())) {
         notifier(
           shiny::icon("triangle-exclamation"),
-          "Skills tool works best with the Read File tool enabled"
+          shiny::HTML(
+            "The <strong>Fetch Skill tool</strong> works best with the <strong>Read File tool</strong> enabled"
+          ),
+          type = "warning"
         )
       }
     })
@@ -406,7 +409,7 @@ btw_app_from_client <- function(
 
 # Status Bar ----
 
-notifier <- function(icon, action, error = NULL) {
+notifier <- function(icon, action, error = NULL, ...) {
   error_body <- if (!is.null(error)) {
     shiny::p(shiny::HTML(sprintf("<code>%s</code>", error$message)))
   }
@@ -441,7 +444,8 @@ notifier <- function(icon, action, error = NULL) {
       bslib_toast_header(action, icon = icon)
     },
     icon = if (is.null(error)) icon,
-    position = "top-right"
+    position = "top-right",
+    ...
   )
   bslib_show_toast(toast)
 }
