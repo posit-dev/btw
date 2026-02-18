@@ -270,6 +270,20 @@ btw_app_from_client <- function(
       }
     })
 
+    skills_read_file_mismatch <- shiny::reactive({
+      sel <- selected_tools()
+      "btw_tool_fetch_skill" %in% sel && !"btw_tool_files_read" %in% sel
+    })
+
+    shiny::observeEvent(skills_read_file_mismatch(), {
+      if (isTRUE(skills_read_file_mismatch())) {
+        notifier(
+          shiny::icon("triangle-exclamation"),
+          "Skills tool works best with the Read File tool enabled"
+        )
+      }
+    })
+
     output$ui_other_tools <- shiny::renderUI({
       if (length(other_tools) == 0) {
         return(NULL)
@@ -391,6 +405,46 @@ btw_app_from_client <- function(
 }
 
 # Status Bar ----
+
+notifier <- function(icon, action, error = NULL) {
+  error_body <- if (!is.null(error)) {
+    shiny::p(shiny::HTML(sprintf("<code>%s</code>", error$message)))
+  }
+
+  bslib_toast <- asNamespace("bslib")[["toast"]]
+  bslib_show_toast <- asNamespace("bslib")[["show_toast"]]
+  bslib_toast_header <- asNamespace("bslib")[["toast_header"]]
+
+  if (is.null(bslib_toast) || is.null(bslib_show_toast)) {
+    if (!is.null(error)) {
+      body <- shiny::span(icon, action)
+    } else {
+      body <- shiny::tagList(
+        shiny::p(
+          shiny::icon("warning"),
+          "Failed to update system prompt",
+          class = "fw-bold"
+        ),
+        error_body
+      )
+    }
+    shiny::showNotification(
+      body,
+      type = if (is.null(error)) "message" else "error"
+    )
+    return()
+  }
+
+  toast <- bslib_toast(
+    if (is.null(error)) action else error_body,
+    header = if (!is.null(error)) {
+      bslib_toast_header(action, icon = icon)
+    },
+    icon = if (is.null(error)) icon,
+    position = "top-right"
+  )
+  bslib_show_toast(toast)
+}
 
 btw_status_bar_ui <- function(id, provider_model) {
   ns <- shiny::NS(id)
@@ -574,46 +628,6 @@ btw_status_bar_server <- function(id, chat) {
 
         shiny::showModal(modal)
       })
-
-      notifier <- function(icon, action, error = NULL) {
-        error_body <- if (!is.null(error)) {
-          shiny::p(shiny::HTML(sprintf("<code>%s</code>", error$message)))
-        }
-
-        bslib_toast <- asNamespace("bslib")[["toast"]]
-        bslib_show_toast <- asNamespace("bslib")[["show_toast"]]
-        bslib_toast_header <- asNamespace("bslib")[["toast_header"]]
-
-        if (is.null(bslib_toast) || is.null(bslib_show_toast)) {
-          if (!is.null(error)) {
-            body <- shiny::span(icon, action)
-          } else {
-            body <- shiny::tagList(
-              shiny::p(
-                shiny::icon("warning"),
-                "Failed to update system prompt",
-                class = "fw-bold"
-              ),
-              error_body
-            )
-          }
-          shiny::showNotification(
-            body,
-            type = if (is.null(error)) "message" else "error"
-          )
-          return()
-        }
-
-        toast <- bslib_toast(
-          if (is.null(error)) action else error_body,
-          header = if (!is.null(error)) {
-            bslib_toast_header(action, icon = icon)
-          },
-          icon = if (is.null(error)) icon,
-          position = "top-right"
-        )
-        bslib_show_toast(toast)
-      }
 
       shiny::observeEvent(
         input$system_prompt,
