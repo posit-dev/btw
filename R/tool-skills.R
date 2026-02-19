@@ -1,17 +1,17 @@
 #' @include tool-result.R
 NULL
 
-#' Tool: Fetch a skill
+#' Tool: Load a skill
 #'
 #' @description
-#' Fetch a skill's instructions and list its bundled resources.
+#' Load a skill's specialized instructions and list its bundled resources.
 #'
 #' Skills are modular capabilities that extend Claude's functionality with
 #' specialized knowledge, workflows, and tools. Each skill is a directory
 #' containing a `SKILL.md` file with instructions and optional bundled
 #' resources (scripts, references, assets).
 #'
-#' @param skill_name The name of the skill to fetch.
+#' @param name The name of the skill to load.
 #' @inheritParams btw_tool_docs_package_news
 #'
 #' @return A `btw_tool_result` containing the skill instructions and a listing
@@ -19,19 +19,19 @@ NULL
 #'
 #' @family skills
 #' @export
-btw_tool_fetch_skill <- function(skill_name, `_intent`) {}
+btw_tool_skill <- function(name, `_intent`) {}
 
-btw_tool_fetch_skill_impl <- function(skill_name) {
-  check_string(skill_name)
+btw_tool_skill_impl <- function(name) {
+  check_string(name)
 
-  skill_info <- find_skill(skill_name)
+  skill_info <- find_skill(name)
 
   if (is.null(skill_info)) {
     available <- btw_list_skills()
     skill_names <- vapply(available, function(x) x$name, character(1))
     cli::cli_abort(
       c(
-        "Skill {.val {skill_name}} not found.",
+        "Skill {.val {name}} not found.",
         "i" = "Available skills: {.val {skill_names}}"
       )
     )
@@ -40,7 +40,7 @@ btw_tool_fetch_skill_impl <- function(skill_name) {
   if (!skill_info$validation$valid) {
     cli::cli_abort(
       c(
-        "Skill {.val {skill_name}} exists but has validation errors:",
+        "Skill {.val {name}} exists but has validation errors:",
         set_names(
           skill_info$validation$errors,
           rep("!", length(skill_info$validation$errors))
@@ -60,41 +60,45 @@ btw_tool_fetch_skill_impl <- function(skill_name) {
   btw_tool_result(
     value = full_content,
     data = list(
-      name = skill_name,
+      name = name,
       path = skill_info$path,
       base_dir = skill_info$base_dir,
       metadata = fm$data,
       resources = resources
     ),
     display = list(
-      title = sprintf("Skill: %s", skill_name),
+      title = sprintf("Skill: %s", name),
       markdown = full_content
     )
   )
 }
 
 .btw_add_to_tools(
-  name = "btw_tool_fetch_skill",
+  name = "btw_tool_skill",
   group = "skills",
+
   tool = function() {
     ellmer::tool(
-      btw_tool_fetch_skill_impl,
-      name = "btw_tool_fetch_skill",
+      btw_tool_skill_impl,
+      name = "btw_tool_skill",
       description = paste(
-        "Fetch a skill's instructions and list its bundled resources.",
-        "Skills provide specialized guidance for specific tasks.",
-        "After fetching, use file read tools to access references,",
-        "or bash/code tools to run scripts."
+        "Load a skill's specialized instructions and list its bundled",
+        "resources. When you recognize that a task matches one of the",
+        "available skills, use this tool to load the full skill",
+        "instructions. If the user references a skill with /{name}",
+        "syntax, use this tool to load that skill. After loading, use",
+        "file read tools to access bundled references, or adapt bundled",
+        "scripts into R code."
       ),
       annotations = ellmer::tool_annotations(
-        title = "Fetch Skill",
+        title = "Load Skill",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         btw_can_register = function() any_skills_exist()
       ),
       arguments = list(
-        skill_name = ellmer::type_string(
-          "The name of the skill to fetch"
+        name = ellmer::type_string(
+          "The name of the skill to load"
         )
       )
     )

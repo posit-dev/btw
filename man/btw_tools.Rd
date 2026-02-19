@@ -133,7 +133,7 @@ this function have access to the tools:
 
 \subsection{Group: skills}{\tabular{ll}{
    Name \tab Description \cr
-   \code{\link[=btw_tool_fetch_skill]{btw_tool_fetch_skill()}} \tab Fetch a skill's instructions and list its bundled resources. \cr
+   \code{\link[=btw_tool_skill]{btw_tool_skill()}} \tab Load a skill's specialized instructions and list its bundled resources. \cr
 }
 
 }

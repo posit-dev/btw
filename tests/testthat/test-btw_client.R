@@ -1085,7 +1085,7 @@ describe("btw_client() with multiple clients", {
 
 test_that("warn_skills_without_read_file() warns when skills present without read file", {
   tools <- list(
-    btw_tool_fetch_skill = "placeholder",
+    btw_tool_skill = "placeholder",
     btw_tool_docs_help_page = "placeholder"
   )
   expect_warning(
@@ -1096,7 +1096,7 @@ test_that("warn_skills_without_read_file() warns when skills present without rea
 
 test_that("warn_skills_without_read_file() is silent when both skills and read file present", {
   tools <- list(
-    btw_tool_fetch_skill = "placeholder",
+    btw_tool_skill = "placeholder",
     btw_tool_files_read = "placeholder"
   )
   expect_no_warning(warn_skills_without_read_file(tools))

@@ -358,9 +358,9 @@ test_that("format_resources_listing() returns empty string for no resources", {
   expect_equal(format_resources_listing(resources, "/tmp"), "")
 })
 
-# Fetch Skill Tool ---------------------------------------------------------
+# Skill Tool ----------------------------------------------------------------
 
-test_that("btw_tool_fetch_skill_impl() returns content and resources", {
+test_that("btw_tool_skill_impl() returns content and resources", {
   dir <- withr::local_tempdir()
   skill_dir <- create_temp_skill(name = "fetch-test", dir = dir)
   dir.create(file.path(skill_dir, "references"))
@@ -368,7 +368,7 @@ test_that("btw_tool_fetch_skill_impl() returns content and resources", {
 
   local_skill_dirs(dir)
 
-  result <- btw_tool_fetch_skill_impl("fetch-test")
+  result <- btw_tool_skill_impl("fetch-test")
   expect_s3_class(result, "ellmer::ContentToolResult")
   expect_match(result@value, "Test Skill")
   expect_match(result@value, "References:")
@@ -376,10 +376,10 @@ test_that("btw_tool_fetch_skill_impl() returns content and resources", {
   expect_equal(result@extra$data$resources$references, "guide.md")
 })
 
-test_that("btw_tool_fetch_skill_impl() errors for missing skill", {
+test_that("btw_tool_skill_impl() errors for missing skill", {
   dir <- withr::local_tempdir()
   local_skill_dirs(dir)
-  expect_error(btw_tool_fetch_skill_impl("nonexistent"), "not found")
+  expect_error(btw_tool_skill_impl("nonexistent"), "not found")
 })
 
 # System Prompt ------------------------------------------------------------

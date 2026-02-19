@@ -272,7 +272,7 @@ btw_app_from_client <- function(
 
     skills_read_file_mismatch <- shiny::reactive({
       sel <- selected_tools()
-      "btw_tool_fetch_skill" %in% sel && !"btw_tool_files_read" %in% sel
+      "btw_tool_skill" %in% sel && !"btw_tool_files_read" %in% sel
     })
 
     shiny::observeEvent(skills_read_file_mismatch(), {
@@ -282,7 +282,7 @@ btw_app_from_client <- function(
           shiny::icon("triangle-exclamation", class = "text-warning"),
           shiny::tagList(
             shiny::HTML(
-              "The <strong>Fetch Skill tool</strong> works best with the <strong>Read File tool</strong> enabled"
+              "The <strong>Load Skill tool</strong> works best with the <strong>Read File tool</strong> enabled"
             ),
             shiny::actionButton(
               class = "btn-sm mt-2",

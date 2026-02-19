@@ -16,5 +16,5 @@ test_that("btw_mcp_tools() excludes skills group by default", {
   local_enable_tools()
   tools <- btw_mcp_tools()
   tool_names <- vapply(tools, function(t) t@name, character(1))
-  expect_false("btw_tool_fetch_skill" %in% tool_names)
+  expect_false("btw_tool_skill" %in% tool_names)
 })

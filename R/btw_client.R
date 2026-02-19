@@ -670,11 +670,11 @@ remove_hidden_content <- function(text) {
 
 warn_skills_without_read_file <- function(tools) {
   tool_names <- names(tools)
-  has_skills <- "btw_tool_fetch_skill" %in% tool_names
+  has_skills <- "btw_tool_skill" %in% tool_names
   has_read_file <- "btw_tool_files_read" %in% tool_names
   if (has_skills && !has_read_file) {
     cli::cli_warn(c(
-      "The {.fn btw_tool_fetch_skill} tool is enabled but {.fn btw_tool_files_read} is not.",
+      "The {.fn btw_tool_skill} tool is enabled but {.fn btw_tool_files_read} is not.",
       "i" = "Skills work best with the read file tool, which lets the model read skill resource files.",
       "i" = "Add {.code btw_tools(\"files\")} or enable {.fn btw_tool_files_read} to get full skill support."
     ))
