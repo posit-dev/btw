@@ -27,9 +27,7 @@ resources (scripts, references, assets).
 }
 \seealso{
 Other skills: 
-\code{\link{btw_skill_create}()},
 \code{\link{btw_skill_install_github}()},
-\code{\link{btw_skill_install_package}()},
-\code{\link{btw_skill_validate}()}
+\code{\link{btw_skill_install_package}()}
 }
 \concept{skills}

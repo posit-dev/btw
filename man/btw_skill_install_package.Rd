@@ -46,9 +46,7 @@ their \verb{inst/skills/} directory, where each subdirectory containing a
 }
 \seealso{
 Other skills: 
-\code{\link{btw_skill_create}()},
 \code{\link{btw_skill_install_github}()},
-\code{\link{btw_skill_validate}()},
 \code{\link{btw_tool_skill}()}
 }
 \concept{skills}

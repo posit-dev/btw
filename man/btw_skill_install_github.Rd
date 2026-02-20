@@ -48,9 +48,7 @@ should contain one or more skill directories, each with a \code{SKILL.md} file.
 }
 \seealso{
 Other skills: 
-\code{\link{btw_skill_create}()},
 \code{\link{btw_skill_install_package}()},
-\code{\link{btw_skill_validate}()},
 \code{\link{btw_tool_skill}()}
 }
 \concept{skills}

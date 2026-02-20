@@ -406,105 +406,6 @@ test_that("btw_skills_system_prompt() includes skill metadata", {
   expect_match(prompt, "<compatibility>Needs R 4.2</compatibility>")
 })
 
-# btw_skill_create ---------------------------------------------------------
-
-test_that("btw_skill_create() creates valid skill directory", {
-  dir <- withr::local_tempdir()
-  expect_message(
-    path <- btw_skill_create(
-      name = "my-new-skill",
-      description = "A new skill.",
-      scope = dir,
-      resources = TRUE
-    ),
-    "Created skill"
-  )
-
-  expect_true(dir.exists(path))
-  expect_true(file.exists(file.path(path, "SKILL.md")))
-  expect_true(dir.exists(file.path(path, "scripts")))
-  expect_true(dir.exists(file.path(path, "references")))
-  expect_true(dir.exists(file.path(path, "assets")))
-
-  # Validate the created skill
-  result <- validate_skill(path)
-  expect_true(result$valid)
-})
-
-test_that("btw_skill_create() without resources omits directories", {
-  dir <- withr::local_tempdir()
-  expect_message(
-    path <- btw_skill_create(
-      name = "minimal-skill",
-      description = "Minimal.",
-      scope = dir,
-      resources = FALSE
-    ),
-    "Created skill"
-  )
-
-  expect_true(file.exists(file.path(path, "SKILL.md")))
-  expect_false(dir.exists(file.path(path, "scripts")))
-})
-
-test_that("btw_skill_create() errors for invalid name", {
-  dir <- withr::local_tempdir()
-  expect_error(btw_skill_create(name = "Bad-Name", scope = dir), "lowercase")
-  expect_error(btw_skill_create(name = "-bad", scope = dir), "lowercase|hyphen")
-  expect_error(btw_skill_create(name = "bad--name", scope = dir), "consecutive")
-})
-
-test_that("btw_skill_create() errors if skill already exists", {
-  dir <- withr::local_tempdir()
-  expect_message(
-    btw_skill_create(name = "existing", description = "First.", scope = dir),
-    "Created skill"
-  )
-  expect_error(
-    btw_skill_create(name = "existing", description = "Second.", scope = dir),
-    "already exists"
-  )
-})
-
-test_that("btw_skill_create() treats I('project') as literal directory name", {
-  dir <- withr::local_tempdir()
-  expect_message(
-    path <- btw_skill_create(
-      name = "literal-test",
-      description = "Literal scope test.",
-      scope = I(file.path(dir, "project"))
-    ),
-    "Created skill"
-  )
-
-  expect_true(dir.exists(path))
-  expect_equal(normalizePath(dirname(path)), normalizePath(file.path(dir, "project")))
-})
-
-# btw_skill_validate -------------------------------------------------------
-
-test_that("btw_skill_validate() reports valid skill", {
-  skill_dir <- create_temp_skill()
-  expect_message(result <- btw_skill_validate(skill_dir), "valid")
-  expect_true(result$valid)
-})
-
-test_that("btw_skill_validate() reports issues", {
-  dir <- withr::local_tempdir()
-  skill_dir <- file.path(dir, "bad-skill")
-  dir.create(skill_dir)
-  writeLines(
-    "---\nname: bad-skill\n---\nBody.",
-    file.path(skill_dir, "SKILL.md")
-  )
-  expect_message(result <- btw_skill_validate(skill_dir), "validation errors")
-  expect_false(result$valid)
-})
-
-test_that("btw_skill_validate() errors for nonexistent directory", {
-  expect_error(btw_skill_validate("/nonexistent/path"), "does not exist")
-})
-
 # select_skill_dir ----------------------------------------------------------
 
 test_that("select_skill_dir() returns single dir directly", {
@@ -1028,24 +929,6 @@ test_that("find_skill() returns validation errors for invalid skill on disk", {
   expect_type(result, "list")
   expect_false(result$validation$valid)
   expect_match(result$validation$errors, "description", all = FALSE)
-})
-
-# btw_skill_create() long description warning -------------------------------
-
-test_that("btw_skill_create() warns on long description", {
-  dir <- withr::local_tempdir()
-  long_desc <- paste(rep("a", 1025), collapse = "")
-  expect_warning(
-    expect_message(
-      btw_skill_create(
-        name = "long-desc",
-        description = long_desc,
-        scope = dir
-      ),
-      "Created skill"
-    ),
-    "long"
-  )
 })
 
 # install_skill_from_dir() overwrite ----------------------------------------
