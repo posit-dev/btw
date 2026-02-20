@@ -120,6 +120,7 @@ Collate:
     'tool-run.R'
     'tool-session-package-installed.R'
     'tool-sessioninfo.R'
+    'tool-skills.R'
     'tool-web.R'
     'tools.R'
     'utils-ellmer.R'

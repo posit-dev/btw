@@ -320,3 +320,32 @@ strip_ansi <- function(text) {
 to_title_case <- function(x) {
   paste0(toupper(substring(x, 1, 1)), substring(x, 2))
 }
+
+# GitHub repo parsing --------------------------------------------------------
+
+parse_github_repo <- function(repo, error_call = caller_env()) {
+  check_string(repo, call = error_call)
+
+  ref <- "HEAD"
+  if (grepl("@", repo, fixed = TRUE)) {
+    at_pos <- regexpr("@", repo, fixed = TRUE)
+    ref <- substring(repo, at_pos + 1L)
+    repo <- substring(repo, 1L, at_pos - 1L)
+    if (!nzchar(ref)) {
+      cli::cli_abort(
+        '{.arg repo} has an empty ref after {.val @}. Use {.val owner/repo@ref} format.',
+        call = error_call
+      )
+    }
+  }
+
+  parts <- strsplit(repo, "/", fixed = TRUE)[[1]]
+  if (length(parts) != 2 || !nzchar(parts[[1]]) || !nzchar(parts[[2]])) {
+    cli::cli_abort(
+      '{.arg repo} must be in {.val owner/repo} or {.val owner/repo@ref} format, not {.val {repo}}.',
+      call = error_call
+    )
+  }
+
+  list(owner = parts[[1]], repo = parts[[2]], ref = ref)
+}

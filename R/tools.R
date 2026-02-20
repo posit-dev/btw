@@ -220,6 +220,7 @@ tool_group_icon <- function(group, default = NULL) {
     "ide" = tool_icon("code-blocks"),
     "pkg" = tool_icon("package"),
     "sessioninfo" = tool_icon("screen-search-desktop"),
+    "skills" = tool_icon("category"),
     "web" = tool_icon("globe-book"),
     if (!is.null(default)) tool_icon(default)
   )

@@ -151,11 +151,15 @@ btw_client <- function(
   llms_txt <- read_llms_txt(path_llms_txt)
   project_context <- c(llms_txt, config$btw_system_prompt)
   project_context <- paste(project_context, collapse = "\n\n")
+  skills_prompt <- btw_skills_system_prompt()
 
   sys_prompt <- c(
     btw_prompt("btw-system_session.md"),
     if (!skip_tools) {
       btw_prompt("btw-system_tools.md")
+    },
+    if (nzchar(skills_prompt)) {
+      skills_prompt
     },
     if (nzchar(project_context)) {
       btw_prompt("btw-system_project.md")
@@ -169,6 +173,8 @@ btw_client <- function(
   if (!skip_tools) {
     client$set_tools(tools = c(client$get_tools(), config$tools))
   }
+
+  warn_skills_without_read_file(client$get_tools())
 
   client
 }
@@ -660,4 +666,17 @@ remove_hidden_content <- function(text) {
   ends[starts - cumsum(ends) < 0 & ends] <- FALSE
 
   paste(lines[starts - shift(cumsum(ends)) <= 0], collapse = "\n")
+}
+
+warn_skills_without_read_file <- function(tools) {
+  tool_names <- names(tools)
+  has_skills <- "btw_tool_skill" %in% tool_names
+  has_read_file <- "btw_tool_files_read" %in% tool_names
+  if (has_skills && !has_read_file) {
+    cli::cli_warn(c(
+      "The {.fn btw_tool_skill} tool is enabled but {.fn btw_tool_files_read} is not.",
+      "i" = "Skills work best with the read file tool, which lets the model read skill resource files.",
+      "i" = "Add {.code btw_tools(\"files\")} or enable {.fn btw_tool_files_read} to get full skill support."
+    ))
+  }
 }

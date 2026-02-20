@@ -270,6 +270,43 @@ btw_app_from_client <- function(
       }
     })
 
+    skills_read_file_mismatch <- shiny::reactive({
+      sel <- selected_tools()
+      "btw_tool_skill" %in% sel && !"btw_tool_files_read" %in% sel
+    })
+
+    shiny::observeEvent(skills_read_file_mismatch(), {
+      if (isTRUE(skills_read_file_mismatch())) {
+        notifier(
+          id = "skills_read_file_mismatch",
+          shiny::icon("triangle-exclamation", class = "text-warning"),
+          shiny::tagList(
+            shiny::HTML(
+              "The <strong>Load Skill tool</strong> works best with the <strong>Read File tool</strong> enabled"
+            ),
+            shiny::actionButton(
+              class = "btn-sm mt-2",
+              "enable_read_file_tool",
+              "Enable Read File Tool"
+            )
+          )
+        )
+      }
+    })
+
+    shiny::observeEvent(input$enable_read_file_tool, {
+      file_tools <- c(input$tools_files, "btw_tool_files_read")
+      shiny::updateCheckboxGroupInput(
+        session = session,
+        inputId = "tools_files",
+        selected = file_tools
+      )
+      bslib_hide_toast <- asNamespace("bslib")[["hide_toast"]]
+      if (!is.null(bslib_hide_toast)) {
+        bslib_hide_toast("skills_read_file_mismatch")
+      }
+    })
+
     output$ui_other_tools <- shiny::renderUI({
       if (length(other_tools) == 0) {
         return(NULL)
@@ -391,6 +428,47 @@ btw_app_from_client <- function(
 }
 
 # Status Bar ----
+
+notifier <- function(icon, action, error = NULL, ...) {
+  error_body <- if (!is.null(error)) {
+    shiny::p(shiny::HTML(sprintf("<code>%s</code>", error$message)))
+  }
+
+  bslib_toast <- asNamespace("bslib")[["toast"]]
+  bslib_show_toast <- asNamespace("bslib")[["show_toast"]]
+  bslib_toast_header <- asNamespace("bslib")[["toast_header"]]
+
+  if (is.null(bslib_toast) || is.null(bslib_show_toast)) {
+    if (!is.null(error)) {
+      body <- shiny::span(icon, action)
+    } else {
+      body <- shiny::tagList(
+        shiny::p(
+          shiny::icon("warning"),
+          "Failed to update system prompt",
+          class = "fw-bold"
+        ),
+        error_body
+      )
+    }
+    shiny::showNotification(
+      body,
+      type = if (is.null(error)) "message" else "error"
+    )
+    return()
+  }
+
+  toast <- bslib_toast(
+    if (is.null(error)) action else error_body,
+    header = if (!is.null(error)) {
+      bslib_toast_header(action, icon = icon)
+    },
+    icon = if (is.null(error)) icon,
+    position = "top-right",
+    ...
+  )
+  bslib_show_toast(toast)
+}
 
 btw_status_bar_ui <- function(id, provider_model) {
   ns <- shiny::NS(id)
@@ -575,46 +653,6 @@ btw_status_bar_server <- function(id, chat) {
         shiny::showModal(modal)
       })
 
-      notifier <- function(icon, action, error = NULL) {
-        error_body <- if (!is.null(error)) {
-          shiny::p(shiny::HTML(sprintf("<code>%s</code>", error$message)))
-        }
-
-        bslib_toast <- asNamespace("bslib")[["toast"]]
-        bslib_show_toast <- asNamespace("bslib")[["show_toast"]]
-        bslib_toast_header <- asNamespace("bslib")[["toast_header"]]
-
-        if (is.null(bslib_toast) || is.null(bslib_show_toast)) {
-          if (!is.null(error)) {
-            body <- shiny::span(icon, action)
-          } else {
-            body <- shiny::tagList(
-              shiny::p(
-                shiny::icon("warning"),
-                "Failed to update system prompt",
-                class = "fw-bold"
-              ),
-              error_body
-            )
-          }
-          shiny::showNotification(
-            body,
-            type = if (is.null(error)) "message" else "error"
-          )
-          return()
-        }
-
-        toast <- bslib_toast(
-          if (is.null(error)) action else error_body,
-          header = if (!is.null(error)) {
-            bslib_toast_header(action, icon = icon)
-          },
-          icon = if (is.null(error)) icon,
-          position = "top-right"
-        )
-        bslib_show_toast(toast)
-      }
-
       shiny::observeEvent(
         input$system_prompt,
         ignoreInit = TRUE,
@@ -691,7 +729,7 @@ app_tool_group_inputs <- function(tools_df, initial_tool_names = NULL) {
 
   # then other, then deprecated (if shown)
   group_names <- names(tools_df)
-  priority_groups <- c("agent", "docs", "files", "env")
+  priority_groups <- c("agent", "skills", "docs", "files", "env")
   trailing_groups <- c("other", "deprecated")
   priority_present <- intersect(priority_groups, group_names)
   middle_groups <- sort(setdiff(
@@ -737,6 +775,7 @@ app_tool_group_choice_input <- function(
     "pkg" = shiny::span(label_icon, "Package Tools"),
     "run" = shiny::span(label_icon, "Run Code"),
     "sessioninfo" = shiny::span(label_icon, "Session Info"),
+    "skills" = shiny::span(label_icon, "Skills"),
     "web" = shiny::span(label_icon, "Web Tools"),
     "other" = shiny::span(label_icon, "Other Tools"),
     to_title_case(group)
