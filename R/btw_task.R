@@ -95,16 +95,13 @@ btw_task <- function(
   check_string(path)
   mode <- arg_match(mode)
 
-  # Read and parse the task file using existing utility
   if (!fs::file_exists(path)) {
     cli::cli_abort("Task file not found: {.path {path}}")
   }
 
-  # Use the existing read_single_btw_file function
   task_config <- read_single_btw_file(path)
-
-  # Extract the task prompt from btw_system_prompt field
   task_prompt <- task_config$btw_system_prompt
+  task_config$btw_system_prompt <- NULL
 
   if (is.null(task_prompt) || !nzchar(task_prompt)) {
     cli::cli_abort(
@@ -112,84 +109,68 @@ btw_task <- function(
     )
   }
 
-  # Remove btw_system_prompt from config to avoid confusion with other fields
-  task_config$btw_system_prompt <- NULL
+  # Capture dots as quosures to preserve expressions (needed for btw() naming)
+  all_quos <- enquos(...)
+  quo_names <- names2(all_quos)
 
-  # Separate named (template vars) and unnamed (context) arguments
-  dots <- dots_list(...)
-  dot_names <- names2(dots)
-
-  # Named args are template variables
-  template_vars <- dots[nzchar(dot_names)]
-
-  # Unnamed args are additional context
-  context_objects <- dots[!nzchar(dot_names)]
+  # Named quos → template variables (evaluated); unnamed quos → context objects
+  template_vars <- lapply(all_quos[nzchar(quo_names)], eval_tidy)
+  context_quos <- all_quos[!nzchar(quo_names)]
 
   # Interpolate template variables in the task prompt
   if (length(template_vars) > 0) {
     task_prompt <- ellmer::interpolate(task_prompt, !!!template_vars)
   }
 
-  # Create the client with configuration from task file
-  # Use provided client, or task file config, or btw defaults
-  if (is.null(client)) {
-    # Build client from task config
-    if (!is.null(task_config$client)) {
-      client <- task_config$client
-    }
-  }
+  # Build final system prompt: task body + optional additional context
+  final_system_prompt <- task_prompt
 
-  # Get tools from task config
-  tools <- task_config$tools %||% btw_tools()
-
-  # Create btw client with resolved configuration
-  chat_client <- btw_client(
-    client = client,
-    tools = tools
-  )
-
-  # Build system prompt
-  base_system_prompt <- chat_client$get_system_prompt()
-
-  # Add task prompt to system
-  sys_prompt_parts <- c(
-    base_system_prompt,
-    "---",
-    "# Task Instructions",
-    "",
-    task_prompt
-  )
-
-  # Add additional context if provided
-  if (length(context_objects) > 0) {
-    user_context <- do.call(btw, c(context_objects, list(clipboard = FALSE)))
-    if (nzchar(user_context)) {
-      sys_prompt_parts <- c(
-        sys_prompt_parts,
-        "",
-        "---",
-        "# Additional Context",
-        "",
-        user_context
+  if (length(context_quos) > 0) {
+    context_values <- lapply(context_quos, eval_tidy)
+    context_names <- vapply(context_quos, as_label, character(1))
+    names(context_values) <- context_names
+    context_env <- new_environment(context_values, parent = parent.frame())
+    user_context_text <- trimws(paste(
+      btw_this(context_env, items = context_names),
+      collapse = "\n"
+    ))
+    if (nzchar(user_context_text)) {
+      final_system_prompt <- paste(
+        c(final_system_prompt, "", "---", "# Additional Context", "", user_context_text),
+        collapse = "\n"
       )
     }
   }
 
-  final_system_prompt <- paste(sys_prompt_parts, collapse = "\n")
+  # Resolve client: explicit arg > task file YAML > btw defaults
+  if (is.null(client) && !is.null(task_config$client)) {
+    client <- task_config$client
+  }
+
+  tools <- task_config$tools %||% btw_tools()
+
+  # Call btw_client() to register tools, then replace the system prompt
+  # with the task-specific content (matches btw_task_create_* pattern)
+  chat_client <- btw_client(
+    client = client,
+    tools = tools
+  )
   chat_client$set_system_prompt(final_system_prompt)
 
-  # Mode dispatch
+  # Derive identity fields from task config or file basename
+  tool_name_raw <- task_config$name %||% fs::path_ext_remove(basename(path))
+  tool_name_normalized <- gsub("-", "_", tool_name_raw)
+  display_name <- task_config$title %||%
+    to_title_case(gsub("[_-]", " ", tool_name_raw))
+
   if (mode == "client") {
     return(chat_client)
   }
 
   if (mode == "tool") {
-    # Create a tool wrapper function (simplified without ... to avoid ellmer argument mismatch)
     task_tool_fn <- function(prompt = "") {
-      # Clone to avoid state pollution
       this_client <- chat_client$clone()
 
-      # Append tool mode instructions
       sys_prompt <- paste0(
         this_client$get_system_prompt(),
         "\n\n---\n\n",
@@ -203,29 +184,31 @@ btw_task <- function(
 
       this_client$set_system_prompt(sys_prompt)
 
-      # Add any additional prompt instructions
       if (nzchar(prompt)) {
-        initial_message <- paste0(
-          "Additional instructions: ",
-          prompt
-        )
+        this_client$chat(paste0("Additional instructions: ", prompt))
       } else {
-        initial_message <- "Please complete the task as instructed."
+        this_client$chat("Please complete the task as instructed.")
       }
-
-      this_client$chat(initial_message)
     }
 
-    # Create the tool definition
+    description <- task_config$description %||% {
+      lines <- strsplit(task_prompt, "\n")[[1]]
+      first_nonempty <- trimws(lines[nzchar(trimws(lines))])
+      if (length(first_nonempty) > 0) {
+        gsub("^#+\\s*", "", first_nonempty[1])
+      } else {
+        paste0("Run the task defined in ", basename(path))
+      }
+    }
+
     tool <- ellmer::tool(
       task_tool_fn,
-      name = paste0("btw_task_", fs::path_ext_remove(basename(path))),
-      description = paste0(
-        "Run the task defined in ",
-        basename(path),
-        ". ",
-        substr(task_prompt, 1, 100),
-        if (nchar(task_prompt) > 100) "..."
+      name = paste0("btw_task_", tool_name_normalized),
+      description = description,
+      annotations = ellmer::tool_annotations(
+        title = display_name,
+        read_only_hint = FALSE,
+        open_world_hint = TRUE
       ),
       arguments = list(
         prompt = ellmer::type_string(
@@ -235,30 +218,30 @@ btw_task <- function(
       )
     )
 
+    if (!is.null(task_config$icon)) {
+      tool@annotations$icon <- custom_icon(task_config$icon)
+    }
+
     return(tool)
   }
 
-  # Console or app mode
   if (mode == "console") {
-    task_name <- fs::path_ext_remove(basename(path))
     cli::cli_text(
-      "Starting {.strong btw_task()} for {.file {task_name}} in live console mode."
+      "Starting {.strong btw_task()} for {.file {display_name}} in live console mode."
     )
     cli::cli_text(
       "{cli::col_yellow(cli::symbol$play)} ",
-      "Say \"{.strong {cli::col_magenta('Let\\'s get started.')}}\" to begin the task."
+      "Say \"{.strong {cli::col_magenta('Let\\'s get started.')}}\" to begin."
     )
     ellmer::live_console(chat_client)
   } else {
-    # App mode
-    task_name <- fs::path_ext_remove(basename(path))
     btw_app_from_client(
       client = chat_client,
       messages = list(list(
         role = "assistant",
         content = paste0(
           "\U1F4CB Hi! I'm ready to help with the <strong>",
-          htmltools::htmlEscape(task_name),
+          htmltools::htmlEscape(display_name),
           "</strong> task.<br><br>",
           "Say <span class='suggestion submit'>Let's get started.</span> to begin."
         )
