@@ -59,6 +59,7 @@ withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
 }
 \seealso{
 Other task and agent functions: 
+\code{\link{btw_task}()},
 \code{\link{btw_task_create_readme}()}
 }
 \concept{task and agent functions}
