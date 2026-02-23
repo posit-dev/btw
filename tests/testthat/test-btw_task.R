@@ -118,6 +118,66 @@ describe("btw_task()", {
     expect_false(is.null(tool@arguments))
   })
 
+  it("uses valid task file names for tool identifiers", {
+    task_dir <- withr::local_tempdir()
+    task_file <- file.path(task_dir, "my-task-file.md")
+    writeLines(
+      con = task_file,
+      c(
+        "---",
+        "tools: false",
+        "---",
+        "",
+        "Simple task"
+      )
+    )
+
+    tool <- btw_task(task_file, mode = "tool")
+    expect_identical(tool@name, "btw_task_my-task-file")
+  })
+
+  it("errors on invalid task names in frontmatter", {
+    task_file <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = task_file,
+      c(
+        "---",
+        "name: task.with.dot",
+        "tools: false",
+        "---",
+        "",
+        "Simple task"
+      )
+    )
+
+    expect_error(
+      btw_task(task_file, mode = "tool"),
+      "Invalid task name"
+    )
+  })
+
+  it("warns on invalid icon and falls back to NULL", {
+    task_file <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = task_file,
+      c(
+        "---",
+        "tools: false",
+        "icon: ''",
+        "---",
+        "",
+        "Simple task"
+      )
+    )
+
+    expect_warning(
+      tool <- btw_task(task_file, mode = "tool"),
+      "Invalid icon in task file"
+    )
+    expect_s3_class(tool, "ellmer::ToolDef")
+    expect_null(tool@annotations$icon)
+  })
+
   it("errors on missing file", {
     expect_error(
       btw_task("nonexistent.md", mode = "client"),

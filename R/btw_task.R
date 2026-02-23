@@ -159,7 +159,7 @@ btw_task <- function(
 
   # Derive identity fields from task config or file basename
   tool_name_raw <- task_config$name %||% fs::path_ext_remove(basename(path))
-  tool_name_normalized <- gsub("-", "_", tool_name_raw)
+  tool_name_normalized <- validate_task_tool_name(tool_name_raw, path)
   display_name <- task_config$title %||%
     to_title_case(gsub("[_-]", " ", tool_name_raw))
 
@@ -219,7 +219,14 @@ btw_task <- function(
     )
 
     if (!is.null(task_config$icon)) {
-      tool@annotations$icon <- custom_icon(task_config$icon)
+      icon <- custom_icon(task_config$icon)
+      if (is.null(icon)) {
+        cli::cli_warn(c(
+          "Invalid icon in task file {.path {path}}",
+          "i" = "Ignoring {.field icon}: {.val {task_config$icon}}"
+        ))
+      }
+      tool@annotations$icon <- icon
     }
 
     return(tool)
@@ -248,4 +255,25 @@ btw_task <- function(
       ))
     )
   }
+}
+
+validate_task_tool_name <- function(name, path) {
+  check_string(name)
+
+  name <- trimws(name)
+  if (!nzchar(name)) {
+    cli::cli_abort(c(
+      "Task name cannot be empty: {.path {path}}",
+      "i" = "Provide a non-empty {.field name} in YAML frontmatter or use a file name with letters."
+    ))
+  }
+
+  if (!grepl("^[a-zA-Z0-9_-]+$", name)) {
+    cli::cli_abort(c(
+      "Invalid task name {.val {name}} in {.path {path}}",
+      "i" = "{.field name} must contain only letters, numbers, - and _."
+    ))
+  }
+
+  name
 }
