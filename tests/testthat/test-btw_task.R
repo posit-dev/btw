@@ -256,30 +256,13 @@ describe("btw_task()", {
   })
 })
 
-describe("btw_task() example files", {
+describe("btw_task() task files", {
   withr::local_envvar(list(ANTHROPIC_API_KEY = "test-key"))
 
-  it("included task files are valid", {
-    tasks_dir <- system.file("tasks", package = "btw")
-
-    if (dir.exists(tasks_dir)) {
-      task_files <- list.files(tasks_dir, pattern = "\\.md$", full.names = TRUE)
-      # Exclude README.md as it's documentation, not a task file
-      task_files <- task_files[!grepl("README\\.md$", task_files)]
-
-      for (file in task_files) {
-        # Test that each task file can be loaded
-        expect_no_error(
-          chat <- btw_task(
-            file,
-            # Provide template variables that examples might need
-            package_name = "base",
-            file_path = "R/test.R",
-            dataset_name = "mtcars",
-            mode = "client"
-          )
-        )
-      }
-    }
+  it("can load a task file with template variables", {
+    task_file <- testthat::test_path("fixtures/test-analyze-package.md")
+    expect_no_error(
+      btw_task(task_file, package_name = "base", mode = "client")
+    )
   })
 })
