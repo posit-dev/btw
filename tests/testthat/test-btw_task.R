@@ -55,8 +55,6 @@ describe("btw_task()", {
       )
     )
 
-    # Just test that named args work for template interpolation
-    # Testing unnamed context would require complex mocking
     chat <- btw_task(
       task_file,
       dataset_name = "mtcars",  # Named - template var
@@ -65,6 +63,29 @@ describe("btw_task()", {
 
     sys_prompt <- chat$get_system_prompt()
     expect_match(sys_prompt, "Analyze mtcars", fixed = TRUE)
+  })
+
+  it("appends unnamed arguments as additional context", {
+    task_file <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = task_file,
+      c(
+        "---",
+        "tools: false",
+        "---",
+        "",
+        "Analyze the data."
+      )
+    )
+
+    chat <- btw_task(
+      task_file,
+      mtcars,  # Unnamed - additional context
+      mode = "client"
+    )
+
+    sys_prompt <- chat$get_system_prompt()
+    expect_match(sys_prompt, "# Additional Context", fixed = TRUE)
   })
 
   it("creates a working tool", {
@@ -173,36 +194,32 @@ describe("btw_task()", {
     # Should use the provided client
     expect_identical(chat$get_provider()@name, "Anthropic")
   })
-
-  it("handles conditional template sections", {
-    # Skip this test - Mustache-style sections don't work with glue/ellmer::interpolate
-    # They use {{ }} delimiters which conflicts with the conditional section syntax
-    skip("Conditional sections not supported with current interpolation")
-  })
 })
 
-test_that("btw_task() example files are valid", {
+describe("btw_task() example files", {
   withr::local_envvar(list(ANTHROPIC_API_KEY = "test-key"))
 
-  tasks_dir <- system.file("tasks", package = "btw")
+  it("included task files are valid", {
+    tasks_dir <- system.file("tasks", package = "btw")
 
-  if (dir.exists(tasks_dir)) {
-    task_files <- list.files(tasks_dir, pattern = "\\.md$", full.names = TRUE)
-    # Exclude README.md as it's documentation, not a task file
-    task_files <- task_files[!grepl("README\\.md$", task_files)]
+    if (dir.exists(tasks_dir)) {
+      task_files <- list.files(tasks_dir, pattern = "\\.md$", full.names = TRUE)
+      # Exclude README.md as it's documentation, not a task file
+      task_files <- task_files[!grepl("README\\.md$", task_files)]
 
-    for (file in task_files) {
-      # Test that each task file can be loaded
-      expect_no_error(
-        chat <- btw_task(
-          file,
-          # Provide template variables that examples might need
-          package_name = "base",
-          file_path = "R/test.R",
-          dataset_name = "mtcars",
-          mode = "client"
+      for (file in task_files) {
+        # Test that each task file can be loaded
+        expect_no_error(
+          chat <- btw_task(
+            file,
+            # Provide template variables that examples might need
+            package_name = "base",
+            file_path = "R/test.R",
+            dataset_name = "mtcars",
+            mode = "client"
+          )
         )
-      )
+      }
     }
-  }
+  })
 })
