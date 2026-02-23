@@ -1,5 +1,13 @@
 # btw (development version)
 
+* New `btw_task()` function runs pre-formatted LLM tasks defined in markdown
+  files with YAML frontmatter. Task files support template variable
+  interpolation via `{{ variable }}` syntax, optional client and tool
+  configuration, and all four execution modes (`"app"`, `"console"`,
+  `"client"`, `"tool"`). Task files can also specify `title`, `icon`,
+  `description`, and `name` fields in their YAML frontmatter to customize
+  the tool definition when used in `"tool"` mode (#42).
+
 * New `btw_tool_files_edit()` tool makes targeted, validated line-based edits
   to files using `replace`, `insert_after`, and `replace_range` actions. Edits
   are anchored to content hashes, so stale edits are rejected if the file has
