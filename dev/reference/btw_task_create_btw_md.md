@@ -73,6 +73,7 @@ ellmer tool object that can be used in other chat instances.
 ## See also
 
 Other task and agent functions:
+[`btw_task()`](https://posit-dev.github.io/btw/dev/reference/btw_task.md),
 [`btw_task_create_readme()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_readme.md)
 
 ## Examples
@@ -89,6 +90,6 @@ withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
 #> #
 #> function (prompt, path = NULL) 
 #> task_create_btw_md_tool(prompt, path)
-#> <bytecode: 0x560145f85240>
-#> <environment: 0x560145f8c4d8>
+#> <bytecode: 0x55fbeda03760>
+#> <environment: 0x55fbeda044b8>
 ```

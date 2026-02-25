@@ -76,14 +76,15 @@ btw_tool_docs_package_help_topics("btw")
 #>  @ value  : chr [1:3] "```json" ...
 #>  @ error  : NULL
 #>  @ extra  :List of 2
-#>  .. $ data   : tibble [46 × 3] (S3: tbl_df/tbl/data.frame)
-#>  ..  ..$ topic_id: chr [1:46] "btw" "btw-package" "btw_agent_tool" "btw_client" ...
-#>  ..  ..$ title   : chr [1:46] "Plain-text descriptions of R objects" "btw: A Toolkit for Connecting R and Large Language Models" "Create a custom agent tool from a markdown file" "Create a btw-enhanced ellmer chat client" ...
-#>  ..  ..$ aliases :List of 46
+#>  .. $ data   : tibble [47 × 3] (S3: tbl_df/tbl/data.frame)
+#>  ..  ..$ topic_id: chr [1:47] "btw" "btw-package" "btw_agent_tool" "btw_client" ...
+#>  ..  ..$ title   : chr [1:47] "Plain-text descriptions of R objects" "btw: A Toolkit for Connecting R and Large Language Models" "Create a custom agent tool from a markdown file" "Create a btw-enhanced ellmer chat client" ...
+#>  ..  ..$ aliases :List of 47
 #>  ..  .. ..$ : 'AsIs' chr "btw"
 #>  ..  .. ..$ : 'AsIs' chr "btw-package"
 #>  ..  .. ..$ : 'AsIs' chr "btw_agent_tool"
 #>  ..  .. ..$ : 'AsIs' chr [1:2] "btw_client" "btw_app"
+#>  ..  .. ..$ : 'AsIs' chr "btw_task"
 #>  ..  .. ..$ : 'AsIs' chr "btw_task_create_btw_md"
 #>  ..  .. ..$ : 'AsIs' chr "btw_task_create_readme"
 #>  ..  .. ..$ : 'AsIs' chr "btw_this"

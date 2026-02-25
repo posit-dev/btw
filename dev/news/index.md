@@ -3,6 +3,17 @@
 ## btw (development version)
 
 - New
+  [`btw_task()`](https://posit-dev.github.io/btw/dev/reference/btw_task.md)
+  function runs pre-formatted LLM tasks defined in markdown files with
+  YAML frontmatter. Task files support template variable interpolation
+  via `{{ variable }}` syntax, optional client and tool configuration,
+  and all four execution modes (`"app"`, `"console"`, `"client"`,
+  `"tool"`). Task files can also specify `title`, `icon`, `description`,
+  and `name` fields in their YAML frontmatter to customize the tool
+  definition when used in `"tool"` mode
+  ([\#42](https://github.com/posit-dev/btw/issues/42)).
+
+- New
   [`btw_tool_files_edit()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_edit.md)
   tool makes targeted, validated line-based edits to files using
   `replace`, `insert_after`, and `replace_range` actions. Edits are
