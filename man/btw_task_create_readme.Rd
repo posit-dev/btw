@@ -58,6 +58,7 @@ withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
 }
 \seealso{
 Other task and agent functions: 
+\code{\link{btw_task}()},
 \code{\link{btw_task_create_btw_md}()},
 \code{\link{btw_task_create_skill}()}
 }

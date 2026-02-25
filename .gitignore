@@ -6,3 +6,4 @@
 .quarto
 docs
 .claude/settings.local.json
+_dev
