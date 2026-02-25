@@ -90,6 +90,8 @@ reference:
     Tasks are typically designed for interactive use (e.g. to collaboratively
     create a project context file), but they can also be used programmatically.
   contents:
+  - btw_task
+  - btw_agent_tool
   - starts_with("btw_task_")
   # TODO update docs: Agents are similar, but are designed to be used primarily as tools by other LLMs.
   - starts_with("btw_agent_")
