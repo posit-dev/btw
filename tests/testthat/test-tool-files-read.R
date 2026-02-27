@@ -89,7 +89,6 @@ describe("is_text_file()", {
   it("accepts a small CJK file shorter than the 8192-byte buffer", {
     tmp <- withr::local_tempfile()
     # 100 chars * 3 bytes = 300 bytes, well under the 8192 buffer.
-    # Still >30% high bytes, so the UTF-8 validation branch is entered.
     write_cjk_file(tmp, 100)
     expect_equal(file.size(tmp), 300)
     expect_true(is_text_file(tmp))
