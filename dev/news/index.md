@@ -31,6 +31,11 @@
   changes; set `replace_all = TRUE` to replace all occurrences
   ([\#167](https://github.com/posit-dev/btw/issues/167)).
 
+- [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+  no longer errors with “argument is of length zero” when run outside of
+  an IDE (thanks [@HenrikBengtsson](https://github.com/HenrikBengtsson),
+  [\#168](https://github.com/posit-dev/btw/issues/168)).
+
 - [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md)
   now correctly handles UTF-8 files containing CJK (Chinese, Japanese,
   Korean) characters. Previously, the text-file detection could truncate
