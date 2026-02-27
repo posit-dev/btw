@@ -68,7 +68,7 @@ withr::with_tempdir({
 #>  ..  ..$ path             : 'fs_path' chr "mtcars.csv"
 #>  ..  ..$ type             : Factor w/ 8 levels "any","block_device",..: 7
 #>  ..  ..$ size             : 'fs_bytes' num 1.74K
-#>  ..  ..$ modification_time: POSIXct[1:1], format: "2026-02-25 21:45:12"
+#>  ..  ..$ modification_time: POSIXct[1:1], format: "2026-02-27 14:35:08"
 #>  .. $ display:List of 1
 #>  ..  ..$ markdown: chr "| path | type | size | modification_time |\n|------|------|------|-------------------|\n| mtcars.csv | file | 1"| __truncated__
 #>  @ request: NULL

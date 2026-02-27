@@ -32,6 +32,14 @@
   ([\#167](https://github.com/posit-dev/btw/issues/167)).
 
 - [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md)
+  now correctly handles UTF-8 files containing CJK (Chinese, Japanese,
+  Korean) characters. Previously, the text-file detection could truncate
+  a read buffer mid-way through a multi-byte character, causing the file
+  to be rejected as binary (thanks
+  [@bianchenhao](https://github.com/bianchenhao),
+  [\#170](https://github.com/posit-dev/btw/issues/170)).
+
+- [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md)
   now correctly reads valid UTF-8 files containing non-ASCII characters
   (e.g., Cyrillic). Previously, these files were incorrectly rejected on
   Windows with non-English locales when
