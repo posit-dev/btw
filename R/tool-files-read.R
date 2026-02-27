@@ -193,9 +193,9 @@ is_text_file <- function(file_path) {
   tryCatch(
     {
       # Read first 8KB of the file
-      con <- file(file_path, "rb")
-      bytes <- readBin(con, what = "raw", n = 8192)
-      close(con)
+      bytes <- withr::with_connection(list(con = file(file_path, "rb")), {
+        readBin(con, what = "raw", n = 8192)
+      })
 
       # If file is empty, consider it text
       if (length(bytes) == 0) {
