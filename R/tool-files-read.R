@@ -193,9 +193,9 @@ is_text_file <- function(file_path) {
   tryCatch(
     {
       # Read first 8KB of the file
-      con <- file(file_path, "rb")
-      bytes <- readBin(con, what = "raw", n = 8192)
-      close(con)
+      bytes <- withr::with_connection(list(con = file(file_path, "rb")), {
+        readBin(con, what = "raw", n = 8192)
+      })
 
       # If file is empty, consider it text
       if (length(bytes) == 0) {
@@ -217,17 +217,16 @@ is_text_file <- function(file_path) {
         return(FALSE)
       }
 
-      # Check for high proportion of extended ASCII or non-UTF8 characters
-      extended_chars <- bytes[bytes > as.raw(127)]
-      if (length(extended_chars) / length(bytes) > 0.3) {
-        # Try to interpret as UTF-8
-        text <- rawToChar(bytes)
-        if (Encoding(text) == "unknown" && !validUTF8(text)) {
-          return(FALSE)
-        }
+      # Trim any incomplete UTF-8 sequence at the end of the buffer
+      # before validating (the buffer may have split a multi-byte character)
+      bytes <- trim_incomplete_trailing_utf8(bytes)
+
+      # Validate as UTF-8
+      text <- rawToChar(bytes)
+      if (Encoding(text) == "unknown" && !validUTF8(text)) {
+        return(FALSE)
       }
 
-      # If we've made it this far, it's likely a text file
       return(TRUE)
     },
     error = function(e) {
@@ -235,6 +234,75 @@ is_text_file <- function(file_path) {
       return(NA)
     }
   )
+}
+
+
+# Trim an incomplete UTF-8 multi-byte sequence from the end of a raw vector.
+#
+# When readBin() reads a fixed number of bytes, it can split a UTF-8 character
+# at the buffer boundary. This can make validUTF8() reject an otherwise valid
+# stream. To avoid that, this function inspects only the last few bytes:
+#
+# * UTF-8 code points are at most 4 bytes, so only the last 4 bytes matter.
+# * Starting at the end, it walks backward through trailing continuation bytes.
+# * If it finds a valid lead byte (2/3/4-byte lead, defined in LEADS), it checks
+#   whether enough bytes remain to complete that sequence.
+# * If incomplete, it trims from that lead byte to the end; otherwise keeps input.
+# * If it encounters an invalid trailing byte, it trims that invalid suffix.
+# * If the suffix is continuation-only with no lead in the inspection window,
+#   it trims that suffix as incomplete.
+trim_incomplete_trailing_utf8 <- function(bytes) {
+  n <- length(bytes)
+  if (n == 0L) {
+    return(bytes)
+  }
+
+  # UTF-8 byte-class constants
+  ASCII_MAX <- 0x7FL
+  CONT <- list(min = 0x80L, max = 0xBFL)
+  LEADS <- list(
+    list(min = 0xC2L, max = 0xDFL, width = 2L), # 2-byte lead
+    list(min = 0xE0L, max = 0xEFL, width = 3L), # 3-byte lead
+    list(min = 0xF0L, max = 0xF4L, width = 4L) # 4-byte lead
+  )
+  MAX_TAIL_SPAN <- 3L
+
+  in_range <- function(b, r) {
+    b >= r$min && b <= r$max
+  }
+
+  # If sequence starting at i needs `width` bytes, trim if incomplete
+  keep_or_trim <- function(i, width) {
+    if (i + width - 1L > n) bytes[seq_len(i - 1L)] else bytes
+  }
+
+  i <- n
+  lower <- max(1L, n - MAX_TAIL_SPAN)
+
+  while (i >= lower) {
+    b <- as.integer(bytes[i])
+
+    if (b <= ASCII_MAX) {
+      return(bytes) # ASCII tail cannot be incomplete UTF-8
+    }
+
+    for (lead in LEADS) {
+      if (in_range(b, lead)) {
+        return(keep_or_trim(i, lead$width))
+      }
+    }
+
+    if (in_range(b, CONT)) {
+      i <- i - 1L
+      next
+    }
+
+    # Invalid byte near end: trim it
+    return(bytes[seq_len(i - 1L)])
+  }
+
+  # Continuation-only suffix with no visible lead in window
+  bytes[seq_len(lower - 1L)]
 }
 
 check_path_exists <- function(path) {
