@@ -65,7 +65,7 @@ from other icon packages. Supported packages:\tabular{lll}{
    bsicons \tab \code{bsicons::house} \tab \code{\link[bsicons:bs_icon]{bsicons::bs_icon()}} \cr
    phosphoricons \tab \code{phosphoricons::house} \tab \code{\link[phosphoricons:ph]{phosphoricons::ph()}} \cr
    rheroicons \tab \code{rheroicons::home} \tab \code{\link[rheroicons:rheroicon]{rheroicons::rheroicon()}} \cr
-   tabler \tab \code{tabler::home} \tab \code{\link[tabler:icon]{tabler::icon()}} \cr
+   tabler \tab \code{tabler::home} \tab \code{\link[tabler:tabler-components]{tabler::icon()}} \cr
    shiny \tab \code{shiny::home} \tab \code{\link[shiny:icon]{shiny::icon()}} \cr
 }
 
