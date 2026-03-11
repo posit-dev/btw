@@ -43,6 +43,12 @@ The path to the installed skill directory, invisibly.
 Install a skill bundled in an R package. Packages can bundle skills in
 their \verb{inst/skills/} directory, where each subdirectory containing a
 \code{SKILL.md} file is a skill.
+
+Note that if a package is attached with \code{\link[=library]{library()}}, its skills are
+\strong{automatically available} without installation — btw discovers skills
+from all attached packages at runtime. Use this function when you want to
+permanently copy a skill to your project or user directory so it remains
+available regardless of which packages are loaded.
 }
 \seealso{
 Other skills: 

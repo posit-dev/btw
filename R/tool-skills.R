@@ -11,6 +11,15 @@ NULL
 #' containing a `SKILL.md` file with instructions and optional bundled
 #' resources (scripts, references, assets).
 #'
+#' Skills are discovered from the following locations, in increasing order of
+#' priority (later sources override earlier ones when skill names conflict):
+#'
+#' 1. Skills bundled with the btw package itself
+#' 2. Skills from currently **attached** R packages — any package with an
+#'    `inst/skills/` directory that is loaded via [library()] or [require()]
+#' 3. User-level skills (`tools::R_user_dir("btw", "config")/skills`)
+#' 4. Project-level skills (`.btw/skills/` or `.agents/skills/`)
+#'
 #' @param name The name of the skill to load.
 #' @inheritParams btw_tool_docs_package_news
 #'
@@ -116,6 +125,9 @@ btw_skill_directories <- function(project_dir = getwd()) {
     dirs <- c(dirs, package_skills)
   }
 
+  # Skills from attached packages
+  dirs <- c(dirs, attached_package_skill_dirs())
+
   # User-level skills (global installation)
   user_skills_dir <- file.path(
     tools::R_user_dir("btw", "config"),
@@ -133,6 +145,18 @@ btw_skill_directories <- function(project_dir = getwd()) {
     }
   }
 
+  dirs
+}
+
+attached_package_skill_dirs <- function() {
+  pkgs <- setdiff(.packages(), "btw")
+  dirs <- character()
+  for (pkg in pkgs) {
+    skills_dir <- system.file("skills", package = pkg)
+    if (nzchar(skills_dir) && dir.exists(skills_dir)) {
+      dirs <- c(dirs, skills_dir)
+    }
+  }
   dirs
 }
 
@@ -758,6 +782,12 @@ btw_skill_install_github <- function(
 #' Install a skill bundled in an R package. Packages can bundle skills in
 #' their `inst/skills/` directory, where each subdirectory containing a
 #' `SKILL.md` file is a skill.
+#'
+#' Note that if a package is attached with [library()], its skills are
+#' **automatically available** without installation — btw discovers skills
+#' from all attached packages at runtime. Use this function when you want to
+#' permanently copy a skill to your project or user directory so it remains
+#' available regardless of which packages are loaded.
 #'
 #' @param package Name of an installed R package that bundles skills.
 #' @param skill Optional skill name. If `NULL` and the package contains

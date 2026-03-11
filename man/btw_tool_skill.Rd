@@ -24,6 +24,16 @@ Skills are modular capabilities that extend Claude's functionality with
 specialized knowledge, workflows, and tools. Each skill is a directory
 containing a \code{SKILL.md} file with instructions and optional bundled
 resources (scripts, references, assets).
+
+Skills are discovered from the following locations, in increasing order of
+priority (later sources override earlier ones when skill names conflict):
+\enumerate{
+\item Skills bundled with the btw package itself
+\item Skills from currently \strong{attached} R packages — any package with an
+\verb{inst/skills/} directory that is loaded via \code{\link[=library]{library()}} or \code{\link[=require]{require()}}
+\item User-level skills (\code{tools::R_user_dir("btw", "config")/skills})
+\item Project-level skills (\verb{.btw/skills/} or \verb{.agents/skills/})
+}
 }
 \seealso{
 Other skills: 

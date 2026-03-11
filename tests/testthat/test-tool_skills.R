@@ -239,6 +239,58 @@ test_that("btw_skill_directories() discovers skills from multiple project dirs",
   expect_true(agents_dir %in% dirs)
 })
 
+test_that("btw_skill_directories() includes skills from attached packages", {
+  pkg_skills <- withr::local_tempdir()
+
+  local_mocked_bindings(
+    attached_package_skill_dirs = function() pkg_skills
+  )
+
+  dirs <- btw_skill_directories()
+  expect_true(pkg_skills %in% dirs)
+})
+
+test_that("attached_package_skill_dirs() returns dirs for attached packages with skills", {
+  pkg_skills <- withr::local_tempdir()
+
+  local_mocked_bindings(
+    `.packages` = function(...) "fakepkg",
+    system.file = function(..., package = NULL) {
+      if (identical(package, "fakepkg")) pkg_skills else ""
+    },
+    .package = "base"
+  )
+
+  result <- attached_package_skill_dirs()
+  expect_equal(result, pkg_skills)
+})
+
+test_that("attached_package_skill_dirs() skips packages without a skills dir", {
+  local_mocked_bindings(
+    `.packages` = function(...) "fakepkg",
+    system.file = function(..., package = NULL) "",
+    .package = "base"
+  )
+
+  result <- attached_package_skill_dirs()
+  expect_equal(result, character())
+})
+
+test_that("attached_package_skill_dirs() excludes btw itself", {
+  pkg_skills <- withr::local_tempdir()
+
+  local_mocked_bindings(
+    `.packages` = function(...) c("btw", "fakepkg"),
+    system.file = function(..., package = NULL) {
+      if (identical(package, "fakepkg")) pkg_skills else ""
+    },
+    .package = "base"
+  )
+
+  result <- attached_package_skill_dirs()
+  expect_equal(result, pkg_skills)
+})
+
 test_that("btw_skill_directories() discovers .agents/skills", {
   project <- withr::local_tempdir()
   withr::local_dir(project)
