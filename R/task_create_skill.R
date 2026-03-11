@@ -90,14 +90,16 @@ You can only create skills within the current project directory (e.g. `.btw/skil
 
   if (!is.null(name)) {
     check_string(name)
-    extra_instructions <- c(
-      extra_instructions,
-      "",
-      sprintf(
-        "The user has already chosen the skill name: %s. Skip the naming step.",
-        name
+    if (mode != "tool") {
+      extra_instructions <- c(
+        extra_instructions,
+        "",
+        sprintf(
+          "The user has already chosen the skill name: %s. Skip the naming step.",
+          name
+        )
       )
-    )
+    }
   }
 
   sys_prompt <- paste0(

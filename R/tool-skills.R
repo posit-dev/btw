@@ -276,6 +276,12 @@ btw_list_skills <- function() {
   all_skills
 }
 
+# Note: find_skill() intentionally returns results for invalid skills (with
+# validation$valid = FALSE) rather than returning NULL. This lets callers like
+# btw_tool_skill_impl() provide actionable error messages ("has validation
+# errors: ...") instead of a generic "not found" when the skill exists on disk
+# but fails validation. Contrast with btw_list_skills(), which skips invalid
+# skills entirely since it populates the system prompt.
 find_skill <- function(skill_name) {
   skill_dirs <- btw_skill_directories()
 
@@ -293,15 +299,18 @@ find_skill <- function(skill_name) {
     }
   }
 
-  # Slow path: scan all skills for a matching metadata$name (handles name/dir mismatch)
+  # Slow path: scan all skills for a matching metadata$name (handles name/dir
+
+  # mismatch). We use extract_skill_metadata() first to avoid full validation
+  # on every non-matching skill, then validate only when we find a match.
   for (dir in skill_dirs) {
     subdirs <- list.dirs(dir, full.names = TRUE, recursive = FALSE)
     for (subdir in subdirs) {
       skill_md_path <- file.path(subdir, "SKILL.md")
       if (!file.exists(skill_md_path)) next
-      validation <- validate_skill(subdir)
-      if (!is.null(validation$metadata$name) &&
-          validation$metadata$name == skill_name) {
+      metadata <- extract_skill_metadata(skill_md_path)
+      if (!is.null(metadata$name) && metadata$name == skill_name) {
+        validation <- validate_skill(subdir)
         return(list(
           path = skill_md_path,
           base_dir = subdir,
@@ -490,7 +499,7 @@ skill_validation <- function(
     valid = length(errors) == 0,
     errors = errors,
     warnings = warnings,
-    # Combined for backward compatibility with callers using $issues
+    # Convenience: combined errors + warnings
     issues = c(errors, warnings),
     metadata = metadata
   )
@@ -549,6 +558,9 @@ format_resources_listing <- function(resources, base_dir) {
   paste(parts, collapse = "")
 }
 
+# Escapes &, <, > for use in XML text content. This XML is decorative
+# formatting for LLM system prompts, not parsed by an XML parser, so we
+# intentionally omit attribute-level escapes (" and ').
 xml_escape <- function(x) {
   x <- gsub("&", "&amp;", x, fixed = TRUE)
   x <- gsub("<", "&lt;", x, fixed = TRUE)
@@ -630,7 +642,8 @@ resolve_skill_scope <- function(scope, error_call = caller_env()) {
 select_skill_dir <- function(
   skill_dirs,
   skill = NULL,
-  source_label = "source"
+  source_label = "source",
+  action = "to install"
 ) {
   if (length(skill_dirs) == 0) {
     cli::cli_abort("No skills found in {source_label}.")
@@ -668,7 +681,7 @@ select_skill_dir <- function(
   choice <- utils::menu(
     choices = basename(skill_dirs),
     graphics = FALSE,
-    title = "\u276F Which skill would you like to install?"
+    title = paste0("\u276F Which skill would you like ", action, "?")
   )
 
   if (choice == 0) {
