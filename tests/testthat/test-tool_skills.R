@@ -147,17 +147,17 @@ test_that("validate_skill() warns for compatibility exceeding 500 chars", {
 
 # Discovery ----------------------------------------------------------------
 
-test_that("btw_list_skills() finds valid skills", {
+test_that("btw_skills_list() finds valid skills", {
   dir <- withr::local_tempdir()
   create_temp_skill(name = "my-skill", dir = dir)
   local_skill_dirs(dir)
 
-  skills <- btw_list_skills()
+  skills <- btw_skills_list()
   expect_length(skills, 1)
   expect_equal(skills[["my-skill"]]$name, "my-skill")
 })
 
-test_that("btw_list_skills() skips invalid skills with warning", {
+test_that("btw_skills_list() skips invalid skills with warning", {
   dir <- withr::local_tempdir()
 
   # Create a valid skill
@@ -174,14 +174,14 @@ test_that("btw_list_skills() skips invalid skills with warning", {
   local_skill_dirs(dir)
 
   expect_warning(
-    skills <- btw_list_skills(),
+    skills <- btw_skills_list(),
     "Skipping invalid skill"
   )
   expect_length(skills, 1)
   expect_equal(skills[["good-skill"]]$name, "good-skill")
 })
 
-test_that("btw_list_skills() later directories override earlier by name", {
+test_that("btw_skills_list() later directories override earlier by name", {
   dir1 <- withr::local_tempdir()
   dir2 <- withr::local_tempdir()
 
@@ -199,14 +199,14 @@ test_that("btw_list_skills() later directories override earlier by name", {
   local_skill_dirs(c(dir1, dir2))
 
   expect_message(
-    skills <- btw_list_skills(),
+    skills <- btw_skills_list(),
     "overrides earlier skill"
   )
   expect_length(skills, 1)
   expect_equal(skills[["shared-skill"]]$description, "From dir2.")
 })
 
-test_that("btw_list_skills() includes compatibility and allowed-tools", {
+test_that("btw_skills_list() includes compatibility and allowed-tools", {
   dir <- withr::local_tempdir()
   create_temp_skill(
     name = "fancy-skill",
@@ -218,7 +218,7 @@ test_that("btw_list_skills() includes compatibility and allowed-tools", {
   )
   local_skill_dirs(dir)
 
-  skills <- btw_list_skills()
+  skills <- btw_skills_list()
   expect_equal(skills[["fancy-skill"]]$compatibility, "Requires Python 3")
   expect_equal(skills[["fancy-skill"]]$allowed_tools, "Read Bash")
 })

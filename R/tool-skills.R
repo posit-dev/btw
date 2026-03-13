@@ -36,7 +36,7 @@ btw_tool_skill_impl <- function(name) {
   skill_info <- find_skill(name)
 
   if (is.null(skill_info)) {
-    available <- btw_list_skills()
+    available <- btw_skills_list()
     skill_names <- vapply(available, function(x) x$name, character(1))
     cli::cli_abort(
       c(
@@ -211,7 +211,7 @@ resolve_project_skill_dir <- function(error_call = caller_env()) {
   existing[[choice]]
 }
 
-btw_list_skills <- function() {
+btw_skills_list <- function() {
   skill_dirs <- btw_skill_directories()
   all_skills <- list()
 
@@ -280,7 +280,7 @@ btw_list_skills <- function() {
 # validation$valid = FALSE) rather than returning NULL. This lets callers like
 # btw_tool_skill_impl() provide actionable error messages ("has validation
 # errors: ...") instead of a generic "not found" when the skill exists on disk
-# but fails validation. Contrast with btw_list_skills(), which skips invalid
+# but fails validation. Contrast with btw_skills_list(), which skips invalid
 # skills entirely since it populates the system prompt.
 find_skill <- function(skill_name) {
   skill_dirs <- btw_skill_directories()
@@ -571,7 +571,7 @@ xml_escape <- function(x) {
 # System Prompt ------------------------------------------------------------
 
 btw_skills_system_prompt <- function() {
-  skills <- btw_list_skills()
+  skills <- btw_skills_list()
 
   if (length(skills) == 0) {
     return("")
