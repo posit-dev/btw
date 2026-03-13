@@ -930,6 +930,7 @@ test_that("btw_skill_install_package() errors when no SKILL.md in subdirs", {
 
 test_that("btw_skills_system_prompt() works", {
   skip_if_not_snapshot_env()
+  local_mocked_bindings(attached_package_skill_dirs = function() character())
   expect_snapshot(
     cat(btw_skills_system_prompt()),
     transform = function(x) {
