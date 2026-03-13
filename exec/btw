@@ -45,7 +45,7 @@ switch(group <- NULL,
         #| description: Help topic or package name.
         topic <- NULL
         #| description: Package name to scope the help topic.
-        #| short: p
+        #| short: 'p'
         package <- NA_character_
 
         tryCatch({
@@ -71,10 +71,10 @@ switch(group <- NULL,
         #| description: Package name.
         package <- NULL
         #| description: Vignette name.
-        #| short: n
+        #| short: 'n'
         name <- NA_character_
         #| description: List available vignettes.
-        #| short: l
+        #| short: 'l'
         list <- FALSE
 
         tryCatch({
@@ -83,7 +83,21 @@ switch(group <- NULL,
           } else if (!is.na(name)) {
             btw_output(btw_this(vignette(name, package = package)))
           } else {
-            btw_output(btw_this(vignette(package, package = package)))
+            result <- tryCatch(
+              btw_this(vignette(package, package = package)),
+              warning = function(w) NULL,
+              error = function(e) NULL
+            )
+            if (is.null(result)) {
+              cat(
+                "No introductory vignette found for", package,
+                "-- available vignettes:\n\n",
+                file = stderr()
+              )
+              btw_output(btw_this(vignette(package = package)))
+            } else {
+              btw_output(result)
+            }
           }
         }, error = btw_error)
       },
@@ -94,7 +108,7 @@ switch(group <- NULL,
         #| description: Package name.
         package <- NULL
         #| description: Search term to filter NEWS entries.
-        #| short: s
+        #| short: 's'
         search <- NA_character_
 
         tryCatch({
@@ -133,7 +147,7 @@ switch(group <- NULL,
 
       test = {
         #| description: Regex to filter test files.
-        #| short: f
+        #| short: 'f'
         filter <- NA_character_
 
         tryCatch({
@@ -193,7 +207,7 @@ switch(group <- NULL,
         #| description: Dependency types to include.
         deps <- NA_character_
         #| description: Check if packages are installed.
-        #| short: c
+        #| short: 'c'
         check <- FALSE
 
         tryCatch({
@@ -225,7 +239,7 @@ switch(group <- NULL,
         #| description: Result format (short or long).
         format <- "short"
         #| description: Number of results.
-        #| short: n
+        #| short: 'n'
         n <- NA_integer_
 
         tryCatch({
