@@ -29,7 +29,7 @@ create_temp_skill <- function(
 # Helper to mock skill directories for discovery
 local_skill_dirs <- function(dirs, .env = parent.frame()) {
   local_mocked_bindings(
-    btw_skill_directories = function() dirs,
+    btw_skills_directories = function() dirs,
     .env = .env
   )
 }

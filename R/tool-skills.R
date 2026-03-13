@@ -116,7 +116,7 @@ btw_tool_skill_impl <- function(name) {
 
 # Skill Discovery ----------------------------------------------------------
 
-btw_skill_directories <- function(project_dir = getwd()) {
+btw_skills_directories <- function(project_dir = getwd()) {
   dirs <- character()
 
   # Package-bundled skills
@@ -161,7 +161,7 @@ attached_package_skill_dirs <- function() {
 }
 
 any_skills_exist <- function() {
-  for (dir in btw_skill_directories()) {
+  for (dir in btw_skills_directories()) {
     subdirs <- list.dirs(dir, full.names = TRUE, recursive = FALSE)
     for (subdir in subdirs) {
       if (file.exists(file.path(subdir, "SKILL.md"))) {
@@ -212,7 +212,7 @@ resolve_project_skill_dir <- function(error_call = caller_env()) {
 }
 
 btw_skills_list <- function() {
-  skill_dirs <- btw_skill_directories()
+  skill_dirs <- btw_skills_directories()
   all_skills <- list()
 
   for (dir in skill_dirs) {
@@ -283,7 +283,7 @@ btw_skills_list <- function() {
 # but fails validation. Contrast with btw_skills_list(), which skips invalid
 # skills entirely since it populates the system prompt.
 find_skill <- function(skill_name) {
-  skill_dirs <- btw_skill_directories()
+  skill_dirs <- btw_skills_directories()
 
   # Fast path: directory named skill_name
   for (dir in skill_dirs) {

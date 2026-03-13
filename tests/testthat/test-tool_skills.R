@@ -223,7 +223,7 @@ test_that("btw_skills_list() includes compatibility and allowed-tools", {
   expect_equal(skills[["fancy-skill"]]$allowed_tools, "Read Bash")
 })
 
-test_that("btw_skill_directories() discovers skills from multiple project dirs", {
+test_that("btw_skills_directories() discovers skills from multiple project dirs", {
   project <- withr::local_tempdir()
   withr::local_dir(project)
   project <- getwd() # resolve symlinks (e.g. /private/var on macOS)
@@ -234,19 +234,19 @@ test_that("btw_skill_directories() discovers skills from multiple project dirs",
   dir.create(btw_dir, recursive = TRUE)
   dir.create(agents_dir, recursive = TRUE)
 
-  dirs <- btw_skill_directories()
+  dirs <- btw_skills_directories()
   expect_true(btw_dir %in% dirs)
   expect_true(agents_dir %in% dirs)
 })
 
-test_that("btw_skill_directories() includes skills from attached packages", {
+test_that("btw_skills_directories() includes skills from attached packages", {
   pkg_skills <- withr::local_tempdir()
 
   local_mocked_bindings(
     attached_package_skill_dirs = function() pkg_skills
   )
 
-  dirs <- btw_skill_directories()
+  dirs <- btw_skills_directories()
   expect_true(pkg_skills %in% dirs)
 })
 
@@ -291,7 +291,7 @@ test_that("attached_package_skill_dirs() excludes btw itself", {
   expect_equal(result, pkg_skills)
 })
 
-test_that("btw_skill_directories() discovers .agents/skills", {
+test_that("btw_skills_directories() discovers .agents/skills", {
   project <- withr::local_tempdir()
   withr::local_dir(project)
   project <- getwd()
@@ -299,7 +299,7 @@ test_that("btw_skill_directories() discovers .agents/skills", {
   agents_dir <- file.path(project, ".agents", "skills")
   dir.create(agents_dir, recursive = TRUE)
 
-  dirs <- btw_skill_directories()
+  dirs <- btw_skills_directories()
   expect_true(agents_dir %in% dirs)
 })
 
