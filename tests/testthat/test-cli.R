@@ -97,6 +97,23 @@ test_that("btw docs help <topic> falls back to topic search", {
   expect_true(is.na(env$package))
 })
 
+test_that("btw docs help pkg::topic reads scoped help page", {
+  local_skip_pandoc_convert_text()
+  env <- run_btw_quietly("docs", "help", "stats::rnorm")
+  expect_equal(env$topic, "stats::rnorm")
+  expect_true(is.na(env$package))
+})
+
+test_that("btw docs help pkg::topic ignores --package with warning", {
+  local_skip_pandoc_convert_text()
+  expect_warning(
+    env <- run_btw_quietly("docs", "help", "stats::rnorm", "-p", "base"),
+    "Ignoring --package"
+  )
+  expect_equal(env$topic, "stats::rnorm")
+  expect_equal(env$package, "base")
+})
+
 test_that("btw docs help errors for unknown topic", {
   result <- run_btw_subprocess("docs", "help", "completely_nonexistent_xyz")
   expect_equal(result$status, 1)

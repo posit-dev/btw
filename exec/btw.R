@@ -54,7 +54,18 @@ switch(
 
         tryCatch(
           {
-            if (!is.na(package)) {
+            if (grepl("::", topic, fixed = TRUE)) {
+              parts <- strsplit(topic, "::", fixed = TRUE)[[1]]
+              if (!is.na(package)) {
+                warning(
+                  "Ignoring --package flag; using package from ",
+                  topic,
+                  " syntax",
+                  call. = FALSE
+                )
+              }
+              btw_output(btw_this(btw:::as_btw_docs_topic(parts[1], parts[2])))
+            } else if (!is.na(package)) {
               btw_output(btw_this(btw:::as_btw_docs_topic(package, topic)))
             } else {
               result <- tryCatch(
