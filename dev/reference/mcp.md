@@ -15,7 +15,7 @@ in *that* R environment.
 ## Usage
 
 ``` r
-btw_mcp_server(tools = btw_tools())
+btw_mcp_server(tools = btw_mcp_tools())
 
 btw_mcp_session()
 ```

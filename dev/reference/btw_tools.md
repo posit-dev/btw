@@ -106,6 +106,13 @@ returned by this function have access to the tools:
 | [`btw_tool_sessioninfo_package()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_sessioninfo_package.md) | Verify that a specific package is installed, or find out which packages are in use in the current session. |
 | [`btw_tool_sessioninfo_platform()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_sessioninfo_platform.md) | Describes the R version, operating system, language and locale settings for the user's system. |
 
+### Group: skills
+
+|  |  |
+|----|----|
+| Name | Description |
+| [`btw_tool_skill()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_skill.md) | Load a skill's specialized instructions and list its bundled resources. |
+
 ### Group: web
 
 |  |  |
@@ -202,6 +209,7 @@ ch$register_tools(c(ch$get_tools(), btw_tools()))
 #> Replacing existing btw_tool_sessioninfo_is_package_installed tool.
 #> Replacing existing btw_tool_sessioninfo_platform tool.
 #> Replacing existing btw_tool_sessioninfo_package tool.
+#> Replacing existing btw_tool_skill tool.
 #> Replacing existing btw_tool_web_read_url tool.
 #> Replacing existing btw_tool_agent_subagent tool.
 #> Replacing existing btw_tool_cran_search tool.
@@ -235,5 +243,6 @@ ch$register_tools(c(ch$get_tools(), btw_tools()))
 #> Replacing existing btw_tool_sessioninfo_is_package_installed tool.
 #> Replacing existing btw_tool_sessioninfo_platform tool.
 #> Replacing existing btw_tool_sessioninfo_package tool.
+#> Replacing existing btw_tool_skill tool.
 #> Replacing existing btw_tool_web_read_url tool.
 ```

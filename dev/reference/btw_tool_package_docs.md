@@ -76,17 +76,20 @@ btw_tool_docs_package_help_topics("btw")
 #>  @ value  : chr [1:3] "```json" ...
 #>  @ error  : NULL
 #>  @ extra  :List of 2
-#>  .. $ data   : tibble [47 × 3] (S3: tbl_df/tbl/data.frame)
-#>  ..  ..$ topic_id: chr [1:47] "btw" "btw-package" "btw_agent_tool" "btw_client" ...
-#>  ..  ..$ title   : chr [1:47] "Plain-text descriptions of R objects" "btw: A Toolkit for Connecting R and Large Language Models" "Create a custom agent tool from a markdown file" "Create a btw-enhanced ellmer chat client" ...
-#>  ..  ..$ aliases :List of 47
+#>  .. $ data   : tibble [51 × 3] (S3: tbl_df/tbl/data.frame)
+#>  ..  ..$ topic_id: chr [1:51] "btw" "btw-package" "btw_agent_tool" "btw_client" ...
+#>  ..  ..$ title   : chr [1:51] "Plain-text descriptions of R objects" "btw: A Toolkit for Connecting R and Large Language Models" "Create a custom agent tool from a markdown file" "Create a btw-enhanced ellmer chat client" ...
+#>  ..  ..$ aliases :List of 51
 #>  ..  .. ..$ : 'AsIs' chr "btw"
 #>  ..  .. ..$ : 'AsIs' chr "btw-package"
 #>  ..  .. ..$ : 'AsIs' chr "btw_agent_tool"
 #>  ..  .. ..$ : 'AsIs' chr [1:2] "btw_client" "btw_app"
+#>  ..  .. ..$ : 'AsIs' chr "btw_skill_install_github"
+#>  ..  .. ..$ : 'AsIs' chr "btw_skill_install_package"
 #>  ..  .. ..$ : 'AsIs' chr "btw_task"
 #>  ..  .. ..$ : 'AsIs' chr "btw_task_create_btw_md"
 #>  ..  .. ..$ : 'AsIs' chr "btw_task_create_readme"
+#>  ..  .. ..$ : 'AsIs' chr "btw_task_create_skill"
 #>  ..  .. ..$ : 'AsIs' chr "btw_this"
 #>  ..  .. ..$ : 'AsIs' chr "btw_this.character"
 #>  ..  .. ..$ : 'AsIs' chr [1:2] "btw_this.data.frame" "btw_this.tbl"
@@ -122,6 +125,7 @@ btw_tool_docs_package_help_topics("btw")
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_sessioninfo_is_package_installed"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_sessioninfo_package"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_sessioninfo_platform"
+#>  ..  .. ..$ : 'AsIs' chr "btw_tool_skill"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_web_read_url"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tools"
 #>  ..  .. ..$ : 'AsIs' chr [1:10] "deprecated" "btw_tool_session_platform_info" "btw_tool_session_package_info" "btw_tool_session_check_package_installed" ...

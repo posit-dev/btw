@@ -104,7 +104,8 @@ Depending on `mode`:
 
 Other task and agent functions:
 [`btw_task_create_btw_md()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_btw_md.md),
-[`btw_task_create_readme()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_readme.md)
+[`btw_task_create_readme()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_readme.md),
+[`btw_task_create_skill()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_skill.md)
 
 ## Examples
 
@@ -122,8 +123,8 @@ Analyze the {{ package_name }} package and create a summary.
 
 # Task with template interpolation
 btw_task(tmp_task_file, package_name = "dplyr", mode = "tool")
-#> # <ellmer::ToolDef> btw_task_file21b2692e62d5(prompt)
-#> # @name: btw_task_file21b2692e62d5
+#> # <ellmer::ToolDef> btw_task_file2507943e925(prompt)
+#> # @name: btw_task_file2507943e925
 #> # @description: Analyze the dplyr package and create a summary.
 #> # @convert: TRUE
 #> #
@@ -144,8 +145,8 @@ btw_task(tmp_task_file, package_name = "dplyr", mode = "tool")
 #>         this_client$chat("Please complete the task as instructed.")
 #>     }
 #> }
-#> <bytecode: 0x55a2f66de288>
-#> <environment: 0x55a2f66e0100>
+#> <bytecode: 0x56248f8803f0>
+#> <environment: 0x56248f882268>
 
 # Include additional context
 btw_task(
@@ -154,8 +155,8 @@ btw_task(
   mtcars,  # Additional context
   mode = "tool"
 )
-#> # <ellmer::ToolDef> btw_task_file21b2692e62d5(prompt)
-#> # @name: btw_task_file21b2692e62d5
+#> # <ellmer::ToolDef> btw_task_file2507943e925(prompt)
+#> # @name: btw_task_file2507943e925
 #> # @description: Analyze the ggplot2 package and create a summary.
 #> # @convert: TRUE
 #> #
@@ -176,6 +177,6 @@ btw_task(
 #>         this_client$chat("Please complete the task as instructed.")
 #>     }
 #> }
-#> <bytecode: 0x55a2f66de288>
-#> <environment: 0x55a2f6586900>
+#> <bytecode: 0x56248f8803f0>
+#> <environment: 0x56249151a128>
 ```

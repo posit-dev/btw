@@ -38,17 +38,17 @@ Other sessioninfo tools:
 ``` r
 btw_tool_sessioninfo_platform()
 #> <btw::BtwSessionInfoToolResult>
-#>  @ value  : chr "<system_info>\nR_VERSION: R version 4.5.2 (2025-10-31)\nOS: Ubuntu 24.04.3 LTS\nSYSTEM: x86_64, linux-gnu\nLANG"| __truncated__
+#>  @ value  : chr "<system_info>\nR_VERSION: R version 4.5.3 (2026-03-11)\nOS: Ubuntu 24.04.3 LTS\nSYSTEM: x86_64, linux-gnu\nLANG"| __truncated__
 #>  @ error  : NULL
 #>  @ extra  :List of 8
-#>  .. $ r_version:: chr "R version 4.5.2 (2025-10-31)"
+#>  .. $ r_version:: chr "R version 4.5.3 (2026-03-11)"
 #>  .. $ os:       : chr "Ubuntu 24.04.3 LTS"
 #>  .. $ system:   : chr "x86_64, linux-gnu"
 #>  .. $ language: : chr "en"
 #>  .. $ locale:   : chr "C"
 #>  .. $ encoding: : chr "C.UTF-8"
 #>  .. $ timezone: : chr "UTC"
-#>  .. $ date:     : chr "Friday, February 27, 2026 (2026-02-27)"
+#>  .. $ date:     : chr "Friday, March 13, 2026 (2026-03-13)"
 #>  .. - attr(*, "class")= chr [1:2] "platform_info" "list"
 #>  @ request: NULL
 ```

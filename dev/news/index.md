@@ -2,6 +2,23 @@
 
 ## btw (development version)
 
+- `btw` now supports [Agent Skills](https://agentskills.io) via
+  [`btw_tool_skill()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_skill.md).
+  Skills are modular, on-demand capabilities that provide specialized
+  instructions, bundled scripts, reference docs, and asset templates to
+  the LLM. Skills are discovered automatically from the btw package,
+  attached R packages with `inst/skills/` directories, user-level
+  skills, and project-level skills in `.btw/skills/` or
+  `.agents/skills/`. When the skill tool is included in the chat client,
+  available skills are listed in the system prompt. Use
+  [`btw_skill_install_github()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_install_github.md)
+  or
+  [`btw_skill_install_package()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_install_package.md)
+  to install skills from external sources, and
+  [`btw_task_create_skill()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_skill.md)
+  to interactively create new skills
+  ([\#145](https://github.com/posit-dev/btw/issues/145)).
+
 - New
   [`btw_task()`](https://posit-dev.github.io/btw/dev/reference/btw_task.md)
   function runs pre-formatted LLM tasks defined in markdown files with
@@ -11,7 +28,7 @@
   `"tool"`). Task files can also specify `title`, `icon`, `description`,
   and `name` fields in their YAML frontmatter to customize the tool
   definition when used in `"tool"` mode
-  ([\#42](https://github.com/posit-dev/btw/issues/42)).
+  ([\#169](https://github.com/posit-dev/btw/issues/169)).
 
 - New
   [`btw_tool_files_edit()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_edit.md)

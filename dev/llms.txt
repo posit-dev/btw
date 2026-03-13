@@ -195,6 +195,17 @@ GitHub](https://github.com/posit-dev/btw/issues).
 - [`btw_this(`*`<environment>`*`)`](https://posit-dev.github.io/btw/dev/reference/btw_this.environment.md)
   : Describe the contents of an environment
 
+## Agent Skills
+
+- [`btw_tool_skill()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_skill.md)
+  : Tool: Load a skill
+- [`btw_skill_install_github()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_install_github.md)
+  : Install a skill from GitHub
+- [`btw_skill_install_package()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_install_package.md)
+  : Install a skill from an R package
+- [`btw_task_create_skill()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_skill.md)
+  : Task: Create a Skill
+
 ## Tasks and Agents
 
 Tasks, or agents, are higher-level functions that combine system prompts
@@ -212,6 +223,8 @@ used programmatically.
   : Task: Initialize Project Context File
 - [`btw_task_create_readme()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_readme.md)
   : Task: Create a Polished README
+- [`btw_task_create_skill()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_skill.md)
+  : Task: Create a Skill
 
 ## Tools
 
@@ -290,6 +303,8 @@ and to avoid name clashes with other tools.
   packages
 - [`btw_tool_sessioninfo_platform()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_sessioninfo_platform.md)
   : Tool: Describe user's platform
+- [`btw_tool_skill()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_skill.md)
+  : Tool: Load a skill
 - [`btw_tool_web_read_url()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_web_read_url.md)
   : Tool: Read a Web Page as Markdown
 

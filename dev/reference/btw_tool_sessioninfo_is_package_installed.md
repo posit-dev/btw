@@ -48,5 +48,5 @@ tryCatch(
   }
 )
 #> Package dplry is not installed.
-#> ℹ Did you mean "dplR", "DALY", "dlr", "dpcR", or "dplyr"?
+#> ℹ Did you mean "dplR", "DALY", "dlr", "dpcR", or "dpdr"?
 ```

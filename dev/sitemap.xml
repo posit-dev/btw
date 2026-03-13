@@ -12,9 +12,12 @@
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_agent_tool.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_client.html</loc></url>
+<url><loc>https://posit-dev.github.io/btw/dev/reference/btw_skill_install_github.html</loc></url>
+<url><loc>https://posit-dev.github.io/btw/dev/reference/btw_skill_install_package.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_task.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_task_create_btw_md.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_task_create_readme.html</loc></url>
+<url><loc>https://posit-dev.github.io/btw/dev/reference/btw_task_create_skill.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_this.character.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_this.data.frame.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_this.environment.html</loc></url>
@@ -50,6 +53,7 @@
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_tool_sessioninfo_is_package_installed.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_tool_sessioninfo_package.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_tool_sessioninfo_platform.html</loc></url>
+<url><loc>https://posit-dev.github.io/btw/dev/reference/btw_tool_skill.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_tool_web_read_url.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/btw_tools.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/dev/reference/deprecated.html</loc></url>

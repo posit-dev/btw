@@ -1,26 +1,20 @@
-# Task: Initialize Project Context File
+# Task: Create a Skill
 
-Create a comprehensive context `btw.md` or `AGENTS.md` file for your
-project. If launched in app or console mode, this task will start an
-interactive chat session to guide you through the process of creating a
-context file.
-
-This task focuses on documenting project context for developers and
-agents. See
-[`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
-for additional details about the format and usage of the `btw.md`
-context file, including choosing the default LLM provider and model or
-the default set of tools to use with
-[`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md).
+Create a new skill for your project using interactive guidance. If
+launched in app or console mode, this task will start an interactive
+chat session to guide you through the process of creating a skill that
+extends Claude's capabilities with specialized knowledge, workflows, or
+tool integrations.
 
 ## Usage
 
 ``` r
-btw_task_create_btw_md(
+btw_task_create_skill(
   ...,
-  path = "btw.md",
+  name = NULL,
   client = NULL,
-  mode = c("app", "console", "client", "tool")
+  mode = c("app", "console", "client", "tool"),
+  tools = "docs"
 )
 ```
 
@@ -32,9 +26,10 @@ btw_task_create_btw_md(
   objects that can be converted to text using
   [`btw()`](https://posit-dev.github.io/btw/dev/reference/btw.md).
 
-- path:
+- name:
 
-  The path to the context file to create. Defaults to `btw.md`.
+  Optional skill name. If provided, the AI will skip the naming step and
+  use this name directly.
 
 - client:
 
@@ -59,6 +54,16 @@ btw_task_create_btw_md(
   while `"client"` and `"tool"` modes return objects for programmatic
   use.
 
+- tools:
+
+  Optional list or character vector of tools to allow the task to use
+  when creating the skill. By default documentation tools are included
+  to allow the task to help create package-based skills. You can include
+  additional tools as needed.
+
+  Because the task requires file tools to create skills with resources,
+  tools for listing, reading and writing files are always included.
+
 ## Value
 
 When `mode` is `"app"` or `"console"`, this function launches an
@@ -74,23 +79,23 @@ ellmer tool object that can be used in other chat instances.
 
 Other task and agent functions:
 [`btw_task()`](https://posit-dev.github.io/btw/dev/reference/btw_task.md),
-[`btw_task_create_readme()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_readme.md),
-[`btw_task_create_skill()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_skill.md)
+[`btw_task_create_btw_md()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_btw_md.md),
+[`btw_task_create_readme()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_readme.md)
 
 ## Examples
 
 ``` r
 withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
-  btw_task_create_btw_md(mode = "tool", client = "anthropic")
+  btw_task_create_skill(mode = "tool", client = "anthropic")
 })
 #> Using model = "claude-sonnet-4-5-20250929".
-#> # <ellmer::ToolDef> btw_task_create_btw_md(prompt, path)
-#> # @name: btw_task_create_btw_md
-#> # @description: Create a comprehensive context file for your project.
+#> # <ellmer::ToolDef> btw_task_create_skill(prompt, name)
+#> # @name: btw_task_create_skill
+#> # @description: Create a new skill for your project with interactive guidance.
 #> # @convert: TRUE
 #> #
-#> function (prompt, path = NULL) 
-#> task_create_btw_md_tool(prompt, path)
-#> <bytecode: 0x56248c6b53d0>
-#> <environment: 0x56248c6b5bb0>
+#> function (prompt, name = NULL) 
+#> btw_task_create_skill_tool(prompt, name)
+#> <bytecode: 0x56248c8d5538>
+#> <environment: 0x56248c8d5ca8>
 ```
