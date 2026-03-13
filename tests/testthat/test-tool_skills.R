@@ -434,6 +434,38 @@ test_that("btw_tool_skill_impl() errors for missing skill", {
   expect_error(btw_tool_skill_impl("nonexistent"), "not found")
 })
 
+test_that("btw_tool_skill_impl(\"\") returns skills listing when skills exist", {
+  dir <- withr::local_tempdir()
+  create_temp_skill(name = "listed-skill", description = "A listed skill.", dir = dir)
+  local_skill_dirs(dir)
+
+  result <- btw_tool_skill_impl("")
+  expect_s3_class(result, "ellmer::ContentToolResult")
+  expect_match(result@value, "listed-skill")
+  expect_type(result@extra$data$skills, "list")
+  expect_named(result@extra$data$skills, "listed-skill")
+})
+
+test_that("btw_tool_skill_impl(\"\") returns no-skills message when none exist", {
+  dir <- withr::local_tempdir()
+  local_skill_dirs(dir)
+
+  result <- btw_tool_skill_impl("")
+  expect_s3_class(result, "ellmer::ContentToolResult")
+  expect_match(result@value, "No skills are currently available")
+})
+
+test_that("btw_tool_skill_impl() error for missing skill mentions calling with empty name", {
+  dir <- withr::local_tempdir()
+  create_temp_skill(name = "real-skill", dir = dir)
+  local_skill_dirs(dir)
+
+  expect_error(
+    btw_tool_skill_impl("nonexistent"),
+    "btw_tool_skill"
+  )
+})
+
 # System Prompt ------------------------------------------------------------
 
 test_that("btw_skills_system_prompt() returns empty for no skills", {
