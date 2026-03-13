@@ -7,7 +7,8 @@
 btw_tool_skill(name, `_intent` = "")
 }
 \arguments{
-\item{name}{The name of the skill to load.}
+\item{name}{The name of the skill to load, or \code{""} to list all available
+skills.}
 
 \item{_intent}{An optional string describing the intent of the tool use.
 When the tool is used by an LLM, the model will use this argument to
@@ -24,6 +25,12 @@ Skills are modular capabilities that extend Claude's functionality with
 specialized knowledge, workflows, and tools. Each skill is a directory
 containing a \code{SKILL.md} file with instructions and optional bundled
 resources (scripts, references, assets).
+
+When \code{btw_tool_skill} is included in the chat client's tools, btw
+automatically injects information about available skills into the system
+prompt so the model knows which skills are available. If the skill tool is
+added after client creation, the model can call \code{btw_tool_skill("")} (empty
+name) to get the current skill listing.
 
 Skills are discovered from the following locations, in increasing order of
 priority (later sources override earlier ones when skill names conflict):

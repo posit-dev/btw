@@ -68,6 +68,7 @@ Suggests:
     pandoc,
     pkgload,
     ragg,
+    Rapp (>= 0.3.0),
     roxygen2,
     shiny,
     shinychat (>= 0.3.0),
@@ -90,6 +91,7 @@ Collate:
     'btw_client_app.R'
     'btw_task.R'
     'btw_this.R'
+    'cli.R'
     'clipboard.R'
     'deprecated.R'
     'edit_btw_md.R'
