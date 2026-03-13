@@ -436,7 +436,11 @@ test_that("btw_tool_skill_impl() errors for missing skill", {
 
 test_that("btw_tool_skill_impl(\"\") returns skills listing when skills exist", {
   dir <- withr::local_tempdir()
-  create_temp_skill(name = "listed-skill", description = "A listed skill.", dir = dir)
+  create_temp_skill(
+    name = "listed-skill",
+    description = "A listed skill.",
+    dir = dir
+  )
   local_skill_dirs(dir)
 
   result <- btw_tool_skill_impl("")
@@ -614,7 +618,10 @@ test_that("install_skill_from_dir() treats I('project') as literal path", {
     ),
     "Installed skill"
   )
-  expect_equal(normalizePath(dirname(path)), normalizePath(file.path(target, "project")))
+  expect_equal(
+    normalizePath(dirname(path)),
+    normalizePath(file.path(target, "project"))
+  )
 })
 
 # btw_skill_install_github -------------------------------------------------

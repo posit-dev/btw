@@ -335,7 +335,9 @@ find_skill <- function(skill_name) {
     subdirs <- list.dirs(dir, full.names = TRUE, recursive = FALSE)
     for (subdir in subdirs) {
       skill_md_path <- file.path(subdir, "SKILL.md")
-      if (!file.exists(skill_md_path)) next
+      if (!file.exists(skill_md_path)) {
+        next
+      }
       metadata <- extract_skill_metadata(skill_md_path)
       if (!is.null(metadata$name) && metadata$name == skill_name) {
         validation <- validate_skill(subdir)
@@ -762,7 +764,9 @@ btw_skill_install_github <- function(
     check_string(skill)
   }
   check_string(scope)
-  if (!is.null(overwrite)) check_bool(overwrite)
+  if (!is.null(overwrite)) {
+    check_bool(overwrite)
+  }
 
   rlang::check_installed("gh", reason = "to install skills from GitHub.")
 
@@ -864,7 +868,9 @@ btw_skill_install_package <- function(
     check_string(skill)
   }
   check_string(scope)
-  if (!is.null(overwrite)) check_bool(overwrite)
+  if (!is.null(overwrite)) {
+    check_bool(overwrite)
+  }
 
   rlang::check_installed(package, reason = "to install skills from it.")
 
@@ -897,7 +903,9 @@ install_skill_from_dir <- function(
 ) {
   check_string(source_dir)
   check_string(scope)
-  if (!is.null(overwrite)) check_bool(overwrite)
+  if (!is.null(overwrite)) {
+    check_bool(overwrite)
+  }
 
   source_dir <- normalizePath(source_dir, mustWork = FALSE)
   if (!dir.exists(source_dir)) {

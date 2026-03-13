@@ -1096,7 +1096,11 @@ describe("btw_client() skills system prompt gating", {
 
     # suppress expected warning: skills tool without files read tool
     chat <- suppressWarnings(btw_client(tools = "skills", path_btw = FALSE))
-    expect_match(chat$get_system_prompt(), "SKILLS_PROMPT_CONTENT", fixed = TRUE)
+    expect_match(
+      chat$get_system_prompt(),
+      "SKILLS_PROMPT_CONTENT",
+      fixed = TRUE
+    )
   })
 
   it("does not inject skills prompt when btw_tool_skill is not in tools", {
