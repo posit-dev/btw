@@ -1078,6 +1078,7 @@ test_that("btw_skills_system_prompt() escapes XML special characters", {
 
 test_that("skills prompt is included in btw_client() system prompt", {
   withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
+  local_enable_tools()
 
   with_mocked_platform(ide = "rstudio", {
     chat <- btw_client(path_btw = FALSE)

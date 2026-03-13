@@ -148,10 +148,17 @@ btw_client <- function(
   session_info <- btw_tool_sessioninfo_platform()@value
   client_system_prompt <- client$get_system_prompt()
 
+  if (!skip_tools) {
+    client$set_tools(tools = c(client$get_tools(), config$tools))
+  }
+
   llms_txt <- read_llms_txt(path_llms_txt)
   project_context <- c(llms_txt, config$btw_system_prompt)
   project_context <- paste(project_context, collapse = "\n\n")
-  has_skill_tool <- !skip_tools && "btw_tool_skill" %in% names(config$tools)
+
+  has_skill_tool <- some(client$get_tools(), \(t) {
+    identical(t@name, "btw_tool_skill")
+  })
   skills_prompt <- if (has_skill_tool) btw_skills_system_prompt() else ""
 
   sys_prompt <- c(
@@ -170,10 +177,6 @@ btw_client <- function(
   )
 
   client$set_system_prompt(paste(sys_prompt, collapse = "\n\n"))
-
-  if (!skip_tools) {
-    client$set_tools(tools = c(client$get_tools(), config$tools))
-  }
 
   warn_skills_without_read_file(client$get_tools())
 
