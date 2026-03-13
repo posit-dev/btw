@@ -67,6 +67,7 @@ Suggests:
     htmltools,
     pandoc,
     pkgload,
+    processx,
     ragg,
     Rapp (>= 0.3.0),
     roxygen2,
