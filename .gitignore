@@ -7,3 +7,6 @@
 docs
 .claude/settings.local.json
 _dev
+.claude/skills/r-cli-app
+.agents/skills/r-cli-app
+skills-lock.json
