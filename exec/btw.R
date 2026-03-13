@@ -5,6 +5,7 @@
 #|   text. Wraps btw package tools for docs, pkg, info, and cran operations.
 
 library(btw)
+library(utils)
 
 # Global options --------------------------------------------------------------
 
@@ -12,7 +13,7 @@ library(btw)
 version <- FALSE
 
 if (version) {
-  cat(format(packageVersion("btw")), "\n")
+  cat(format(utils::packageVersion("btw")), "\n")
   quit(status = 0)
 }
 
@@ -32,16 +33,22 @@ btw_error <- function(e) {
   quit(status = 1)
 }
 
+btw_self_help <- function(...) {
+  script_path <- commandArgs(TRUE)[1]
+  Rapp:::print_app_help(script_path, yaml = FALSE, command_path = c(...))
+  quit(status = 1)
+}
+
 # Subcommand dispatch ---------------------------------------------------------
 
 switch(
-  group <- NULL,
+  group <- "",
 
   # docs group ----------------------------------------------------------------
 
   docs = {
     switch(
-      docs_cmd <- NULL,
+      docs_cmd <- "",
 
       # docs help ---------------------------------------------------------------
 
@@ -98,12 +105,12 @@ switch(
         tryCatch(
           {
             if (list) {
-              btw_output(btw_this(vignette(package = package)))
+              btw_output(btw_this(utils::vignette(package = package)))
             } else if (!is.na(name)) {
-              btw_output(btw_this(vignette(name, package = package)))
+              btw_output(btw_this(utils::vignette(name, package = package)))
             } else {
               result <- tryCatch(
-                btw_this(vignette(package, package = package)),
+                btw_this(utils::vignette(package, package = package)),
                 warning = function(w) NULL,
                 error = function(e) NULL
               )
@@ -114,7 +121,7 @@ switch(
                   "-- available vignettes:\n\n",
                   file = stderr()
                 )
-                btw_output(btw_this(vignette(package = package)))
+                btw_output(btw_this(utils::vignette(package = package)))
               } else {
                 btw_output(result)
               }
@@ -145,6 +152,7 @@ switch(
         )
       }
     )
+    if (docs_cmd == "") btw_self_help("docs")
   },
 
   # pkg group -----------------------------------------------------------------
@@ -154,7 +162,7 @@ switch(
     path <- "."
 
     switch(
-      pkg_cmd <- NULL,
+      pkg_cmd <- "",
 
       # pkg document ------------------------------------------------------------
 
@@ -228,13 +236,14 @@ switch(
         )
       }
     )
+    if (pkg_cmd == "") btw_self_help("pkg")
   },
 
   # info group ----------------------------------------------------------------
 
   info = {
     switch(
-      info_cmd <- NULL,
+      info_cmd <- "",
 
       # info platform -----------------------------------------------------------
 
@@ -282,13 +291,14 @@ switch(
         )
       }
     )
+    if (info_cmd == "") btw_self_help("info")
   },
 
   # cran group ----------------------------------------------------------------
 
   cran = {
     switch(
-      cran_cmd <- NULL,
+      cran_cmd <- "",
 
       # cran search -------------------------------------------------------------
 
@@ -331,5 +341,7 @@ switch(
         )
       }
     )
+    if (cran_cmd == "") btw_self_help("cran")
   }
 )
+if (group == "") btw_self_help()
