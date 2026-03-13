@@ -82,6 +82,11 @@ reference:
   - btw_this
   - has_concept("btw formatting methods")
 
+- title: Agent Skills
+  contents:
+    - btw_tool_skill
+    - contains("_skill")
+
 - title: Tasks and Agents
   desc: |
     Tasks, or agents, are higher-level functions that combine system prompts and
