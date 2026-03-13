@@ -4,11 +4,22 @@
 \alias{install_btw_cli}
 \title{Install the btw CLI}
 \usage{
-install_btw_cli(destdir = NULL)
+install_btw_cli(destdir = NULL, ...)
 }
 \arguments{
 \item{destdir}{Directory where the CLI launcher will be installed. If \code{NULL},
 the default location used by \code{\link[Rapp:install_pkg_cli_apps]{Rapp::install_pkg_cli_apps()}} is used.}
+
+\item{...}{
+  Arguments passed on to \code{\link[Rapp:install_pkg_cli_apps]{Rapp::install_pkg_cli_apps}}
+  \describe{
+    \item{\code{lib.loc}}{Additional library paths forwarded to \code{\link[base:system.file]{base::system.file()}}
+while locating package scripts. Discovery happens at install time; written
+launchers embed absolute script paths.}
+    \item{\code{overwrite}}{Whether to replace an existing executable. \code{TRUE} always
+overwrites, \code{FALSE} never overwrites non-Rapp executables, and \code{NA} (the
+default) prompts interactively and otherwise skips.}
+  }}
 }
 \value{
 The result of \code{\link[Rapp:install_pkg_cli_apps]{Rapp::install_pkg_cli_apps()}}, invisibly.
@@ -17,4 +28,11 @@ The result of \code{\link[Rapp:install_pkg_cli_apps]{Rapp::install_pkg_cli_apps(
 Installs the \code{btw} CLI launcher using \code{\link[Rapp:install_pkg_cli_apps]{Rapp::install_pkg_cli_apps()}}.
 \href{https://github.com/r-lib/Rapp}{Rapp} is required to build and install the
 CLI.
+}
+\details{
+After installing the CLI, you will be offered the option to install the
+\code{r-btw-cli} skill, which helps AI coding assistants discover and use the
+\code{btw} CLI. If you decline or are in a non-interactive session, the skill
+instructions are copied to the clipboard (or printed) so you can add them
+to your \code{CLAUDE.md}, \code{AGENTS.md}, or other context file manually.
 }

@@ -1,4 +1,4 @@
-write_to_clipboard <- function(x) {
+write_to_clipboard <- function(x, what = "{.pkg btw}") {
   if (!is_interactive() || !clipr::clipr_available()) {
     if (is_interactive()) {
       cli::cli_alert_warning(
@@ -13,7 +13,7 @@ write_to_clipboard <- function(x) {
   tryCatch(
     {
       clipr::write_clip(x)
-      cli::cli_alert_success("{.pkg btw} copied to the clipboard!")
+      cli::cli_alert_success(sprintf("%s copied to the clipboard!", what))
     },
     error = function(e) e
   )
