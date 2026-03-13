@@ -19,7 +19,9 @@ if (version) {
 # Helpers ---------------------------------------------------------------------
 
 btw_output <- function(x) {
-  if (!is.character(x)) x <- S7::prop(x, "value")
+  if (!is.character(x)) {
+    x <- S7::prop(x, "value")
+  }
   cat(paste(x, collapse = "\n"), "\n")
 }
 
@@ -32,12 +34,14 @@ btw_error <- function(e) {
 
 # Subcommand dispatch ---------------------------------------------------------
 
-switch(group <- NULL,
+switch(
+  group <- NULL,
 
   # docs group ----------------------------------------------------------------
 
   docs = {
-    switch(docs_cmd <- NULL,
+    switch(
+      docs_cmd <- NULL,
 
       # docs help ---------------------------------------------------------------
 
@@ -48,21 +52,24 @@ switch(group <- NULL,
         #| short: 'p'
         package <- NA_character_
 
-        tryCatch({
-          if (!is.na(package)) {
-            btw_output(btw_this(btw:::as_btw_docs_topic(package, topic)))
-          } else {
-            result <- tryCatch(
-              btw_this(btw:::as_btw_docs_package(topic)),
-              error = function(e) NULL
-            )
-            if (is.null(result)) {
-              btw_output(btw_this(btw:::as_btw_docs_topic(NULL, topic)))
+        tryCatch(
+          {
+            if (!is.na(package)) {
+              btw_output(btw_this(btw:::as_btw_docs_topic(package, topic)))
             } else {
-              btw_output(result)
+              result <- tryCatch(
+                btw_this(btw:::as_btw_docs_package(topic)),
+                error = function(e) NULL
+              )
+              if (is.null(result)) {
+                btw_output(btw_this(btw:::as_btw_docs_topic(NULL, topic)))
+              } else {
+                btw_output(result)
+              }
             }
-          }
-        }, error = btw_error)
+          },
+          error = btw_error
+        )
       },
 
       # docs vignette -----------------------------------------------------------
@@ -77,29 +84,33 @@ switch(group <- NULL,
         #| short: 'l'
         list <- FALSE
 
-        tryCatch({
-          if (list) {
-            btw_output(btw_this(vignette(package = package)))
-          } else if (!is.na(name)) {
-            btw_output(btw_this(vignette(name, package = package)))
-          } else {
-            result <- tryCatch(
-              btw_this(vignette(package, package = package)),
-              warning = function(w) NULL,
-              error = function(e) NULL
-            )
-            if (is.null(result)) {
-              cat(
-                "No introductory vignette found for", package,
-                "-- available vignettes:\n\n",
-                file = stderr()
-              )
+        tryCatch(
+          {
+            if (list) {
               btw_output(btw_this(vignette(package = package)))
+            } else if (!is.na(name)) {
+              btw_output(btw_this(vignette(name, package = package)))
             } else {
-              btw_output(result)
+              result <- tryCatch(
+                btw_this(vignette(package, package = package)),
+                warning = function(w) NULL,
+                error = function(e) NULL
+              )
+              if (is.null(result)) {
+                cat(
+                  "No introductory vignette found for",
+                  package,
+                  "-- available vignettes:\n\n",
+                  file = stderr()
+                )
+                btw_output(btw_this(vignette(package = package)))
+              } else {
+                btw_output(result)
+              }
             }
-          }
-        }, error = btw_error)
+          },
+          error = btw_error
+        )
       },
 
       # docs news ---------------------------------------------------------------
@@ -111,10 +122,16 @@ switch(group <- NULL,
         #| short: 's'
         search <- NA_character_
 
-        tryCatch({
-          search_term <- if (!is.na(search)) search else ""
-          btw_output(btw:::btw_tool_docs_package_news_impl(package, search_term))
-        }, error = btw_error)
+        tryCatch(
+          {
+            search_term <- if (!is.na(search)) search else ""
+            btw_output(btw:::btw_tool_docs_package_news_impl(
+              package,
+              search_term
+            ))
+          },
+          error = btw_error
+        )
       }
     )
   },
@@ -125,22 +142,29 @@ switch(group <- NULL,
     #| description: Path to package directory.
     path <- "."
 
-    switch(pkg_cmd <- NULL,
+    switch(
+      pkg_cmd <- NULL,
 
       # pkg document ------------------------------------------------------------
 
       document = {
-        tryCatch({
-          btw_output(btw:::btw_tool_pkg_document_impl(path))
-        }, error = btw_error)
+        tryCatch(
+          {
+            btw_output(btw:::btw_tool_pkg_document_impl(path))
+          },
+          error = btw_error
+        )
       },
 
       # pkg check ---------------------------------------------------------------
 
       check = {
-        tryCatch({
-          btw_output(btw:::btw_tool_pkg_check_impl(path))
-        }, error = btw_error)
+        tryCatch(
+          {
+            btw_output(btw:::btw_tool_pkg_check_impl(path))
+          },
+          error = btw_error
+        )
       },
 
       # pkg test ----------------------------------------------------------------
@@ -150,22 +174,28 @@ switch(group <- NULL,
         #| short: 'f'
         filter <- NA_character_
 
-        tryCatch({
-          btw_output(
-            btw:::btw_tool_pkg_test_impl(
-              path,
-              if (!is.na(filter)) filter else NULL
+        tryCatch(
+          {
+            btw_output(
+              btw:::btw_tool_pkg_test_impl(
+                path,
+                if (!is.na(filter)) filter else NULL
+              )
             )
-          )
-        }, error = btw_error)
+          },
+          error = btw_error
+        )
       },
 
       # pkg load ----------------------------------------------------------------
 
       load = {
-        tryCatch({
-          btw_output(btw:::btw_tool_pkg_load_all_impl(path))
-        }, error = btw_error)
+        tryCatch(
+          {
+            btw_output(btw:::btw_tool_pkg_load_all_impl(path))
+          },
+          error = btw_error
+        )
       },
 
       # pkg coverage ------------------------------------------------------------
@@ -174,14 +204,17 @@ switch(group <- NULL,
         #| description: Filename for line-level coverage details.
         file <- NA_character_
 
-        tryCatch({
-          btw_output(
-            btw:::btw_tool_pkg_coverage_impl(
-              path,
-              if (!is.na(file)) file else NULL
+        tryCatch(
+          {
+            btw_output(
+              btw:::btw_tool_pkg_coverage_impl(
+                path,
+                if (!is.na(file)) file else NULL
+              )
             )
-          )
-        }, error = btw_error)
+          },
+          error = btw_error
+        )
       }
     )
   },
@@ -189,14 +222,18 @@ switch(group <- NULL,
   # info group ----------------------------------------------------------------
 
   info = {
-    switch(info_cmd <- NULL,
+    switch(
+      info_cmd <- NULL,
 
       # info platform -----------------------------------------------------------
 
       platform = {
-        tryCatch({
-          btw_output(btw:::btw_tool_sessioninfo_platform_impl())
-        }, error = btw_error)
+        tryCatch(
+          {
+            btw_output(btw:::btw_tool_sessioninfo_platform_impl())
+          },
+          error = btw_error
+        )
       },
 
       # info packages -----------------------------------------------------------
@@ -210,18 +247,28 @@ switch(group <- NULL,
         #| short: 'c'
         check <- FALSE
 
-        tryCatch({
-          pkgs <- `packages...`
-          if (check && length(pkgs) > 0) {
-            for (pkg in pkgs) {
-              btw_output(btw:::btw_tool_sessioninfo_is_package_installed_impl(pkg))
+        tryCatch(
+          {
+            pkgs <- `packages...`
+            if (check && length(pkgs) > 0) {
+              for (pkg in pkgs) {
+                btw_output(btw:::btw_tool_sessioninfo_is_package_installed_impl(
+                  pkg
+                ))
+              }
+            } else {
+              if (length(pkgs) == 0) {
+                pkgs <- "attached"
+              }
+              deps_val <- if (!is.na(deps)) deps else ""
+              btw_output(btw:::btw_tool_sessioninfo_package_impl(
+                pkgs,
+                deps_val
+              ))
             }
-          } else {
-            if (length(pkgs) == 0) pkgs <- "attached"
-            deps_val <- if (!is.na(deps)) deps else ""
-            btw_output(btw:::btw_tool_sessioninfo_package_impl(pkgs, deps_val))
-          }
-        }, error = btw_error)
+          },
+          error = btw_error
+        )
       }
     )
   },
@@ -229,7 +276,8 @@ switch(group <- NULL,
   # cran group ----------------------------------------------------------------
 
   cran = {
-    switch(cran_cmd <- NULL,
+    switch(
+      cran_cmd <- NULL,
 
       # cran search -------------------------------------------------------------
 
@@ -242,17 +290,20 @@ switch(group <- NULL,
         #| short: 'n'
         n <- NA_integer_
 
-        tryCatch({
-          size <- if (!is.na(n)) {
-            n
-          } else if (format == "long") {
-            5L
-          } else {
-            20L
-          }
-          result <- pkgsearch::pkg_search(query, format = format, size = size)
-          btw_output(btw_this(result, for_tool_use = TRUE))
-        }, error = btw_error)
+        tryCatch(
+          {
+            size <- if (!is.na(n)) {
+              n
+            } else if (format == "long") {
+              5L
+            } else {
+              20L
+            }
+            result <- pkgsearch::pkg_search(query, format = format, size = size)
+            btw_output(btw_this(result, for_tool_use = TRUE))
+          },
+          error = btw_error
+        )
       },
 
       # cran info ---------------------------------------------------------------
@@ -261,9 +312,12 @@ switch(group <- NULL,
         #| description: Package name.
         package <- NULL
 
-        tryCatch({
-          btw_output(btw_this(pkgsearch::cran_package(package)))
-        }, error = btw_error)
+        tryCatch(
+          {
+            btw_output(btw_this(pkgsearch::cran_package(package)))
+          },
+          error = btw_error
+        )
       }
     )
   }

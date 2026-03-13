@@ -1,7 +1,7 @@
 use_latest_pandoc()
 
 btw_cli_path <- function() {
-  path <- test_path("..", "..", "exec", "btw")
+  path <- test_path("..", "..", "exec", "btw.R")
   if (!file.exists(path)) {
     skip("btw CLI script not found")
   }
