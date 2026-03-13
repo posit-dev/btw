@@ -57,7 +57,7 @@ describe("btw_task()", {
 
     chat <- btw_task(
       task_file,
-      dataset_name = "mtcars",  # Named - template var
+      dataset_name = "mtcars", # Named - template var
       mode = "client"
     )
 
@@ -80,7 +80,7 @@ describe("btw_task()", {
 
     chat <- btw_task(
       task_file,
-      mtcars,  # Unnamed - additional context
+      mtcars, # Unnamed - additional context
       mode = "client"
     )
 
@@ -193,7 +193,7 @@ describe("btw_task()", {
         "---",
         "tools: [docs]",
         "---",
-        ""  # Empty body
+        "" # Empty body
       )
     )
 

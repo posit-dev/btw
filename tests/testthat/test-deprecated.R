@@ -102,7 +102,9 @@ test_that("btw_tools() with old tool names resolves to new tools", {
 test_that("new sessioninfo tools work without warnings", {
   expect_no_warning(btw_tool_sessioninfo_platform())
   expect_no_warning(btw_tool_sessioninfo_package(packages = "btw"))
-  expect_no_warning(btw_tool_sessioninfo_is_package_installed(package_name = "btw"))
+  expect_no_warning(btw_tool_sessioninfo_is_package_installed(
+    package_name = "btw"
+  ))
 })
 
 test_that("new cran tools work without warnings", {
@@ -118,7 +120,10 @@ test_that("new file tools work without warnings", {
 
     expect_no_warning(btw_tool_files_list())
     expect_no_warning(btw_tool_files_read(path = "test.txt"))
-    expect_no_warning(btw_tool_files_write(path = "test2.txt", content = "hello"))
+    expect_no_warning(btw_tool_files_write(
+      path = "test2.txt",
+      content = "hello"
+    ))
   })
 })
 

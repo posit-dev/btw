@@ -23,7 +23,10 @@
 #' @seealso [btw_tools()]
 #' @family sessioninfo tools
 #' @export
-btw_tool_sessioninfo_is_package_installed <- function(package_name, `_intent`) {}
+btw_tool_sessioninfo_is_package_installed <- function(
+  package_name,
+  `_intent`
+) {}
 
 btw_tool_sessioninfo_is_package_installed_impl <- function(package_name) {
   check_installed(package_name)

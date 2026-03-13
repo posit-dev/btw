@@ -136,7 +136,14 @@ btw_task <- function(
     ))
     if (nzchar(user_context_text)) {
       final_system_prompt <- paste(
-        c(final_system_prompt, "", "---", "# Additional Context", "", user_context_text),
+        c(
+          final_system_prompt,
+          "",
+          "---",
+          "# Additional Context",
+          "",
+          user_context_text
+        ),
         collapse = "\n"
       )
     }
@@ -191,15 +198,16 @@ btw_task <- function(
       }
     }
 
-    description <- task_config$description %||% {
-      lines <- strsplit(task_prompt, "\n")[[1]]
-      first_nonempty <- trimws(lines[nzchar(trimws(lines))])
-      if (length(first_nonempty) > 0) {
-        gsub("^#+\\s*", "", first_nonempty[1])
-      } else {
-        paste0("Run the task defined in ", basename(path))
+    description <- task_config$description %||%
+      {
+        lines <- strsplit(task_prompt, "\n")[[1]]
+        first_nonempty <- trimws(lines[nzchar(trimws(lines))])
+        if (length(first_nonempty) > 0) {
+          gsub("^#+\\s*", "", first_nonempty[1])
+        } else {
+          paste0("Run the task defined in ", basename(path))
+        }
       }
-    }
 
     tool <- ellmer::tool(
       task_tool_fn,

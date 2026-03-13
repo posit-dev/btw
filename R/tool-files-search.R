@@ -316,7 +316,7 @@ ON code_files.filename = code_lines.filename;"
 
 files_search_extensions <- function() {
   # fmt: skip
- default <- c("R", "Rmd", "qmd", "py", "js", "ts", "md", "scss", "css")
+  default <- c("R", "Rmd", "qmd", "py", "js", "ts", "md", "scss", "css")
 
   # Check new option name first, then fall back to deprecated name
   res <- getOption("btw.files_search.extensions")
