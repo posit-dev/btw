@@ -11,6 +11,12 @@ NULL
 #' containing a `SKILL.md` file with instructions and optional bundled
 #' resources (scripts, references, assets).
 #'
+#' When `btw_tool_skill` is included in the chat client's tools, btw
+#' automatically injects information about available skills into the system
+#' prompt so the model knows which skills are available. If the skill tool is
+#' added after client creation, the model can call `btw_tool_skill("")` (empty
+#' name) to get the current skill listing.
+#'
 #' Skills are discovered from the following locations, in increasing order of
 #' priority (later sources override earlier ones when skill names conflict):
 #'
@@ -20,7 +26,8 @@ NULL
 #' 3. User-level skills (`tools::R_user_dir("btw", "config")/skills`)
 #' 4. Project-level skills (`.btw/skills/` or `.agents/skills/`)
 #'
-#' @param name The name of the skill to load.
+#' @param name The name of the skill to load, or `""` to list all available
+#'   skills.
 #' @inheritParams btw_tool_docs_package_news
 #'
 #' @return A `btw_tool_result` containing the skill instructions and a listing
@@ -31,7 +38,26 @@ NULL
 btw_tool_skill <- function(name, `_intent`) {}
 
 btw_tool_skill_impl <- function(name) {
-  check_string(name)
+  check_string(name, allow_empty = TRUE)
+
+  if (!nzchar(name)) {
+    skills <- btw_skills_list()
+    if (length(skills) == 0) {
+      return(btw_tool_result(
+        value = "No skills are currently available.",
+        display = list(
+          title = "Available Skills",
+          markdown = "No skills are currently available."
+        )
+      ))
+    }
+    prompt <- btw_skills_system_prompt()
+    return(btw_tool_result(
+      value = prompt,
+      data = list(skills = skills),
+      display = list(title = "Available Skills", markdown = prompt)
+    ))
+  }
 
   skill_info <- find_skill(name)
 
@@ -41,7 +67,8 @@ btw_tool_skill_impl <- function(name) {
     cli::cli_abort(
       c(
         "Skill {.val {name}} not found.",
-        "i" = "Available skills: {.val {skill_names}}"
+        "i" = "Available skills: {.val {skill_names}}",
+        "i" = "Call {.code btw_tool_skill(\"\")} to get the full, up-to-date skill listing."
       )
     )
   }
@@ -92,11 +119,12 @@ btw_tool_skill_impl <- function(name) {
       name = "btw_tool_skill",
       description = paste(
         "Load a skill's specialized instructions and list its bundled",
-        "resources. When you recognize that a task matches one of the",
-        "available skills, use this tool to load the full skill",
-        "instructions. If the user references a skill with /{name}",
-        "syntax, use this tool to load that skill. After loading, use",
-        "file read tools to access bundled references, or adapt bundled",
+        "resources. Pass an empty string (\"\") as the name to get the",
+        "current listing of all available skills. When you recognize that",
+        "a task matches one of the available skills, use this tool to load",
+        "the full skill instructions. If the user references a skill with",
+        "/{name} syntax, use this tool to load that skill. After loading,",
+        "use file read tools to access bundled references, or adapt bundled",
         "scripts into R code."
       ),
       annotations = ellmer::tool_annotations(
@@ -107,7 +135,7 @@ btw_tool_skill_impl <- function(name) {
       ),
       arguments = list(
         name = ellmer::type_string(
-          "The name of the skill to load"
+          "The name of the skill to load, or \"\" (empty string) to list all available skills."
         )
       )
     )

@@ -1,5 +1,8 @@
 local_enable_tools()
-local_mocked_bindings(btw_skills_system_prompt = function(...) "")
+local_mocked_bindings(
+  btw_skills_system_prompt = function(...) "",
+  any_skills_exist = function(...) TRUE
+)
 local_sessioninfo_quarto_version()
 withr::local_options(btw.client.quiet = TRUE)
 
@@ -1078,6 +1081,45 @@ describe("btw_client() with multiple clients", {
     chat <- btw_client(client = "smart", path_btw = btw_md)
     expect_equal(chat$get_model(), "claude-sonnet-4")
     expect_s3_class(chat$get_provider(), "ellmer::ProviderAnthropic")
+  })
+})
+
+# skills system prompt gating ------------------------------------------------
+
+describe("btw_client() skills system prompt gating", {
+  withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
+
+  it("injects skills prompt when btw_tool_skill is in tools", {
+    local_mocked_bindings(
+      btw_skills_system_prompt = function(...) "SKILLS_PROMPT_CONTENT"
+    )
+
+    # suppress expected warning: skills tool without files read tool
+    chat <- suppressWarnings(btw_client(tools = "skills", path_btw = FALSE))
+    expect_match(chat$get_system_prompt(), "SKILLS_PROMPT_CONTENT", fixed = TRUE)
+  })
+
+  it("does not inject skills prompt when btw_tool_skill is not in tools", {
+    local_mocked_bindings(
+      btw_skills_system_prompt = function(...) "SKILLS_PROMPT_CONTENT"
+    )
+
+    chat <- btw_client(tools = "docs", path_btw = FALSE)
+    expect_no_match(chat$get_system_prompt(), "SKILLS_PROMPT_CONTENT")
+  })
+
+  it("does not call btw_skills_system_prompt when tools = FALSE", {
+    called <- FALSE
+    local_mocked_bindings(
+      btw_skills_system_prompt = function(...) {
+        called <<- TRUE
+        "SKILLS_PROMPT_CONTENT"
+      }
+    )
+
+    chat <- btw_client(tools = FALSE, path_btw = FALSE)
+    expect_false(called)
+    expect_no_match(chat$get_system_prompt(), "SKILLS_PROMPT_CONTENT")
   })
 })
 
