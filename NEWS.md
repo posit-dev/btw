@@ -1,12 +1,23 @@
 # btw (development version)
 
+* `btw` now supports [Agent Skills](https://agentskills.io) via
+  `btw_tool_skill()`. Skills are modular, on-demand capabilities that provide
+  specialized instructions, bundled scripts, reference docs, and asset
+  templates to the LLM. Skills are discovered automatically from the btw
+  package, attached R packages with `inst/skills/` directories, user-level
+  skills, and project-level skills in `.btw/skills/` or `.agents/skills/`.
+  When the skill tool is included in the chat client, available skills are
+  listed in the system prompt. Use `btw_skill_install_github()` or
+  `btw_skill_install_package()` to install skills from external sources, and
+  `btw_task_create_skill()` to interactively create new skills (#145).
+
 * New `btw_task()` function runs pre-formatted LLM tasks defined in markdown
   files with YAML frontmatter. Task files support template variable
   interpolation via `{{ variable }}` syntax, optional client and tool
   configuration, and all four execution modes (`"app"`, `"console"`,
   `"client"`, `"tool"`). Task files can also specify `title`, `icon`,
   `description`, and `name` fields in their YAML frontmatter to customize
-  the tool definition when used in `"tool"` mode (#42).
+  the tool definition when used in `"tool"` mode (#169).
 
 * New `btw_tool_files_edit()` tool makes targeted, validated line-based edits
   to files using `replace`, `insert_after`, and `replace_range` actions. Edits
