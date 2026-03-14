@@ -20,13 +20,13 @@ btw pkg document [--path <dir>]      Generate roxygen2 docs
 btw pkg check [--path <dir>]         Run R CMD check
 btw pkg test [-f <filter>] [--path <dir>]  Run testthat tests
 btw pkg load [--path <dir>]          Load package with pkgload
-btw pkg coverage [--file <f>]        Compute test coverage
+btw pkg coverage [--file <f>] [--json]  Compute test coverage
 
-btw info platform                    R version, OS, locale
-btw info packages [<pkg>...]         Installed package details (--check for quick lookup)
+btw info platform [--json]              R version, OS, locale
+btw info packages [<pkg>...] [--json]   Installed package details (--check for quick lookup, --deps for dep types)
 
-btw cran search <query> [-n <count>] Search CRAN for packages
-btw cran info <pkg>                  CRAN package details
+btw cran search <query> [-n <count>] [--json]  Search CRAN for packages
+btw cran info <pkg> [--json]            CRAN package details
 ```
 
 Run `btw --help`, `btw <group> --help`, or `btw <group> <cmd> --help` for full usage details.
