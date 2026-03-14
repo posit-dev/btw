@@ -412,6 +412,25 @@ test_that("btw cran info shows package info", {
   expect_equal(env$package, "anyflights")
 })
 
+test_that("btw cran search --json outputs valid JSON", {
+  local_mocked_bindings(pkg_search = mock_pkgsearch, .package = "pkgsearch")
+  env <- run_btw_quietly("cran", "search", "string interpolation", "--json")
+  parsed <- jsonlite::fromJSON(paste(env$.output, collapse = "\n"))
+  expect_true(is.data.frame(parsed))
+  expect_equal(parsed$package, c("glue", "epoxy", "gsubfn"))
+})
+
+test_that("btw cran info --json outputs valid JSON", {
+  local_mocked_bindings(
+    cran_package = mock_cran_package,
+    .package = "pkgsearch"
+  )
+  env <- run_btw_quietly("cran", "info", "anyflights", "--json")
+  parsed <- jsonlite::fromJSON(paste(env$.output, collapse = "\n"))
+  expect_equal(parsed$Package, "anyflights")
+  expect_equal(parsed$Version, "0.3.5")
+})
+
 # error handling ---------------------------------------------------------
 
 test_that("btw pkg error exits with code 1 and message on stderr", {

@@ -178,7 +178,7 @@ btw_info_packages <- function(packages, deps, check, json = FALSE) {
   }
 }
 
-btw_cran_search <- function(query, format, n) {
+btw_cran_search <- function(query, format, n, json = FALSE) {
   size <- if (!is.na(n)) {
     n
   } else if (format == "long") {
@@ -187,11 +187,24 @@ btw_cran_search <- function(query, format, n) {
     20L
   }
   result <- pkgsearch::pkg_search(query, format = format, size = size)
-  btw_output(btw_this(result, for_tool_use = TRUE))
+  if (json) {
+    df <- as.data.frame(result)
+    df[] <- lapply(df, function(col) {
+      if (inherits(col, "numeric_version")) as.character(col) else col
+    })
+    btw_json_output(df)
+  } else {
+    btw_output(btw_this(result, for_tool_use = TRUE))
+  }
 }
 
-btw_cran_info <- function(package) {
-  btw_output(btw_this(pkgsearch::cran_package(package)))
+btw_cran_info <- function(package, json = FALSE) {
+  result <- pkgsearch::cran_package(package)
+  if (json) {
+    btw_json_output(unclass(result))
+  } else {
+    btw_output(btw_this(result))
+  }
 }
 
 # Subcommand dispatch ---------------------------------------------------------
@@ -318,6 +331,9 @@ switch(
 
   # cran ----
   cran = {
+    #| description: Output as JSON.
+    json <- FALSE
+
     switch(
       cran_cmd <- "",
 
@@ -331,14 +347,14 @@ switch(
         #| short: 'n'
         n <- NA_integer_
 
-        tryCatch(btw_cran_search(query, format, n), error = btw_error)
+        tryCatch(btw_cran_search(query, format, n, json), error = btw_error)
       },
 
       # cran info ----
       info = {
         #| description: Package name.
         package <- NULL
-        tryCatch(btw_cran_info(package), error = btw_error)
+        tryCatch(btw_cran_info(package, json), error = btw_error)
       }
     )
     if (cran_cmd == "") btw_self_help("cran")
