@@ -71,6 +71,7 @@ reference:
   - btw_client
   - btw_tools
   - mcp
+  - install_btw_cli
 
 - title: Project Context
   contents:
