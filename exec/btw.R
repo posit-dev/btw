@@ -132,13 +132,17 @@ btw_pkg_load <- function(path) {
   btw_output(btw:::btw_tool_pkg_load_all_impl(path))
 }
 
-btw_pkg_coverage <- function(path, file) {
-  btw_output(
-    btw:::btw_tool_pkg_coverage_impl(
-      path,
-      if (has_value(file)) file else NULL
-    )
+btw_pkg_coverage <- function(path, file, json = FALSE) {
+  result <- btw:::btw_tool_pkg_coverage_impl(
+    path,
+    if (has_value(file)) file else NULL
   )
+  if (json) {
+    data <- S7::prop(result, "extra")$data
+    btw_json_output(if (!is.null(data)) data else list())
+  } else {
+    btw_output(result)
+  }
 }
 
 btw_info_platform <- function(json = FALSE) {
@@ -291,7 +295,9 @@ switch(
       coverage = {
         #| description: Filename for line-level coverage details.
         file <- ""
-        tryCatch(btw_pkg_coverage(path, file), error = btw_error)
+        #| description: Output as JSON.
+        json <- FALSE
+        tryCatch(btw_pkg_coverage(path, file, json), error = btw_error)
       }
     )
     if (pkg_cmd == "") btw_self_help("pkg")

@@ -251,6 +251,26 @@ test_that("btw pkg coverage calls coverage impl", {
   expect_equal(env$file, "")
 })
 
+test_that("btw pkg coverage --json outputs valid JSON", {
+  mock_df <- data.frame(
+    filename = c("R/foo.R", "R/bar.R"),
+    coverage = c(95.5, 80.0),
+    stringsAsFactors = FALSE
+  )
+  local_mocked_bindings(
+    btw_tool_pkg_coverage_impl = function(pkg, filename = NULL) {
+      btw:::BtwRunToolResult(
+        value = "Coverage: 87%",
+        extra = list(data = mock_df, code = "coverage()")
+      )
+    }
+  )
+  env <- run_btw_quietly("pkg", "coverage", "--json")
+  parsed <- jsonlite::fromJSON(paste(env$.output, collapse = "\n"))
+  expect_equal(parsed$filename, c("R/foo.R", "R/bar.R"))
+  expect_equal(parsed$coverage, c(95.5, 80.0))
+})
+
 test_that("btw pkg coverage --file passes filename", {
   mock_filename <- NULL
   local_mocked_bindings(
