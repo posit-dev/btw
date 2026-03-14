@@ -27,7 +27,8 @@ The result of \code{\link[Rapp:install_pkg_cli_apps]{Rapp::install_pkg_cli_apps(
 \description{
 Installs the \code{btw} CLI launcher using \code{\link[Rapp:install_pkg_cli_apps]{Rapp::install_pkg_cli_apps()}}.
 \href{https://github.com/r-lib/Rapp}{Rapp} is required to build and install the
-CLI.
+CLI. See \code{\link[Rapp:install_pkg_cli_apps]{Rapp::install_pkg_cli_apps()}} for details on where the launcher is
+installed and how to manage it.
 }
 \details{
 After installing the CLI, you will be offered the option to install the

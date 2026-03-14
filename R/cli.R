@@ -2,7 +2,8 @@
 #'
 #' Installs the `btw` CLI launcher using [Rapp::install_pkg_cli_apps()].
 #' [Rapp](https://github.com/r-lib/Rapp) is required to build and install the
-#' CLI.
+#' CLI. See [Rapp::install_pkg_cli_apps()] for details on where the launcher is
+#' installed and how to manage it.
 #'
 #' After installing the CLI, you will be offered the option to install the
 #' `r-btw-cli` skill, which helps AI coding assistants discover and use the
