@@ -51,14 +51,14 @@
       
       Options:
         -p, --package <PACKAGE>  Package name to scope the help topic.
-                                 [default: "NA"] [type: string]
+                                 [default: ""] [type: string]
       
       Global options:
         --version / --no-version  Print btw version and exit. [default: false]
                                   Enable with `--version`.
       
       Arguments:
-        <TOPIC>  Help topic or package name.
+        <TOPIC>  Help topic, package name, or {package} for package listing.
 
 # btw pkg --help shows pkg group help
 

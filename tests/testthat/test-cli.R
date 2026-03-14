@@ -73,11 +73,19 @@ test_that("btw --version prints version and exits 0", {
 
 # docs help --------------------------------------------------------------
 
-test_that("btw docs help <package> lists help topics", {
-  env <- run_btw_quietly("docs", "help", "stats")
+test_that("btw docs help <topic> resolves topic first", {
+  local_skip_pandoc_convert_text()
+  env <- run_btw_quietly("docs", "help", "rnorm")
   expect_true(is.environment(env))
-  expect_equal(env$topic, "stats")
-  expect_true(is.na(env$package))
+  expect_equal(env$topic, "rnorm")
+  expect_equal(env$package, "")
+})
+
+test_that("btw docs help {package} lists help topics", {
+  env <- run_btw_quietly("docs", "help", "{stats}")
+  expect_true(is.environment(env))
+  expect_equal(env$topic, "{stats}")
+  expect_equal(env$package, "")
 })
 
 test_that("btw docs help <topic> -p <package> reads help page", {
@@ -87,21 +95,19 @@ test_that("btw docs help <topic> -p <package> reads help page", {
   expect_equal(env$package, "stats")
 })
 
-test_that("btw docs help <topic> falls back to topic search", {
-  skip_if_not_installed("dplyr")
-  local_skip_pandoc_convert_text()
-
-  # "mutate" is not a package, so it should fall back to topic search
-  env <- run_btw_quietly("docs", "help", "mutate")
-  expect_equal(env$topic, "mutate")
-  expect_true(is.na(env$package))
+test_that("btw docs help <name> falls back to package listing", {
+  # "stats" as a topic resolves to ?stats, but a name that is only a package
+  # (not a topic) should fall back to package listing
+  env <- run_btw_quietly("docs", "help", "stats")
+  expect_equal(env$topic, "stats")
+  expect_equal(env$package, "")
 })
 
 test_that("btw docs help pkg::topic reads scoped help page", {
   local_skip_pandoc_convert_text()
   env <- run_btw_quietly("docs", "help", "stats::rnorm")
   expect_equal(env$topic, "stats::rnorm")
-  expect_true(is.na(env$package))
+  expect_equal(env$package, "")
 })
 
 test_that("btw docs help pkg::topic ignores --package with warning", {
@@ -134,7 +140,7 @@ test_that("btw docs vignette <package> reads intro vignette", {
   local_skip_pandoc_convert()
   env <- run_btw_quietly("docs", "vignette", "dplyr")
   expect_equal(env$package, "dplyr")
-  expect_true(is.na(env$name))
+  expect_equal(env$name, "")
   expect_false(env$list)
 })
 
@@ -162,7 +168,7 @@ test_that("btw docs news <package> reads news", {
   local_skip_pandoc_convert_text()
   env <- run_btw_quietly("docs", "news", "dplyr")
   expect_equal(env$package, "dplyr")
-  expect_true(is.na(env$search))
+  expect_equal(env$search, "")
 })
 
 test_that("btw docs news <package> -s <term> searches news", {
@@ -242,7 +248,7 @@ test_that("btw pkg coverage calls coverage impl", {
     btw_tool_pkg_coverage_impl = function(pkg, filename = NULL) "Coverage: 80%"
   )
   env <- run_btw_quietly("pkg", "coverage")
-  expect_true(is.na(env$file))
+  expect_equal(env$file, "")
 })
 
 test_that("btw pkg coverage --file passes filename", {

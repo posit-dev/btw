@@ -19,9 +19,15 @@ if (version) {
 
 # Helpers ---------------------------------------------------------------------
 
+has_value <- function(x) !is.na(x) && nzchar(x)
+
 btw_output <- function(x) {
-  if (!is.character(x)) {
+  if (is.character(x)) {
+    # pass through
+  } else if (S7::S7_inherits(x)) {
     x <- S7::prop(x, "value")
+  } else {
+    stop("Unexpected output type: ", class(x)[[1]], call. = FALSE)
   }
   cat(paste(x, collapse = "\n"), "\n")
 }
@@ -44,7 +50,7 @@ btw_self_help <- function(...) {
 btw_docs_help <- function(topic, package) {
   if (grepl("::", topic, fixed = TRUE)) {
     parts <- strsplit(topic, "::", fixed = TRUE)[[1]]
-    if (!is.na(package)) {
+    if (has_value(package)) {
       warning(
         "Ignoring --package flag; using package from ",
         topic,
@@ -53,15 +59,18 @@ btw_docs_help <- function(topic, package) {
       )
     }
     btw_output(btw_this(btw:::as_btw_docs_topic(parts[1], parts[2])))
-  } else if (!is.na(package)) {
+  } else if (grepl("^\\{.+\\}$", topic)) {
+    pkg_name <- sub("^\\{(.+)\\}$", "\\1", topic)
+    btw_output(btw_this(btw:::as_btw_docs_package(pkg_name)))
+  } else if (has_value(package)) {
     btw_output(btw_this(btw:::as_btw_docs_topic(package, topic)))
   } else {
     result <- tryCatch(
-      btw_this(btw:::as_btw_docs_package(topic)),
+      btw_this(btw:::as_btw_docs_topic(NULL, topic)),
       error = function(e) NULL
     )
     if (is.null(result)) {
-      btw_output(btw_this(btw:::as_btw_docs_topic(NULL, topic)))
+      btw_output(btw_this(btw:::as_btw_docs_package(topic)))
     } else {
       btw_output(result)
     }
@@ -71,7 +80,7 @@ btw_docs_help <- function(topic, package) {
 btw_docs_vignette <- function(package, name, list) {
   if (list) {
     btw_output(btw_this(utils::vignette(package = package)))
-  } else if (!is.na(name)) {
+  } else if (has_value(name)) {
     btw_output(btw_this(utils::vignette(name, package = package)))
   } else {
     result <- tryCatch(
@@ -94,7 +103,7 @@ btw_docs_vignette <- function(package, name, list) {
 }
 
 btw_docs_news <- function(package, search) {
-  search_term <- if (!is.na(search)) search else ""
+  search_term <- if (has_value(search)) search else ""
   btw_output(btw:::btw_tool_docs_package_news_impl(package, search_term))
 }
 
@@ -110,7 +119,7 @@ btw_pkg_test <- function(path, filter) {
   btw_output(
     btw:::btw_tool_pkg_test_impl(
       path,
-      if (!is.na(filter)) filter else NULL
+      if (has_value(filter)) filter else NULL
     )
   )
 }
@@ -123,7 +132,7 @@ btw_pkg_coverage <- function(path, file) {
   btw_output(
     btw:::btw_tool_pkg_coverage_impl(
       path,
-      if (!is.na(file)) file else NULL
+      if (has_value(file)) file else NULL
     )
   )
 }
@@ -142,7 +151,7 @@ btw_info_packages <- function(packages, deps, check) {
     if (length(pkgs) == 0) {
       pkgs <- "attached"
     }
-    deps_val <- if (!is.na(deps)) deps else ""
+    deps_val <- if (has_value(deps)) deps else ""
     btw_output(btw:::btw_tool_sessioninfo_package_impl(pkgs, deps_val))
   }
 }
@@ -175,11 +184,11 @@ switch(
 
       # docs help ----
       help = {
-        #| description: Help topic or package name.
+        #| description: Help topic, package name, or {package} for package listing.
         topic <- NULL
         #| description: Package name to scope the help topic.
         #| short: 'p'
-        package <- NA_character_
+        package <- ""
 
         tryCatch(btw_docs_help(topic, package), error = btw_error)
       },
@@ -190,7 +199,7 @@ switch(
         package <- NULL
         #| description: Vignette name.
         #| short: 'n'
-        name <- NA_character_
+        name <- ""
         #| description: List available vignettes.
         #| short: 'l'
         list <- FALSE
@@ -204,7 +213,7 @@ switch(
         package <- NULL
         #| description: Search term to filter NEWS entries.
         #| short: 's'
-        search <- NA_character_
+        search <- ""
 
         tryCatch(btw_docs_news(package, search), error = btw_error)
       }
@@ -234,7 +243,7 @@ switch(
       test = {
         #| description: Regex to filter test files.
         #| short: 'f'
-        filter <- NA_character_
+        filter <- ""
         tryCatch(btw_pkg_test(path, filter), error = btw_error)
       },
 
@@ -246,7 +255,7 @@ switch(
       # pkg coverage ----
       coverage = {
         #| description: Filename for line-level coverage details.
-        file <- NA_character_
+        file <- ""
         tryCatch(btw_pkg_coverage(path, file), error = btw_error)
       }
     )
@@ -268,7 +277,7 @@ switch(
         #| description: Package names to query.
         `packages...` <- c()
         #| description: Dependency types to include.
-        deps <- NA_character_
+        deps <- ""
         #| description: Check if packages are installed.
         #| short: 'c'
         check <- FALSE
