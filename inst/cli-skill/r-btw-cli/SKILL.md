@@ -10,13 +10,15 @@ description: "Use the `btw` CLI to access R documentation, manage R package deve
 ## Commands
 
 ```
-btw docs help <topic> [-p <pkg>]     Read an R help page (or list topics for a package)
+btw docs help <topic> [-p <pkg>]     Read an R help page (tries topic first, falls back to package listing)
+btw docs help {<pkg>}                List help topics for a package
+btw docs help <pkg>::<topic>         Read a specific help page (scoped)
 btw docs vignette <pkg> [-n <name>]  Read a vignette (--list to list available)
 btw docs news <pkg> [-s <term>]      Read package NEWS/changelog
 
 btw pkg document [--path <dir>]      Generate roxygen2 docs
 btw pkg check [--path <dir>]         Run R CMD check
-btw pkg test [-f <filter>] [--path]  Run testthat tests
+btw pkg test [-f <filter>] [--path <dir>]  Run testthat tests
 btw pkg load [--path <dir>]          Load package with pkgload
 btw pkg coverage [--file <f>]        Compute test coverage
 
