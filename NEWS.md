@@ -3,9 +3,10 @@
 * New `btw` CLI provides command-line access to btw's tool groups — **docs**,
   **pkg**, **info**, and **cran** — powered by
   [Rapp](https://github.com/r-lib/Rapp). Install with `install_btw_cli()` and
-  run commands like `btw docs help dplyr::mutate` or `btw cran search "tidyverse"`.
-  Output is TTY-aware: colored and formatted for terminals, plain markdown when
-  piped (#176).
+  run commands like `btw docs help dplyr::mutate` or `btw cran search
+  "tidyverse"`. Output is designed for humans and LLMs: colored and formatted
+  for terminals, plain markdown when piped, with a `--json` flag to return
+  pipable JSON in select commands (#176).
 
 * `btw` now supports [Agent Skills](https://agentskills.io) via
   `btw_tool_skill()`. Skills are modular, on-demand capabilities that provide
