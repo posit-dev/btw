@@ -14,6 +14,8 @@
 - [`btw_mcp_server()`](https://posit-dev.github.io/btw/dev/reference/mcp.md)
   [`btw_mcp_session()`](https://posit-dev.github.io/btw/dev/reference/mcp.md)
   : Start a Model Context Protocol server with btw tools
+- [`install_btw_cli()`](https://posit-dev.github.io/btw/dev/reference/install_btw_cli.md)
+  : Install the btw CLI
 
 ## Project Context
 

@@ -4,6 +4,11 @@ Skills are modular capabilities that extend Claude's functionality with
 specialized knowledge, workflows, and tools. Each skill is a directory
 containing a SKILL.md file with instructions and optional bundled
 resources (scripts, references, assets).
+When btw_tool_skill is included in the chat client's tools, btw
+automatically injects information about available skills into the system
+prompt so the model knows which skills are available. If the skill tool is
+added after client creation, the model can call btw_tool_skill(&quot;&quot;) (empty
+name) to get the current skill listing.
 Skills are discovered from the following locations, in increasing order of
 priority (later sources override earlier ones when skill names conflict):
 Skills bundled with the btw package itself
@@ -17,6 +22,11 @@ Skills are modular capabilities that extend Claude's functionality with
 specialized knowledge, workflows, and tools. Each skill is a directory
 containing a SKILL.md file with instructions and optional bundled
 resources (scripts, references, assets).
+When btw_tool_skill is included in the chat client's tools, btw
+automatically injects information about available skills into the system
+prompt so the model knows which skills are available. If the skill tool is
+added after client creation, the model can call btw_tool_skill(&quot;&quot;) (empty
+name) to get the current skill listing.
 Skills are discovered from the following locations, in increasing order of
 priority (later sources override earlier ones when skill names conflict):
 Skills bundled with the btw package itself
@@ -70,6 +80,11 @@ Project-level skills (.btw/skills/ or .agents/skills/)
 specialized knowledge, workflows, and tools. Each skill is a directory
 containing a <code>SKILL.md</code> file with instructions and optional bundled
 resources (scripts, references, assets).</p>
+<p>When <code>btw_tool_skill</code> is included in the chat client's tools, btw
+automatically injects information about available skills into the system
+prompt so the model knows which skills are available. If the skill tool is
+added after client creation, the model can call <code>btw_tool_skill("")</code> (empty
+name) to get the current skill listing.</p>
 <p>Skills are discovered from the following locations, in increasing order of
 priority (later sources override earlier ones when skill names conflict):</p><ol><li><p>Skills bundled with the btw package itself</p></li>
 <li><p>Skills from currently <strong>attached</strong> R packages — any package with an
@@ -88,7 +103,8 @@ priority (later sources override earlier ones when skill names conflict):</p><ol
 
 
 <dl><dt id="arg-name">name<a class="anchor" aria-label="anchor" href="#arg-name"></a></dt>
-<dd><p>The name of the skill to load.</p></dd>
+<dd><p>The name of the skill to load, or <code>""</code> to list all available
+skills.</p></dd>
 
 
 <dt id="arg--intent">_intent<a class="anchor" aria-label="anchor" href="#arg--intent"></a></dt>

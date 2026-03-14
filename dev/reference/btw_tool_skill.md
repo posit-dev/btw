@@ -7,6 +7,12 @@ specialized knowledge, workflows, and tools. Each skill is a directory
 containing a `SKILL.md` file with instructions and optional bundled
 resources (scripts, references, assets).
 
+When `btw_tool_skill` is included in the chat client's tools, btw
+automatically injects information about available skills into the system
+prompt so the model knows which skills are available. If the skill tool
+is added after client creation, the model can call `btw_tool_skill("")`
+(empty name) to get the current skill listing.
+
 Skills are discovered from the following locations, in increasing order
 of priority (later sources override earlier ones when skill names
 conflict):
@@ -32,7 +38,7 @@ btw_tool_skill(name, `_intent` = "")
 
 - name:
 
-  The name of the skill to load.
+  The name of the skill to load, or `""` to list all available skills.
 
 - \_intent:
 
