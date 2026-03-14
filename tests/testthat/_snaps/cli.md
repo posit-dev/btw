@@ -98,6 +98,9 @@
         platform  
         packages  
       
+      Options:
+        --json / --no-json  Output as JSON. [default: false] Enable with `--json`.
+      
       Global options:
         --version / --no-version  Print btw version and exit. [default: false]
                                   Enable with `--version`.

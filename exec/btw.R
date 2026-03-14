@@ -21,6 +21,10 @@ if (version) {
 
 has_value <- function(x) !is.na(x) && nzchar(x)
 
+btw_json_output <- function(x) {
+  cat(jsonlite::toJSON(x, auto_unbox = TRUE, pretty = TRUE, na = "null"), "\n")
+}
+
 btw_output <- function(x) {
   if (is.character(x)) {
     # pass through
@@ -137,22 +141,40 @@ btw_pkg_coverage <- function(path, file) {
   )
 }
 
-btw_info_platform <- function() {
-  btw_output(btw:::btw_tool_sessioninfo_platform_impl())
+btw_info_platform <- function(json = FALSE) {
+  result <- btw:::btw_tool_sessioninfo_platform_impl()
+  if (json) {
+    btw_json_output(S7::prop(result, "extra"))
+  } else {
+    btw_output(result)
+  }
 }
 
-btw_info_packages <- function(packages, deps, check) {
+btw_info_packages <- function(packages, deps, check, json = FALSE) {
   pkgs <- packages
   if (check && length(pkgs) > 0) {
-    for (pkg in pkgs) {
-      btw_output(btw:::btw_tool_sessioninfo_is_package_installed_impl(pkg))
+    if (json) {
+      results <- lapply(pkgs, function(pkg) {
+        result <- btw:::btw_tool_sessioninfo_is_package_installed_impl(pkg)
+        S7::prop(result, "extra")
+      })
+      btw_json_output(results)
+    } else {
+      for (pkg in pkgs) {
+        btw_output(btw:::btw_tool_sessioninfo_is_package_installed_impl(pkg))
+      }
     }
   } else {
     if (length(pkgs) == 0) {
       pkgs <- "attached"
     }
     deps_val <- if (has_value(deps)) deps else ""
-    btw_output(btw:::btw_tool_sessioninfo_package_impl(pkgs, deps_val))
+    result <- btw:::btw_tool_sessioninfo_package_impl(pkgs, deps_val)
+    if (json) {
+      btw_json_output(S7::prop(result, "extra")$data)
+    } else {
+      btw_output(result)
+    }
   }
 }
 
@@ -264,12 +286,15 @@ switch(
 
   # info ----
   info = {
+    #| description: Output as JSON.
+    json <- FALSE
+
     switch(
       info_cmd <- "",
 
       # info platform ----
       platform = {
-        tryCatch(btw_info_platform(), error = btw_error)
+        tryCatch(btw_info_platform(json), error = btw_error)
       },
 
       # info packages ----
@@ -283,7 +308,7 @@ switch(
         check <- FALSE
 
         tryCatch(
-          btw_info_packages(`packages...`, deps, check),
+          btw_info_packages(`packages...`, deps, check, json),
           error = btw_error
         )
       }

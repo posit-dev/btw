@@ -308,6 +308,48 @@ test_that("btw info packages --check calls is_package_installed", {
   expect_equal(checked_pkgs, c("dplyr", "ggplot2"))
 })
 
+test_that("btw info platform --json outputs valid JSON", {
+  local_sessioninfo_quarto_version()
+  env <- run_btw_quietly("info", "platform", "--json")
+  parsed <- jsonlite::fromJSON(paste(env$.output, collapse = "\n"))
+  expect_type(parsed, "list")
+  expect_true("os:" %in% names(parsed))
+})
+
+test_that("btw info packages --json outputs valid JSON", {
+  mock_df <- data.frame(
+    package = c("dplyr", "ggplot2"),
+    version = c("1.1.4", "3.5.0"),
+    stringsAsFactors = FALSE
+  )
+  local_mocked_bindings(
+    btw_tool_sessioninfo_package_impl = function(packages, dependencies) {
+      btw:::BtwPackageInfoToolResult(
+        value = "pkg info",
+        extra = list(data = mock_df)
+      )
+    }
+  )
+  env <- run_btw_quietly("info", "packages", "--json")
+  parsed <- jsonlite::fromJSON(paste(env$.output, collapse = "\n"))
+  expect_equal(parsed$package, c("dplyr", "ggplot2"))
+})
+
+test_that("btw info packages --check --json outputs valid JSON", {
+  local_mocked_bindings(
+    btw_tool_sessioninfo_is_package_installed_impl = function(package_name) {
+      btw:::BtwToolResult(
+        value = paste(package_name, "is installed"),
+        extra = list(package = package_name, version = "1.0.0")
+      )
+    }
+  )
+  env <- run_btw_quietly("info", "packages", "dplyr", "ggplot2", "--check", "--json")
+  parsed <- jsonlite::fromJSON(paste(env$.output, collapse = "\n"))
+  expect_equal(nrow(parsed), 2)
+  expect_equal(parsed$package, c("dplyr", "ggplot2"))
+})
+
 test_that("btw info packages --deps passes dependency types", {
   mock_deps <- NULL
   local_mocked_bindings(
