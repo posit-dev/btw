@@ -646,16 +646,6 @@ maybe_use_build_ignore <- function(target_parent, project_dir = getwd()) {
 }
 
 update_rbuildignore <- function(dir_name, rbuildignore_path) {
-  if (rlang::is_installed("usethis")) {
-    usethis::with_project(
-      dirname(rbuildignore_path),
-      usethis::use_build_ignore(dir_name),
-      quiet = TRUE,
-      force = TRUE
-    )
-    return(invisible(NULL))
-  }
-
   pattern <- escape_for_rbuildignore(dir_name)
 
   existing <- if (file.exists(rbuildignore_path)) {

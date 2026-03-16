@@ -1132,7 +1132,10 @@ test_that("maybe_use_build_ignore() auto-updates .Rbuildignore when it exists", 
   skills_dir <- file.path(project, ".btw", "skills")
   dir.create(skills_dir, recursive = TRUE)
 
-  suppressMessages(maybe_use_build_ignore(skills_dir))
+  expect_message(
+    maybe_use_build_ignore(skills_dir),
+    "\\.Rbuildignore"
+  )
 
   lines <- readLines(rbuildignore)
   expect_true(any(grepl("btw", lines, fixed = TRUE)))
@@ -1173,7 +1176,10 @@ test_that("maybe_use_build_ignore() prompts when .Rbuildignore absent (interacti
   local_mocked_bindings(is_interactive = function() TRUE)
   local_mocked_bindings(menu = function(...) 1L, .package = "utils")
 
-  suppressMessages(maybe_use_build_ignore(skills_dir))
+  expect_message(
+    maybe_use_build_ignore(skills_dir),
+    "\\.Rbuildignore"
+  )
   expect_true(file.exists(rbuildignore))
 })
 
