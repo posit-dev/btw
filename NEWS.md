@@ -113,6 +113,10 @@
 * `btw_app()` no longer errors with "argument is of length zero" when run
   outside of an IDE (thanks @HenrikBengtsson, #168).
 
+* `btw_app()` no longer errors when provider built-in tools (e.g.
+  `claude_tool_web_search()`) are registered with a btw client.
+  Built-in tools now appear in the app sidebar under a "Built-in" group (#175).
+
 * `btw_tool_files_read()` now correctly handles UTF-8 files containing CJK
   (Chinese, Japanese, Korean) characters. Previously, the text-file detection
   could truncate a read buffer mid-way through a multi-byte character, causing
