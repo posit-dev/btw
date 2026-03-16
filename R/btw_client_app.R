@@ -204,7 +204,7 @@ btw_app_from_client <- function(
     # Split tools: btw tools (including built-in) and other (non-btw) tools
     is_btw_tool <- function(tool) {
       identical(substring(tool@name, 1, 9), "btw_tool_") ||
-        S7::S7_inherits(tool, BtwToolBuiltIn)
+        (!is.null(BtwToolBuiltIn) && S7::S7_inherits(tool, BtwToolBuiltIn))
     }
     btw_available_tools <- keep(all_available_tools, is_btw_tool)
     other_tools <- discard(all_available_tools, is_btw_tool)

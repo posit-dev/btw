@@ -60,14 +60,21 @@ chat_get_cost <- function(client) {
 
 # Built-in tool wrapping ---------------------------------------------------
 
-BtwToolBuiltIn <- S7::new_class(
-  "BtwToolBuiltIn",
-  parent = ellmer:::ToolBuiltIn,
-  properties = list(
-    title = S7::class_character,
-    description = S7::class_character,
-    annotations = S7::class_list
-  )
+ellmer_ToolBuiltIn <- function() {
+  asNamespace("ellmer")[["ToolBuiltIn"]]
+}
+
+BtwToolBuiltIn <- tryCatch(
+  S7::new_class(
+    "BtwToolBuiltIn",
+    parent = ellmer_ToolBuiltIn(),
+    properties = list(
+      title = S7::class_character,
+      description = S7::class_character,
+      annotations = S7::class_list
+    )
+  ),
+  error = function(e) NULL
 )
 
 built_in_tool_info <- function(name) {
@@ -92,9 +99,14 @@ built_in_tool_info <- function(name) {
 }
 
 wrap_built_in_tools <- function(client) {
+  ToolBuiltIn <- ellmer_ToolBuiltIn()
+  if (is.null(ToolBuiltIn) || is.null(BtwToolBuiltIn)) {
+    return(invisible(client))
+  }
+
   tools <- client$get_tools()
   tools <- map(tools, function(tool) {
-    if (!S7::S7_inherits(tool, ellmer:::ToolBuiltIn)) {
+    if (!S7::S7_inherits(tool, ToolBuiltIn)) {
       return(tool)
     }
     if (S7::S7_inherits(tool, BtwToolBuiltIn)) {
