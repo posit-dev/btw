@@ -93,7 +93,7 @@ built_in_tool_info <- function(name) {
     ),
     list(
       title = to_title_case(gsub("_", " ", name)),
-      description = ""
+      description = sprintf("A provider built-in %s tool.", name)
     )
   )
 }
