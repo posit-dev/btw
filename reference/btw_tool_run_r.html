@@ -13,7 +13,7 @@ execution stops on the first error, returning all results up to that point."><me
 
     <a class="navbar-brand me-2" href="../index.html">btw</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,7 +40,7 @@ execution stops on the first error, returning all results up to that point."><me
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Tool: Run R code</h1>
-      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/v1.1.0/R/tool-run.R" class="external-link"><code>R/tool-run.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/main/R/tool-run.R" class="external-link"><code>R/tool-run.R</code></a></small>
       <div class="d-none name"><code>btw_tool_run_r.Rd</code></div>
     </div>
 
@@ -65,7 +65,9 @@ execution stops on the first error, returning all results up to that point.</p>
 
 
 <dt id="arg--intent">_intent<a class="anchor" aria-label="anchor" href="#arg--intent"></a></dt>
-<dd><p>Intent description (automatically added by ellmer).</p></dd>
+<dd><p>An optional string describing the intent of the tool use.
+When the tool is used by an LLM, the model will use this argument to
+explain why it called the tool.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -92,7 +94,7 @@ execution. Can be a character string of the form <code>"w:h"</code> (e.g., <code
 or a numeric value representing width/height (e.g., <code>16/9</code>). Default is
 <code>"3:2"</code>.</p></li>
 <li><p><code>btw.run_r.plot_size</code>: Integer pixel size for the longest side of plots.
-Default is <code>768L</code>. This image size was selected to match <a href="https://platform.openai.com/docs/guides/images-vision?api-mode=responses" class="external-link">OpenAI's image resizing rules</a>,
+Default is <code>768L</code>. This image size was selected to match <a href="https://developers.openai.com/api/docs/guides/images-vision" class="external-link">OpenAI's image resizing rules</a>,
 where images are resized such that the largest size is 768px. Another
 common choice is 512px. Larger images may be used but will result in
 increased token sizes.</p></li>

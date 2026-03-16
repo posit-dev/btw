@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">btw</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,6 +80,13 @@
 
         </dt>
         <dd>Start a Model Context Protocol server with btw tools</dd>
+
+        <dt>
+
+          <code><a href="install_btw_cli.html">install_btw_cli()</a></code>
+
+        </dt>
+        <dd>Install the btw CLI</dd>
       </dl></div><div class="section level2">
       <h2 id="project-context">Project Context<a class="anchor" aria-label="anchor" href="#project-context"></a></h2>
 
@@ -141,6 +148,43 @@
         </dt>
         <dd>Describe the contents of an environment</dd>
       </dl></div><div class="section level2">
+      <h2 id="agent-skills">Agent Skills<a class="anchor" aria-label="anchor" href="#agent-skills"></a></h2>
+
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="btw_tool_skill.html">btw_tool_skill()</a></code>
+
+        </dt>
+        <dd>Tool: Load a skill</dd>
+
+        <dt>
+
+          <code><a href="btw_skill_install_github.html">btw_skill_install_github()</a></code>
+
+        </dt>
+        <dd>Install a skill from GitHub</dd>
+
+        <dt>
+
+          <code><a href="btw_skill_install_package.html">btw_skill_install_package()</a></code>
+
+        </dt>
+        <dd>Install a skill from an R package</dd>
+
+        <dt>
+
+          <code><a href="btw_task_create_skill.html">btw_task_create_skill()</a></code>
+
+        </dt>
+        <dd>Task: Create a Skill</dd>
+      </dl></div><div class="section level2">
       <h2 id="tasks-and-agents">Tasks and Agents<a class="anchor" aria-label="anchor" href="#tasks-and-agents"></a></h2>
 
       <div class="section-desc"><p>Tasks, or agents, are higher-level functions that combine system prompts and tools to perform more complex operations.</p><p>Tasks are typically designed for interactive use (e.g. to collaboratively create a project context file), but they can also be used programmatically.</p></div>
@@ -151,6 +195,20 @@
 
 
       <dl><dt>
+
+          <code><a href="btw_task.html">btw_task()</a></code>
+
+        </dt>
+        <dd>Run a pre-formatted btw task</dd>
+
+        <dt>
+
+          <code><a href="btw_agent_tool.html">btw_agent_tool()</a></code>
+
+        </dt>
+        <dd>Create a custom agent tool from a markdown file</dd>
+
+        <dt>
 
           <code><a href="btw_task_create_btw_md.html">btw_task_create_btw_md()</a></code>
 
@@ -163,6 +221,13 @@
 
         </dt>
         <dd>Task: Create a Polished README</dd>
+
+        <dt>
+
+          <code><a href="btw_task_create_skill.html">btw_task_create_skill()</a></code>
+
+        </dt>
+        <dd>Task: Create a Skill</dd>
       </dl></div><div class="section level2">
       <h2 id="tools">Tools<a class="anchor" aria-label="anchor" href="#tools"></a></h2>
 
@@ -174,6 +239,27 @@
 
 
       <dl><dt>
+
+          <code><a href="btw_tool_agent_subagent.html">btw_tool_agent_subagent()</a></code>
+
+        </dt>
+        <dd>Tool: Subagent</dd>
+
+        <dt>
+
+          <code><a href="btw_tool_cran_package.html">btw_tool_cran_package()</a></code>
+
+        </dt>
+        <dd>Tool: Describe a CRAN package</dd>
+
+        <dt>
+
+          <code><a href="btw_tool_cran_search.html">btw_tool_cran_search()</a></code>
+
+        </dt>
+        <dd>Tool: Search for an R package on CRAN</dd>
+
+        <dt>
 
           <code><a href="btw_tool_docs_package_news.html">btw_tool_docs_package_news()</a></code>
 
@@ -196,28 +282,42 @@
 
         <dt>
 
-          <code><a href="btw_tool_files_code_search.html">btw_tool_files_code_search()</a></code>
+          <code><a href="btw_tool_files_edit.html">btw_tool_files_edit()</a></code>
 
         </dt>
-        <dd>Tool: Code Search in Project</dd>
+        <dd>Tool: Edit a text file</dd>
 
         <dt>
 
-          <code><a href="btw_tool_files_list_files.html">btw_tool_files_list_files()</a></code>
+          <code><a href="btw_tool_files_list.html">btw_tool_files_list()</a></code>
 
         </dt>
         <dd>Tool: List files</dd>
 
         <dt>
 
-          <code><a href="btw_tool_files_read_text_file.html">btw_tool_files_read_text_file()</a></code>
+          <code><a href="btw_tool_files_read.html">btw_tool_files_read()</a></code>
 
         </dt>
         <dd>Tool: Read a file</dd>
 
         <dt>
 
-          <code><a href="btw_tool_files_write_text_file.html">btw_tool_files_write_text_file()</a></code>
+          <code><a href="btw_tool_files_replace.html">btw_tool_files_replace()</a></code>
+
+        </dt>
+        <dd>Tool: Replace exact strings in a text file</dd>
+
+        <dt>
+
+          <code><a href="btw_tool_files_search.html">btw_tool_files_search()</a></code>
+
+        </dt>
+        <dd>Tool: Code Search in Project</dd>
+
+        <dt>
+
+          <code><a href="btw_tool_files_write.html">btw_tool_files_write()</a></code>
 
         </dt>
         <dd>Tool: Write a text file</dd>
@@ -315,6 +415,13 @@
 
         <dt>
 
+          <code><a href="btw_tool_pkg_load_all.html">btw_tool_pkg_load_all()</a></code>
+
+        </dt>
+        <dd>Tool: Load package code</dd>
+
+        <dt>
+
           <code><a href="btw_tool_pkg_test.html">btw_tool_pkg_test()</a></code>
 
         </dt>
@@ -329,38 +436,31 @@
 
         <dt>
 
-          <code><a href="btw_tool_search_package_info.html">btw_tool_search_package_info()</a></code>
-
-        </dt>
-        <dd>Tool: Describe a CRAN package</dd>
-
-        <dt>
-
-          <code><a href="btw_tool_search_packages.html">btw_tool_search_packages()</a></code>
-
-        </dt>
-        <dd>Tool: Search for an R package on CRAN</dd>
-
-        <dt>
-
-          <code><a href="btw_tool_session_check_package_installed.html">btw_tool_session_check_package_installed()</a></code>
+          <code><a href="btw_tool_sessioninfo_is_package_installed.html">btw_tool_sessioninfo_is_package_installed()</a></code>
 
         </dt>
         <dd>Tool: Check if a package is installed</dd>
 
         <dt>
 
-          <code><a href="btw_tool_session_package_info.html">btw_tool_session_package_info()</a></code>
+          <code><a href="btw_tool_sessioninfo_package.html">btw_tool_sessioninfo_package()</a></code>
 
         </dt>
         <dd>Tool: Gather information about a package or currently loaded packages</dd>
 
         <dt>
 
-          <code><a href="btw_tool_session_platform_info.html">btw_tool_session_platform_info()</a></code>
+          <code><a href="btw_tool_sessioninfo_platform.html">btw_tool_sessioninfo_platform()</a></code>
 
         </dt>
         <dd>Tool: Describe user's platform</dd>
+
+        <dt>
+
+          <code><a href="btw_tool_skill.html">btw_tool_skill()</a></code>
+
+        </dt>
+        <dd>Tool: Load a skill</dd>
 
         <dt>
 

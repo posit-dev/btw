@@ -3,6 +3,30 @@
 with an ellmer chat via chat$register_tools() that allow the chat to
 interface with your computational environment. Chats returned by
 this function have access to the tools:
+Group: agent
+
+NameDescription
+btw_tool_agent_subagent()
+Delegate a task to a specialized assistant that can work independently with its own conversation thread.
+
+
+
+
+
+
+
+Group: cran
+
+NameDescription
+btw_tool_cran_package()Describe a CRAN package.
+btw_tool_cran_search()Search for an R package on CRAN.
+
+
+
+
+
+
+
 Group: docs
 
 NameDescription
@@ -33,10 +57,12 @@ btw_tool_env_describe_environment()List and describe items in the R session's gl
 Group: files
 
 NameDescription
-btw_tool_files_code_search()Search code files in the project.
-btw_tool_files_list_files()List files or directories in the project.
-btw_tool_files_read_text_file()Read an entire text file.
-btw_tool_files_write_text_file()Write content to a text file.
+btw_tool_files_edit()Edit a text file using hashline references for precise, targeted modifications.
+btw_tool_files_list()List files or directories in the project.
+btw_tool_files_read()Read the contents of a text file.
+btw_tool_files_replace()Find and replace exact string occurrences in a text file.
+btw_tool_files_search()Search code files in the project.
+btw_tool_files_write()Write content to a text file.
 
 
 
@@ -89,6 +115,7 @@ NameDescription
 btw_tool_pkg_check()Run comprehensive package checks.
 btw_tool_pkg_coverage()Compute test coverage for an R package.
 btw_tool_pkg_document()Generate package documentation.
+btw_tool_pkg_load_all()Load package code to verify it loads correctly.
 btw_tool_pkg_test()Run testthat tests for an R package.
 
 
@@ -108,11 +135,12 @@ btw_tool_run_r()Run R code.
 
 
 
-Group: search
+Group: sessioninfo
 
 NameDescription
-btw_tool_search_package_info()Describe a CRAN package.
-btw_tool_search_packages()Search for an R package on CRAN.
+btw_tool_sessioninfo_is_package_installed()Check if a package is installed in the current session.
+btw_tool_sessioninfo_package()Verify that a specific package is installed, or find out which packages are in use in the current session.
+btw_tool_sessioninfo_platform()Describes the R version, operating system, language and locale settings for the user's system.
 
 
 
@@ -120,12 +148,10 @@ btw_tool_search_packages()Search for an R package on CRAN.
 
 
 
-Group: session
+Group: skills
 
 NameDescription
-btw_tool_session_check_package_installed()Check if a package is installed in the current session.
-btw_tool_session_package_info()Verify that a specific package is installed, or find out which packages are in use in the current session.
-btw_tool_session_platform_info()Describes the R version, operating system, language and locale settings for the user's system.
+btw_tool_skill()Load a skill's specialized instructions and list its bundled resources.
 
 
 
@@ -146,6 +172,30 @@ btw_tool_web_read_url()Read a web page and convert it to Markdown format.
 with an ellmer chat via chat$register_tools() that allow the chat to
 interface with your computational environment. Chats returned by
 this function have access to the tools:
+Group: agent
+
+NameDescription
+btw_tool_agent_subagent()
+Delegate a task to a specialized assistant that can work independently with its own conversation thread.
+
+
+
+
+
+
+
+Group: cran
+
+NameDescription
+btw_tool_cran_package()Describe a CRAN package.
+btw_tool_cran_search()Search for an R package on CRAN.
+
+
+
+
+
+
+
 Group: docs
 
 NameDescription
@@ -176,10 +226,12 @@ btw_tool_env_describe_environment()List and describe items in the R session's gl
 Group: files
 
 NameDescription
-btw_tool_files_code_search()Search code files in the project.
-btw_tool_files_list_files()List files or directories in the project.
-btw_tool_files_read_text_file()Read an entire text file.
-btw_tool_files_write_text_file()Write content to a text file.
+btw_tool_files_edit()Edit a text file using hashline references for precise, targeted modifications.
+btw_tool_files_list()List files or directories in the project.
+btw_tool_files_read()Read the contents of a text file.
+btw_tool_files_replace()Find and replace exact string occurrences in a text file.
+btw_tool_files_search()Search code files in the project.
+btw_tool_files_write()Write content to a text file.
 
 
 
@@ -232,6 +284,7 @@ NameDescription
 btw_tool_pkg_check()Run comprehensive package checks.
 btw_tool_pkg_coverage()Compute test coverage for an R package.
 btw_tool_pkg_document()Generate package documentation.
+btw_tool_pkg_load_all()Load package code to verify it loads correctly.
 btw_tool_pkg_test()Run testthat tests for an R package.
 
 
@@ -251,11 +304,12 @@ btw_tool_run_r()Run R code.
 
 
 
-Group: search
+Group: sessioninfo
 
 NameDescription
-btw_tool_search_package_info()Describe a CRAN package.
-btw_tool_search_packages()Search for an R package on CRAN.
+btw_tool_sessioninfo_is_package_installed()Check if a package is installed in the current session.
+btw_tool_sessioninfo_package()Verify that a specific package is installed, or find out which packages are in use in the current session.
+btw_tool_sessioninfo_platform()Describes the R version, operating system, language and locale settings for the user's system.
 
 
 
@@ -263,12 +317,10 @@ btw_tool_search_packages()Search for an R package on CRAN.
 
 
 
-Group: session
+Group: skills
 
 NameDescription
-btw_tool_session_check_package_installed()Check if a package is installed in the current session.
-btw_tool_session_package_info()Verify that a specific package is installed, or find out which packages are in use in the current session.
-btw_tool_session_platform_info()Describes the R version, operating system, language and locale settings for the user's system.
+btw_tool_skill()Load a skill's specialized instructions and list its bundled resources.
 
 
 
@@ -293,7 +345,7 @@ btw_tool_web_read_url()Read a web page and convert it to Markdown format.
 
     <a class="navbar-brand me-2" href="../index.html">btw</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -320,7 +372,7 @@ btw_tool_web_read_url()Read a web page and convert it to Markdown format.
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Tools: Register tools from btw</h1>
-      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/v1.1.0/R/tools.R" class="external-link"><code>R/tools.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/main/R/tools.R" class="external-link"><code>R/tools.R</code></a></small>
       <div class="d-none name"><code>btw_tools.Rd</code></div>
     </div>
 
@@ -329,6 +381,14 @@ btw_tool_web_read_url()Read a web page and convert it to Markdown format.
 with an ellmer chat via <code>chat$register_tools()</code> that allow the chat to
 interface with your computational environment. Chats returned by
 this function have access to the tools:</p><div class="section">
+<h3 id="group-agent">Group: agent<a class="anchor" aria-label="anchor" href="#group-agent"></a></h3>
+<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_agent_subagent.html">btw_tool_agent_subagent()</a></code></td><td></td></tr><tr><td>Delegate a task to a specialized assistant that can work independently with its own conversation thread.</td><td></td></tr></table></div>
+
+<div class="section">
+<h3 id="group-cran">Group: cran<a class="anchor" aria-label="anchor" href="#group-cran"></a></h3>
+<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_cran_package.html">btw_tool_cran_package()</a></code></td><td>Describe a CRAN package.</td></tr><tr><td><code><a href="btw_tool_cran_search.html">btw_tool_cran_search()</a></code></td><td>Search for an R package on CRAN.</td></tr></table></div>
+
+<div class="section">
 <h3 id="group-docs">Group: docs<a class="anchor" aria-label="anchor" href="#group-docs"></a></h3>
 <table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_package_docs.html">btw_tool_docs_available_vignettes()</a></code></td><td>List available vignettes for an R package.</td></tr><tr><td><code><a href="btw_tool_package_docs.html">btw_tool_docs_help_page()</a></code></td><td>Get help page from package.</td></tr><tr><td><code><a href="btw_tool_package_docs.html">btw_tool_docs_package_help_topics()</a></code></td><td>Get available help topics for an R package.</td></tr><tr><td><code><a href="btw_tool_docs_package_news.html">btw_tool_docs_package_news()</a></code></td><td>Read the release notes (NEWS) for a package.</td></tr><tr><td><code><a href="btw_tool_package_docs.html">btw_tool_docs_vignette()</a></code></td><td>Get a package vignette in plain text.</td></tr></table></div>
 
@@ -338,7 +398,7 @@ this function have access to the tools:</p><div class="section">
 
 <div class="section">
 <h3 id="group-files">Group: files<a class="anchor" aria-label="anchor" href="#group-files"></a></h3>
-<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_files_code_search.html">btw_tool_files_code_search()</a></code></td><td>Search code files in the project.</td></tr><tr><td><code><a href="btw_tool_files_list_files.html">btw_tool_files_list_files()</a></code></td><td>List files or directories in the project.</td></tr><tr><td><code><a href="btw_tool_files_read_text_file.html">btw_tool_files_read_text_file()</a></code></td><td>Read an entire text file.</td></tr><tr><td><code><a href="btw_tool_files_write_text_file.html">btw_tool_files_write_text_file()</a></code></td><td>Write content to a text file.</td></tr></table></div>
+<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_files_edit.html">btw_tool_files_edit()</a></code></td><td>Edit a text file using hashline references for precise, targeted modifications.</td></tr><tr><td><code><a href="btw_tool_files_list.html">btw_tool_files_list()</a></code></td><td>List files or directories in the project.</td></tr><tr><td><code><a href="btw_tool_files_read.html">btw_tool_files_read()</a></code></td><td>Read the contents of a text file.</td></tr><tr><td><code><a href="btw_tool_files_replace.html">btw_tool_files_replace()</a></code></td><td>Find and replace exact string occurrences in a text file.</td></tr><tr><td><code><a href="btw_tool_files_search.html">btw_tool_files_search()</a></code></td><td>Search code files in the project.</td></tr><tr><td><code><a href="btw_tool_files_write.html">btw_tool_files_write()</a></code></td><td>Write content to a text file.</td></tr></table></div>
 
 <div class="section">
 <h3 id="group-git">Group: git<a class="anchor" aria-label="anchor" href="#group-git"></a></h3>
@@ -354,19 +414,19 @@ this function have access to the tools:</p><div class="section">
 
 <div class="section">
 <h3 id="group-pkg">Group: pkg<a class="anchor" aria-label="anchor" href="#group-pkg"></a></h3>
-<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_pkg_check.html">btw_tool_pkg_check()</a></code></td><td>Run comprehensive package checks.</td></tr><tr><td><code><a href="btw_tool_pkg_coverage.html">btw_tool_pkg_coverage()</a></code></td><td>Compute test coverage for an R package.</td></tr><tr><td><code><a href="btw_tool_pkg_document.html">btw_tool_pkg_document()</a></code></td><td>Generate package documentation.</td></tr><tr><td><code><a href="btw_tool_pkg_test.html">btw_tool_pkg_test()</a></code></td><td>Run testthat tests for an R package.</td></tr></table></div>
+<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_pkg_check.html">btw_tool_pkg_check()</a></code></td><td>Run comprehensive package checks.</td></tr><tr><td><code><a href="btw_tool_pkg_coverage.html">btw_tool_pkg_coverage()</a></code></td><td>Compute test coverage for an R package.</td></tr><tr><td><code><a href="btw_tool_pkg_document.html">btw_tool_pkg_document()</a></code></td><td>Generate package documentation.</td></tr><tr><td><code><a href="btw_tool_pkg_load_all.html">btw_tool_pkg_load_all()</a></code></td><td>Load package code to verify it loads correctly.</td></tr><tr><td><code><a href="btw_tool_pkg_test.html">btw_tool_pkg_test()</a></code></td><td>Run testthat tests for an R package.</td></tr></table></div>
 
 <div class="section">
 <h3 id="group-run">Group: run<a class="anchor" aria-label="anchor" href="#group-run"></a></h3>
 <table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_run_r.html">btw_tool_run_r()</a></code></td><td>Run R code.</td></tr></table></div>
 
 <div class="section">
-<h3 id="group-search">Group: search<a class="anchor" aria-label="anchor" href="#group-search"></a></h3>
-<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_search_package_info.html">btw_tool_search_package_info()</a></code></td><td>Describe a CRAN package.</td></tr><tr><td><code><a href="btw_tool_search_packages.html">btw_tool_search_packages()</a></code></td><td>Search for an R package on CRAN.</td></tr></table></div>
+<h3 id="group-sessioninfo">Group: sessioninfo<a class="anchor" aria-label="anchor" href="#group-sessioninfo"></a></h3>
+<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_sessioninfo_is_package_installed.html">btw_tool_sessioninfo_is_package_installed()</a></code></td><td>Check if a package is installed in the current session.</td></tr><tr><td><code><a href="btw_tool_sessioninfo_package.html">btw_tool_sessioninfo_package()</a></code></td><td>Verify that a specific package is installed, or find out which packages are in use in the current session.</td></tr><tr><td><code><a href="btw_tool_sessioninfo_platform.html">btw_tool_sessioninfo_platform()</a></code></td><td>Describes the R version, operating system, language and locale settings for the user's system.</td></tr></table></div>
 
 <div class="section">
-<h3 id="group-session">Group: session<a class="anchor" aria-label="anchor" href="#group-session"></a></h3>
-<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_session_check_package_installed.html">btw_tool_session_check_package_installed()</a></code></td><td>Check if a package is installed in the current session.</td></tr><tr><td><code><a href="btw_tool_session_package_info.html">btw_tool_session_package_info()</a></code></td><td>Verify that a specific package is installed, or find out which packages are in use in the current session.</td></tr><tr><td><code><a href="btw_tool_session_platform_info.html">btw_tool_session_platform_info()</a></code></td><td>Describes the R version, operating system, language and locale settings for the user's system.</td></tr></table></div>
+<h3 id="group-skills">Group: skills<a class="anchor" aria-label="anchor" href="#group-skills"></a></h3>
+<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_skill.html">btw_tool_skill()</a></code></td><td>Load a skill's specialized instructions and list its bundled resources.</td></tr></table></div>
 
 <div class="section">
 <h3 id="group-web">Group: web<a class="anchor" aria-label="anchor" href="#group-web"></a></h3>
@@ -427,6 +487,9 @@ place. The <code>chat</code> input is returned invisibly.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># ensure that the current tools persist</span></span></span>
 <span class="r-in"><span><span class="va">ch</span><span class="op">$</span><span class="fu">register_tools</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">ch</span><span class="op">$</span><span class="fu">get_tools</span><span class="op">(</span><span class="op">)</span>, <span class="fu">btw_tools</span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_agent_subagent tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_cran_search tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_cran_package tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_package_news tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_package_help_topics tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_help_page tool.</span>
@@ -434,10 +497,12 @@ place. The <code>chat</code> input is returned invisibly.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_vignette tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_env_describe_data_frame tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_env_describe_environment tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_code_search tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_list_files tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_read_text_file tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_write_text_file tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_edit tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_list tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_read tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_replace tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_search tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_write tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_status tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_diff tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_log tool.</span>
@@ -445,16 +510,20 @@ place. The <code>chat</code> input is returned invisibly.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_branch_list tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_branch_create tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_branch_checkout tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_ide_read_current_editor tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_pkg_coverage tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_pkg_document tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_pkg_check tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_pkg_test tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_search_packages tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_search_package_info tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_session_platform_info tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_session_package_info tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_session_check_package_installed tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_pkg_load_all tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_sessioninfo_is_package_installed tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_sessioninfo_platform tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_sessioninfo_package tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_skill tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_web_read_url tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_agent_subagent tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_cran_search tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_cran_package tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_package_news tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_package_help_topics tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_help_page tool.</span>
@@ -462,10 +531,12 @@ place. The <code>chat</code> input is returned invisibly.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_docs_vignette tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_env_describe_data_frame tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_env_describe_environment tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_code_search tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_list_files tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_read_text_file tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_write_text_file tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_edit tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_list tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_read tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_replace tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_search tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_files_write tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_status tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_diff tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_log tool.</span>
@@ -473,15 +544,16 @@ place. The <code>chat</code> input is returned invisibly.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_branch_list tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_branch_create tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_git_branch_checkout tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_ide_read_current_editor tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_pkg_coverage tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_pkg_document tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_pkg_check tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_pkg_test tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_search_packages tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_search_package_info tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_session_platform_info tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_session_package_info tool.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_session_check_package_installed tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_pkg_load_all tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_sessioninfo_is_package_installed tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_sessioninfo_platform tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_sessioninfo_package tool.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_skill tool.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Replacing existing btw_tool_web_read_url tool.</span>
 </code></pre></div>
     </div>

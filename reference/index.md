@@ -14,6 +14,8 @@
 - [`btw_mcp_server()`](https://posit-dev.github.io/btw/reference/mcp.md)
   [`btw_mcp_session()`](https://posit-dev.github.io/btw/reference/mcp.md)
   : Start a Model Context Protocol server with btw tools
+- [`install_btw_cli()`](https://posit-dev.github.io/btw/reference/install_btw_cli.md)
+  : Install the btw CLI
 
 ## Project Context
 
@@ -35,6 +37,17 @@
 - [`btw_this(`*`<environment>`*`)`](https://posit-dev.github.io/btw/reference/btw_this.environment.md)
   : Describe the contents of an environment
 
+## Agent Skills
+
+- [`btw_tool_skill()`](https://posit-dev.github.io/btw/reference/btw_tool_skill.md)
+  : Tool: Load a skill
+- [`btw_skill_install_github()`](https://posit-dev.github.io/btw/reference/btw_skill_install_github.md)
+  : Install a skill from GitHub
+- [`btw_skill_install_package()`](https://posit-dev.github.io/btw/reference/btw_skill_install_package.md)
+  : Install a skill from an R package
+- [`btw_task_create_skill()`](https://posit-dev.github.io/btw/reference/btw_task_create_skill.md)
+  : Task: Create a Skill
+
 ## Tasks and Agents
 
 Tasks, or agents, are higher-level functions that combine system prompts
@@ -44,10 +57,16 @@ Tasks are typically designed for interactive use (e.g. to
 collaboratively create a project context file), but they can also be
 used programmatically.
 
+- [`btw_task()`](https://posit-dev.github.io/btw/reference/btw_task.md)
+  : Run a pre-formatted btw task
+- [`btw_agent_tool()`](https://posit-dev.github.io/btw/reference/btw_agent_tool.md)
+  : Create a custom agent tool from a markdown file
 - [`btw_task_create_btw_md()`](https://posit-dev.github.io/btw/reference/btw_task_create_btw_md.md)
   : Task: Initialize Project Context File
 - [`btw_task_create_readme()`](https://posit-dev.github.io/btw/reference/btw_task_create_readme.md)
   : Task: Create a Polished README
+- [`btw_task_create_skill()`](https://posit-dev.github.io/btw/reference/btw_task_create_skill.md)
+  : Task: Create a Skill
 
 ## Tools
 
@@ -60,19 +79,29 @@ counterparts available via
 for interactive use. The long and awkward function names are for LLMs
 and to avoid name clashes with other tools.
 
+- [`btw_tool_agent_subagent()`](https://posit-dev.github.io/btw/reference/btw_tool_agent_subagent.md)
+  : Tool: Subagent
+- [`btw_tool_cran_package()`](https://posit-dev.github.io/btw/reference/btw_tool_cran_package.md)
+  : Tool: Describe a CRAN package
+- [`btw_tool_cran_search()`](https://posit-dev.github.io/btw/reference/btw_tool_cran_search.md)
+  : Tool: Search for an R package on CRAN
 - [`btw_tool_docs_package_news()`](https://posit-dev.github.io/btw/reference/btw_tool_docs_package_news.md)
   : Tool: Package Release Notes
 - [`btw_tool_env_describe_data_frame()`](https://posit-dev.github.io/btw/reference/btw_tool_env_describe_data_frame.md)
   : Tool: Describe data frame
 - [`btw_tool_env_describe_environment()`](https://posit-dev.github.io/btw/reference/btw_tool_env_describe_environment.md)
   : Tool: Describe an environment
-- [`btw_tool_files_code_search()`](https://posit-dev.github.io/btw/reference/btw_tool_files_code_search.md)
-  : Tool: Code Search in Project
-- [`btw_tool_files_list_files()`](https://posit-dev.github.io/btw/reference/btw_tool_files_list_files.md)
+- [`btw_tool_files_edit()`](https://posit-dev.github.io/btw/reference/btw_tool_files_edit.md)
+  : Tool: Edit a text file
+- [`btw_tool_files_list()`](https://posit-dev.github.io/btw/reference/btw_tool_files_list.md)
   : Tool: List files
-- [`btw_tool_files_read_text_file()`](https://posit-dev.github.io/btw/reference/btw_tool_files_read_text_file.md)
+- [`btw_tool_files_read()`](https://posit-dev.github.io/btw/reference/btw_tool_files_read.md)
   : Tool: Read a file
-- [`btw_tool_files_write_text_file()`](https://posit-dev.github.io/btw/reference/btw_tool_files_write_text_file.md)
+- [`btw_tool_files_replace()`](https://posit-dev.github.io/btw/reference/btw_tool_files_replace.md)
+  : Tool: Replace exact strings in a text file
+- [`btw_tool_files_search()`](https://posit-dev.github.io/btw/reference/btw_tool_files_search.md)
+  : Tool: Code Search in Project
+- [`btw_tool_files_write()`](https://posit-dev.github.io/btw/reference/btw_tool_files_write.md)
   : Tool: Write a text file
 - [`btw_tool_git_branch_checkout()`](https://posit-dev.github.io/btw/reference/btw_tool_git_branch_checkout.md)
   : Tool: Git Branch Checkout
@@ -103,20 +132,20 @@ and to avoid name clashes with other tools.
   : Tool: Compute package test coverage
 - [`btw_tool_pkg_document()`](https://posit-dev.github.io/btw/reference/btw_tool_pkg_document.md)
   : Tool: Generate package documentation
+- [`btw_tool_pkg_load_all()`](https://posit-dev.github.io/btw/reference/btw_tool_pkg_load_all.md)
+  : Tool: Load package code
 - [`btw_tool_pkg_test()`](https://posit-dev.github.io/btw/reference/btw_tool_pkg_test.md)
   : Tool: Run package tests
 - [`btw_tool_run_r()`](https://posit-dev.github.io/btw/reference/btw_tool_run_r.md)
   **\[experimental\]** : Tool: Run R code
-- [`btw_tool_search_package_info()`](https://posit-dev.github.io/btw/reference/btw_tool_search_package_info.md)
-  : Tool: Describe a CRAN package
-- [`btw_tool_search_packages()`](https://posit-dev.github.io/btw/reference/btw_tool_search_packages.md)
-  : Tool: Search for an R package on CRAN
-- [`btw_tool_session_check_package_installed()`](https://posit-dev.github.io/btw/reference/btw_tool_session_check_package_installed.md)
+- [`btw_tool_sessioninfo_is_package_installed()`](https://posit-dev.github.io/btw/reference/btw_tool_sessioninfo_is_package_installed.md)
   : Tool: Check if a package is installed
-- [`btw_tool_session_package_info()`](https://posit-dev.github.io/btw/reference/btw_tool_session_package_info.md)
+- [`btw_tool_sessioninfo_package()`](https://posit-dev.github.io/btw/reference/btw_tool_sessioninfo_package.md)
   : Tool: Gather information about a package or currently loaded
   packages
-- [`btw_tool_session_platform_info()`](https://posit-dev.github.io/btw/reference/btw_tool_session_platform_info.md)
+- [`btw_tool_sessioninfo_platform()`](https://posit-dev.github.io/btw/reference/btw_tool_sessioninfo_platform.md)
   : Tool: Describe user's platform
+- [`btw_tool_skill()`](https://posit-dev.github.io/btw/reference/btw_tool_skill.md)
+  : Tool: Load a skill
 - [`btw_tool_web_read_url()`](https://posit-dev.github.io/btw/reference/btw_tool_web_read_url.md)
   : Tool: Read a Web Page as Markdown

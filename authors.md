@@ -12,28 +12,28 @@
 
 - **Posit Software, PBC**. Copyright holder, funder.
 
-- **Google**. Copyright holder.  
+- **Google**. Copyright holder.\
   Material Design Icons
 
-- **Microsoft**. Copyright holder.  
+- **Microsoft**. Copyright holder.\
   @vscode/codicons
 
-- **Jamie Perkins**. Copyright holder.  
+- **Jamie Perkins**. Copyright holder.\
   countUp.js author
 
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/posit-dev/btw/blob/v1.1.0/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/posit-dev/btw/blob/main/DESCRIPTION)
 
-Aden-Buie G, Couch S, Cheng J (2025). *btw: A Toolkit for Connecting R
-and Large Language Models*. R package version 1.1.0,
+Aden-Buie G, Couch S, Cheng J (2026). *btw: A Toolkit for Connecting R
+and Large Language Models*. R package version 1.2.0,
 <https://github.com/posit-dev/btw>.
 
     @Manual{,
       title = {btw: A Toolkit for Connecting R and Large Language Models},
       author = {Garrick Aden-Buie and Simon Couch and Joe Cheng},
-      year = {2025},
-      note = {R package version 1.1.0},
+      year = {2026},
+      note = {R package version 1.2.0},
       url = {https://github.com/posit-dev/btw},
     }
