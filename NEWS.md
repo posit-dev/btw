@@ -1,4 +1,4 @@
-# btw (development version)
+# btw 1.2.0
 
 * New `btw` CLI provides command-line access to btw's tool groups — **docs**,
   **pkg**, **info**, and **cran** — powered by
