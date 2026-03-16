@@ -19,3 +19,5 @@
 ^\.prettierrc$
 ^node_modules$
 ^data-raw$
+^skills-lock\.json$
+^\.agents$

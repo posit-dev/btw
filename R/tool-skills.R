@@ -598,6 +598,80 @@ xml_escape <- function(x) {
   x
 }
 
+# R Package Build Ignore ---------------------------------------------------
+
+maybe_use_build_ignore <- function(target_parent, project_dir = getwd()) {
+  # Normalize then convert to forward slashes for consistent cross-platform
+  # comparison — normalizePath() uses \ on Windows but getwd()/file.path() use /
+  norm <- function(x) gsub("\\\\", "/", normalizePath(x, mustWork = FALSE))
+  project_dir <- norm(project_dir)
+  target_parent <- norm(target_parent)
+
+  # Only act if the install is inside the project directory
+  prefix <- paste0(project_dir, "/")
+  if (!startsWith(target_parent, prefix)) {
+    return(invisible(NULL))
+  }
+
+  # Only act if the project is an R package
+  if (!file.exists(file.path(project_dir, "DESCRIPTION"))) {
+    return(invisible(NULL))
+  }
+
+  # Get the top-level directory (e.g., ".btw" from ".btw/skills")
+  relative_path <- substring(target_parent, nchar(prefix) + 1)
+  top_dir <- strsplit(relative_path, "/", fixed = TRUE)[[1]][1]
+
+  if (!nzchar(top_dir)) {
+    return(invisible(NULL))
+  }
+
+  rbuildignore_path <- file.path(project_dir, ".Rbuildignore")
+
+  if (file.exists(rbuildignore_path)) {
+    update_rbuildignore(top_dir, rbuildignore_path)
+  } else if (is_interactive()) {
+    cli::cli_alert_info(
+      "Your project has a {.file DESCRIPTION} file and could be an R package."
+    )
+    choice <- utils::menu(
+      c("Yes", "No"),
+      title = cli::format_inline(
+        "\u276F Would you like to create {.file .Rbuildignore} and add {.path {top_dir}} to ignore the skills directory?"
+      )
+    )
+    if (choice == 1L) {
+      update_rbuildignore(top_dir, rbuildignore_path)
+    }
+  }
+
+  invisible(NULL)
+}
+
+update_rbuildignore <- function(dir_name, rbuildignore_path) {
+  pattern <- escape_for_rbuildignore(dir_name)
+
+  existing <- if (file.exists(rbuildignore_path)) {
+    readLines(rbuildignore_path, warn = FALSE)
+  } else {
+    character()
+  }
+
+  if (any(existing == pattern)) {
+    return(invisible(NULL))
+  }
+
+  writeLines(c(existing, pattern), rbuildignore_path)
+  cli::cli_inform(c("v" = "Added {.val {pattern}} to {.file .Rbuildignore}"))
+}
+
+escape_for_rbuildignore <- function(path) {
+  path <- gsub(".", "\\.", path, fixed = TRUE)
+  path <- gsub("$", "\\$", path, fixed = TRUE)
+  path <- gsub("^", "\\^", path, fixed = TRUE)
+  paste0("^", path, "$")
+}
+
 # System Prompt ------------------------------------------------------------
 
 btw_skills_system_prompt <- function() {
@@ -969,6 +1043,8 @@ install_skill_from_dir <- function(
   cli::cli_inform(c(
     "v" = "Installed skill {.val {skill_name}} to {.path {target_dir}}"
   ))
+
+  maybe_use_build_ignore(target_parent)
 
   invisible(target_dir)
 }

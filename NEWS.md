@@ -1,52 +1,8 @@
-# btw (development version)
+# btw 1.2.0
 
-* New `btw` CLI provides command-line access to btw's tool groups — **docs**,
-  **pkg**, **info**, and **cran** — powered by
-  [Rapp](https://github.com/r-lib/Rapp). Install with `install_btw_cli()` and
-  run commands like `btw docs help dplyr::mutate` or `btw cran search
-  "tidyverse"`. Output is designed for humans and LLMs: colored and formatted
-  for terminals, plain markdown when piped, with a `--json` flag to return
-  pipable JSON in select commands (#176).
+## Breaking changes
 
-* `btw` now supports [Agent Skills](https://agentskills.io) via
-  `btw_tool_skill()`. Skills are modular, on-demand capabilities that provide
-  specialized instructions, bundled scripts, reference docs, and asset
-  templates to the LLM. Skills are discovered automatically from the btw
-  package, attached R packages with `inst/skills/` directories, user-level
-  skills, and project-level skills in `.btw/skills/` or `.agents/skills/`.
-  When the skill tool is included in the chat client, available skills are
-  listed in the system prompt. Use `btw_skill_install_github()` or
-  `btw_skill_install_package()` to install skills from external sources, and
-  `btw_task_create_skill()` to interactively create new skills (#145).
-
-* New `btw_task()` function runs pre-formatted LLM tasks defined in markdown
-  files with YAML frontmatter. Task files support template variable
-  interpolation via `{{ variable }}` syntax, optional client and tool
-  configuration, and all four execution modes (`"app"`, `"console"`,
-  `"client"`, `"tool"`). Task files can also specify `title`, `icon`,
-  `description`, and `name` fields in their YAML frontmatter to customize
-  the tool definition when used in `"tool"` mode (#169).
-
-* New `btw_tool_files_edit()` tool makes targeted, validated line-based edits
-  to files using `replace`, `insert_after`, and `replace_range` actions. Edits
-  are anchored to content hashes, so stale edits are rejected if the file has
-  changed. To support this, `btw_tool_files_read()` now annotates each line
-  with a short hash (e.g. `2:f1a|  return("world")`) when called as a tool
-  (#167).
-
-* New `btw_tool_files_replace()` tool finds and replaces exact string
-  occurrences in a file. By default it requires the string to appear exactly
-  once to prevent unintended changes; set `replace_all = TRUE` to replace all
-  occurrences (#167).
-
-* `btw_app()` no longer errors with "argument is of length zero" when run outside of an IDE (thanks @HenrikBengtsson, #168).
-
-* `btw_tool_files_read()` now correctly handles UTF-8 files containing CJK (Chinese, Japanese, Korean) characters. Previously, the text-file detection could truncate a read buffer mid-way through a multi-byte character, causing the file to be rejected as binary (thanks @bianchenhao, #170).
-
-* `btw_tool_files_read()` now correctly reads valid UTF-8 files containing non-ASCII characters (e.g., Cyrillic). Previously, these files were incorrectly rejected on Windows with non-English locales when `Encoding()` returned "unknown" even though they were valid UTF-8 (thanks @RKonstantinR, #160).
-
-* BREAKING CHANGE: Several tool groups and tool names have been renamed for clarity (#159):
-
+* Several tool groups and tool names have been renamed for clarity (#159):
 
   | Old Name | New Name |
   |----------|----------|
@@ -62,11 +18,25 @@
   | `btw_tool_files_write_text_file()` | `btw_tool_files_write()` |
   | `btw_tool_files_code_search()` | `btw_tool_files_search()` |
 
-  The old names and group aliases continue to work but emit deprecation warnings. The `btw.files_code_search.extensions` and `btw.files_code_search.exclusions` options have also been renamed to `btw.files_search.extensions` and `btw.files_search.exclusions`, with the old option names emitting deprecation warnings.
+  The old names and group aliases continue to work but emit deprecation
+  warnings. The `btw.files_code_search.extensions` and
+  `btw.files_code_search.exclusions` options have also been renamed to
+  `btw.files_search.extensions` and `btw.files_search.exclusions`, with the old
+  option names emitting deprecation warnings.
 
-* New `btw_tool_pkg_load_all()` tool runs `pkgload::load_all()` in an isolated subprocess to verify package code loads correctly and trigger recompilation of compiled code. Useful for quick validation during development without running full tests or affecting the current R session (#156).
+## New features
 
-* `btw.md` now supports configuring multiple client options. When `btw_client()` is called interactively, you'll be presented with a menu to choose which client to use. Clients can be specified as an array:
+* New `btw` CLI provides command-line access to btw's tool groups — **docs**,
+  **pkg**, **info**, and **cran** — powered by
+  [Rapp](https://github.com/r-lib/Rapp). Install with `install_btw_cli()` and
+  run commands like `btw docs help dplyr::mutate` or `btw cran search
+  "tidyverse"`. Output is designed for humans and LLMs: colored and formatted
+  for terminals, plain markdown when piped, with a `--json` flag to return
+  pipable JSON in select commands (#176).
+
+* `btw.md` now supports configuring multiple client options. When
+  `btw_client()` is called interactively, you'll be presented with a menu to
+  choose which client to use. Clients can be specified as an array:
 
   ```yaml
   client:
@@ -84,11 +54,79 @@
     chatgpt: openai/gpt-5.2
   ```
 
-  With aliases, you can select a client by name in the interactive menu or pass the alias directly via `btw_client(client = "alias")`. In non-interactive contexts, the first client is used automatically (#153).
+  With aliases, you can select a client by name in the interactive menu or pass
+  the alias directly via `btw_client(client = "alias")`. In non-interactive
+  contexts, the first client is used automatically (#153).
 
-* New `btw_tool_agent_subagent()` tool enables hierarchical agent workflows by allowing an orchestrating LLM to delegate tasks to subagents. Each subagent runs in its own isolated chat session with restricted tool access and maintains conversation state that can be resumed via `session_id`. This allows you to delegate tasks to smaller cheaper models or reduce context bloat in the main conversation (#149).
+* `btw_agent_tool()` allows you to create specialized custom subagents from
+  `btw.md` style markdown files. Agent files are automatically discovered from
+  `.btw/agent-*.md` (project and user directories) and `.claude/agents/` (for
+  Claude Code compatibility), and are registered as callable tools in
+  `btw_tools()`. Custom agents can specify their own system prompts, icons,
+  models, and available tools (#149).
 
-* New `btw_agent_tool()` allows you to create specialized custom subagents from `btw.md` style markdown files. Agent files are automatically discovered from `.btw/agent-*.md` (project and user directories) and `.claude/agents/` (for Claude Code compatibility), and are registered as callable tools in `btw_tools()`. Custom agents can specify their own system prompts, icons, models, and available tools (#149).
+* `btw_task()` runs pre-formatted LLM tasks defined in markdown files with YAML
+  frontmatter. Task files support template variable interpolation via
+  `{{ variable }}` syntax, optional client and tool configuration, and all four
+  execution modes (`"app"`, `"console"`, `"client"`, `"tool"`). Task files can
+  also specify `title`, `icon`, `description`, and `name` fields in their YAML
+  frontmatter to customize the tool definition when used in `"tool"` mode
+  (#169).
+
+* `btw_tool_agent_subagent()` enables hierarchical agent workflows by allowing
+  an orchestrating LLM to delegate tasks to subagents. Each subagent runs in
+  its own isolated chat session with restricted tool access and maintains
+  conversation state that can be resumed via `session_id`. This allows you to
+  delegate tasks to smaller cheaper models or reduce context bloat in the main
+  conversation (#149).
+
+* `btw_tool_files_edit()` makes targeted, validated line-based edits to files
+  using `replace`, `insert_after`, and `replace_range` actions. Edits are
+  anchored to content hashes, so stale edits are rejected if the file has
+  changed. To support this, `btw_tool_files_read()` now annotates each line
+  with a short hash (e.g. `2:f1a|  return("world")`) when called as a tool
+  (#167).
+
+* `btw_tool_files_replace()` finds and replaces exact string occurrences in a
+  file. By default it requires the string to appear exactly once to prevent
+  unintended changes; set `replace_all = TRUE` to replace all occurrences
+  (#167).
+
+* `btw_tool_pkg_load_all()` runs `pkgload::load_all()` in an isolated
+  subprocess to verify package code loads correctly and trigger recompilation
+  of compiled code. Useful for quick validation during development without
+  running full tests or affecting the current R session (#156).
+
+* `btw_tool_skill()` adds support for [Agent Skills](https://agentskills.io).
+  Skills are modular, on-demand capabilities that provide specialized
+  instructions, bundled scripts, reference docs, and asset templates to the
+  LLM. Skills are discovered automatically from the btw package, attached R
+  packages with `inst/skills/` directories, user-level skills, and
+  project-level skills in `.btw/skills/` or `.agents/skills/`. When the skill
+  tool is included in the chat client, available skills are listed in the
+  system prompt. Use `btw_skill_install_github()` or
+  `btw_skill_install_package()` to install skills from external sources, and
+  `btw_task_create_skill()` to interactively create new skills (#145).
+
+## Bug fixes
+
+* `btw_app()` no longer errors with "argument is of length zero" when run
+  outside of an IDE (thanks @HenrikBengtsson, #168).
+
+* `btw_app()` no longer errors when provider built-in tools (e.g.
+  `claude_tool_web_search()`) are registered with a btw client.
+  Built-in tools now appear in the app sidebar under a "Built-in" group (#175).
+
+* `btw_tool_files_read()` now correctly handles UTF-8 files containing CJK
+  (Chinese, Japanese, Korean) characters. Previously, the text-file detection
+  could truncate a read buffer mid-way through a multi-byte character, causing
+  the file to be rejected as binary (thanks @bianchenhao, #170).
+
+* `btw_tool_files_read()` now correctly reads valid UTF-8 files containing
+  non-ASCII characters (e.g., Cyrillic). Previously, these files were
+  incorrectly rejected on Windows with non-English locales when `Encoding()`
+  returned "unknown" even though they were valid UTF-8 (thanks @RKonstantinR,
+  #160).
 
 # btw 1.1.0
 

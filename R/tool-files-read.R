@@ -188,8 +188,8 @@ title_with_open_file_button <- function(verb, path) {
 }
 
 is_text_file <- function(file_path) {
-  # Note: this function was written by claude-3.7-sonnet.
-  # Try to read the first chunk of the file as binary
+  con <- NULL # avoid "no visible binding" note for con in with_connection()
+
   tryCatch(
     {
       # Read first 8KB of the file

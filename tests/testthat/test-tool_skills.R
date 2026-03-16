@@ -1083,6 +1083,164 @@ test_that("btw_skills_system_prompt() escapes XML special characters", {
   expect_no_match(prompt, "<tags>", fixed = TRUE)
 })
 
+# maybe_use_build_ignore() -------------------------------------------------
+
+test_that("maybe_use_build_ignore() does nothing outside project dir", {
+  project <- withr::local_tempdir()
+  writeLines("Package: fakepkg", file.path(project, "DESCRIPTION"))
+  writeLines("", file.path(project, ".Rbuildignore"))
+
+  outside <- withr::local_tempdir()
+  skills_dir <- file.path(outside, ".btw", "skills")
+
+  # install dir is NOT under project
+  withr::local_dir(project)
+  maybe_use_build_ignore(skills_dir)
+
+  # .Rbuildignore should be unchanged (empty)
+  expect_equal(
+    trimws(readLines(file.path(project, ".Rbuildignore"))),
+    ""
+  )
+})
+
+test_that("maybe_use_build_ignore() does nothing when DESCRIPTION absent", {
+  project <- withr::local_tempdir()
+  withr::local_dir(project)
+  project <- getwd()
+
+  skills_dir <- file.path(project, ".btw", "skills")
+  dir.create(skills_dir, recursive = TRUE)
+
+  rbuildignore <- file.path(project, ".Rbuildignore")
+  writeLines(character(), rbuildignore)
+
+  maybe_use_build_ignore(skills_dir)
+
+  expect_equal(readLines(rbuildignore), character())
+})
+
+test_that("maybe_use_build_ignore() auto-updates .Rbuildignore when it exists", {
+  project <- withr::local_tempdir()
+  withr::local_dir(project)
+  project <- getwd()
+
+  writeLines("Package: fakepkg", file.path(project, "DESCRIPTION"))
+  rbuildignore <- file.path(project, ".Rbuildignore")
+  writeLines(character(), rbuildignore)
+
+  skills_dir <- file.path(project, ".btw", "skills")
+  dir.create(skills_dir, recursive = TRUE)
+
+  expect_message(
+    maybe_use_build_ignore(skills_dir),
+    "\\.Rbuildignore"
+  )
+
+  lines <- readLines(rbuildignore)
+  expect_true(any(grepl("btw", lines, fixed = TRUE)))
+})
+
+test_that("maybe_use_build_ignore() does not add duplicate entry", {
+  project <- withr::local_tempdir()
+  withr::local_dir(project)
+  project <- getwd()
+
+  writeLines("Package: fakepkg", file.path(project, "DESCRIPTION"))
+  rbuildignore <- file.path(project, ".Rbuildignore")
+  pattern <- escape_for_rbuildignore(".btw")
+  writeLines(pattern, rbuildignore)
+
+  skills_dir <- file.path(project, ".btw", "skills")
+  dir.create(skills_dir, recursive = TRUE)
+
+  # Should not add a duplicate
+  maybe_use_build_ignore(skills_dir)
+
+  lines <- readLines(rbuildignore)
+  expect_equal(sum(lines == pattern), 1L)
+})
+
+test_that("maybe_use_build_ignore() prompts when .Rbuildignore absent (interactive, yes)", {
+  project <- withr::local_tempdir()
+  withr::local_dir(project)
+  project <- getwd()
+
+  writeLines("Package: fakepkg", file.path(project, "DESCRIPTION"))
+  skills_dir <- file.path(project, ".agents", "skills")
+  dir.create(skills_dir, recursive = TRUE)
+
+  rbuildignore <- file.path(project, ".Rbuildignore")
+  expect_false(file.exists(rbuildignore))
+
+  local_mocked_bindings(is_interactive = function() TRUE)
+  local_mocked_bindings(menu = function(...) 1L, .package = "utils")
+
+  suppressMessages(maybe_use_build_ignore(skills_dir))
+  expect_true(file.exists(rbuildignore))
+})
+
+test_that("maybe_use_build_ignore() does nothing when .Rbuildignore absent non-interactively", {
+  project <- withr::local_tempdir()
+  withr::local_dir(project)
+  project <- getwd()
+
+  writeLines("Package: fakepkg", file.path(project, "DESCRIPTION"))
+  skills_dir <- file.path(project, ".btw", "skills")
+  dir.create(skills_dir, recursive = TRUE)
+
+  local_mocked_bindings(is_interactive = function() FALSE)
+
+  maybe_use_build_ignore(skills_dir)
+  expect_false(file.exists(file.path(project, ".Rbuildignore")))
+})
+
+test_that("maybe_use_build_ignore() does nothing when user declines prompt", {
+  project <- withr::local_tempdir()
+  withr::local_dir(project)
+  project <- getwd()
+
+  writeLines("Package: fakepkg", file.path(project, "DESCRIPTION"))
+  skills_dir <- file.path(project, ".btw", "skills")
+  dir.create(skills_dir, recursive = TRUE)
+
+  local_mocked_bindings(is_interactive = function() TRUE)
+  local_mocked_bindings(menu = function(...) 2L, .package = "utils")
+
+  suppressMessages(maybe_use_build_ignore(skills_dir))
+  expect_false(file.exists(file.path(project, ".Rbuildignore")))
+})
+
+test_that("install_skill_from_dir() updates .Rbuildignore for R packages", {
+  source_dir <- withr::local_tempdir()
+  create_temp_skill(name = "pkg-skill", dir = source_dir)
+
+  project <- withr::local_tempdir()
+  withr::local_dir(project)
+  project <- getwd()
+
+  writeLines("Package: fakepkg", file.path(project, "DESCRIPTION"))
+  writeLines(character(), file.path(project, ".Rbuildignore"))
+
+  suppressMessages(expect_message(
+    install_skill_from_dir(
+      file.path(source_dir, "pkg-skill"),
+      scope = "project"
+    ),
+    "Installed skill"
+  ))
+
+  lines <- readLines(file.path(project, ".Rbuildignore"))
+  expect_true(any(grepl("btw", lines, fixed = TRUE)))
+})
+
+# escape_for_rbuildignore() ------------------------------------------------
+
+test_that("escape_for_rbuildignore() produces correct pattern for dot-prefixed dirs", {
+  expect_equal(escape_for_rbuildignore(".btw"), "^\\.btw$")
+  expect_equal(escape_for_rbuildignore(".agents"), "^\\.agents$")
+})
+
 test_that("skills prompt is included in btw_client() system prompt", {
   withr::local_envvar(list(ANTHROPIC_API_KEY = "beep"))
   local_enable_tools()
