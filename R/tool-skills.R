@@ -650,7 +650,8 @@ update_rbuildignore <- function(dir_name, rbuildignore_path) {
     usethis::with_project(
       dirname(rbuildignore_path),
       usethis::use_build_ignore(dir_name),
-      quiet = TRUE
+      quiet = TRUE,
+      force = TRUE
     )
     return(invisible(NULL))
   }
