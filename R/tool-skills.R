@@ -632,12 +632,12 @@ maybe_use_build_ignore <- function(target_parent, project_dir = getwd()) {
     update_rbuildignore(top_dir, rbuildignore_path)
   } else if (is_interactive()) {
     cli::cli_alert_info(
-      "Project has a {.file DESCRIPTION} file \u2014 it looks like an R package."
+      "Your project has a {.file DESCRIPTION} file and could be an R package."
     )
     choice <- utils::menu(
       c("Yes", "No"),
       title = cli::format_inline(
-        "\u276F Create {.file .Rbuildignore} and add {.path {top_dir}}?"
+        "\u276F Would you like to create {.file .Rbuildignore} and add {.path {top_dir}} to ignore the skills directory?"
       )
     )
     if (choice == 1L) {

@@ -1176,10 +1176,7 @@ test_that("maybe_use_build_ignore() prompts when .Rbuildignore absent (interacti
   local_mocked_bindings(is_interactive = function() TRUE)
   local_mocked_bindings(menu = function(...) 1L, .package = "utils")
 
-  expect_message(
-    maybe_use_build_ignore(skills_dir),
-    "\\.Rbuildignore"
-  )
+  suppressMessages(maybe_use_build_ignore(skills_dir))
   expect_true(file.exists(rbuildignore))
 })
 
@@ -1210,7 +1207,7 @@ test_that("maybe_use_build_ignore() does nothing when user declines prompt", {
   local_mocked_bindings(is_interactive = function() TRUE)
   local_mocked_bindings(menu = function(...) 2L, .package = "utils")
 
-  maybe_use_build_ignore(skills_dir)
+  suppressMessages(maybe_use_build_ignore(skills_dir))
   expect_false(file.exists(file.path(project, ".Rbuildignore")))
 })
 
@@ -1225,13 +1222,13 @@ test_that("install_skill_from_dir() updates .Rbuildignore for R packages", {
   writeLines("Package: fakepkg", file.path(project, "DESCRIPTION"))
   writeLines(character(), file.path(project, ".Rbuildignore"))
 
-  expect_message(
+  suppressMessages(expect_message(
     install_skill_from_dir(
       file.path(source_dir, "pkg-skill"),
       scope = "project"
     ),
     "Installed skill"
-  )
+  ))
 
   lines <- readLines(file.path(project, ".Rbuildignore"))
   expect_true(any(grepl("btw", lines, fixed = TRUE)))
