@@ -209,6 +209,7 @@ tool_group_icon <- function(group, default = NULL) {
   switch(
     group,
     "agent" = tool_icon("robot"),
+    "built-in" = tool_icon("pallet"),
     "cran" = tool_icon("search"),
     "deprecated" = tool_icon("error"),
     "docs" = tool_icon("dictionary"),

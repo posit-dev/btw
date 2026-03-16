@@ -178,6 +178,7 @@ btw_client <- function(
 
   client$set_system_prompt(paste(sys_prompt, collapse = "\n\n"))
 
+  wrap_built_in_tools(client)
   warn_skills_without_read_file(client$get_tools())
 
   client
