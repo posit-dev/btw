@@ -201,13 +201,13 @@ btw_app_from_client <- function(
 
     tool_groups <- unique(btw_tools_df(all_available_tools)$group)
 
-    # Split tools: btw tools and other (non-btw) tools
-    btw_available_tools <- keep(all_available_tools, function(tool) {
-      identical(substring(tool@name, 1, 9), "btw_tool_")
-    })
-    other_tools <- keep(all_available_tools, function(tool) {
-      !identical(substring(tool@name, 1, 9), "btw_tool_")
-    })
+    # Split tools: btw tools (including built-in) and other (non-btw) tools
+    is_btw_tool <- function(tool) {
+      identical(substring(tool@name, 1, 9), "btw_tool_") ||
+        (!is.null(BtwToolBuiltIn) && S7::S7_inherits(tool, BtwToolBuiltIn))
+    }
+    btw_available_tools <- keep(all_available_tools, is_btw_tool)
+    other_tools <- discard(all_available_tools, is_btw_tool)
 
     selected_tools <- shiny::reactive({
       tool_groups <- c(tool_groups, if (length(other_tools) > 0) "other")
@@ -763,6 +763,7 @@ app_tool_group_choice_input <- function(
   label_text <- switch(
     group,
     "agent" = shiny::span(label_icon, "Agents"),
+    "built-in" = shiny::span(label_icon, "Built-in"),
     "cran" = shiny::span(label_icon, "CRAN"),
     "deprecated" = shiny::span(label_icon, "Deprecated", class = "text-danger"),
     "docs" = shiny::span(label_icon, "Documentation"),

@@ -95,6 +95,99 @@ test_that("All btw tools have a btw_can_register() annotation function", {
   expect_equal(missing_btw_can_register, c())
 })
 
+test_that("built_in_tool_info() returns metadata for known tools", {
+  info <- built_in_tool_info("web_search")
+  expect_equal(info$title, "Web Search")
+  expect_true(nzchar(info$description))
+  expect_true(info$read_only_hint)
+  expect_true(info$open_world_hint)
+
+  info <- built_in_tool_info("web_fetch")
+  expect_equal(info$title, "Web Fetch")
+  expect_true(nzchar(info$description))
+  expect_true(info$read_only_hint)
+  expect_false(info$open_world_hint)
+})
+
+test_that("built_in_tool_info() returns sensible defaults for unknown tools", {
+  info <- built_in_tool_info("code_execution")
+  expect_equal(info$title, "Code execution")
+  expect_equal(info$description, "A provider built-in code_execution tool.")
+  expect_null(info$read_only_hint)
+  expect_null(info$open_world_hint)
+})
+
+test_that("wrap_built_in_tools() wraps ToolBuiltIn tools", {
+  skip_if(is.null(ellmer_ToolBuiltIn()), "ellmer ToolBuiltIn not available")
+  skip_if(is.null(BtwToolBuiltIn), "BtwToolBuiltIn class not available")
+
+  withr::local_envvar(ANTHROPIC_API_KEY = "beep")
+  ch <- ellmer::chat_anthropic()
+
+  ToolBuiltIn <- ellmer_ToolBuiltIn()
+  mock_tool <- ToolBuiltIn(name = "web_search", json = list(type = "test"))
+  ch$set_tools(list(mock_tool))
+
+  wrap_built_in_tools(ch)
+  tools <- ch$get_tools()
+
+  expect_length(tools, 1)
+  expect_true(S7::S7_inherits(tools[[1]], BtwToolBuiltIn))
+  expect_equal(tools[[1]]@title, "Web Search")
+  expect_equal(tools[[1]]@annotations$btw_group, "built-in")
+  expect_true(tools[[1]]@annotations$read_only_hint)
+})
+
+test_that("wrap_built_in_tools() does not modify non-built-in tools", {
+  skip_if(is.null(ellmer_ToolBuiltIn()), "ellmer ToolBuiltIn not available")
+  skip_if(is.null(BtwToolBuiltIn), "BtwToolBuiltIn class not available")
+
+  withr::local_envvar(ANTHROPIC_API_KEY = "beep")
+  ch <- ellmer::chat_anthropic()
+
+  local_enable_tools()
+  btw_tool <- btw_tools("docs_help_page")[[1]]
+  ch$set_tools(list(btw_tool))
+
+  wrap_built_in_tools(ch)
+  tools <- ch$get_tools()
+
+  expect_length(tools, 1)
+  expect_s3_class(tools[[1]], "ellmer::ToolDef")
+  expect_false(S7::S7_inherits(tools[[1]], BtwToolBuiltIn))
+})
+
+test_that("wrap_built_in_tools() is idempotent", {
+  skip_if(is.null(ellmer_ToolBuiltIn()), "ellmer ToolBuiltIn not available")
+  skip_if(is.null(BtwToolBuiltIn), "BtwToolBuiltIn class not available")
+
+  withr::local_envvar(ANTHROPIC_API_KEY = "beep")
+  ch <- ellmer::chat_anthropic()
+
+  ToolBuiltIn <- ellmer_ToolBuiltIn()
+  mock_tool <- ToolBuiltIn(name = "web_search", json = list(type = "test"))
+  ch$set_tools(list(mock_tool))
+
+  wrap_built_in_tools(ch)
+  first_pass <- ch$get_tools()
+
+  wrap_built_in_tools(ch)
+  second_pass <- ch$get_tools()
+
+  expect_equal(length(first_pass), length(second_pass))
+  expect_equal(first_pass[[1]]@title, second_pass[[1]]@title)
+})
+
+test_that("wrap_built_in_tools() degrades gracefully when BtwToolBuiltIn is NULL", {
+  withr::local_envvar(ANTHROPIC_API_KEY = "beep")
+  ch <- ellmer::chat_anthropic()
+  ch$set_tools(list())
+
+  local_mocked_bindings(BtwToolBuiltIn = NULL)
+  expect_no_error(wrap_built_in_tools(ch))
+  expect_length(ch$get_tools(), 0)
+})
+
 test_that("$tool() returns a tool definition for all .btw_tools", {
   local_enable_tools(
     has_chromote = FALSE,

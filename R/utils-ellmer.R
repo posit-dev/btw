@@ -57,3 +57,76 @@ chat_get_cost <- function(client) {
     error = function(e) NA
   )
 }
+
+# Built-in tool wrapping ---------------------------------------------------
+
+ellmer_ToolBuiltIn <- function() {
+  asNamespace("ellmer")[["ToolBuiltIn"]]
+}
+
+BtwToolBuiltIn <- tryCatch(
+  S7::new_class(
+    "BtwToolBuiltIn",
+    parent = ellmer_ToolBuiltIn(),
+    properties = list(
+      title = S7::class_character,
+      description = S7::class_character,
+      annotations = S7::class_list
+    )
+  ),
+  error = function(e) NULL
+)
+
+built_in_tool_info <- function(name) {
+  switch(name,
+    web_search = list(
+      title = "Web Search",
+      description = "Search the web for up-to-date information.",
+      read_only_hint = TRUE,
+      open_world_hint = TRUE
+    ),
+    web_fetch = list(
+      title = "Web Fetch",
+      description = "Fetch and read content from web URLs.",
+      read_only_hint = TRUE,
+      open_world_hint = FALSE
+    ),
+    list(
+      title = to_title_case(gsub("_", " ", name)),
+      description = sprintf("A provider built-in %s tool.", name)
+    )
+  )
+}
+
+wrap_built_in_tools <- function(client) {
+  ToolBuiltIn <- ellmer_ToolBuiltIn()
+  if (is.null(ToolBuiltIn) || is.null(BtwToolBuiltIn)) {
+    return(invisible(client))
+  }
+
+  tools <- client$get_tools()
+  tools <- map(tools, function(tool) {
+    if (!S7::S7_inherits(tool, ToolBuiltIn)) {
+      return(tool)
+    }
+    if (S7::S7_inherits(tool, BtwToolBuiltIn)) {
+      return(tool)
+    }
+    info <- built_in_tool_info(tool@name)
+    BtwToolBuiltIn(
+      name = tool@name,
+      json = tool@json,
+      title = info$title,
+      description = info$description,
+      annotations = compact(list(
+        title = info$title,
+        btw_group = "built-in",
+        icon = tool_group_icon("built-in"),
+        read_only_hint = info$read_only_hint,
+        open_world_hint = info$open_world_hint
+      ))
+    )
+  })
+  client$set_tools(tools)
+  invisible(client)
+}
