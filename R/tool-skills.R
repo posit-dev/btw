@@ -601,11 +601,14 @@ xml_escape <- function(x) {
 # R Package Build Ignore ---------------------------------------------------
 
 maybe_use_build_ignore <- function(target_parent, project_dir = getwd()) {
-  project_dir <- normalizePath(project_dir, mustWork = FALSE)
-  target_parent <- normalizePath(target_parent, mustWork = FALSE)
+  # Normalize then convert to forward slashes for consistent cross-platform
+  # comparison — normalizePath() uses \ on Windows but getwd()/file.path() use /
+  norm <- function(x) gsub("\\\\", "/", normalizePath(x, mustWork = FALSE))
+  project_dir <- norm(project_dir)
+  target_parent <- norm(target_parent)
 
   # Only act if the install is inside the project directory
-  prefix <- paste0(project_dir, .Platform$file.sep)
+  prefix <- paste0(project_dir, "/")
   if (!startsWith(target_parent, prefix)) {
     return(invisible(NULL))
   }
@@ -617,7 +620,7 @@ maybe_use_build_ignore <- function(target_parent, project_dir = getwd()) {
 
   # Get the top-level directory (e.g., ".btw" from ".btw/skills")
   relative_path <- substring(target_parent, nchar(prefix) + 1)
-  top_dir <- strsplit(relative_path, .Platform$file.sep, fixed = TRUE)[[1]][1]
+  top_dir <- strsplit(relative_path, "/", fixed = TRUE)[[1]][1]
 
   if (!nzchar(top_dir)) {
     return(invisible(NULL))
