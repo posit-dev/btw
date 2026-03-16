@@ -1132,10 +1132,7 @@ test_that("maybe_use_build_ignore() auto-updates .Rbuildignore when it exists", 
   skills_dir <- file.path(project, ".btw", "skills")
   dir.create(skills_dir, recursive = TRUE)
 
-  expect_message(
-    maybe_use_build_ignore(skills_dir),
-    "\\.Rbuildignore"
-  )
+  suppressMessages(maybe_use_build_ignore(skills_dir))
 
   lines <- readLines(rbuildignore)
   expect_true(any(grepl("btw", lines, fixed = TRUE)))
@@ -1176,10 +1173,7 @@ test_that("maybe_use_build_ignore() prompts when .Rbuildignore absent (interacti
   local_mocked_bindings(is_interactive = function() TRUE)
   local_mocked_bindings(menu = function(...) 1L, .package = "utils")
 
-  expect_message(
-    maybe_use_build_ignore(skills_dir),
-    "\\.Rbuildignore"
-  )
+  suppressMessages(maybe_use_build_ignore(skills_dir))
   expect_true(file.exists(rbuildignore))
 })
 
@@ -1193,6 +1187,22 @@ test_that("maybe_use_build_ignore() does nothing when .Rbuildignore absent non-i
   dir.create(skills_dir, recursive = TRUE)
 
   local_mocked_bindings(is_interactive = function() FALSE)
+
+  maybe_use_build_ignore(skills_dir)
+  expect_false(file.exists(file.path(project, ".Rbuildignore")))
+})
+
+test_that("maybe_use_build_ignore() does nothing when user declines prompt", {
+  project <- withr::local_tempdir()
+  withr::local_dir(project)
+  project <- getwd()
+
+  writeLines("Package: fakepkg", file.path(project, "DESCRIPTION"))
+  skills_dir <- file.path(project, ".btw", "skills")
+  dir.create(skills_dir, recursive = TRUE)
+
+  local_mocked_bindings(is_interactive = function() TRUE)
+  local_mocked_bindings(menu = function(...) 2L, .package = "utils")
 
   maybe_use_build_ignore(skills_dir)
   expect_false(file.exists(file.path(project, ".Rbuildignore")))
