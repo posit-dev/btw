@@ -114,7 +114,7 @@ btw_task("analyze.md", dataset_name = "mtcars", mtcars, my_function)
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Run a pre-formatted btw task</h1>
-      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/main/R/btw_task.R" class="external-link"><code>R/btw_task.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/v1.2.0/R/btw_task.R" class="external-link"><code>R/btw_task.R</code></a></small>
       <div class="d-none name"><code>btw_task.Rd</code></div>
     </div>
 
@@ -228,8 +228,8 @@ YAML frontmatter, falling back to the default client resolution of
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Task with template interpolation</span></span></span>
 <span class="r-in"><span><span class="fu">btw_task</span><span class="op">(</span><span class="va">tmp_task_file</span>, package_name <span class="op">=</span> <span class="st">"dplyr"</span>, mode <span class="op">=</span> <span class="st">"tool"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> # &lt;ellmer::ToolDef&gt; btw_task_file23db798b2e69(prompt)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> # @name: btw_task_file23db798b2e69</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # &lt;ellmer::ToolDef&gt; btw_task_file2380526a9a42(prompt)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # @name: btw_task_file2380526a9a42</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # @description: Analyze the dplyr package and create a summary.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # @convert: TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> #</span>
@@ -250,8 +250,8 @@ YAML frontmatter, falling back to the default client resolution of
 <span class="r-out co"><span class="r-pr">#&gt;</span>         this_client$chat("Please complete the task as instructed.")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5603787ac500&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5603787b6eb0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55e8cb445da0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55e8cb449898&gt;</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Include additional context</span></span></span>
 <span class="r-in"><span><span class="fu">btw_task</span><span class="op">(</span></span></span>
@@ -260,8 +260,8 @@ YAML frontmatter, falling back to the default client resolution of
 <span class="r-in"><span>  <span class="va">mtcars</span>,  <span class="co"># Additional context</span></span></span>
 <span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"tool"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> # &lt;ellmer::ToolDef&gt; btw_task_file23db798b2e69(prompt)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> # @name: btw_task_file23db798b2e69</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # &lt;ellmer::ToolDef&gt; btw_task_file2380526a9a42(prompt)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # @name: btw_task_file2380526a9a42</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # @description: Analyze the ggplot2 package and create a summary.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # @convert: TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> #</span>
@@ -282,8 +282,8 @@ YAML frontmatter, falling back to the default client resolution of
 <span class="r-out co"><span class="r-pr">#&gt;</span>         this_client$chat("Please complete the task as instructed.")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5603787ac500&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x560374461c08&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55e8cb445da0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55e8c6fdf4c0&gt;</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
