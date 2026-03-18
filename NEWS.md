@@ -2,7 +2,7 @@
 
 ## Bug fixes
 
-* The `btw` CLI now correctly loads `datasets`, `utils`, `stats`, and `methods` by declaring them in the Rapp `#| launcher:` frontmatter rather than via `library()` calls (#181).
+* The `btw` CLI now loads `datasets`, `utils`, `stats`, and `methods` by declaring them in the Rapp `#| launcher:` frontmatter, reducing surprises for users who expect standard R packages to be available (#181).
 
 # btw 1.2.0
 
