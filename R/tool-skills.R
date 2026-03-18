@@ -757,6 +757,9 @@ resolve_skill_scope <- function(scope, error_call = caller_env()) {
 resolve_user_skill_dir <- function() {
   candidates <- file.path(btw_user_dirs(), "skills")
   existing <- candidates[dir.exists(candidates)]
+  # Require content, not just existence: an empty directory (e.g. one left
+  # behind after removing a skill) should not cause subsequent installs to
+  # land there instead of the preferred default (~/.btw/skills).
   non_empty <- existing[map_lgl(existing, function(d) length(list.files(d)) > 0)]
   if (length(non_empty) > 0) non_empty[[1]] else candidates[[1]]
 }
