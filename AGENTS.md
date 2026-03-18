@@ -134,7 +134,7 @@ Follow these style rules: ...
 
 btw looks for these files in:
 1. Current working directory or its parents (project-specific)
-2. `~/.config/btw/btw.md` or `~/btw.md` (global defaults)
+2. `~/.btw/btw.md`, `~/.config/btw/btw.md`, or `~/btw.md` (global defaults)
 
 Content becomes part of the system prompt. Use `<!-- HIDE -->` / `<!-- /HIDE -->` comments to exclude sections from the prompt.
 
@@ -340,6 +340,7 @@ Edit files in `inst/prompts/`. These are assembled in `btw_client()` based on co
 - **Git and GitHub commands** - `@git` and `@issue`/`@pr` commands require gert and gh packages respectively, plus appropriate repository access
 - **MCP server blocks** the R process - run non-interactively
 - **Test snapshots require frequent updates** as output formatting evolves
+- **`btw_user_dirs()` is the single source of truth** for user-level config locations (`~/.btw`, `~/.config/btw`, `tools::R_user_dir("btw")`). Any code that discovers or installs user-level skills, agents, or `btw.md` files must use this helper — never hardcode individual paths
 
 ## Resources
 
