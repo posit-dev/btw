@@ -2,6 +2,8 @@
 
 ## Bug fixes
 
+* User-level config locations are now consistent across skills, agents, and `btw.md` discovery. A new internal `btw_user_dirs()` helper returns `~/.btw`, `~/.config/btw`, and `tools::R_user_dir("btw")` as the canonical search paths. Skills installed with btw <= 1.2.0 (which used `tools::R_user_dir("btw", "config")`) are still discovered for backwards compatibility (#182).
+
 * The `btw` CLI now loads `datasets`, `utils`, `stats`, and `methods` by declaring them in the Rapp `#| launcher:` frontmatter, reducing surprises for users who expect standard R packages to be available (#181).
 
 # btw 1.2.0
