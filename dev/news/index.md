@@ -2,86 +2,14 @@
 
 ## btw (development version)
 
-- New `btw` CLI provides command-line access to btw’s tool groups —
-  **docs**, **pkg**, **info**, and **cran** — powered by
-  [Rapp](https://github.com/r-lib/Rapp). Install with
-  [`install_btw_cli()`](https://posit-dev.github.io/btw/dev/reference/install_btw_cli.md)
-  and run commands like `btw docs help dplyr::mutate` or
-  `btw cran search "tidyverse"`. Output is designed for humans and LLMs:
-  colored and formatted for terminals, plain markdown when piped, with a
-  `--json` flag to return pipable JSON in select commands
-  ([\#176](https://github.com/posit-dev/btw/issues/176)).
+## btw 1.2.0
 
-- `btw` now supports [Agent Skills](https://agentskills.io) via
-  [`btw_tool_skill()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_skill.md).
-  Skills are modular, on-demand capabilities that provide specialized
-  instructions, bundled scripts, reference docs, and asset templates to
-  the LLM. Skills are discovered automatically from the btw package,
-  attached R packages with `inst/skills/` directories, user-level
-  skills, and project-level skills in `.btw/skills/` or
-  `.agents/skills/`. When the skill tool is included in the chat client,
-  available skills are listed in the system prompt. Use
-  [`btw_skill_install_github()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_install_github.md)
-  or
-  [`btw_skill_install_package()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_install_package.md)
-  to install skills from external sources, and
-  [`btw_task_create_skill()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_skill.md)
-  to interactively create new skills
-  ([\#145](https://github.com/posit-dev/btw/issues/145)).
+CRAN release: 2026-03-16
 
-- New
-  [`btw_task()`](https://posit-dev.github.io/btw/dev/reference/btw_task.md)
-  function runs pre-formatted LLM tasks defined in markdown files with
-  YAML frontmatter. Task files support template variable interpolation
-  via `{{ variable }}` syntax, optional client and tool configuration,
-  and all four execution modes (`"app"`, `"console"`, `"client"`,
-  `"tool"`). Task files can also specify `title`, `icon`, `description`,
-  and `name` fields in their YAML frontmatter to customize the tool
-  definition when used in `"tool"` mode
-  ([\#169](https://github.com/posit-dev/btw/issues/169)).
+### Breaking changes
 
-- New
-  [`btw_tool_files_edit()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_edit.md)
-  tool makes targeted, validated line-based edits to files using
-  `replace`, `insert_after`, and `replace_range` actions. Edits are
-  anchored to content hashes, so stale edits are rejected if the file
-  has changed. To support this,
-  [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md)
-  now annotates each line with a short hash
-  (e.g. `2:f1a| return("world")`) when called as a tool
-  ([\#167](https://github.com/posit-dev/btw/issues/167)).
-
-- New
-  [`btw_tool_files_replace()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_replace.md)
-  tool finds and replaces exact string occurrences in a file. By default
-  it requires the string to appear exactly once to prevent unintended
-  changes; set `replace_all = TRUE` to replace all occurrences
-  ([\#167](https://github.com/posit-dev/btw/issues/167)).
-
-- [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
-  no longer errors with “argument is of length zero” when run outside of
-  an IDE (thanks [@HenrikBengtsson](https://github.com/HenrikBengtsson),
-  [\#168](https://github.com/posit-dev/btw/issues/168)).
-
-- [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md)
-  now correctly handles UTF-8 files containing CJK (Chinese, Japanese,
-  Korean) characters. Previously, the text-file detection could truncate
-  a read buffer mid-way through a multi-byte character, causing the file
-  to be rejected as binary (thanks
-  [@bianchenhao](https://github.com/bianchenhao),
-  [\#170](https://github.com/posit-dev/btw/issues/170)).
-
-- [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md)
-  now correctly reads valid UTF-8 files containing non-ASCII characters
-  (e.g., Cyrillic). Previously, these files were incorrectly rejected on
-  Windows with non-English locales when
-  [`Encoding()`](https://rdrr.io/r/base/Encoding.html) returned
-  “unknown” even though they were valid UTF-8 (thanks
-  [@RKonstantinR](https://github.com/RKonstantinR),
-  [\#160](https://github.com/posit-dev/btw/issues/160)).
-
-- BREAKING CHANGE: Several tool groups and tool names have been renamed
-  for clarity ([\#159](https://github.com/posit-dev/btw/issues/159)):
+- Several tool groups and tool names have been renamed for clarity
+  ([\#159](https://github.com/posit-dev/btw/issues/159)):
 
   | Old Name | New Name |
   |----|----|
@@ -103,14 +31,17 @@
   `btw.files_search.extensions` and `btw.files_search.exclusions`, with
   the old option names emitting deprecation warnings.
 
-- New
-  [`btw_tool_pkg_load_all()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_load_all.md)
-  tool runs
-  [`pkgload::load_all()`](https://pkgload.r-lib.org/reference/load_all.html)
-  in an isolated subprocess to verify package code loads correctly and
-  trigger recompilation of compiled code. Useful for quick validation
-  during development without running full tests or affecting the current
-  R session ([\#156](https://github.com/posit-dev/btw/issues/156)).
+### New features
+
+- New `btw` CLI provides command-line access to btw’s tool groups —
+  **docs**, **pkg**, **info**, and **cran** — powered by
+  [Rapp](https://github.com/r-lib/Rapp). Install with
+  [`install_btw_cli()`](https://posit-dev.github.io/btw/dev/reference/install_btw_cli.md)
+  and run commands like `btw docs help dplyr::mutate` or
+  `btw cran search "tidyverse"`. Output is designed for humans and LLMs:
+  colored and formatted for terminals, plain markdown when piped, with a
+  `--json` flag to return pipable JSON in select commands
+  ([\#176](https://github.com/posit-dev/btw/issues/176)).
 
 - `btw.md` now supports configuring multiple client options. When
   [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
@@ -138,18 +69,7 @@
   non-interactive contexts, the first client is used automatically
   ([\#153](https://github.com/posit-dev/btw/issues/153)).
 
-- New
-  [`btw_tool_agent_subagent()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_agent_subagent.md)
-  tool enables hierarchical agent workflows by allowing an orchestrating
-  LLM to delegate tasks to subagents. Each subagent runs in its own
-  isolated chat session with restricted tool access and maintains
-  conversation state that can be resumed via `session_id`. This allows
-  you to delegate tasks to smaller cheaper models or reduce context
-  bloat in the main conversation
-  ([\#149](https://github.com/posit-dev/btw/issues/149)).
-
-- New
-  [`btw_agent_tool()`](https://posit-dev.github.io/btw/dev/reference/btw_agent_tool.md)
+- [`btw_agent_tool()`](https://posit-dev.github.io/btw/dev/reference/btw_agent_tool.md)
   allows you to create specialized custom subagents from `btw.md` style
   markdown files. Agent files are automatically discovered from
   `.btw/agent-*.md` (project and user directories) and `.claude/agents/`
@@ -159,6 +79,97 @@
   Custom agents can specify their own system prompts, icons, models, and
   available tools
   ([\#149](https://github.com/posit-dev/btw/issues/149)).
+
+- [`btw_task()`](https://posit-dev.github.io/btw/dev/reference/btw_task.md)
+  runs pre-formatted LLM tasks defined in markdown files with YAML
+  frontmatter. Task files support template variable interpolation via
+  `{{ variable }}` syntax, optional client and tool configuration, and
+  all four execution modes (`"app"`, `"console"`, `"client"`, `"tool"`).
+  Task files can also specify `title`, `icon`, `description`, and `name`
+  fields in their YAML frontmatter to customize the tool definition when
+  used in `"tool"` mode
+  ([\#169](https://github.com/posit-dev/btw/issues/169)).
+
+- [`btw_tool_agent_subagent()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_agent_subagent.md)
+  enables hierarchical agent workflows by allowing an orchestrating LLM
+  to delegate tasks to subagents. Each subagent runs in its own isolated
+  chat session with restricted tool access and maintains conversation
+  state that can be resumed via `session_id`. This allows you to
+  delegate tasks to smaller cheaper models or reduce context bloat in
+  the main conversation
+  ([\#149](https://github.com/posit-dev/btw/issues/149)).
+
+- [`btw_tool_files_edit()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_edit.md)
+  makes targeted, validated line-based edits to files using `replace`,
+  `insert_after`, and `replace_range` actions. Edits are anchored to
+  content hashes, so stale edits are rejected if the file has changed.
+  To support this,
+  [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md)
+  now annotates each line with a short hash
+  (e.g. `2:f1a| return("world")`) when called as a tool
+  ([\#167](https://github.com/posit-dev/btw/issues/167)).
+
+- [`btw_tool_files_replace()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_replace.md)
+  finds and replaces exact string occurrences in a file. By default it
+  requires the string to appear exactly once to prevent unintended
+  changes; set `replace_all = TRUE` to replace all occurrences
+  ([\#167](https://github.com/posit-dev/btw/issues/167)).
+
+- [`btw_tool_pkg_load_all()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_load_all.md)
+  runs
+  [`pkgload::load_all()`](https://pkgload.r-lib.org/reference/load_all.html)
+  in an isolated subprocess to verify package code loads correctly and
+  trigger recompilation of compiled code. Useful for quick validation
+  during development without running full tests or affecting the current
+  R session ([\#156](https://github.com/posit-dev/btw/issues/156)).
+
+- [`btw_tool_skill()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_skill.md)
+  adds support for [Agent Skills](https://agentskills.io). Skills are
+  modular, on-demand capabilities that provide specialized instructions,
+  bundled scripts, reference docs, and asset templates to the LLM.
+  Skills are discovered automatically from the btw package, attached R
+  packages with `inst/skills/` directories, user-level skills, and
+  project-level skills in `.btw/skills/` or `.agents/skills/`. When the
+  skill tool is included in the chat client, available skills are listed
+  in the system prompt. Use
+  [`btw_skill_install_github()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_install_github.md)
+  or
+  [`btw_skill_install_package()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_install_package.md)
+  to install skills from external sources, and
+  [`btw_task_create_skill()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_skill.md)
+  to interactively create new skills
+  ([\#145](https://github.com/posit-dev/btw/issues/145)).
+
+### Bug fixes
+
+- [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+  no longer errors with “argument is of length zero” when run outside of
+  an IDE (thanks [@HenrikBengtsson](https://github.com/HenrikBengtsson),
+  [\#168](https://github.com/posit-dev/btw/issues/168)).
+
+- [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+  no longer errors when provider built-in tools (e.g.
+  [`claude_tool_web_search()`](https://ellmer.tidyverse.org/reference/claude_tool_web_search.html))
+  are registered with a btw client. Built-in tools now appear in the app
+  sidebar under a “Built-in” group
+  ([\#175](https://github.com/posit-dev/btw/issues/175)).
+
+- [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md)
+  now correctly handles UTF-8 files containing CJK (Chinese, Japanese,
+  Korean) characters. Previously, the text-file detection could truncate
+  a read buffer mid-way through a multi-byte character, causing the file
+  to be rejected as binary (thanks
+  [@bianchenhao](https://github.com/bianchenhao),
+  [\#170](https://github.com/posit-dev/btw/issues/170)).
+
+- [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md)
+  now correctly reads valid UTF-8 files containing non-ASCII characters
+  (e.g., Cyrillic). Previously, these files were incorrectly rejected on
+  Windows with non-English locales when
+  [`Encoding()`](https://rdrr.io/r/base/Encoding.html) returned
+  “unknown” even though they were valid UTF-8 (thanks
+  [@RKonstantinR](https://github.com/RKonstantinR),
+  [\#160](https://github.com/posit-dev/btw/issues/160)).
 
 ## btw 1.1.0
 
