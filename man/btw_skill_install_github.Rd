@@ -27,8 +27,9 @@ non-interactive sessions).}
 chosen from \verb{.btw/skills/} or \verb{.agents/skills/}
 in that order. If one already exists, it is used; otherwise
 \verb{.btw/skills/} is created.
-\item \code{"user"}: Installs to the user-level skills directory
-(\code{tools::R_user_dir("btw", "config")/skills}).
+\item \code{"user"}: Installs to the first of \verb{~/.btw/skills},
+\verb{~/.config/btw/skills}, or \code{tools::R_user_dir("btw")/skills} that
+already exists, defaulting to \verb{~/.btw/skills} if none do.
 \item A directory path: Installs to a custom directory, e.g.
 \code{scope = ".openhands/skills"}. Use \code{I("project")} or \code{I("user")}
 if you need a literal directory with those names.

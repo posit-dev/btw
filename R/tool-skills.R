@@ -25,8 +25,8 @@ NULL
 #'    `inst/skills/` directory that is loaded via [library()] or [require()]
 #' 3. User-level skills (`~/.btw/skills`, `~/.config/btw/skills`,
 #'    `tools::R_user_dir("btw")/skills`). For backwards compatibility, the
-#'    legacy `tools::R_user_dir("btw", "config")/skills` path used by btw
-#'    <= 1.2.0 is also included at lower priority.
+#'    legacy `tools::R_user_dir("btw", "config")/skills` path used by briefly
+#'    by btw 1.2.0 is also included at lower priority.
 #' 4. Project-level skills (`.btw/skills/` or `.agents/skills/`)
 #'
 #' @param name The name of the skill to load, or `""` to list all available
@@ -760,7 +760,9 @@ resolve_user_skill_dir <- function() {
   # Require content, not just existence: an empty directory (e.g. one left
   # behind after removing a skill) should not cause subsequent installs to
   # land there instead of the preferred default (~/.btw/skills).
-  non_empty <- existing[map_lgl(existing, function(d) length(list.files(d)) > 0)]
+  non_empty <- existing[map_lgl(existing, function(d) {
+    length(list.files(d)) > 0
+  })]
   if (length(non_empty) > 0) non_empty[[1]] else candidates[[1]]
 }
 
