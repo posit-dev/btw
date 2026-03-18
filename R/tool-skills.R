@@ -322,8 +322,11 @@ btw_skills_list <- function() {
 find_skill <- function(skill_name) {
   skill_dirs <- btw_skills_directories()
 
+  # Search in reverse priority order so higher-priority sources win, consistent
+  # with btw_skills_list() which uses last-wins semantics.
+
   # Fast path: directory named skill_name
-  for (dir in skill_dirs) {
+  for (dir in rev(skill_dirs)) {
     skill_dir <- file.path(dir, skill_name)
     skill_md_path <- file.path(skill_dir, "SKILL.md")
     if (dir.exists(skill_dir) && file.exists(skill_md_path)) {
@@ -337,10 +340,9 @@ find_skill <- function(skill_name) {
   }
 
   # Slow path: scan all skills for a matching metadata$name (handles name/dir
-
   # mismatch). We use extract_skill_metadata() first to avoid full validation
   # on every non-matching skill, then validate only when we find a match.
-  for (dir in skill_dirs) {
+  for (dir in rev(skill_dirs)) {
     subdirs <- list.dirs(dir, full.names = TRUE, recursive = FALSE)
     for (subdir in subdirs) {
       skill_md_path <- file.path(subdir, "SKILL.md")
