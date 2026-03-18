@@ -3,9 +3,8 @@
 #| description: >
 #|   Describe R objects, documentation, and workspace state in LLM-friendly
 #|   text. Wraps btw package tools for docs, pkg, info, and cran operations.
-
-library(btw)
-library(utils)
+#| launcher:
+#|   default-packages: [base, datasets, utils, stats, methods, btw]
 
 # Global options --------------------------------------------------------------
 
