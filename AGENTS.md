@@ -302,6 +302,7 @@ Edit files in `inst/prompts/`. These are assembled in `btw_client()` based on co
 - **All tool wrappers accept `_intent` parameter** (added automatically by `wrap_with_intent()`)
 - **Snapshot tests for tool outputs** to catch formatting changes
 - **Use `check_*()` functions** argument validation, described below
+- **Suppress cli messages in tests** - `expect_message(expr, pattern)` only absorbs the first *matching* message; non-matching messages (e.g. a `cli_alert_info()` emitted before the one under test) leak to the console even when the test passes. Wrap with `suppressMessages(expect_message(...))` when secondary messages are expected but unimportant, or use `suppressMessages(expr)` alone when the assertion is a side-effect rather than the message content.
 
 ### Type Check Functions
 
