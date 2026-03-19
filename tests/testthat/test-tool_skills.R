@@ -355,6 +355,40 @@ test_that("find_skill() finds a valid skill", {
   expect_true(file.exists(result$path))
 })
 
+test_that("find_skill() returns the highest-priority version when skill exists in multiple dirs", {
+  low_dir <- withr::local_tempdir()
+  high_dir <- withr::local_tempdir()
+  create_temp_skill(name = "my-skill", description = "Low priority version", dir = low_dir)
+  create_temp_skill(name = "my-skill", description = "High priority version", dir = high_dir)
+  # high_dir last = higher priority (consistent with btw_skills_directories() semantics)
+  local_skill_dirs(c(low_dir, high_dir))
+
+  result <- find_skill("my-skill")
+  fm <- frontmatter::read_front_matter(result$path)
+  expect_equal(fm$data$description, "High priority version")
+})
+
+# resolve_user_skill_dir() -------------------------------------------------
+
+test_that("resolve_user_skill_dir() returns first non-empty existing candidate", {
+  dir1 <- withr::local_tempdir()
+  dir2 <- withr::local_tempdir()
+  skills2 <- file.path(dir2, "skills")
+  dir.create(skills2)
+  writeLines("x", file.path(skills2, "placeholder"))
+
+  local_mocked_bindings(btw_user_dirs = function() c(dir1, dir2))
+  expect_equal(resolve_user_skill_dir(), skills2)
+})
+
+test_that("resolve_user_skill_dir() falls back to first candidate when none have content", {
+  dir1 <- withr::local_tempdir()
+  dir2 <- withr::local_tempdir()
+
+  local_mocked_bindings(btw_user_dirs = function() c(dir1, dir2))
+  expect_equal(resolve_user_skill_dir(), file.path(dir1, "skills"))
+})
+
 # extract_skill_metadata ---------------------------------------------------
 
 test_that("extract_skill_metadata() returns parsed frontmatter", {

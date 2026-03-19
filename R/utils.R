@@ -152,17 +152,28 @@ path_find_in_project <- function(filename, dir = getwd()) {
   path_find_in_project(filename, dirname(dir))
 }
 
+# Returns user-level config directories in decreasing priority order.
+# Consumers iterate and use the first match (or rev() when building
+# an increasing-priority list like btw_skills_directories()).
+btw_user_dirs <- function() {
+  c(
+    fs::path_home(".btw"),
+    fs::path_home(".config", "btw"),
+    tools::R_user_dir("btw")
+  )
+}
+
 path_find_user <- function(filename) {
   if (identical(Sys.getenv("TESTTHAT"), "true")) {
     # In testthat, we don't want to use the home directory
     return(NULL)
   }
 
-  possibilities <- c(
+  possibilities <- unique(c(
     fs::path_home(filename),
     fs::path_home_r(filename),
-    fs::path_home(".config", "btw", filename)
-  )
+    file.path(btw_user_dirs(), filename)
+  ))
 
   for (path in possibilities) {
     if (fs::file_exists(path)) {
@@ -191,19 +202,14 @@ find_project_agent_files <- function(dir = getwd()) {
   as.character(files)
 }
 
-# Find agent-*.md files in user config directories (~/.btw/, ~/.config/btw/)
+# Find agent-*.md files in user config directories
 find_user_agent_files <- function() {
   if (identical(Sys.getenv("TESTTHAT"), "true")) {
     return(character())
   }
 
-  user_dirs <- c(
-    fs::path_home(".btw"),
-    fs::path_home(".config", "btw")
-  )
-
   files <- character()
-  for (dir in user_dirs) {
+  for (dir in btw_user_dirs()) {
     if (fs::dir_exists(dir)) {
       found <- fs::dir_ls(dir, regexp = "agent-.*\\.md$", type = "file")
       files <- c(files, as.character(found))

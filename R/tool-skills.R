@@ -23,7 +23,10 @@ NULL
 #' 1. Skills bundled with the btw package itself
 #' 2. Skills from currently **attached** R packages — any package with an
 #'    `inst/skills/` directory that is loaded via [library()] or [require()]
-#' 3. User-level skills (`tools::R_user_dir("btw", "config")/skills`)
+#' 3. User-level skills (`~/.btw/skills`, `~/.config/btw/skills`,
+#'    `tools::R_user_dir("btw")/skills`). For backwards compatibility, the
+#'    legacy `tools::R_user_dir("btw", "config")/skills` path used by briefly
+#'    by btw 1.2.0 is also included at lower priority.
 #' 4. Project-level skills (`.btw/skills/` or `.agents/skills/`)
 #'
 #' @param name The name of the skill to load, or `""` to list all available
@@ -156,13 +159,19 @@ btw_skills_directories <- function(project_dir = getwd()) {
   # Skills from attached packages
   dirs <- c(dirs, attached_package_skill_dirs())
 
-  # User-level skills (global installation)
-  user_skills_dir <- file.path(
-    tools::R_user_dir("btw", "config"),
-    "skills"
-  )
-  if (dir.exists(user_skills_dir)) {
-    dirs <- c(dirs, user_skills_dir)
+  # Legacy: btw <= 1.2.0 install target — kept for backwards compatibility only,
+  # never written to by newer versions
+  legacy_skills_dir <- file.path(tools::R_user_dir("btw", "config"), "skills")
+  if (dir.exists(legacy_skills_dir)) {
+    dirs <- c(dirs, legacy_skills_dir)
+  }
+
+  # User-level skills from btw_user_dirs() in increasing priority order
+  for (user_dir in rev(btw_user_dirs())) {
+    user_skills_dir <- file.path(user_dir, "skills")
+    if (dir.exists(user_skills_dir) && !user_skills_dir %in% dirs) {
+      dirs <- c(dirs, user_skills_dir)
+    }
   }
 
   # Project-level skills from multiple conventions
@@ -313,8 +322,11 @@ btw_skills_list <- function() {
 find_skill <- function(skill_name) {
   skill_dirs <- btw_skills_directories()
 
+  # Search in reverse priority order so higher-priority sources win, consistent
+  # with btw_skills_list() which uses last-wins semantics.
+
   # Fast path: directory named skill_name
-  for (dir in skill_dirs) {
+  for (dir in rev(skill_dirs)) {
     skill_dir <- file.path(dir, skill_name)
     skill_md_path <- file.path(skill_dir, "SKILL.md")
     if (dir.exists(skill_dir) && file.exists(skill_md_path)) {
@@ -328,10 +340,9 @@ find_skill <- function(skill_name) {
   }
 
   # Slow path: scan all skills for a matching metadata$name (handles name/dir
-
   # mismatch). We use extract_skill_metadata() first to avoid full validation
   # on every non-matching skill, then validate only when we find a match.
-  for (dir in skill_dirs) {
+  for (dir in rev(skill_dirs)) {
     subdirs <- list.dirs(dir, full.names = TRUE, recursive = FALSE)
     for (subdir in subdirs) {
       skill_md_path <- file.path(subdir, "SKILL.md")
@@ -738,9 +749,21 @@ resolve_skill_scope <- function(scope, error_call = caller_env()) {
   switch(
     scope,
     project = resolve_project_skill_dir(error_call = error_call),
-    user = file.path(tools::R_user_dir("btw", "config"), "skills"),
+    user = resolve_user_skill_dir(),
     scope
   )
+}
+
+resolve_user_skill_dir <- function() {
+  candidates <- file.path(btw_user_dirs(), "skills")
+  existing <- candidates[dir.exists(candidates)]
+  # Require content, not just existence: an empty directory (e.g. one left
+  # behind after removing a skill) should not cause subsequent installs to
+  # land there instead of the preferred default (~/.btw/skills).
+  non_empty <- existing[map_lgl(existing, function(d) {
+    length(list.files(d)) > 0
+  })]
+  if (length(non_empty) > 0) non_empty[[1]] else candidates[[1]]
 }
 
 select_skill_dir <- function(
@@ -813,8 +836,9 @@ select_skill_dir <- function(
 #'     chosen from `.btw/skills/` or `.agents/skills/`
 #'     in that order. If one already exists, it is used; otherwise
 #'     `.btw/skills/` is created.
-#'   - `"user"`: Installs to the user-level skills directory
-#'     (`tools::R_user_dir("btw", "config")/skills`).
+#'   - `"user"`: Installs to the first of `~/.btw/skills`,
+#'     `~/.config/btw/skills`, or `tools::R_user_dir("btw")/skills` that
+#'     already exists, defaulting to `~/.btw/skills` if none do.
 #'   - A directory path: Installs to a custom directory, e.g.
 #'     `scope = ".openhands/skills"`. Use `I("project")` or `I("user")`
 #'     if you need a literal directory with those names.
@@ -917,8 +941,9 @@ btw_skill_install_github <- function(
 #'     chosen from `.btw/skills/` or `.agents/skills/`
 #'     in that order. If one already exists, it is used; otherwise
 #'     `.btw/skills/` is created.
-#'   - `"user"`: Installs to the user-level skills directory
-#'     (`tools::R_user_dir("btw", "config")/skills`).
+#'   - `"user"`: Installs to the first of `~/.btw/skills`,
+#'     `~/.config/btw/skills`, or `tools::R_user_dir("btw")/skills` that
+#'     already exists, defaulting to `~/.btw/skills` if none do.
 #'   - A directory path: Installs to a custom directory, e.g.
 #'     `scope = ".openhands/skills"`. Use `I("project")` or `I("user")`
 #'     if you need a literal directory with those names.
