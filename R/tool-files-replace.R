@@ -1,15 +1,42 @@
 #' Tool: Replace exact strings in a text file
 #'
+#' @description
+#' ## Description
+#'
+#' Finds and replaces exact string occurrences in a file. Because this tool
+#' operates on exact string matches, it's suited for simple renames, value
+#' updates, or repetitive text changes where the target string is unambiguous.
+#'
+#' ## Replace vs Edit
+#'
+#' btw's two file-editing tools serve different use cases:
+#'
+#' * `btw_tool_files_replace()` is best for exact text substitutions:
+#'   renaming a variable, updating a URL, or changing a value. It does not
+#'   require a prior [btw_tool_files_read()] call. By default, it requires the
+#'   match to be unique to prevent unintended changes.
+#' * [btw_tool_files_edit()] is best for structural, line-based edits: inserting
+#'   new lines, deleting lines, replacing a range of lines, or making several
+#'   edits at once. It requires hashline references from a prior
+#'   [btw_tool_files_read()] call and validates them against the current file
+#'   state.
+#'
 #' @param path Path to the file to edit. The `path` must be in the current
 #'   working directory.
-#' @param old_string The exact string to find in the file. Must be unique unless
-#'   `replace_all` is `TRUE`.
-#' @param new_string The replacement string. Must differ from `old_string`.
+#' @param old_string The exact string to find in the file. Must match
+#'   character-for-character, including whitespace and indentation. Must be
+#'   unique unless `replace_all` is `TRUE`.
+#' @param new_string The replacement string. Must differ from `old_string`. Use
+#'   an empty string (`""`) to delete the matched text.
 #' @param replace_all If `TRUE`, replace all occurrences of `old_string`.
 #'   Defaults to `FALSE`, which requires exactly one occurrence.
 #' @inheritParams btw_tool_docs_package_news
 #'
-#' @return Returns a message confirming the replacement was applied.
+#' @return Returns a message confirming the replacement was applied, including
+#'   the number of occurrences replaced.
+#'
+#' @seealso [btw_tool_files_edit()] for line-based structural edits using
+#'   hashline references, [btw_tool_files_read()] for reading files.
 #'
 #' @family files tools
 #' @export

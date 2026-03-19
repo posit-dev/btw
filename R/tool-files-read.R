@@ -3,6 +3,27 @@ NULL
 
 #' Tool: Read a file
 #'
+#' @description
+#' ## Description
+#'
+#' Reads the contents of a text file, optionally restricted to a line range.
+#' Each line is annotated with a hashline prefix (`line_number:hash|content`)
+#' that enables validated editing via [btw_tool_files_edit()].
+#'
+#' ## Hashline annotations
+#'
+#' The hashline format prefixes each line with `line_number:hash|`, e.g.
+#' `2:f1a|  return("world")`. The 3-character hash is a truncated
+#' [rlang::hash()] of the line content after trimming whitespace and
+#' truncating to 80 characters. These hashes are used by
+#' [btw_tool_files_edit()] to validate that the file hasn't changed between
+#' reading and editing. See [btw_tool_files_edit()] for details on the
+#' hashline approach and its benefits and limitations.
+#'
+#' Hashline annotations are only included in the model-facing tool output. The
+#' display shown to users in [btw_app()] or [shinychat::chat_ui()] is always a
+#' clean code block.
+#'
 #' @examples
 #' withr::with_tempdir({
 #'   write.csv(mtcars, "mtcars.csv")
@@ -19,7 +40,12 @@ NULL
 #'   `line_start` to read a specific line range of the file.
 #' @inheritParams btw_tool_docs_package_news
 #'
-#' @return Returns a character vector of lines from the file.
+#' @return Returns lines with hashline annotations (see **Hashline
+#'   annotations**).
+#'
+#' @seealso [btw_tool_files_edit()] for making validated edits using hashline
+#'   references, [btw_tool_files_replace()] for exact string find-and-replace,
+#'   [btw_tool_files_write()] for writing entire files.
 #'
 #' @family files tools
 #' @export

@@ -22,10 +22,31 @@ When the tool is used by an LLM, the model will use this argument to
 explain why it called the tool.}
 }
 \value{
-Returns a character vector of lines from the file.
+Returns lines with hashline annotations (see \strong{Hashline
+annotations}).
 }
 \description{
-Tool: Read a file
+\subsection{Description}{
+
+Reads the contents of a text file, optionally restricted to a line range.
+Each line is annotated with a hashline prefix (\code{line_number:hash|content})
+that enables validated editing via \code{\link[=btw_tool_files_edit]{btw_tool_files_edit()}}.
+}
+
+\subsection{Hashline annotations}{
+
+The hashline format prefixes each line with \verb{line_number:hash|}, e.g.
+\code{2:f1a|  return("world")}. The 3-character hash is a truncated
+\code{\link[rlang:hash]{rlang::hash()}} of the line content after trimming whitespace and
+truncating to 80 characters. These hashes are used by
+\code{\link[=btw_tool_files_edit]{btw_tool_files_edit()}} to validate that the file hasn't changed between
+reading and editing. See \code{\link[=btw_tool_files_edit]{btw_tool_files_edit()}} for details on the
+hashline approach and its benefits and limitations.
+
+Hashline annotations are only included in the model-facing tool output. The
+display shown to users in \code{\link[=btw_app]{btw_app()}} or \code{\link[shinychat:chat_ui]{shinychat::chat_ui()}} is always a
+clean code block.
+}
 }
 \examples{
 withr::with_tempdir({
@@ -36,6 +57,10 @@ withr::with_tempdir({
 
 }
 \seealso{
+\code{\link[=btw_tool_files_edit]{btw_tool_files_edit()}} for making validated edits using hashline
+references, \code{\link[=btw_tool_files_replace]{btw_tool_files_replace()}} for exact string find-and-replace,
+\code{\link[=btw_tool_files_write]{btw_tool_files_write()}} for writing entire files.
+
 Other files tools: 
 \code{\link{btw_tool_files_edit}()},
 \code{\link{btw_tool_files_list}()},

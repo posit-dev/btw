@@ -16,10 +16,12 @@ btw_tool_files_replace(
 \item{path}{Path to the file to edit. The \code{path} must be in the current
 working directory.}
 
-\item{old_string}{The exact string to find in the file. Must be unique unless
-\code{replace_all} is \code{TRUE}.}
+\item{old_string}{The exact string to find in the file. Must match
+character-for-character, including whitespace and indentation. Must be
+unique unless \code{replace_all} is \code{TRUE}.}
 
-\item{new_string}{The replacement string. Must differ from \code{old_string}.}
+\item{new_string}{The replacement string. Must differ from \code{old_string}. Use
+an empty string (\code{""}) to delete the matched text.}
 
 \item{replace_all}{If \code{TRUE}, replace all occurrences of \code{old_string}.
 Defaults to \code{FALSE}, which requires exactly one occurrence.}
@@ -29,12 +31,37 @@ When the tool is used by an LLM, the model will use this argument to
 explain why it called the tool.}
 }
 \value{
-Returns a message confirming the replacement was applied.
+Returns a message confirming the replacement was applied, including
+the number of occurrences replaced.
 }
 \description{
-Tool: Replace exact strings in a text file
+\subsection{Description}{
+
+Finds and replaces exact string occurrences in a file. Because this tool
+operates on exact string matches, it's suited for simple renames, value
+updates, or repetitive text changes where the target string is unambiguous.
+}
+
+\subsection{Replace vs Edit}{
+
+btw's two file-editing tools serve different use cases:
+\itemize{
+\item \code{btw_tool_files_replace()} is best for exact text substitutions:
+renaming a variable, updating a URL, or changing a value. It does not
+require a prior \code{\link[=btw_tool_files_read]{btw_tool_files_read()}} call. By default, it requires the
+match to be unique to prevent unintended changes.
+\item \code{\link[=btw_tool_files_edit]{btw_tool_files_edit()}} is best for structural, line-based edits: inserting
+new lines, deleting lines, replacing a range of lines, or making several
+edits at once. It requires hashline references from a prior
+\code{\link[=btw_tool_files_read]{btw_tool_files_read()}} call and validates them against the current file
+state.
+}
+}
 }
 \seealso{
+\code{\link[=btw_tool_files_edit]{btw_tool_files_edit()}} for line-based structural edits using
+hashline references, \code{\link[=btw_tool_files_read]{btw_tool_files_read()}} for reading files.
+
 Other files tools: 
 \code{\link{btw_tool_files_edit}()},
 \code{\link{btw_tool_files_list}()},
