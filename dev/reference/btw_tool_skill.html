@@ -14,7 +14,10 @@ priority (later sources override earlier ones when skill names conflict):
 Skills bundled with the btw package itself
 Skills from currently attached R packages — any package with an
 inst/skills/ directory that is loaded via library() or require()
-User-level skills (tools::R_user_dir(&quot;btw&quot;, &quot;config&quot;)/skills)
+User-level skills (~/.btw/skills, ~/.config/btw/skills,
+tools::R_user_dir(&quot;btw&quot;)/skills). For backwards compatibility, the
+legacy tools::R_user_dir(&quot;btw&quot;, &quot;config&quot;)/skills path used by briefly
+by btw 1.2.0 is also included at lower priority.
 Project-level skills (.btw/skills/ or .agents/skills/)
 
 "><meta property="og:description" content="Load a skill's specialized instructions and list its bundled resources.
@@ -32,7 +35,10 @@ priority (later sources override earlier ones when skill names conflict):
 Skills bundled with the btw package itself
 Skills from currently attached R packages — any package with an
 inst/skills/ directory that is loaded via library() or require()
-User-level skills (tools::R_user_dir(&quot;btw&quot;, &quot;config&quot;)/skills)
+User-level skills (~/.btw/skills, ~/.config/btw/skills,
+tools::R_user_dir(&quot;btw&quot;)/skills). For backwards compatibility, the
+legacy tools::R_user_dir(&quot;btw&quot;, &quot;config&quot;)/skills path used by briefly
+by btw 1.2.0 is also included at lower priority.
 Project-level skills (.btw/skills/ or .agents/skills/)
 
 "><meta property="og:image" content="https://posit-dev.github.io/btw/logo.png"><meta name="robots" content="noindex"></head><body>
@@ -89,7 +95,10 @@ name) to get the current skill listing.</p>
 priority (later sources override earlier ones when skill names conflict):</p><ol><li><p>Skills bundled with the btw package itself</p></li>
 <li><p>Skills from currently <strong>attached</strong> R packages — any package with an
 <code>inst/skills/</code> directory that is loaded via <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library()</a></code> or <code><a href="https://rdrr.io/r/base/library.html" class="external-link">require()</a></code></p></li>
-<li><p>User-level skills (<code>tools::R_user_dir("btw", "config")/skills</code>)</p></li>
+<li><p>User-level skills (<code>~/.btw/skills</code>, <code>~/.config/btw/skills</code>,
+<code>tools::R_user_dir("btw")/skills</code>). For backwards compatibility, the
+legacy <code>tools::R_user_dir("btw", "config")/skills</code> path used by briefly
+by btw 1.2.0 is also included at lower priority.</p></li>
 <li><p>Project-level skills (<code>.btw/skills/</code> or <code>.agents/skills/</code>)</p></li>
 </ol></div>
 

@@ -77,8 +77,9 @@ non-interactive sessions).</p></dd>
 chosen from <code>.btw/skills/</code> or <code>.agents/skills/</code>
 in that order. If one already exists, it is used; otherwise
 <code>.btw/skills/</code> is created.</p></li>
-<li><p><code>"user"</code>: Installs to the user-level skills directory
-(<code>tools::R_user_dir("btw", "config")/skills</code>).</p></li>
+<li><p><code>"user"</code>: Installs to the first of <code>~/.btw/skills</code>,
+<code>~/.config/btw/skills</code>, or <code>tools::R_user_dir("btw")/skills</code> that
+already exists, defaulting to <code>~/.btw/skills</code> if none do.</p></li>
 <li><p>A directory path: Installs to a custom directory, e.g.
 <code>scope = ".openhands/skills"</code>. Use <code>I("project")</code> or <code>I("user")</code>
 if you need a literal directory with those names.</p></li>

@@ -40,8 +40,9 @@ btw_skill_install_github(
     chosen from `.btw/skills/` or `.agents/skills/` in that order. If
     one already exists, it is used; otherwise `.btw/skills/` is created.
 
-  - `"user"`: Installs to the user-level skills directory
-    (`tools::R_user_dir("btw", "config")/skills`).
+  - `"user"`: Installs to the first of `~/.btw/skills`,
+    `~/.config/btw/skills`, or `tools::R_user_dir("btw")/skills` that
+    already exists, defaulting to `~/.btw/skills` if none do.
 
   - A directory path: Installs to a custom directory, e.g.
     `scope = ".openhands/skills"`. Use `I("project")` or `I("user")` if

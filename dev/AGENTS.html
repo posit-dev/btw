@@ -174,7 +174,7 @@
 <span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a></span>
 <span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>Follow these style rules: ...</span></code></pre></div>
-<p>btw looks for these files in: 1. Current working directory or its parents (project-specific) 2. <code>~/.config/btw/btw.md</code> or <code>~/btw.md</code> (global defaults)</p>
+<p>btw looks for these files in: 1. Current working directory or its parents (project-specific) 2. <code>~/.btw/btw.md</code>, <code>~/.config/btw/btw.md</code>, or <code>~/btw.md</code> (global defaults)</p>
 <p>Content becomes part of the system prompt. Use <code>&lt;!-- HIDE --&gt;</code> / <code>&lt;!-- /HIDE --&gt;</code> comments to exclude sections from the prompt.</p>
 </div>
 <div class="section level3">
@@ -353,6 +353,8 @@
 <strong>Snapshot tests for tool outputs</strong> to catch formatting changes</li>
 <li>
 <strong>Use <code>check_*()</code> functions</strong> argument validation, described below</li>
+<li>
+<strong>Suppress cli messages in tests</strong> - <code>expect_message(expr, pattern)</code> only absorbs the first <em>matching</em> message; non-matching messages (e.g. a <code>cli_alert_info()</code> emitted before the one under test) leak to the console even when the test passes. Wrap with <code>suppressMessages(expect_message(...))</code> when secondary messages are expected but unimportant, or use <code>suppressMessages(expr)</code> alone when the assertion is a side-effect rather than the message content.</li>
 </ul><div class="section level3">
 <h3 id="type-check-functions">Type Check Functions<a class="anchor" aria-label="anchor" href="#type-check-functions"></a></h3>
 <div class="section level4">
@@ -418,6 +420,8 @@
 <strong>MCP server blocks</strong> the R process - run non-interactively</li>
 <li>
 <strong>Test snapshots require frequent updates</strong> as output formatting evolves</li>
+<li>
+<strong><code>btw_user_dirs()</code> is the single source of truth</strong> for user-level config locations (<code>~/.btw</code>, <code>~/.config/btw</code>, <code>tools::R_user_dir("btw")</code>). Any code that discovers or installs user-level skills, agents, or <code>btw.md</code> files must use this helper — never hardcode individual paths</li>
 </ul></div>
 <div class="section level2">
 <h2 id="resources">Resources<a class="anchor" aria-label="anchor" href="#resources"></a></h2>

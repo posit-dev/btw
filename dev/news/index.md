@@ -4,6 +4,11 @@
 
 ### Bug fixes
 
+- User-level config locations are now consistent across skills, agents,
+  and `btw.md` discovery. Skills installed with btw v1.2.0 are still
+  discovered for backwards compatibility
+  ([\#182](https://github.com/posit-dev/btw/issues/182)).
+
 - The `btw` CLI now loads `datasets`, `utils`, `stats`, and `methods` by
   declaring them in the Rapp `#| launcher:` frontmatter, reducing
   surprises for users who expect standard R packages to be available
