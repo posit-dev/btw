@@ -410,20 +410,35 @@ subagent_client <- function(
     ))
   }
 
+  # We may need to read btw.md directly to determine client settings
+  config <- NULL
+
   subagent_client_resolved <-
     client %||%
     getOption("btw.subagent.client") %||%
     getOption("btw.client")
 
+  if (is.null(subagent_client_resolved)) {
+    config <- read_btw_file()
+
+    subagent_client_resolved <-
+      config$options$btw.subagent.client %||%
+      btw_client_config(config = config, tools = FALSE)$client
+  }
+
   tools_default <-
     tools_default %||%
     getOption("btw.subagent.tools_default") %||%
-    getOption("btw.tools")
+    getOption("btw.tools") %||%
+    config$options$btw.subagent.tools_default %||%
+    config$tools
+
   tools_default <- subagent_disallow_recursion(tools_default)
 
   tools_allowed <-
     tools_allowed %||%
-    getOption("btw.subagent.tools_allowed")
+    getOption("btw.subagent.tools_allowed") %||%
+    config$options$btw.subagent.tools_allowed
   # Note: Don't filter subagent from tools_allowed here.
   # The allowed list should be used as-is for validation.
   # The final subagent_disallow_recursion() at the end handles the actual filtering.
