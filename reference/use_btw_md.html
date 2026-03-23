@@ -21,7 +21,7 @@ arguments, it opens the same file that btw_client() would use by default."><meta
 
     <a class="navbar-brand me-2" href="../index.html">btw</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,7 +48,7 @@ arguments, it opens the same file that btw_client() would use by default."><meta
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Create or edit a btw.md context file</h1>
-      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/v1.2.0/R/edit_btw_md.R" class="external-link"><code>R/edit_btw_md.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/main/R/edit_btw_md.R" class="external-link"><code>R/edit_btw_md.R</code></a></small>
       <div class="d-none name"><code>use_btw_md.Rd</code></div>
     </div>
 
@@ -124,12 +124,12 @@ for editing.</p></li>
 
 
 
-<p>You can use a <code>btw.md</code> or <a href="https://agents.md" class="external-link"><code>AGENTS.md</code></a> file to keep track
-of project-specific rules, guidance and context in your project. Either file
-name will work, so we'll refer primarily to <code>btw.md</code>. These files are used
-automatically by <code><a href="btw_client.html">btw_client()</a></code> and <code><a href="btw_client.html">btw_app()</a></code>: they look first for <code>btw.md</code>
-and then for <code>AGENTS.md</code>. If both files are present, only the <code>btw.md</code> file
-will be used.</p>
+<p>You can use a <code>btw.md</code> or <a href="https://agents.md/" class="external-link"><code>AGENTS.md</code></a> file to keep
+track of project-specific rules, guidance and context in your project. Either
+file name will work, so we'll refer primarily to <code>btw.md</code>. These files are
+used automatically by <code><a href="btw_client.html">btw_client()</a></code> and <code><a href="btw_client.html">btw_app()</a></code>: they look first for
+<code>btw.md</code> and then for <code>AGENTS.md</code>. If both files are present, only the
+<code>btw.md</code> file will be used.</p>
 <p>Any time you start a chat client with <code><a href="btw_client.html">btw_client()</a></code> or launch a chat session
 with <code><a href="btw_client.html">btw_app()</a></code>, btw will automatically find and include the contents of the
 <code>btw.md</code> or <code>AGENTS.md</code> file in the system prompt of your chat. This helps
@@ -265,7 +265,7 @@ available tools.</p></div>
 <span class="r-in"><span>    <span class="fu">use_btw_md</span><span class="op">(</span><span class="va">btw_md_tmp</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">}</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Created <span style="color: #0000BB;">/tmp/RtmpmTwhWW/file238075a2e38.md</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Created <span style="color: #0000BB;">/tmp/RtmprfJByv/file24695952e875.md</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> See `?btw::btw_client()` for format details</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> See `?btw::btw_tools()` for available tools</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Call `btw::btw_task_create_btw_md()` to use an LLM to help you initialize the</span>

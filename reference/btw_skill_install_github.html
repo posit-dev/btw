@@ -9,7 +9,7 @@ should contain one or more skill directories, each with a SKILL.md file."><meta 
 
     <a class="navbar-brand me-2" href="../index.html">btw</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@ should contain one or more skill directories, each with a SKILL.md file."><meta 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Install a skill from GitHub</h1>
-      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/v1.2.0/R/tool-skills.R" class="external-link"><code>R/tool-skills.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/main/R/tool-skills.R" class="external-link"><code>R/tool-skills.R</code></a></small>
       <div class="d-none name"><code>btw_skill_install_github.Rd</code></div>
     </div>
 
@@ -77,8 +77,9 @@ non-interactive sessions).</p></dd>
 chosen from <code>.btw/skills/</code> or <code>.agents/skills/</code>
 in that order. If one already exists, it is used; otherwise
 <code>.btw/skills/</code> is created.</p></li>
-<li><p><code>"user"</code>: Installs to the user-level skills directory
-(<code>tools::R_user_dir("btw", "config")/skills</code>).</p></li>
+<li><p><code>"user"</code>: Installs to the first of <code>~/.btw/skills</code>,
+<code>~/.config/btw/skills</code>, or <code>tools::R_user_dir("btw")/skills</code> that
+already exists, defaulting to <code>~/.btw/skills</code> if none do.</p></li>
 <li><p>A directory path: Installs to a custom directory, e.g.
 <code>scope = ".openhands/skills"</code>. Use <code>I("project")</code> or <code>I("user")</code>
 if you need a literal directory with those names.</p></li>

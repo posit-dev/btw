@@ -1,6 +1,29 @@
 # Tool: Replace exact strings in a text file
 
-Tool: Replace exact strings in a text file
+### Description
+
+Finds and replaces exact string occurrences in a file. Because this tool
+operates on exact string matches, it's suited for simple renames, value
+updates, or repetitive text changes where the target string is
+unambiguous.
+
+### Replace vs Edit
+
+btw's two file-editing tools serve different use cases:
+
+- `btw_tool_files_replace()` is best for exact text substitutions:
+  renaming a variable, updating a URL, or changing a value. It does not
+  require a prior
+  [`btw_tool_files_read()`](https://posit-dev.github.io/btw/reference/btw_tool_files_read.md)
+  call. By default, it requires the match to be unique to prevent
+  unintended changes.
+
+- [`btw_tool_files_edit()`](https://posit-dev.github.io/btw/reference/btw_tool_files_edit.md)
+  is best for structural, line-based edits: inserting new lines,
+  deleting lines, replacing a range of lines, or making several edits at
+  once. It requires hashline references from a prior
+  [`btw_tool_files_read()`](https://posit-dev.github.io/btw/reference/btw_tool_files_read.md)
+  call and validates them against the current file state.
 
 ## Usage
 
@@ -23,12 +46,14 @@ btw_tool_files_replace(
 
 - old_string:
 
-  The exact string to find in the file. Must be unique unless
-  `replace_all` is `TRUE`.
+  The exact string to find in the file. Must match
+  character-for-character, including whitespace and indentation. Must be
+  unique unless `replace_all` is `TRUE`.
 
 - new_string:
 
-  The replacement string. Must differ from `old_string`.
+  The replacement string. Must differ from `old_string`. Use an empty
+  string (`""`) to delete the matched text.
 
 - replace_all:
 
@@ -43,9 +68,15 @@ btw_tool_files_replace(
 
 ## Value
 
-Returns a message confirming the replacement was applied.
+Returns a message confirming the replacement was applied, including the
+number of occurrences replaced.
 
 ## See also
+
+[`btw_tool_files_edit()`](https://posit-dev.github.io/btw/reference/btw_tool_files_edit.md)
+for line-based structural edits using hashline references,
+[`btw_tool_files_read()`](https://posit-dev.github.io/btw/reference/btw_tool_files_read.md)
+for reading files.
 
 Other files tools:
 [`btw_tool_files_edit()`](https://posit-dev.github.io/btw/reference/btw_tool_files_edit.md),
