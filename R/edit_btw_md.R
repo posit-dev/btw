@@ -33,12 +33,12 @@
 #'
 #' @section Project Context:
 #'
-#' You can use a `btw.md` or [`AGENTS.md`](https://agents.md) file to keep track
-#' of project-specific rules, guidance and context in your project. Either file
-#' name will work, so we'll refer primarily to `btw.md`. These files are used
-#' automatically by [btw_client()] and [btw_app()]: they look first for `btw.md`
-#' and then for `AGENTS.md`. If both files are present, only the `btw.md` file
-#' will be used.
+#' You can use a `btw.md` or [`AGENTS.md`](https://agents.md/) file to keep
+#' track of project-specific rules, guidance and context in your project. Either
+#' file name will work, so we'll refer primarily to `btw.md`. These files are
+#' used automatically by [btw_client()] and [btw_app()]: they look first for
+#' `btw.md` and then for `AGENTS.md`. If both files are present, only the
+#' `btw.md` file will be used.
 #'
 #' Any time you start a chat client with `btw_client()` or launch a chat session
 #' with `btw_app()`, btw will automatically find and include the contents of the

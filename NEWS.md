@@ -1,4 +1,4 @@
-# btw (development version)
+# btw 1.2.1
 
 ## Bug fixes
 
