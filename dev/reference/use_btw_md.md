@@ -78,7 +78,7 @@ edit_btw_md(scope = NULL)
 
 ## Project Context
 
-You can use a `btw.md` or [`AGENTS.md`](https://agents.md) file to keep
+You can use a `btw.md` or [`AGENTS.md`](https://agents.md/) file to keep
 track of project-specific rules, guidance and context in your project.
 Either file name will work, so we'll refer primarily to `btw.md`. These
 files are used automatically by
@@ -249,7 +249,7 @@ withr::with_tempdir({
     use_btw_md(btw_md_tmp)
   })
 })
-#> ✔ Created /tmp/RtmpGkPZWu/file240c38dace98.md
+#> ✔ Created /tmp/RtmprAecmH/file248c1f02ecd.md
 #> ℹ See `?btw::btw_client()` for format details
 #> ℹ See `?btw::btw_tools()` for available tools
 #> ℹ Call `btw::btw_task_create_btw_md()` to use an LLM to help you initialize the

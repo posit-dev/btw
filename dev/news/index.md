@@ -2,6 +2,10 @@
 
 ## btw (development version)
 
+## btw 1.2.1
+
+CRAN release: 2026-03-23
+
 ### Bug fixes
 
 - User-level config locations are now consistent across skills, agents,
