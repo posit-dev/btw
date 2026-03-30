@@ -5,6 +5,7 @@
 #|   text. Wraps btw package tools for docs, pkg, info, and cran operations.
 #| launcher:
 #|   default-packages: [base, datasets, utils, stats, methods, btw]
+library(utils)
 
 # Global options --------------------------------------------------------------
 
