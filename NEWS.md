@@ -1,5 +1,9 @@
 # btw (development version)
 
+## Bug fixes
+
+* `btw_tool_agent_subagent()` now correctly uses the options from your `btw.md` file when called directly rather than through `btw_client()` or `btw_app()` (#185).
+
 # btw 1.2.1
 
 ## Bug fixes

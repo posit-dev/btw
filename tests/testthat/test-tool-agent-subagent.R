@@ -62,6 +62,37 @@ test_that("subagent_client() clones clients from options", {
   expect_false(identical(chat1, chat_obj))
 })
 
+test_that("subagent_client() consults btw.md if options are unset", {
+  # i.e. btw_tool_agent_subagent() uses btw.md settings when called directly
+  tmp_btw_md <- withr::local_tempfile(
+    lines = c(
+      "---",
+      "options:",
+      "  subagent:",
+      "    client: openrouter/super-cool-model",
+      "    tools_allowed: docs",
+      "    tools_default: docs_help_page",
+      "---"
+    )
+  )
+
+  local_btw_md(project = tmp_btw_md)
+
+  agent_client <- subagent_client()
+  expect_equal(agent_client$get_provider()@name, "OpenRouter")
+  expect_equal(agent_client$get_provider()@model, "super-cool-model")
+
+  expect_equal(
+    names(agent_client$get_tools()),
+    "btw_tool_docs_help_page"
+  )
+
+  expect_error(
+    subagent_client(tools = "btw_tool_skill"),
+    "disallowed tools"
+  )
+})
+
 # subagent_build_description() is internal - description content is tested
 # through btw_tool_agent_subagent registration tests below
 
@@ -314,6 +345,8 @@ test_that("btw_tool_agent_subagent is filtered out from default tools", {
 })
 
 test_that("btw_tool_agent_subagent is silently filtered out from 'agent' tool group", {
+  local_btw_md()
+
   # Request the 'agent' tool group which includes btw_tool_agent_subagent
   # The subagent tool is silently filtered via can_register (no warning)
   chat <- subagent_client(tools = c("agent"))
@@ -343,6 +376,8 @@ test_that("btw_tool_agent_subagent is silently filtered out even when in tools_a
 })
 
 test_that("btw_tool_agent_subagent never appears in chat$get_tools() for subagent", {
+  local_btw_md()
+
   # Test multiple scenarios to ensure subagent tool never appears
 
   # Scenario 1: Explicit request → throws error
@@ -377,6 +412,8 @@ test_that("btw_tool_agent_subagent never appears in chat$get_tools() for subagen
 })
 
 test_that("subagent tool errors even when in tools_allowed", {
+  local_btw_md()
+
   withr::local_options(
     btw.subagent.tools_allowed = c("btw_tool_agent_subagent", "docs")
   )
@@ -401,6 +438,8 @@ test_that("subagent tool errors even when in tools_allowed", {
 # ---- Chat Client Configuration ----------------------------------------------
 
 test_that("subagent_client creates chat with filtered tools", {
+  local_btw_md()
+
   chat <- subagent_client(tools = "files")
 
   expect_true(inherits(chat, "Chat"))

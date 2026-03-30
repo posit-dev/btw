@@ -1,4 +1,11 @@
 use_latest_pandoc <- function(.envir = parent.frame()) {
+  has_internet <- asNamespace("testthat")[["has_internet"]]
+
+  if (!is.null(has_internet) && !has_internet("captive.apple.com")) {
+    # No internet, skip
+    return()
+  }
+
   if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
     # On CRAN, don't attempt to do anything with pandoc
     return()
@@ -147,6 +154,18 @@ local_skip_pandoc_convert <- function(.env = caller_env()) {
     pandoc_convert = function(path, ...) {
       # Skip actual pandoc conversion for speed
       read_file(path)
+    },
+    .env = .env
+  )
+}
+
+local_btw_md <- function(project = NULL, user = NULL, .env = caller_env()) {
+  local_mocked_bindings(
+    find_btw_context_file = function(...) {
+      project
+    },
+    path_find_user = function(...) {
+      user
     },
     .env = .env
   )
