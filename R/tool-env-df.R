@@ -243,7 +243,7 @@ get_dataset_from_package <- function(name, package = NULL) {
 )
 
 describe_data_frame_glimpse <- function(x, x_name) {
-  res <- cli::ansi_strip(capture.output(dplyr::glimpse(x)))
+  res <- cli::ansi_strip(utils::capture.output(dplyr::glimpse(x)))
   as_btw_capture(res)
 }
 
@@ -251,7 +251,7 @@ describe_data_frame_print <- function(x) {
   withr::local_options(pillar.advice = FALSE, pillar.min_title_chars = Inf)
 
   res <- cli::ansi_strip(
-    capture.output(dplyr::as_tibble(x, width = 1000, n = Inf))
+    utils::capture.output(dplyr::as_tibble(x, width = 1000, n = Inf))
   )
   as_btw_capture(res[2:length(res)])
 }

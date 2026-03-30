@@ -217,7 +217,7 @@ tool_use_readme <- function() {
       # Try to run the usethis function
       tryCatch(
         {
-          use_readme_result <<- capture.output(use_readme(), type = "message")
+          use_readme_result <<- utils::capture.output(use_readme(), type = "message")
         },
         error = function(e) {
           if (grepl(".git", conditionMessage(e), fixed = TRUE)) {
@@ -357,7 +357,7 @@ tool_readme_add_badge <- function() {
       fn <- asNamespace("usethis")[[usethis_function]]
 
       # Call the function with the provided arguments
-      result <- capture.output(do.call(fn, args_list), type = "message")
+      result <- utils::capture.output(do.call(fn, args_list), type = "message")
       result <- paste(result, collapse = "\n")
       cli::ansi_strip(result)
     },

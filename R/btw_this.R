@@ -31,9 +31,9 @@ capture_print <- function(x) {
   # TODO: Replace with {evaluate}
   local_reproducible_output(max.print = 100)
 
-  out <- capture.output(print(x))
+  out <- utils::capture.output(print(x))
   if (length(out) == 0 || !any(nzchar(out))) {
-    out <- capture.output(print(x), type = "message")
+    out <- utils::capture.output(print(x), type = "message")
   }
 
   as_btw_capture(out)
@@ -699,7 +699,7 @@ btw_this.Chat <- function(x, ...) {
 
 #' @export
 btw_this.function <- function(x, ...) {
-  fn_def <- capture.output(print(x))
+  fn_def <- utils::capture.output(print(x))
 
   fn_def <- fn_def[!grepl("^<(bytecode|environment): ", fn_def)]
 

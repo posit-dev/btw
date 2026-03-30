@@ -57,7 +57,7 @@ btw_tool_docs_package_help_topics <- function(package_name, `_intent`) {}
 btw_tool_docs_package_help_topics_impl <- function(package_name) {
   check_installed(package_name)
 
-  help_db <- help.search(
+  help_db <- utils::help.search(
     "",
     package = package_name,
     fields = c("alias", "title"),
@@ -129,7 +129,7 @@ btw_tool_docs_help_page_impl <- function(topic, package_name = "") {
 
   withr::local_options(list(menu.graphics = FALSE))
 
-  help_page <- inject(help(
+  help_page <- inject(utils::help(
     package = !!package_name,
     topic = !!topic,
     help_type = "text",
