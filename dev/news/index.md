@@ -2,6 +2,16 @@
 
 ## btw (development version)
 
+### Bug fixes
+
+- [`btw_tool_agent_subagent()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_agent_subagent.md)
+  now correctly uses the options from your `btw.md` file when called
+  directly rather than through
+  [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+  or
+  [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+  ([\#185](https://github.com/posit-dev/btw/issues/185)).
+
 ## btw 1.2.1
 
 CRAN release: 2026-03-23

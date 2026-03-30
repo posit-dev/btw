@@ -23,8 +23,8 @@ btw_skill_install_github(
   reference (branch, tag, or SHA) as `"owner/repo@ref"`, following the
   convention used by
   [`pak::pak()`](https://pak.r-lib.org/reference/pak.html) and
-  [`remotes::install_github()`](https://remotes.r-lib.org/reference/install_github.html).
-  Defaults to `"HEAD"` when no ref is specified.
+  `remotes::install_github()`. Defaults to `"HEAD"` when no ref is
+  specified.
 
 - skill:
 
