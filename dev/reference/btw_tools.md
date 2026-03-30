@@ -159,7 +159,8 @@ ch <- ellmer::chat_anthropic()
 #> Using model = "claude-sonnet-4-5-20250929".
 
 # register all of the available tools
-ch$register_tools(btw_tools())
+ch1 <- ch$clone()
+ch1$register_tools(btw_tools())
 #> Warning: GitHub tools are not available because you are not authenticated with the gh
 #> package.
 #> ℹ Run `gh::gh_whoami()` to check your authentication status.
@@ -168,81 +169,10 @@ ch$register_tools(btw_tools())
 #> This warning is displayed once per session.
 
 # or register only the tools related to fetching documentation
-ch$register_tools(btw_tools("docs"))
-#> Replacing existing btw_tool_docs_package_news tool.
-#> Replacing existing btw_tool_docs_package_help_topics tool.
-#> Replacing existing btw_tool_docs_help_page tool.
-#> Replacing existing btw_tool_docs_available_vignettes tool.
-#> Replacing existing btw_tool_docs_vignette tool.
+ch2 <- ch$clone()
+ch2$register_tools(btw_tools("docs"))
 
 # ensure that the current tools persist
-ch$register_tools(c(ch$get_tools(), btw_tools()))
-#> Replacing existing btw_tool_agent_subagent tool.
-#> Replacing existing btw_tool_cran_search tool.
-#> Replacing existing btw_tool_cran_package tool.
-#> Replacing existing btw_tool_docs_package_news tool.
-#> Replacing existing btw_tool_docs_package_help_topics tool.
-#> Replacing existing btw_tool_docs_help_page tool.
-#> Replacing existing btw_tool_docs_available_vignettes tool.
-#> Replacing existing btw_tool_docs_vignette tool.
-#> Replacing existing btw_tool_env_describe_data_frame tool.
-#> Replacing existing btw_tool_env_describe_environment tool.
-#> Replacing existing btw_tool_files_edit tool.
-#> Replacing existing btw_tool_files_list tool.
-#> Replacing existing btw_tool_files_read tool.
-#> Replacing existing btw_tool_files_replace tool.
-#> Replacing existing btw_tool_files_search tool.
-#> Replacing existing btw_tool_files_write tool.
-#> Replacing existing btw_tool_git_status tool.
-#> Replacing existing btw_tool_git_diff tool.
-#> Replacing existing btw_tool_git_log tool.
-#> Replacing existing btw_tool_git_commit tool.
-#> Replacing existing btw_tool_git_branch_list tool.
-#> Replacing existing btw_tool_git_branch_create tool.
-#> Replacing existing btw_tool_git_branch_checkout tool.
-#> Replacing existing btw_tool_ide_read_current_editor tool.
-#> Replacing existing btw_tool_pkg_coverage tool.
-#> Replacing existing btw_tool_pkg_document tool.
-#> Replacing existing btw_tool_pkg_check tool.
-#> Replacing existing btw_tool_pkg_test tool.
-#> Replacing existing btw_tool_pkg_load_all tool.
-#> Replacing existing btw_tool_sessioninfo_is_package_installed tool.
-#> Replacing existing btw_tool_sessioninfo_platform tool.
-#> Replacing existing btw_tool_sessioninfo_package tool.
-#> Replacing existing btw_tool_skill tool.
-#> Replacing existing btw_tool_web_read_url tool.
-#> Replacing existing btw_tool_agent_subagent tool.
-#> Replacing existing btw_tool_cran_search tool.
-#> Replacing existing btw_tool_cran_package tool.
-#> Replacing existing btw_tool_docs_package_news tool.
-#> Replacing existing btw_tool_docs_package_help_topics tool.
-#> Replacing existing btw_tool_docs_help_page tool.
-#> Replacing existing btw_tool_docs_available_vignettes tool.
-#> Replacing existing btw_tool_docs_vignette tool.
-#> Replacing existing btw_tool_env_describe_data_frame tool.
-#> Replacing existing btw_tool_env_describe_environment tool.
-#> Replacing existing btw_tool_files_edit tool.
-#> Replacing existing btw_tool_files_list tool.
-#> Replacing existing btw_tool_files_read tool.
-#> Replacing existing btw_tool_files_replace tool.
-#> Replacing existing btw_tool_files_search tool.
-#> Replacing existing btw_tool_files_write tool.
-#> Replacing existing btw_tool_git_status tool.
-#> Replacing existing btw_tool_git_diff tool.
-#> Replacing existing btw_tool_git_log tool.
-#> Replacing existing btw_tool_git_commit tool.
-#> Replacing existing btw_tool_git_branch_list tool.
-#> Replacing existing btw_tool_git_branch_create tool.
-#> Replacing existing btw_tool_git_branch_checkout tool.
-#> Replacing existing btw_tool_ide_read_current_editor tool.
-#> Replacing existing btw_tool_pkg_coverage tool.
-#> Replacing existing btw_tool_pkg_document tool.
-#> Replacing existing btw_tool_pkg_check tool.
-#> Replacing existing btw_tool_pkg_test tool.
-#> Replacing existing btw_tool_pkg_load_all tool.
-#> Replacing existing btw_tool_sessioninfo_is_package_installed tool.
-#> Replacing existing btw_tool_sessioninfo_platform tool.
-#> Replacing existing btw_tool_sessioninfo_package tool.
-#> Replacing existing btw_tool_skill tool.
-#> Replacing existing btw_tool_web_read_url tool.
+ch3 <- ch$clone()
+ch3$register_tools(c(ch3$get_tools(), btw_tools()))
 ```
