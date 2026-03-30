@@ -13,13 +13,16 @@
 #' ch <- ellmer::chat_anthropic()
 #'
 #' # register all of the available tools
-#' ch$register_tools(btw_tools())
+#' ch1 <- ch$clone()
+#' ch1$register_tools(btw_tools())
 #'
 #' # or register only the tools related to fetching documentation
-#' ch$register_tools(btw_tools("docs"))
+#' ch2 <- ch$clone()
+#' ch2$register_tools(btw_tools("docs"))
 #'
 #' # ensure that the current tools persist
-#' ch$register_tools(c(ch$get_tools(), btw_tools()))
+#' ch3 <- ch$clone()
+#' ch3$register_tools(c(ch3$get_tools(), btw_tools()))
 #'
 #' @param ... Optional names of tools or tool groups to include when registering
 #'   tools. By default all btw tools are included. For example, use `"docs"` to
