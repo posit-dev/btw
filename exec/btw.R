@@ -215,12 +215,12 @@ btw_cran_info <- function(package, json = FALSE) {
 switch(
   group <- "",
 
-  # docs ----
+  #| title: Access R documentation
   docs = {
     switch(
       docs_cmd <- "",
 
-      # docs help ----
+      #| title: Show help for a topic or package
       help = {
         #| description: Help topic, package name, or {package} for package listing.
         topic <- NULL
@@ -231,7 +231,7 @@ switch(
         tryCatch(btw_docs_help(topic, package), error = btw_error)
       },
 
-      # docs vignette ----
+      #| title: Read a package vignette
       vignette = {
         #| description: Package name.
         package <- NULL
@@ -245,7 +245,7 @@ switch(
         tryCatch(btw_docs_vignette(package, name, list), error = btw_error)
       },
 
-      # docs news ----
+      #| title: Show package NEWS
       news = {
         #| description: Package name.
         package <- NULL
@@ -259,7 +259,7 @@ switch(
     if (docs_cmd == "") btw_self_help("docs")
   },
 
-  # pkg ----
+  #| title: Work with an R package under development
   pkg = {
     #| description: Path to package directory.
     path <- "."
@@ -267,17 +267,17 @@ switch(
     switch(
       pkg_cmd <- "",
 
-      # pkg document ----
+      #| title: Generate package documentation
       document = {
         tryCatch(btw_pkg_document(path), error = btw_error)
       },
 
-      # pkg check ----
+      #| title: Run R CMD check
       check = {
         tryCatch(btw_pkg_check(path), error = btw_error)
       },
 
-      # pkg test ----
+      #| title: Run package tests
       test = {
         #| description: Regex to filter test files.
         #| short: 'f'
@@ -285,12 +285,12 @@ switch(
         tryCatch(btw_pkg_test(path, filter), error = btw_error)
       },
 
-      # pkg load ----
+      #| title: Load package with pkgload
       load = {
         tryCatch(btw_pkg_load(path), error = btw_error)
       },
 
-      # pkg coverage ----
+      #| title: Measure package test coverage
       coverage = {
         #| description: Filename for line-level coverage details.
         file <- ""
@@ -302,7 +302,7 @@ switch(
     if (pkg_cmd == "") btw_self_help("pkg")
   },
 
-  # info ----
+  #| title: Inspect the R session and environment
   info = {
     #| description: Output as JSON.
     json <- FALSE
@@ -310,12 +310,12 @@ switch(
     switch(
       info_cmd <- "",
 
-      # info platform ----
+      #| title: Show platform and session info
       platform = {
         tryCatch(btw_info_platform(json), error = btw_error)
       },
 
-      # info packages ----
+      #| title: Show installed package information
       packages = {
         #| description: Package names to query.
         `packages...` <- c()
@@ -334,7 +334,7 @@ switch(
     if (info_cmd == "") btw_self_help("info")
   },
 
-  # cran ----
+  #| title: Query CRAN package metadata
   cran = {
     #| description: Output as JSON.
     json <- FALSE
@@ -342,7 +342,7 @@ switch(
     switch(
       cran_cmd <- "",
 
-      # cran search ----
+      #| title: Search CRAN for packages
       search = {
         #| description: Search query.
         query <- NULL
@@ -355,7 +355,7 @@ switch(
         tryCatch(btw_cran_search(query, format, n, json), error = btw_error)
       },
 
-      # cran info ----
+      #| title: Show CRAN metadata for a package
       info = {
         #| description: Package name.
         package <- NULL
@@ -363,6 +363,14 @@ switch(
       }
     )
     if (cran_cmd == "") btw_self_help("cran")
+  },
+
+  #| title: Run btw_app() in the current directory
+  app = {
+    #| description: The client (provider/model string) to use
+    client <- ""
+
+    btw_app(client = if (nzchar(client)) client)
   }
 )
 
