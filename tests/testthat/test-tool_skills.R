@@ -175,7 +175,7 @@ test_that("btw_skills_list() skips invalid skills with warning", {
 
   expect_warning(
     skills <- btw_skills_list(),
-    "Skipping invalid skill"
+    "skipped due to errors"
   )
   expect_length(skills, 1)
   expect_equal(skills[["good-skill"]]$name, "good-skill")

@@ -251,6 +251,7 @@ resolve_project_skill_dir <- function(error_call = caller_env()) {
 btw_skills_list <- function() {
   skill_dirs <- btw_skills_directories()
   all_skills <- list()
+  skill_problems <- list()
 
   for (dir in skill_dirs) {
     if (!dir.exists(dir)) {
@@ -267,21 +268,18 @@ btw_skills_list <- function() {
 
       validation <- validate_skill(subdir)
       if (!validation$valid) {
-        cli::cli_warn(c(
-          "Skipping invalid skill in {.path {subdir}}.",
-          set_names(validation$errors, rep("!", length(validation$errors)))
-        ))
+        skill_problems[[subdir]] <- list(
+          type = "error",
+          messages = c(validation$errors, validation$warnings)
+        )
         next
       }
 
       if (length(validation$warnings) > 0) {
-        cli::cli_warn(c(
-          "Skill in {.path {subdir}} has validation warnings.",
-          set_names(
-            validation$warnings,
-            rep("!", length(validation$warnings))
-          )
-        ))
+        skill_problems[[subdir]] <- list(
+          type = "warning",
+          messages = validation$warnings
+        )
       }
 
       metadata <- validation$metadata
@@ -308,6 +306,35 @@ btw_skills_list <- function() {
 
       all_skills[[skill_name]] <- skill_entry
     }
+  }
+
+  if (length(skill_problems) > 0) {
+    n_errors <- sum(
+      map_lgl(skill_problems, function(p) p$type == "error")
+    )
+    n_warnings <- length(skill_problems) - n_errors
+
+    header <- if (n_errors > 0 && n_warnings > 0) {
+      "{n_errors} skill{?s} skipped due to errors; {n_warnings} skill{?s} with warnings."
+    } else if (n_errors > 0) {
+      "{n_errors} skill{?s} skipped due to errors."
+    } else {
+      "{n_warnings} skill{?s} with validation warnings."
+    }
+
+    details <- map(names(skill_problems), function(path) {
+      prob <- skill_problems[[path]]
+      label <- if (prob$type == "error") " (skipped)" else ""
+
+      path_label <- cli::format_inline("{.path {path}}{label}")
+
+      c(
+        "*" = path_label,
+        set_names(prob$messages, rep(" ", length(prob$messages)))
+      )
+    })
+
+    cli::cli_warn(c(header, unlist(details)))
   }
 
   all_skills
@@ -699,37 +726,34 @@ btw_skills_system_prompt <- function() {
     "## Skills\n\nYou have access to specialized skills that provide detailed guidance for specific tasks."
   }
 
-  skill_items <- vapply(
-    skills,
-    function(skill) {
-      parts <- sprintf(
-        "<skill>\n<name>%s</name>\n<description>%s</description>\n<location>%s</location>",
-        xml_escape(skill$name),
-        xml_escape(skill$description),
-        xml_escape(skill$path)
+  skill_items <- map_chr(skills, function(skill) {
+    parts <- sprintf(
+      "<skill>\n<name>%s</name>\n<description>%s</description>\n<location>%s</location>",
+      xml_escape(skill$name),
+      xml_escape(skill$description),
+      xml_escape(skill$path)
+    )
+    if (!is.null(skill$compatibility)) {
+      parts <- paste0(
+        parts,
+        sprintf(
+          "\n<compatibility>%s</compatibility>",
+          xml_escape(skill$compatibility)
+        )
       )
-      if (!is.null(skill$compatibility)) {
-        parts <- paste0(
-          parts,
-          sprintf(
-            "\n<compatibility>%s</compatibility>",
-            xml_escape(skill$compatibility)
-          )
+    }
+    if (!is.null(skill$allowed_tools)) {
+      allowed_tools <- paste(skill$allowed_tools, collapse = ", ")
+      parts <- paste0(
+        parts,
+        sprintf(
+          "\n<allowed-tools>%s</allowed-tools>",
+          xml_escape(allowed_tools)
         )
-      }
-      if (!is.null(skill$allowed_tools)) {
-        parts <- paste0(
-          parts,
-          sprintf(
-            "\n<allowed-tools>%s</allowed-tools>",
-            xml_escape(skill$allowed_tools)
-          )
-        )
-      }
-      paste0(parts, "\n</skill>")
-    },
-    character(1)
-  )
+      )
+    }
+    paste0(parts, "\n</skill>")
+  })
 
   paste0(
     explanation,
@@ -1054,11 +1078,8 @@ install_skill_from_dir <- function(
 
   if (length(validation$warnings) > 0) {
     cli::cli_warn(c(
-      "Installing skill {.val {skill_name}} with validation warnings:",
-      set_names(
-        validation$warnings,
-        rep("!", length(validation$warnings))
-      )
+      "Skill {.val {skill_name}} has validation warnings:",
+      set_names(validation$warnings, rep("*", length(validation$warnings)))
     ))
   }
 
