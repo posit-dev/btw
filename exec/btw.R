@@ -374,13 +374,17 @@ switch(
     #| description: Comma-separated list of btw tools to enable in the app (by name or group).
     tools <- ""
 
+    #| description: Path to a `btw.md` file.
+    path_btw <- ""
+
     tools <- if (has_value(tools)) {
       strsplit(tools, ",", fixed = TRUE)[[1]]
     }
 
     btw_app(
-      client = if (nzchar(client)) client,
-      tools = tools
+      client = if (has_value(client)) client,
+      tools = tools,
+      path_btw = if (has_value(path_btw)) path_btw
     )
   }
 )
