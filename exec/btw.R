@@ -371,7 +371,17 @@ switch(
     #| description: The client (provider/model string) to use
     client <- ""
 
-    btw_app(client = if (nzchar(client)) client)
+    #| description: Comma-separated list of btw tools to enable in the app (by name or group).
+    tools <- ""
+
+    tools <- if (has_value(tools)) {
+      strsplit(tools, ",", fixed = TRUE)[[1]]
+    }
+
+    btw_app(
+      client = if (nzchar(client)) client,
+      tools = tools
+    )
   }
 )
 
