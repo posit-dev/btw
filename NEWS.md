@@ -4,6 +4,8 @@
 
 * Added two new commands to the `btw` CLI: `btw app` to launch a `btw_app()` session in the current working directory and `btw skills install` to install skills from the terminal.
 
+* Added `btw help` to the `btw` CLI, which prints the `r-btw-cli` skill — a usage guide designed for AI agents.
+
 ## Bug fixes
 
 * `btw_tool_agent_subagent()` now correctly uses the options from your `btw.md` file when called directly rather than through `btw_client()` or `btw_app()` (#185).

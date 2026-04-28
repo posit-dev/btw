@@ -414,6 +414,19 @@ switch(
     if (skills_cmd == "") btw_self_help("skills")
   },
 
+  #| title: Show btw CLI usage guide for AI agents
+  help = {
+    skill_path <- system.file(
+      "cli-skill", "r-btw-cli", "SKILL.md",
+      package = "btw"
+    )
+    if (!nzchar(skill_path)) {
+      cat("btw CLI skill not found.\n", file = stderr())
+      quit(status = 1)
+    }
+    cat(frontmatter::read_front_matter(skill_path)$body, "\n")
+  },
+
   #| title: Run btw_app() in the current directory
   app = {
     #| description: The client (provider/model string) to use
