@@ -70,11 +70,11 @@ btw(
 #> ## Context
 #> 
 #> pkgsearch::pkg_search("network visualization", size = 1)
-#> Found 3440 packages matching `network visualization`, showing 1 result.
+#> Found 3485 packages matching `network visualization`, showing 1 result.
 #> 
 #> | package | title | version | date | url | downloads_last_month |
 #> |---------|-------|---------|------|-----|----------------------|
-#> | DiagrammeR | Graph/Network Visualization | 1.0.11 | 2024-02-02 | https://rich-iannone.github.io/DiagrammeR/, https://github.com/rich-iannone/DiagrammeR | 47,566 |
+#> | visNetwork | Network Visualization using 'vis.js' Library | 2.1.4 | 2025-09-04 | https://datastorm-open.github.io/visNetwork/ | 76,729 |
 btw(
   pkgsearch::pkg_search("network visualization", format = "long", size = 1),
   clipboard = FALSE
@@ -87,20 +87,15 @@ btw(
 #> ## Context
 #> 
 #> pkgsearch::pkg_search(...)
-#> Found 3440 packages matching `network visualization`, showing 1 result.
+#> Found 3485 packages matching `network visualization`, showing 1 result.
 #> 
-#> ### DiagrammeR (v1.0.11) -- Graph/Network Visualization
+#> ### visNetwork (v2.1.4) -- Network Visualization using 'vis.js' Library
 #> 
-#> * Maintainer: Richard Iannone
-#> * Homepage: https://rich-iannone.github.io/DiagrammeR/, https://github.com/rich-iannone/DiagrammeR
-#> * Date: 2024-02-02
-#> * Downloads Last Month: 47,566
+#> * Maintainer: Benoit Thieurmel
+#> * Homepage: https://datastorm-open.github.io/visNetwork/
+#> * Date: 2025-09-04
+#> * Downloads Last Month: 76,729
 #> 
-#> Build graph/network structures using functions for stepwise
-#> addition and deletion of nodes and edges. Work with data available in
-#> tables for bulk addition of nodes, edges, and associated metadata. Use
-#> graph selections and traversals to apply changes to specific nodes or
-#> edges. A wide selection of graph algorithms allow for the analysis of
-#> graphs. Visualize the graphs and take advantage of any aesthetic
-#> properties assigned to nodes and edges.
+#> Provides an R interface to the 'vis.js' JavaScript charting
+#> library. It allows an interactive visualization of networks.
 ```

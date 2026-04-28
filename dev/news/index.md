@@ -2,6 +2,13 @@
 
 ## btw (development version)
 
+### New features
+
+- Added two new commands to the `btw` CLI: `btw app` to launch a
+  [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+  session in the current working directory and `btw skills install` to
+  install skills from the terminal.
+
 ### Bug fixes
 
 - [`btw_tool_agent_subagent()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_agent_subagent.md)
