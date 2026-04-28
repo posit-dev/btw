@@ -29,6 +29,7 @@ btw-run-r-result .card-body {
   border: none;
   border-radius: 0;
   overflow-x: auto;
+  position: relative;
 }
 
 .btw-run-output pre:not(.btw-output-source) {
@@ -41,9 +42,57 @@ btw-run-r-result .card-body {
   background-color: var(--bs-black);
 }
 
-.btw-run-output > :not(.btw-output-source) .code-copy-button {
-  /* TODO: Figure out how to disable markdown-stream code copy button */
+.btw-run-output .code-copy-button {
+  /* Hide shinychat's pipeline copy button — btw adds its own via addBlockCopyButtons() */
   display: none;
+}
+
+/* Per-block copy buttons */
+.btw-block-copy-btn {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--bs-body-color);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+}
+
+.btw-run-output pre:hover .btw-block-copy-btn {
+  opacity: 0.6;
+}
+
+.btw-block-copy-btn:hover {
+  opacity: 1 !important;
+}
+
+.btw-block-copy-btn:focus {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 2px;
+  opacity: 1;
+}
+
+.btw-block-copy-btn > .bi::after {
+  content: "";
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  background-color: var(--bs-body-color, #222);
+  mask-image: url('data:image/svg+xml,<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M3 5V12.73C2.4 12.38 2 11.74 2 11V5C2 2.79 3.79 1 6 1H9C9.74 1 10.38 1.4 10.73 2H6C4.35 2 3 3.35 3 5ZM11 15H6C4.897 15 4 14.103 4 13V5C4 3.897 4.897 3 6 3H11C12.103 3 13 3.897 13 5V13C13 14.103 12.103 15 11 15ZM12 5C12 4.448 11.552 4 11 4H6C5.448 4 5 4.448 5 5V13C5 13.552 5.448 14 6 14H11C11.552 14 12 13.552 12 13V5Z"/></svg>');
+}
+
+.btw-block-copy-btn-checked > .bi::after {
+  mask-image: url('data:image/svg+xml,<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>');
+  background-color: var(--bs-success, #198754);
 }
 
 .btw-run-output pre code {

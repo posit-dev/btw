@@ -85,12 +85,21 @@ const inIframe = window.self !== window.top
 const inIDE = document.querySelector(".btw-in-ide") !== null
 
 if (inIframe && inIDE) {
+  // Matches both old Lit (shiny-markdown-stream) and new React (.shiny-chat-message-content)
+  const STREAM_SELECTOR = "shiny-markdown-stream, .shiny-chat-message-content"
+
   const stopObserving = observeShinyMarkdownStream((streamEl) => {
     enhanceCodeActions(streamEl)
   })
 
+  // New React shinychat: btw-run-r-result dispatches this event after rendering
+  // its per-block copy buttons. Add IDE action buttons to source code blocks only.
+  document.addEventListener("btw-run-r-rendered", (e) => {
+    enhanceBtwCodeActions(e.target)
+  })
+
   function isMarkdownStream(el) {
-    return el.matches("shiny-markdown-stream")
+    return el.matches(STREAM_SELECTOR)
   }
 
   function canEnhance(el) {
@@ -106,6 +115,11 @@ if (inIframe && inIDE) {
 
     function attachObserver(el) {
       if (!isMarkdownStream(el) || observers.has(el)) return
+
+      // Enhance any content already in the element. In React shinychat the
+      // element arrives fully populated in one commit, so the per-element
+      // observer below would never fire for that initial content.
+      callback(el)
 
       let timeoutId = null
 
@@ -123,7 +137,7 @@ if (inIframe && inIDE) {
       observers.set(el, observer)
     }
 
-    document.querySelectorAll("shiny-markdown-stream").forEach(attachObserver)
+    document.querySelectorAll(STREAM_SELECTOR).forEach(attachObserver)
 
     const rootObserver = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
@@ -135,7 +149,7 @@ if (inIframe && inIDE) {
           }
 
           node
-            .querySelectorAll?.("shiny-markdown-stream")
+            .querySelectorAll?.(STREAM_SELECTOR)
             .forEach(attachObserver)
         })
       })
@@ -159,8 +173,23 @@ if (inIframe && inIDE) {
       if (!pre || !canEnhance(pre)) return
 
       const wrapper = ensureWrapper(pre)
-      moveCopyButton(wrapper, copyButton)
       installActionButtons(wrapper, pre)
+      moveCopyButton(wrapper, copyButton)
+    })
+  }
+
+  function enhanceBtwCodeActions(result) {
+    result.querySelectorAll(".btw-block-copy-btn").forEach((copyButton) => {
+      const pre = copyButton.closest("pre")
+      if (!pre) return
+
+      const wrapper = ensureWrapper(pre)
+
+      // Install IDE action buttons first, then copy button so it appears last
+      if (pre.closest(".btw-output-source")) {
+        installActionButtons(wrapper, pre)
+      }
+      moveCopyButton(wrapper, copyButton)
     })
   }
 
