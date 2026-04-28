@@ -9,6 +9,9 @@
   session in the current working directory and `btw skills install` to
   install skills from the terminal.
 
+- Added `btw help` to the `btw` CLI, which prints the `r-btw-cli` skill
+  — a usage guide designed for AI agents.
+
 ### Bug fixes
 
 - [`btw_tool_agent_subagent()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_agent_subagent.md)
