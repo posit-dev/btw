@@ -202,6 +202,28 @@ btw_cran_search <- function(query, format, n, json = FALSE) {
   }
 }
 
+btw_skills_install <- function(source, skill, scope, overwrite) {
+  skill_val <- if (has_value(skill)) skill else NULL
+  scope_val <- if (has_value(scope)) scope else "project"
+  overwrite_val <- if (is.na(overwrite)) NULL else overwrite
+
+  if (grepl("/", source, fixed = TRUE)) {
+    btw_skill_install_github(
+      source,
+      skill = skill_val,
+      scope = scope_val,
+      overwrite = overwrite_val
+    )
+  } else {
+    btw_skill_install_package(
+      source,
+      skill = skill_val,
+      scope = scope_val,
+      overwrite = overwrite_val
+    )
+  }
+}
+
 btw_cran_info <- function(package, json = FALSE) {
   result <- pkgsearch::cran_package(package)
   if (json) {
@@ -364,6 +386,32 @@ switch(
       }
     )
     if (cran_cmd == "") btw_self_help("cran")
+  },
+
+  #| title: Manage btw skills
+  skills = {
+    switch(
+      skills_cmd <- "",
+
+      #| title: Install a skill from a package or GitHub repository
+      install = {
+        #| description: Package name (e.g. "btw") or GitHub repo spec (e.g. "posit-dev/btw").
+        source <- NULL
+        #| description: Skill name to install (if the source has multiple skills).
+        #| short: 's'
+        skill <- ""
+        #| description: Scope for installation ("project" or "user").
+        scope <- "project"
+        #| description: Overwrite an existing skill if it is already installed.
+        overwrite <- FALSE
+
+        tryCatch(
+          btw_skills_install(source, skill, scope, overwrite),
+          error = btw_error
+        )
+      }
+    )
+    if (skills_cmd == "") btw_self_help("skills")
   },
 
   #| title: Run btw_app() in the current directory

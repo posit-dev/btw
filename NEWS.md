@@ -1,5 +1,9 @@
 # btw (development version)
 
+## New features
+
+* Added two new commands to the `btw` CLI: `btw app` to launch a `btw_app()` session in the current working directory and `btw skills install` to install skills from the terminal.
+
 ## Bug fixes
 
 * `btw_tool_agent_subagent()` now correctly uses the options from your `btw.md` file when called directly rather than through `btw_client()` or `btw_app()` (#185).
