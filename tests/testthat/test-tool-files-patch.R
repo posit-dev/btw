@@ -242,6 +242,23 @@ test_that("match_hunk: hunk context not found errors", {
   )
 })
 
+test_that("match_hunk: hunk longer than file reports not-found cleanly", {
+  hunk <- list(ops = list(
+    list(type = "context", line = "a"),
+    list(type = "context", line = "b"),
+    list(type = "context", line = "c")
+  ))
+
+  expect_error(
+    match_hunk(hunk, c("a", "b"), 1L, "test.txt"),
+    "Hunk context not found"
+  )
+  expect_error(
+    match_hunk(hunk, character(), 1L, "test.txt"),
+    "Hunk context not found"
+  )
+})
+
 test_that("parse_patch rejects pure-insert hunks (no context or delete)", {
   patch <- paste(
     "*** Begin Patch",

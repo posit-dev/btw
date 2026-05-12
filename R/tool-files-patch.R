@@ -416,17 +416,20 @@ match_hunk <- function(hunk, file_lines, search_start, path) {
 
   seq_len_val <- length(match_seq)
   n_file <- length(file_lines)
+  last_start <- n_file - seq_len_val + 1L
 
-  for (start in seq(search_start, n_file - seq_len_val + 1L)) {
-    matched <- TRUE
-    for (j in seq_len(seq_len_val)) {
-      if (file_lines[start + j - 1L] != match_seq[[j]]$line) {
-        matched <- FALSE
-        break
+  if (search_start <= last_start) {
+    for (start in seq(search_start, last_start)) {
+      matched <- TRUE
+      for (j in seq_len(seq_len_val)) {
+        if (file_lines[start + j - 1L] != match_seq[[j]]$line) {
+          matched <- FALSE
+          break
+        }
       }
-    }
-    if (matched) {
-      return(list(start = start, end = start + seq_len_val - 1L))
+      if (matched) {
+        return(list(start = start, end = start + seq_len_val - 1L))
+      }
     }
   }
 
