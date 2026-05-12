@@ -101,9 +101,27 @@ btw_tool_files_patch_impl <- function(patch) {
     collapse = "\n"
   )
 
+  display_md <- paste(
+    c(
+      "**Patch**",
+      md_code_block("diff", patch),
+      "",
+      "**Results**",
+      value
+    ),
+    collapse = "\n"
+  )
+
   # Use BtwToolResult rather than BtwFileDiffToolResult: a patch can touch
   # multiple files, so the single-file diff viewer shape doesn't apply cleanly.
-  btw_tool_result(value)
+  btw_tool_result(
+    value,
+    display = list(
+      markdown = display_md,
+      show_request = FALSE,
+      icon = tool_icon("file-save")
+    )
+  )
 }
 
 .btw_add_to_tools(
