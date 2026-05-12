@@ -4,6 +4,15 @@
 
 ### New features
 
+- Added
+  [`btw_tool_files_patch()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_patch.md),
+  a new files tool that applies a structured diff-style patch envelope
+  to make coordinated changes across multiple files in a single call.
+  One patch can add, update, delete, and rename files atomically: all
+  operations are validated before any file is written, so a partial
+  failure leaves the working tree untouched
+  ([\#190](https://github.com/posit-dev/btw/issues/190)).
+
 - Added two new commands to the `btw` CLI: `btw app` to launch a
   [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
   session in the current working directory and `btw skills install` to

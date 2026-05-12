@@ -41,7 +41,8 @@
 <h2 class="pkg-version" data-toc-text="development version" id="btw-development-version">btw (development version)<a class="anchor" aria-label="anchor" href="#btw-development-version"></a></h2>
 <div class="section level3">
 <h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
-<ul><li><p>Added two new commands to the <code>btw</code> CLI: <code>btw app</code> to launch a <code><a href="../reference/btw_client.html">btw_app()</a></code> session in the current working directory and <code>btw skills install</code> to install skills from the terminal.</p></li>
+<ul><li><p>Added <code><a href="../reference/btw_tool_files_patch.html">btw_tool_files_patch()</a></code>, a new files tool that applies a structured diff-style patch envelope to make coordinated changes across multiple files in a single call. One patch can add, update, delete, and rename files atomically: all operations are validated before any file is written, so a partial failure leaves the working tree untouched (<a href="https://github.com/posit-dev/btw/issues/190" class="external-link">#190</a>).</p></li>
+<li><p>Added two new commands to the <code>btw</code> CLI: <code>btw app</code> to launch a <code><a href="../reference/btw_client.html">btw_app()</a></code> session in the current working directory and <code>btw skills install</code> to install skills from the terminal.</p></li>
 <li><p>Added <code>btw help</code> to the <code>btw</code> CLI, which prints the <code>r-btw-cli</code> skill — a usage guide designed for AI agents.</p></li>
 </ul></div>
 <div class="section level3">

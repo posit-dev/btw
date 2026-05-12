@@ -47,6 +47,7 @@ returned by this function have access to the tools:
 | Name | Description |
 | [`btw_tool_files_edit()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_edit.md) | Edit a text file using hashline references for precise, targeted modifications. |
 | [`btw_tool_files_list()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_list.md) | List files or directories in the project. |
+| [`btw_tool_files_patch()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_patch.md) | Apply a patch envelope that adds, updates, deletes, or moves files atomically. |
 | [`btw_tool_files_read()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_read.md) | Read the contents of a text file. |
 | [`btw_tool_files_replace()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_replace.md) | Find and replace exact string occurrences in a text file. |
 | [`btw_tool_files_search()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_search.md) | Search code files in the project. |
