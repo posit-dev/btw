@@ -35,19 +35,19 @@
 #'
 #' ### Headers
 #'
-#' * `*** Add File: <path>` — create a new file (must not exist).
-#' * `*** Update File: <path>` — modify an existing file.
-#' * `*** Delete File: <path>` — remove an existing file.
-#' * `*** Move to: <path>` — sub-header inside an `Update File` block; renames
+#' * `*** Add File: <path>` -- create a new file (must not exist).
+#' * `*** Update File: <path>` -- modify an existing file.
+#' * `*** Delete File: <path>` -- remove an existing file.
+#' * `*** Move to: <path>` -- sub-header inside an `Update File` block; renames
 #'   the file to `<path>` after applying any hunks. Destination must not exist.
 #'
 #' ### Hunk lines (inside `Update File`)
 #'
-#' * `@@` — hunk boundary; any trailing text on this line is informational and
+#' * `@@` -- hunk boundary; any trailing text on this line is informational and
 #'   ignored.
-#' * ` <text>` (space prefix) — context line that must match the file exactly.
-#' * `-<text>` — line to delete; must match the file exactly at this position.
-#' * `+<text>` — line to insert.
+#' * ` <text>` (space prefix) -- context line that must match the file exactly.
+#' * `-<text>` -- line to delete; must match the file exactly at this position.
+#' * `+<text>` -- line to insert.
 #'
 #' Every hunk must include at least one context or delete line to anchor the
 #' edit; pure-insert hunks are rejected. Use `*** Add File` for new files.
@@ -84,7 +84,7 @@ btw_tool_files_patch_impl <- function(patch) {
         "add" = paste0("  - Added: ", op$path),
         "delete" = paste0("  - Deleted: ", op$path),
         "update" = if (!is.null(op$move_to)) {
-          paste0("  - Moved: ", op$path, " → ", op$move_to)
+          paste0("  - Moved: ", op$path, " -> ", op$move_to)
         } else {
           paste0("  - Updated: ", op$path)
         }
@@ -138,17 +138,17 @@ WIRE FORMAT:
   *** End Patch
 
 HEADERS:
-- "*** Begin Patch" / "*** End Patch" — required envelope
-- "*** Add File: <path>"    — create a new file (must not exist)
-- "*** Update File: <path>" — modify an existing file (must exist)
-- "*** Delete File: <path>" — remove a file (must exist)
-- "*** Move to: <path>"     — sub-header inside Update File; rename destination
+- "*** Begin Patch" / "*** End Patch" -- required envelope
+- "*** Add File: <path>"    -- create a new file (must not exist)
+- "*** Update File: <path>" -- modify an existing file (must exist)
+- "*** Delete File: <path>" -- remove a file (must exist)
+- "*** Move to: <path>"     -- sub-header inside Update File; rename destination
 
 HUNK LINES (inside Update File):
-- "@@"         — hunk boundary (trailing text is informational, ignored)
-- " <text>"    — context line: must match the file exactly (space prefix)
-- "-<text>"    — delete this line
-- "+<text>"    — insert this line
+- "@@"         -- hunk boundary (trailing text is informational, ignored)
+- " <text>"    -- context line: must match the file exactly (space prefix)
+- "-<text>"    -- delete this line
+- "+<text>"    -- insert this line
 
 ADD FILE BODY:
 Every body line must start with "+"; content follows the "+".
@@ -183,7 +183,7 @@ NOTES:
 
 # parse_patch: parse a patch string into a list of operation objects.
 # Each op is: list(op, path, move_to, hunks, lines) as described in the spec.
-# Hunk ops use a flat tagged-line list: list(list(type=..., line=...)) —
+# Hunk ops use a flat tagged-line list: list(list(type=..., line=...)) --
 # this makes both matching and applying straightforward without separate decomposition.
 parse_patch <- function(patch) {
   raw_lines <- strsplit(patch, "\n", fixed = TRUE)[[1]]
@@ -407,7 +407,7 @@ validate_patch_ops <- function(ops) {
 }
 
 # match_hunk: find where a hunk's context+delete lines appear in file_lines.
-# Returns list(start = N, end = M) — 1-based range covered by context+delete.
+# Returns list(start = N, end = M) -- 1-based range covered by context+delete.
 match_hunk <- function(hunk, file_lines, search_start, path) {
   match_seq <- Filter(
     function(x) x$type %in% c("context", "delete"),
@@ -502,7 +502,7 @@ apply_patch_ops <- function(ops) {
     }
   }
 
-  # All dry-run succeeded — commit to disk
+  # All dry-run succeeded -- commit to disk
   for (s in staged) {
     if (s$type == "write") {
       if (!is.null(s$dir)) {
