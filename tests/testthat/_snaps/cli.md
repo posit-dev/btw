@@ -9,10 +9,13 @@
       Wraps btw package tools for docs, pkg, info, and cran operations.
       
       Commands:
-        docs  
-        pkg   
-        info  
-        cran  
+        docs    Access R documentation
+        pkg     Work with an R package under development
+        info    Inspect the R session and environment
+        cran    Query CRAN package metadata
+        skills  Manage btw skills
+        help    Show btw CLI usage guide for AI agents
+        app     Run btw_app() in the current directory
       
       Options:
         --version / --no-version  Print btw version and exit. [default: false]
@@ -25,14 +28,14 @@
     Code
       run_btw("docs", "--help")
     Output
+      Access R documentation
+      
       Usage: btw docs [OPTIONS] <COMMAND>
       
-      docs command
-      
       Commands:
-        help      
-        vignette  
-        news      
+        help      Show help for a topic or package
+        vignette  Read a package vignette
+        news      Show package NEWS
       
       Global options:
         --version / --no-version  Print btw version and exit. [default: false]
@@ -45,9 +48,9 @@
     Code
       run_btw("docs", "help", "--help")
     Output
-      Usage: btw docs help [OPTIONS] <TOPIC>
+      Show help for a topic or package
       
-      help command
+      Usage: btw docs help [OPTIONS] <TOPIC>
       
       Options:
         -p, --package <PACKAGE>  Package name to scope the help topic.
@@ -65,16 +68,16 @@
     Code
       run_btw("pkg", "--help")
     Output
+      Work with an R package under development
+      
       Usage: btw pkg [OPTIONS] <COMMAND>
       
-      pkg command
-      
       Commands:
-        document  
-        check     
-        test      
-        load      
-        coverage  
+        document  Generate package documentation
+        check     Run R CMD check
+        test      Run package tests
+        load      Load package with pkgload
+        coverage  Measure package test coverage
       
       Options:
         --path <PATH>  Path to package directory. [default: "."] [type: string]
@@ -90,13 +93,13 @@
     Code
       run_btw("info", "--help")
     Output
+      Inspect the R session and environment
+      
       Usage: btw info [OPTIONS] <COMMAND>
       
-      info command
-      
       Commands:
-        platform  
-        packages  
+        platform  Show platform and session info
+        packages  Show installed package information
       
       Options:
         --json / --no-json  Output as JSON. [default: false] Enable with `--json`.
@@ -112,13 +115,13 @@
     Code
       run_btw("cran", "--help")
     Output
+      Query CRAN package metadata
+      
       Usage: btw cran [OPTIONS] <COMMAND>
       
-      cran command
-      
       Commands:
-        search  
-        info    
+        search  Search CRAN for packages
+        info    Show CRAN metadata for a package
       
       Options:
         --json / --no-json  Output as JSON. [default: false] Enable with `--json`.

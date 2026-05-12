@@ -47,11 +47,11 @@
       
       ##### `log`
       
-      logical; if TRUE, probabilities p are given as log(p).
+      logical; if `TRUE`, probabilities/densities are given as logarithms.
       
       ##### `lower.tail`
       
-      logical; if TRUE (default), probabilities are `P[X \le x]` otherwise,
+      logical; if `TRUE` (default), probabilities are `P[X \le x]`, otherwise,
       `P[X > x]`.
       
       #### Details
@@ -68,9 +68,9 @@
       
       #### Value
       
-      `dnorm` gives the density, `pnorm` gives the distribution function,
-      `qnorm` gives the quantile function, and `rnorm` generates random
-      deviates.
+      `dnorm` gives the density, `pnorm` is the cumulative distribution
+      function, and `qnorm` is the quantile function of the normal
+      distribution. `rnorm` generates random deviates.
       
       The length of the result is determined by `n` for `rnorm`, and is the
       maximum of the lengths of the numerical arguments for the other
@@ -85,42 +85,54 @@
       #### Source
       
       For `pnorm`, based on
-      
-      Cody, W. D. (1993) Algorithm 715: SPECFUN – A portable FORTRAN package
-      of special function routines and test drivers. *ACM Transactions on
-      Mathematical Software* **19**, 22–32.
+      <a href="#reference+Normal.Rd+R+3ACody+3A1993" class="citation">Cody
+      (1993)</a>.
       
       For `qnorm`, the code is based on a C translation of
-      
-      Wichura, M. J. (1988) Algorithm AS 241: The percentage points of the
-      normal distribution. *Applied Statistics*, **37**, 477–484;
-      [doi:10.2307/2347330](https://doi.org/10.2307/2347330).
-      
-      which provides precise results up to about 16 digits for `log.p=FALSE`.
-      For log scale probabilities in the extreme tails, since
-      <span class="rlang">**R**</span> version 4.1.0, extensively since 4.3.0,
-      asymptotic expansions are used which have been derived and explored in
-      
-      Maechler, M. (2022) Asymptotic tail formulas for gaussian quantiles;
-      [<span class="pkg">DPQ</span>](https://CRAN.R-project.org/package=DPQ)
-      vignette
-      <https://CRAN.R-project.org/package=DPQ/vignettes/qnorm-asymp.pdf>.
+      <a href="#reference+Normal.Rd+R+3AWichura+3A1988"
+      class="citation">Wichura (1988)</a> which provides precise results up to
+      about 16 digits for `log.p=FALSE`. For log scale probabilities in the
+      extreme tails, since <span class="rlang">**R**</span> version 4.1.0,
+      extensively since 4.3.0, asymptotic expansions are used which have been
+      derived and explored in
+      <a href="#reference+Normal.Rd+R+3AMaechler+3A2022"
+      class="citation">Mächler (2022)</a>.
       
       For `rnorm`, see RNG for how to select the algorithm and for references
       to the supplied methods.
       
       #### References
       
-      Becker, R. A., Chambers, J. M. and Wilks, A. R. (1988) *The New S
-      Language*. Wadsworth & Brooks/Cole.
+      <span id="reference+Normal.Rd+R+3ABecker+2BChambers+2BWilks+3A1988"></span>
       
-      Johnson, N. L., Kotz, S. and Balakrishnan, N. (1995) *Continuous
-      Univariate Distributions*, volume 1, chapter 13. Wiley, New York.
+      Becker RA, Chambers JM, Wilks AR (1988). *The New S Language*. Chapman
+      and Hall/CRC, London. ISBN 053409192X.
+      
+      <span id="reference+Normal.Rd+R+3ACody+3A1993"></span>Cody WJ (1993).
+      “Algorithm 715: SPECFUN—A Portable FORTRAN Package of Special Function
+      Routines and Test Drivers.” *ACM Transactions on Mathematical Software*,
+      **19**(1), 22–30.
+      [doi:10.1145/151271.151273](https://doi.org/10.1145/151271.151273).
+      
+      <span id="reference+Normal.Rd+R+3AJohnson+2BKotz+2BBalakrishnan+3A1994"></span>Johnson
+      NL, Kotz S, Balakrishnan N (1994). *Continuous Univariate
+      Distributions*, volume 1. Wiley, New York. ISBN 978-0-471-58495-7.  
+      Chapter 13.
+      
+      <span id="reference+Normal.Rd+R+3AMaechler+3A2022"></span>Mächler M
+      (2022). *Asymptotic Tail Formulas for Gaussian Quantiles*. Vignette,
+      CRAN package <span class="pkg">DPQ</span>,
+      <https://CRAN.R-project.org/package=DPQ/vignettes/qnorm-asymp.pdf>.
+      
+      <span id="reference+Normal.Rd+R+3AWichura+3A1988"></span>Wichura MJ
+      (1988). “Algorithm AS 241: The Percentage Points of the Normal
+      Distribution.” *Applied Statistics*, **37**(3), 477.
+      [doi:10.2307/2347330](https://doi.org/10.2307/2347330).
       
       #### See Also
       
       Distributions for other standard distributions, including `dlnorm` for
-      the *Log*normal distribution.
+      the *log*-normal distribution.
       
       #### Examples
       
