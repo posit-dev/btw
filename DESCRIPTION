@@ -113,6 +113,7 @@ Collate:
     'tool-env.R'
     'tool-files-edit.R'
     'tool-files-list.R'
+    'tool-files-patch.R'
     'tool-files-read.R'
     'tool-files-replace.R'
     'tool-files-search.R'
