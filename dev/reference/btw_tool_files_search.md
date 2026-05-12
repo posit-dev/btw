@@ -111,14 +111,14 @@ withr::with_tempdir({
     show_lines = TRUE
   )
 })
-#> ℹ Indexing files in /tmp/RtmpHBiNCQ/file246342b772c7 for code search
-#> ✔ Indexing files in /tmp/RtmpHBiNCQ/file246342b772c7 for code search [424ms]
+#> ℹ Indexing files in /tmp/RtmpGmFcCU/file22f6296959c3 for code search
+#> ✔ Indexing files in /tmp/RtmpGmFcCU/file22f6296959c3 for code search [444ms]
 #> 
 #> <btw::BtwToolResult>
 #>  @ value  :'data.frame': 1 obs. of  5 variables:
 #>  .. $ filename     : chr "state_names_1.md"
 #>  .. $ size         : 'fs_bytes' num 219
-#>  .. $ last_modified: POSIXct, format: "2026-05-12 17:56:57"
+#>  .. $ last_modified: POSIXct, format: "2026-05-12 19:05:34"
 #>  .. $ content      : chr "Kentucky"
 #>  .. $ line         : num 17
 #>  @ error  : NULL

@@ -27,6 +27,9 @@ Useful links:
 
 Authors:
 
+- Garrick Aden-Buie <garrick@adenbuie.com>
+  ([ORCID](https://orcid.org/0000-0002-7111-0077))
+
 - Simon Couch <simon.couch@posit.co>
   ([ORCID](https://orcid.org/0000-0001-5676-5107))
 
