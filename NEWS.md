@@ -2,6 +2,8 @@
 
 ## New features
 
+* Added `btw_tool_files_patch()`, a new files tool that applies a structured diff-style patch envelope to make coordinated changes across multiple files in a single call. One patch can add, update, delete, and rename files atomically: all operations are validated before any file is written, so a partial failure leaves the working tree untouched (#190).
+
 * Added two new commands to the `btw` CLI: `btw app` to launch a `btw_app()` session in the current working directory and `btw skills install` to install skills from the terminal.
 
 * Added `btw help` to the `btw` CLI, which prints the `r-btw-cli` skill — a usage guide designed for AI agents.
