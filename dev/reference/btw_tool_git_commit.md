@@ -60,6 +60,6 @@ withr::with_tempdir({
   # What the LLM sees
   cat(res@value)
 })
-#> Created commit: 699c29d
+#> Created commit: 4e50d80
 #> Message: Initial commit
 ```
