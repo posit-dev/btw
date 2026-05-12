@@ -117,6 +117,7 @@ don't require hashline references.
 
 Other files tools:
 \code{\link[=btw_tool_files_list]{btw_tool_files_list()}},
+\code{\link[=btw_tool_files_patch]{btw_tool_files_patch()}},
 \code{\link[=btw_tool_files_read]{btw_tool_files_read()}},
 \code{\link[=btw_tool_files_replace]{btw_tool_files_replace()}},
 \code{\link[=btw_tool_files_search]{btw_tool_files_search()}},
