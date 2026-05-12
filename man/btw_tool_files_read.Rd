@@ -64,6 +64,7 @@ references, \code{\link[=btw_tool_files_replace]{btw_tool_files_replace()}} for 
 Other files tools:
 \code{\link[=btw_tool_files_edit]{btw_tool_files_edit()}},
 \code{\link[=btw_tool_files_list]{btw_tool_files_list()}},
+\code{\link[=btw_tool_files_patch]{btw_tool_files_patch()}},
 \code{\link[=btw_tool_files_replace]{btw_tool_files_replace()}},
 \code{\link[=btw_tool_files_search]{btw_tool_files_search()}},
 \code{\link[=btw_tool_files_write]{btw_tool_files_write()}}

@@ -79,13 +79,6 @@ the text after each \code{+}.
 }
 
 }
-
-\subsection{Atomicity}{
-
-The patch is parsed and every operation (hunk matches, path checks,
-filesystem preconditions) is validated before any file is written. If any
-check fails, no changes are applied.
-}
 }
 \seealso{
 \code{\link[=btw_tool_files_edit]{btw_tool_files_edit()}} for hashline-based targeted edits,
