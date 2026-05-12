@@ -21,11 +21,10 @@ Returns a summary of the operations applied.
 Applies a structured diff-like patch envelope to one or more files. Unlike
 \code{\link[=btw_tool_files_edit]{btw_tool_files_edit()}} (which requires hashline references from a prior
 read) or \code{\link[=btw_tool_files_replace]{btw_tool_files_replace()}} (which requires exact strings), the
-patch tool uses context-matching hunks so models can produce edits without
-first reading the file.
-
-A single patch envelope can add, update, delete, and move files atomically:
-either all operations succeed or none are applied.
+patch tool uses context-matching hunks so models can produce coordinated
+edits across multiple files in a single tool call. A single patch envelope
+can add, update, delete, and move files atomically: either all operations
+succeed or none are applied.
 \subsection{Patch syntax}{
 
 A patch is a text envelope that begins with \verb{*** Begin Patch} and ends with
@@ -51,21 +50,21 @@ export const newName = 1
 }\if{html}{\out{</div>}}
 \subsection{Headers}{
 \itemize{
-\item \verb{*** Add File: <path>} — create a new file (must not exist).
-\item \verb{*** Update File: <path>} — modify an existing file.
-\item \verb{*** Delete File: <path>} — remove an existing file.
-\item \verb{*** Move to: <path>} — sub-header inside an \verb{Update File} block; renames
+\item \verb{*** Add File: <path>} -- create a new file (must not exist).
+\item \verb{*** Update File: <path>} -- modify an existing file.
+\item \verb{*** Delete File: <path>} -- remove an existing file.
+\item \verb{*** Move to: <path>} -- sub-header inside an \verb{Update File} block; renames
 the file to \verb{<path>} after applying any hunks. Destination must not exist.
 }
 }
 
 \subsection{Hunk lines (inside \verb{Update File})}{
 \itemize{
-\item \code{@} — hunk boundary; any trailing text on this line is informational and
+\item \code{@} -- hunk boundary; any trailing text on this line is informational and
 ignored.
-\item \verb{ <text>} (space prefix) — context line that must match the file exactly.
-\item \verb{-<text>} — line to delete; must match the file exactly at this position.
-\item \verb{+<text>} — line to insert.
+\item \verb{ <text>} (space prefix) -- context line that must match the file exactly.
+\item \verb{-<text>} -- line to delete; must match the file exactly at this position.
+\item \verb{+<text>} -- line to insert.
 }
 
 Every hunk must include at least one context or delete line to anchor the

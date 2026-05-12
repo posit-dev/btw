@@ -4,11 +4,10 @@
 #' Applies a structured diff-like patch envelope to one or more files. Unlike
 #' [btw_tool_files_edit()] (which requires hashline references from a prior
 #' read) or [btw_tool_files_replace()] (which requires exact strings), the
-#' patch tool uses context-matching hunks so models can produce edits without
-#' first reading the file.
-#'
-#' A single patch envelope can add, update, delete, and move files atomically:
-#' either all operations succeed or none are applied.
+#' patch tool uses context-matching hunks so models can produce coordinated
+#' edits across multiple files in a single tool call. A single patch envelope
+#' can add, update, delete, and move files atomically: either all operations
+#' succeed or none are applied.
 #'
 #' ## Patch syntax
 #'
