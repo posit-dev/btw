@@ -6,10 +6,10 @@ Unlike
 (which requires hashline references from a prior read) or
 [`btw_tool_files_replace()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_replace.md)
 (which requires exact strings), the patch tool uses context-matching
-hunks so models can produce edits without first reading the file.
-
-A single patch envelope can add, update, delete, and move files
-atomically: either all operations succeed or none are applied.
+hunks so models can produce coordinated edits across multiple files in a
+single tool call. A single patch envelope can add, update, delete, and
+move files atomically: either all operations succeed or none are
+applied.
 
 ### Patch syntax
 
@@ -37,28 +37,28 @@ header:
 
 #### Headers
 
-- `*** Add File: <path>` — create a new file (must not exist).
+- `*** Add File: <path>` – create a new file (must not exist).
 
-- `*** Update File: <path>` — modify an existing file.
+- `*** Update File: <path>` – modify an existing file.
 
-- `*** Delete File: <path>` — remove an existing file.
+- `*** Delete File: <path>` – remove an existing file.
 
-- `*** Move to: <path>` — sub-header inside an `Update File` block;
+- `*** Move to: <path>` – sub-header inside an `Update File` block;
   renames the file to `<path>` after applying any hunks. Destination
   must not exist.
 
 #### Hunk lines (inside `Update File`)
 
-- `@` — hunk boundary; any trailing text on this line is informational
+- `@` – hunk boundary; any trailing text on this line is informational
   and ignored.
 
-- ` <text>` (space prefix) — context line that must match the file
+- ` <text>` (space prefix) – context line that must match the file
   exactly.
 
-- `-<text>` — line to delete; must match the file exactly at this
+- `-<text>` – line to delete; must match the file exactly at this
   position.
 
-- `+<text>` — line to insert.
+- `+<text>` – line to insert.
 
 Every hunk must include at least one context or delete line to anchor
 the edit; pure-insert hunks are rejected. Use `*** Add File` for new
