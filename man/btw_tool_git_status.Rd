@@ -24,7 +24,7 @@ explain why it called the tool.}
 Returns a character table of file statuses.
 }
 \description{
-This tool allows the LLM to run \code{\link[gert:git_commit]{gert::git_status()}}, equivalent to \verb{git status} in the terminal, and to see the current status of the working
+This tool allows the LLM to run \code{\link[gert:git_status]{gert::git_status()}}, equivalent to \verb{git status} in the terminal, and to see the current status of the working
 directory.
 }
 \examples{
@@ -42,12 +42,12 @@ withr::with_tempdir({
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-Other git tools: 
-\code{\link{btw_tool_git_branch_checkout}()},
-\code{\link{btw_tool_git_branch_create}()},
-\code{\link{btw_tool_git_branch_list}()},
-\code{\link{btw_tool_git_commit}()},
-\code{\link{btw_tool_git_diff}()},
-\code{\link{btw_tool_git_log}()}
+Other git tools:
+\code{\link[=btw_tool_git_branch_checkout]{btw_tool_git_branch_checkout()}},
+\code{\link[=btw_tool_git_branch_create]{btw_tool_git_branch_create()}},
+\code{\link[=btw_tool_git_branch_list]{btw_tool_git_branch_list()}},
+\code{\link[=btw_tool_git_commit]{btw_tool_git_commit()}},
+\code{\link[=btw_tool_git_diff]{btw_tool_git_diff()}},
+\code{\link[=btw_tool_git_log]{btw_tool_git_log()}}
 }
 \concept{git tools}

@@ -18,7 +18,7 @@ R objects that can be converted to text using \code{\link[=btw]{btw()}}.}
 \item{path}{The path to the context file to create. Defaults to \code{btw.md}.}
 
 \item{client}{An \link[ellmer:Chat]{ellmer::Chat} client, or a \code{provider/model} string to be
-passed to \code{\link[ellmer:chat-any]{ellmer::chat()}} to create a chat client, or an alias to a client
+passed to \code{\link[ellmer:chat]{ellmer::chat()}} to create a chat client, or an alias to a client
 setting in your \code{btw.md} file (see "Multiple Providers" section). Defaults
 to \code{\link[ellmer:chat_anthropic]{ellmer::chat_anthropic()}}. You can use the \code{btw.client} option to set a
 default client for new \code{btw_client()} calls, or use a \code{btw.md} project file
@@ -58,9 +58,9 @@ withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
 
 }
 \seealso{
-Other task and agent functions: 
-\code{\link{btw_task}()},
-\code{\link{btw_task_create_readme}()},
-\code{\link{btw_task_create_skill}()}
+Other task and agent functions:
+\code{\link[=btw_task]{btw_task()}},
+\code{\link[=btw_task_create_readme]{btw_task_create_readme()}},
+\code{\link[=btw_task_create_skill]{btw_task_create_skill()}}
 }
 \concept{task and agent functions}

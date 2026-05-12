@@ -36,10 +36,10 @@ details for a specific file.
 \seealso{
 \code{\link[=btw_tools]{btw_tools()}}
 
-Other pkg tools: 
-\code{\link{btw_tool_pkg_check}()},
-\code{\link{btw_tool_pkg_document}()},
-\code{\link{btw_tool_pkg_load_all}()},
-\code{\link{btw_tool_pkg_test}()}
+Other pkg tools:
+\code{\link[=btw_tool_pkg_check]{btw_tool_pkg_check()}},
+\code{\link[=btw_tool_pkg_document]{btw_tool_pkg_document()}},
+\code{\link[=btw_tool_pkg_load_all]{btw_tool_pkg_load_all()}},
+\code{\link[=btw_tool_pkg_test]{btw_tool_pkg_test()}}
 }
 \concept{pkg tools}

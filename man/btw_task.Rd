@@ -105,9 +105,9 @@ btw_task(
 
 }
 \seealso{
-Other task and agent functions: 
-\code{\link{btw_task_create_btw_md}()},
-\code{\link{btw_task_create_readme}()},
-\code{\link{btw_task_create_skill}()}
+Other task and agent functions:
+\code{\link[=btw_task_create_btw_md]{btw_task_create_btw_md()}},
+\code{\link[=btw_task_create_readme]{btw_task_create_readme()}},
+\code{\link[=btw_task_create_skill]{btw_task_create_skill()}}
 }
 \concept{task and agent functions}

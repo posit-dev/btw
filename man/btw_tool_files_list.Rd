@@ -14,7 +14,7 @@ btw_tool_files_list(
 \arguments{
 \item{path}{Path to a directory or file for which to get information. The
 \code{path} must be in the current working directory. If \code{path} is a directory,
-we use \code{\link[fs:dir_ls]{fs::dir_info()}} to list information about files and directories in
+we use \code{\link[fs:dir_info]{fs::dir_info()}} to list information about files and directories in
 \code{path} (use \code{type} to pick only one or the other). If \code{path} is a file, we
 show information about that file.}
 
@@ -42,11 +42,11 @@ withr::with_tempdir({
 
 }
 \seealso{
-Other files tools: 
-\code{\link{btw_tool_files_edit}()},
-\code{\link{btw_tool_files_read}()},
-\code{\link{btw_tool_files_replace}()},
-\code{\link{btw_tool_files_search}()},
-\code{\link{btw_tool_files_write}()}
+Other files tools:
+\code{\link[=btw_tool_files_edit]{btw_tool_files_edit()}},
+\code{\link[=btw_tool_files_read]{btw_tool_files_read()}},
+\code{\link[=btw_tool_files_replace]{btw_tool_files_replace()}},
+\code{\link[=btw_tool_files_search]{btw_tool_files_search()}},
+\code{\link[=btw_tool_files_write]{btw_tool_files_write()}}
 }
 \concept{files tools}

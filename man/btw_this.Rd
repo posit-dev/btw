@@ -24,9 +24,9 @@ btw_this(dplyr::mutate) # include function source
 
 }
 \seealso{
-Other btw formatting methods: 
-\code{\link{btw_this.character}()},
-\code{\link{btw_this.data.frame}()},
-\code{\link{btw_this.environment}()}
+Other btw formatting methods:
+\code{\link[=btw_this.character]{btw_this.character()}},
+\code{\link[=btw_this.data.frame]{btw_this.data.frame()}},
+\code{\link[=btw_this.environment]{btw_this.environment()}}
 }
 \concept{btw formatting methods}

@@ -18,7 +18,7 @@ environment.}
 A single logical value; will default to \code{TRUE} when run interactively.}
 }
 \value{
-Returns an \link[ellmer:Content]{ellmer::ContentText} object with the collected prompt. If
+Returns an \link[ellmer:ContentText]{ellmer::ContentText} object with the collected prompt. If
 \code{clipboard = TRUE}, the prompt text is copied to the clipboard when the
 returned object is printed for the first time (e.g. calling \code{btw()} without
 assignment).

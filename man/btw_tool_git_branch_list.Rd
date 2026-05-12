@@ -19,7 +19,7 @@ Returns a character table of branches.
 }
 \description{
 This tool allows an LLM to list git branches in the repository using
-\code{\link[gert:git_branch]{gert::git_branch_list()}}, equivalent to \verb{git branch} in the terminal.
+\code{\link[gert:git_branch_list]{gert::git_branch_list()}}, equivalent to \verb{git branch} in the terminal.
 }
 \examples{
 \dontshow{if (rlang::is_installed("gert")) withAutoprint(\{ # examplesIf}
@@ -41,12 +41,12 @@ withr::with_tempdir({
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-Other git tools: 
-\code{\link{btw_tool_git_branch_checkout}()},
-\code{\link{btw_tool_git_branch_create}()},
-\code{\link{btw_tool_git_commit}()},
-\code{\link{btw_tool_git_diff}()},
-\code{\link{btw_tool_git_log}()},
-\code{\link{btw_tool_git_status}()}
+Other git tools:
+\code{\link[=btw_tool_git_branch_checkout]{btw_tool_git_branch_checkout()}},
+\code{\link[=btw_tool_git_branch_create]{btw_tool_git_branch_create()}},
+\code{\link[=btw_tool_git_commit]{btw_tool_git_commit()}},
+\code{\link[=btw_tool_git_diff]{btw_tool_git_diff()}},
+\code{\link[=btw_tool_git_log]{btw_tool_git_log()}},
+\code{\link[=btw_tool_git_status]{btw_tool_git_status()}}
 }
 \concept{git tools}

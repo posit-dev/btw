@@ -27,10 +27,10 @@ pattern.
 \seealso{
 \code{\link[=btw_tools]{btw_tools()}}
 
-Other pkg tools: 
-\code{\link{btw_tool_pkg_check}()},
-\code{\link{btw_tool_pkg_coverage}()},
-\code{\link{btw_tool_pkg_document}()},
-\code{\link{btw_tool_pkg_load_all}()}
+Other pkg tools:
+\code{\link[=btw_tool_pkg_check]{btw_tool_pkg_check()}},
+\code{\link[=btw_tool_pkg_coverage]{btw_tool_pkg_coverage()}},
+\code{\link[=btw_tool_pkg_document]{btw_tool_pkg_document()}},
+\code{\link[=btw_tool_pkg_load_all]{btw_tool_pkg_load_all()}}
 }
 \concept{pkg tools}

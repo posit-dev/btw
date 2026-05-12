@@ -71,7 +71,7 @@ btw_tool_docs_help_page("btw", "btw")
 \seealso{
 \code{\link[=btw_tools]{btw_tools()}}
 
-Other docs tools: 
-\code{\link{btw_tool_docs_package_news}()}
+Other docs tools:
+\code{\link[=btw_tool_docs_package_news]{btw_tool_docs_package_news()}}
 }
 \concept{docs tools}

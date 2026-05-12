@@ -109,7 +109,7 @@ block you can choose settings for the default ellmer chat \code{client}, e.g.
 
 Use the \code{client} field to set options for the chat client. This can be a
 single string in \code{provider} or \code{provider/model} format -- as used by
-\code{\link[ellmer:chat-any]{ellmer::chat()}} -- or a list of client options with \code{provider} and
+\code{\link[ellmer:chat]{ellmer::chat()}} -- or a list of client options with \code{provider} and
 \code{model} fields, as well as any other options supported by the underlying
 \verb{ellmer::chat_*()} function you choose. Note that \code{provider} maps to the
 \verb{ellmer::chat_*()} function, while \code{model} maps to the \code{model} argument of

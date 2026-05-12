@@ -18,7 +18,7 @@ explain why it called the tool.}
 Returns a diff patch as a formatted string.
 }
 \description{
-This tool allows an LLM to run \code{\link[gert:git_diff]{gert::git_diff_patch()}}, equivalent to
+This tool allows an LLM to run \code{\link[gert:git_diff_patch]{gert::git_diff_patch()}}, equivalent to
 \verb{git diff} in the terminal, and to see the detailed changes made in a commit.
 }
 \examples{
@@ -40,12 +40,12 @@ withr::with_tempdir({
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-Other git tools: 
-\code{\link{btw_tool_git_branch_checkout}()},
-\code{\link{btw_tool_git_branch_create}()},
-\code{\link{btw_tool_git_branch_list}()},
-\code{\link{btw_tool_git_commit}()},
-\code{\link{btw_tool_git_log}()},
-\code{\link{btw_tool_git_status}()}
+Other git tools:
+\code{\link[=btw_tool_git_branch_checkout]{btw_tool_git_branch_checkout()}},
+\code{\link[=btw_tool_git_branch_create]{btw_tool_git_branch_create()}},
+\code{\link[=btw_tool_git_branch_list]{btw_tool_git_branch_list()}},
+\code{\link[=btw_tool_git_commit]{btw_tool_git_commit()}},
+\code{\link[=btw_tool_git_log]{btw_tool_git_log()}},
+\code{\link[=btw_tool_git_status]{btw_tool_git_status()}}
 }
 \concept{git tools}

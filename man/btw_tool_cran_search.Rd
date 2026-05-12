@@ -54,7 +54,7 @@ btw(
 \seealso{
 \code{\link[=btw_tools]{btw_tools()}}
 
-Other cran tools: 
-\code{\link{btw_tool_cran_package}()}
+Other cran tools:
+\code{\link[=btw_tool_cran_package]{btw_tool_cran_package()}}
 }
 \concept{cran tools}

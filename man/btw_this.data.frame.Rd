@@ -78,14 +78,9 @@ btw_this(mtcars, format = "json")
 \seealso{
 \code{\link[=btw_tool_env_describe_data_frame]{btw_tool_env_describe_data_frame()}}
 
-Other btw formatting methods: 
-\code{\link{btw_this}()},
-\code{\link{btw_this.character}()},
-\code{\link{btw_this.environment}()}
-
-Other btw formatting methods: 
-\code{\link{btw_this}()},
-\code{\link{btw_this.character}()},
-\code{\link{btw_this.environment}()}
+Other btw formatting methods:
+\code{\link[=btw_this]{btw_this()}},
+\code{\link[=btw_this.character]{btw_this.character()}},
+\code{\link[=btw_this.environment]{btw_this.environment()}}
 }
 \concept{btw formatting methods}

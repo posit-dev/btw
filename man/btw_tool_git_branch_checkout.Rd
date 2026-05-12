@@ -21,7 +21,7 @@ Returns a confirmation message.
 }
 \description{
 Allows an LLM to switch to a different git branch using
-\code{\link[gert:git_branch]{gert::git_branch_checkout()}}, equivalent to \verb{git checkout <branch>} in
+\code{\link[gert:git_branch_checkout]{gert::git_branch_checkout()}}, equivalent to \verb{git checkout <branch>} in
 the terminal.
 }
 \examples{
@@ -47,12 +47,12 @@ withr::with_tempdir({
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-Other git tools: 
-\code{\link{btw_tool_git_branch_create}()},
-\code{\link{btw_tool_git_branch_list}()},
-\code{\link{btw_tool_git_commit}()},
-\code{\link{btw_tool_git_diff}()},
-\code{\link{btw_tool_git_log}()},
-\code{\link{btw_tool_git_status}()}
+Other git tools:
+\code{\link[=btw_tool_git_branch_create]{btw_tool_git_branch_create()}},
+\code{\link[=btw_tool_git_branch_list]{btw_tool_git_branch_list()}},
+\code{\link[=btw_tool_git_commit]{btw_tool_git_commit()}},
+\code{\link[=btw_tool_git_diff]{btw_tool_git_diff()}},
+\code{\link[=btw_tool_git_log]{btw_tool_git_log()}},
+\code{\link[=btw_tool_git_status]{btw_tool_git_status()}}
 }
 \concept{git tools}

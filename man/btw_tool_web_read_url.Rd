@@ -15,7 +15,7 @@ explain why it called the tool.}
 }
 \value{
 Returns a \code{BtwWebPageResult} object that inherits from
-\link[ellmer:Content]{ellmer::ContentToolResult} containing the markdown content of the web
+\link[ellmer:ContentToolResult]{ellmer::ContentToolResult} containing the markdown content of the web
 page.
 }
 \description{

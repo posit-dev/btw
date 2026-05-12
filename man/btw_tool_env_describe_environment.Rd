@@ -33,7 +33,7 @@ btw_tool_env_describe_environment("my_cars")
 \seealso{
 \code{\link[=btw_this.environment]{btw_this.environment()}}, \code{\link[=btw_tools]{btw_tools()}}
 
-Other env tools: 
-\code{\link{btw_tool_env_describe_data_frame}()}
+Other env tools:
+\code{\link[=btw_tool_env_describe_data_frame]{btw_tool_env_describe_data_frame()}}
 }
 \concept{env tools}

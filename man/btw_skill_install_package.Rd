@@ -52,8 +52,8 @@ permanently copy a skill to your project or user directory so it remains
 available regardless of which packages are loaded.
 }
 \seealso{
-Other skills: 
-\code{\link{btw_skill_install_github}()},
-\code{\link{btw_tool_skill}()}
+Other skills:
+\code{\link[=btw_skill_install_github]{btw_skill_install_github()}},
+\code{\link[=btw_tool_skill]{btw_tool_skill()}}
 }
 \concept{skills}

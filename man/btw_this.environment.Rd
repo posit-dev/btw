@@ -31,9 +31,9 @@ btw_this(env)
 \seealso{
 \code{\link[=btw_tool_env_describe_environment]{btw_tool_env_describe_environment()}}
 
-Other btw formatting methods: 
-\code{\link{btw_this}()},
-\code{\link{btw_this.character}()},
-\code{\link{btw_this.data.frame}()}
+Other btw formatting methods:
+\code{\link[=btw_this]{btw_this()}},
+\code{\link[=btw_this.character]{btw_this.character()}},
+\code{\link[=btw_this.data.frame]{btw_this.data.frame()}}
 }
 \concept{btw formatting methods}

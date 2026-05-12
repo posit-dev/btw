@@ -46,8 +46,8 @@ by btw 1.2.0 is also included at lower priority.
 }
 }
 \seealso{
-Other skills: 
-\code{\link{btw_skill_install_github}()},
-\code{\link{btw_skill_install_package}()}
+Other skills:
+\code{\link[=btw_skill_install_github]{btw_skill_install_github()}},
+\code{\link[=btw_skill_install_package]{btw_skill_install_package()}}
 }
 \concept{skills}

@@ -92,11 +92,11 @@ withr::with_tempdir({
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-Other files tools: 
-\code{\link{btw_tool_files_edit}()},
-\code{\link{btw_tool_files_list}()},
-\code{\link{btw_tool_files_read}()},
-\code{\link{btw_tool_files_replace}()},
-\code{\link{btw_tool_files_write}()}
+Other files tools:
+\code{\link[=btw_tool_files_edit]{btw_tool_files_edit()}},
+\code{\link[=btw_tool_files_list]{btw_tool_files_list()}},
+\code{\link[=btw_tool_files_read]{btw_tool_files_read()}},
+\code{\link[=btw_tool_files_replace]{btw_tool_files_replace()}},
+\code{\link[=btw_tool_files_write]{btw_tool_files_write()}}
 }
 \concept{files tools}

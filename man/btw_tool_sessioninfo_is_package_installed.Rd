@@ -36,8 +36,8 @@ tryCatch(
 \seealso{
 \code{\link[=btw_tools]{btw_tools()}}
 
-Other sessioninfo tools: 
-\code{\link{btw_tool_sessioninfo_package}()},
-\code{\link{btw_tool_sessioninfo_platform}()}
+Other sessioninfo tools:
+\code{\link[=btw_tool_sessioninfo_package]{btw_tool_sessioninfo_package()}},
+\code{\link[=btw_tool_sessioninfo_platform]{btw_tool_sessioninfo_platform()}}
 }
 \concept{sessioninfo tools}

@@ -28,7 +28,7 @@ cli::cat_line(
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-Other cran tools: 
-\code{\link{btw_tool_cran_search}()}
+Other cran tools:
+\code{\link[=btw_tool_cran_search]{btw_tool_cran_search()}}
 }
 \concept{cran tools}

@@ -21,7 +21,7 @@ Returns the commit SHA.
 }
 \description{
 This tool allows an LLM stage files and create a git commit. This tool uses a
-combination of \code{\link[gert:git_commit]{gert::git_add()}} to stage files and \code{\link[gert:git_commit]{gert::git_commit()}} to
+combination of \code{\link[gert:git_add]{gert::git_add()}} to stage files and \code{\link[gert:git_commit]{gert::git_commit()}} to
 commit them, which is equivalent to \verb{git add} and \verb{git commit} in the
 terminal, respectively.
 }
@@ -42,12 +42,12 @@ withr::with_tempdir({
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-Other git tools: 
-\code{\link{btw_tool_git_branch_checkout}()},
-\code{\link{btw_tool_git_branch_create}()},
-\code{\link{btw_tool_git_branch_list}()},
-\code{\link{btw_tool_git_diff}()},
-\code{\link{btw_tool_git_log}()},
-\code{\link{btw_tool_git_status}()}
+Other git tools:
+\code{\link[=btw_tool_git_branch_checkout]{btw_tool_git_branch_checkout()}},
+\code{\link[=btw_tool_git_branch_create]{btw_tool_git_branch_create()}},
+\code{\link[=btw_tool_git_branch_list]{btw_tool_git_branch_list()}},
+\code{\link[=btw_tool_git_diff]{btw_tool_git_diff()}},
+\code{\link[=btw_tool_git_log]{btw_tool_git_log()}},
+\code{\link[=btw_tool_git_status]{btw_tool_git_status()}}
 }
 \concept{git tools}

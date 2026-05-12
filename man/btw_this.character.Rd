@@ -81,7 +81,7 @@ Requires \pkg{gh} package and GitHub authentication.
 When used in RStudio or Positron, or anywhere else that the
 \pkg{rstudioapi} is supported, \code{btw("@current_file")} includes the contents
 of the file currently open in the editor using
-\code{\link[rstudioapi:rstudio-editors]{rstudioapi::getSourceEditorContext()}}.
+\code{\link[rstudioapi:getSourceEditorContext]{rstudioapi::getSourceEditorContext()}}.
 \item \code{"@clipboard"} \cr
 Includes the contents currently stored in your clipboard.
 \item \code{"@platform_info"} \cr
@@ -106,9 +106,9 @@ cat(btw_this("@last_value"))
 
 }
 \seealso{
-Other btw formatting methods: 
-\code{\link{btw_this}()},
-\code{\link{btw_this.data.frame}()},
-\code{\link{btw_this.environment}()}
+Other btw formatting methods:
+\code{\link[=btw_this]{btw_this()}},
+\code{\link[=btw_this.data.frame]{btw_this.data.frame()}},
+\code{\link[=btw_this.environment]{btw_this.environment()}}
 }
 \concept{btw formatting methods}

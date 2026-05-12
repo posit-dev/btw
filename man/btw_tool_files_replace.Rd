@@ -62,11 +62,11 @@ state.
 \code{\link[=btw_tool_files_edit]{btw_tool_files_edit()}} for line-based structural edits using
 hashline references, \code{\link[=btw_tool_files_read]{btw_tool_files_read()}} for reading files.
 
-Other files tools: 
-\code{\link{btw_tool_files_edit}()},
-\code{\link{btw_tool_files_list}()},
-\code{\link{btw_tool_files_read}()},
-\code{\link{btw_tool_files_search}()},
-\code{\link{btw_tool_files_write}()}
+Other files tools:
+\code{\link[=btw_tool_files_edit]{btw_tool_files_edit()}},
+\code{\link[=btw_tool_files_list]{btw_tool_files_list()}},
+\code{\link[=btw_tool_files_read]{btw_tool_files_read()}},
+\code{\link[=btw_tool_files_search]{btw_tool_files_search()}},
+\code{\link[=btw_tool_files_write]{btw_tool_files_write()}}
 }
 \concept{files tools}

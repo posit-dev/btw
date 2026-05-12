@@ -15,11 +15,11 @@ btw_mcp_session()
 to the tools provided by \code{\link[=btw_tools]{btw_tools()}}. Use \code{\link[=btw_tools]{btw_tools()}} to subset to
 specific list of \pkg{btw} tools that can be augmented with additional
 tools. Alternatively, you can pass a path to an R script that returns a
-list of tools as supported by \code{\link[mcptools:server]{mcptools::mcp_server()}}.}
+list of tools as supported by \code{\link[mcptools:mcp_server]{mcptools::mcp_server()}}.}
 }
 \value{
-Returns the result of \code{\link[mcptools:server]{mcptools::mcp_server()}} or
-\code{\link[mcptools:server]{mcptools::mcp_session()}}.
+Returns the result of \code{\link[mcptools:mcp_server]{mcptools::mcp_server()}} or
+\code{\link[mcptools:mcp_session]{mcptools::mcp_session()}}.
 }
 \description{
 \code{btw_mcp_server()} starts an MCP server with tools from \code{\link[=btw_tools]{btw_tools()}}, which
@@ -158,7 +158,7 @@ To allow the server to access variables in specific sessions, call
 
 }
 \seealso{
-These functions use \code{\link[mcptools:server]{mcptools::mcp_server()}} and \code{\link[mcptools:server]{mcptools::mcp_session()}}
+These functions use \code{\link[mcptools:mcp_server]{mcptools::mcp_server()}} and \code{\link[mcptools:mcp_session]{mcptools::mcp_session()}}
 under the hood. To configure arbitrary tools with an MCP client, see the
 documentation of those functions.
 }

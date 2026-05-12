@@ -27,7 +27,7 @@ explain why it called the tool.}
 Returns a confirmation message.
 }
 \description{
-Allows an LLM to create a new git branch using \code{\link[gert:git_branch]{gert::git_branch_create()}},
+Allows an LLM to create a new git branch using \code{\link[gert:git_branch_create]{gert::git_branch_create()}},
 equivalent to \verb{git branch <branch>} in the terminal.
 }
 \examples{
@@ -50,12 +50,12 @@ withr::with_tempdir({
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-Other git tools: 
-\code{\link{btw_tool_git_branch_checkout}()},
-\code{\link{btw_tool_git_branch_list}()},
-\code{\link{btw_tool_git_commit}()},
-\code{\link{btw_tool_git_diff}()},
-\code{\link{btw_tool_git_log}()},
-\code{\link{btw_tool_git_status}()}
+Other git tools:
+\code{\link[=btw_tool_git_branch_checkout]{btw_tool_git_branch_checkout()}},
+\code{\link[=btw_tool_git_branch_list]{btw_tool_git_branch_list()}},
+\code{\link[=btw_tool_git_commit]{btw_tool_git_commit()}},
+\code{\link[=btw_tool_git_diff]{btw_tool_git_diff()}},
+\code{\link[=btw_tool_git_log]{btw_tool_git_log()}},
+\code{\link[=btw_tool_git_status]{btw_tool_git_status()}}
 }
 \concept{git tools}

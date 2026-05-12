@@ -26,8 +26,8 @@ btw_tool_sessioninfo_platform()
 \seealso{
 \code{\link[=btw_tools]{btw_tools()}}
 
-Other sessioninfo tools: 
-\code{\link{btw_tool_sessioninfo_is_package_installed}()},
-\code{\link{btw_tool_sessioninfo_package}()}
+Other sessioninfo tools:
+\code{\link[=btw_tool_sessioninfo_is_package_installed]{btw_tool_sessioninfo_is_package_installed()}},
+\code{\link[=btw_tool_sessioninfo_package]{btw_tool_sessioninfo_package()}}
 }
 \concept{sessioninfo tools}

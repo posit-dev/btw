@@ -23,7 +23,7 @@ explain why it called the tool.}
 Returns a character table of commit history.
 }
 \description{
-This tool allows an LLM to run \code{\link[gert:git_commit]{gert::git_log()}}, equivalent to \verb{git log} in
+This tool allows an LLM to run \code{\link[gert:git_log]{gert::git_log()}}, equivalent to \verb{git log} in
 the terminal, and to see the commit history of a repository.
 }
 \examples{
@@ -47,12 +47,12 @@ withr::with_tempdir({
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-Other git tools: 
-\code{\link{btw_tool_git_branch_checkout}()},
-\code{\link{btw_tool_git_branch_create}()},
-\code{\link{btw_tool_git_branch_list}()},
-\code{\link{btw_tool_git_commit}()},
-\code{\link{btw_tool_git_diff}()},
-\code{\link{btw_tool_git_status}()}
+Other git tools:
+\code{\link[=btw_tool_git_branch_checkout]{btw_tool_git_branch_checkout()}},
+\code{\link[=btw_tool_git_branch_create]{btw_tool_git_branch_create()}},
+\code{\link[=btw_tool_git_branch_list]{btw_tool_git_branch_list()}},
+\code{\link[=btw_tool_git_commit]{btw_tool_git_commit()}},
+\code{\link[=btw_tool_git_diff]{btw_tool_git_diff()}},
+\code{\link[=btw_tool_git_status]{btw_tool_git_status()}}
 }
 \concept{git tools}

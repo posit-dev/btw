@@ -48,7 +48,7 @@ btw_tool_docs_package_news("dplyr", "join_by")
 \seealso{
 \code{\link[=btw_tools]{btw_tools()}}
 
-Other docs tools: 
+Other docs tools:
 \code{\link{btw_tool_package_docs}}
 }
 \concept{docs tools}

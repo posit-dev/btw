@@ -20,7 +20,7 @@ btw_app(..., client = NULL, tools = NULL, path_btw = NULL, messages = list())
 \code{\link[shiny:shinyApp]{shiny::shinyApp()}}. In \code{btw_client()}, additional arguments are ignored.}
 
 \item{client}{An \link[ellmer:Chat]{ellmer::Chat} client, or a \code{provider/model} string to be
-passed to \code{\link[ellmer:chat-any]{ellmer::chat()}} to create a chat client, or an alias to a client
+passed to \code{\link[ellmer:chat]{ellmer::chat()}} to create a chat client, or an alias to a client
 setting in your \code{btw.md} file (see "Multiple Providers" section). Defaults
 to \code{\link[ellmer:chat_anthropic]{ellmer::chat_anthropic()}}. You can use the \code{btw.client} option to set a
 default client for new \code{btw_client()} calls, or use a \code{btw.md} project file
@@ -53,7 +53,7 @@ the current project. By default, btw will look for an \code{llms.txt} file in
 the your current working directory or its parents. Set \code{path_llms_txt = FALSE} to skip looking for an \code{llms.txt} file.}
 
 \item{messages}{A list of initial messages to show in the chat, passed to
-\code{\link[shinychat:chat_app]{shinychat::chat_mod_ui()}}.}
+\code{\link[shinychat:chat_mod_ui]{shinychat::chat_mod_ui()}}.}
 }
 \value{
 Returns an \link[ellmer:Chat]{ellmer::Chat} object with additional tools registered
@@ -100,7 +100,7 @@ The following R options are consulted when creating a new btw chat client and
 take precedence over settings in a \code{btw.md} file:
 \itemize{
 \item \code{btw.client}: The \link[ellmer:Chat]{ellmer::Chat} client or a \code{provider/model} string (see
-\code{\link[ellmer:chat-any]{ellmer::chat()}}) to use as the basis for new \code{btw_client()} or
+\code{\link[ellmer:chat]{ellmer::chat()}}) to use as the basis for new \code{btw_client()} or
 \code{btw_app()} chats.
 \item \code{btw.tools}: The btw tools to include by default when starting a new
 btw chat, see \code{\link[=btw_tools]{btw_tools()}} for details.`
