@@ -1,4 +1,5 @@
 local_enable_tools()
+local_btw_md()
 withr::local_options(btw.client.quiet = TRUE)
 
 describe("btw_task()", {
