@@ -78,14 +78,8 @@ btw_docs_help <- function(topic, package) {
   }
 }
 
-format_as_yaml_rows <- function(df) {
-  rows <- lapply(seq_len(nrow(df)), function(i) {
-    paste(
-      mapply(function(key, val) paste0(key, ": ", val), names(df), df[i, ]),
-      collapse = "\n"
-    )
-  })
-  paste(rows, collapse = "\n\n")
+format_as_md_list <- function(df) {
+  paste0("* `", df[[1]], "` - ", df[[2]], collapse = "\n")
 }
 
 btw_docs_topics <- function(package, only) {
@@ -100,7 +94,7 @@ btw_docs_topics <- function(package, only) {
     result <- btw:::btw_tool_docs_package_help_topics_impl(package)
     df <- S7::prop(result, "extra")$data[, c("topic_id", "title")]
     cat("## Help topics\n\n")
-    cat(format_as_yaml_rows(df), "\n")
+    cat(format_as_md_list(df), "\n")
   }
 
   if (include_vignettes) {
@@ -108,7 +102,7 @@ btw_docs_topics <- function(package, only) {
     df <- S7::prop(result, "extra")$data
     if (include_help) cat("\n")
     cat("## Vignettes\n\n")
-    cat(format_as_yaml_rows(df), "\n")
+    cat(format_as_md_list(df), "\n")
   }
 }
 
