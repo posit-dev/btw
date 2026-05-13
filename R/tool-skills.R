@@ -29,6 +29,22 @@ NULL
 #'    by btw 1.2.0 is also included at lower priority.
 #' 4. Project-level skills (`.btw/skills/` or `.agents/skills/`)
 #'
+#' The default user-level and project-level directories can be replaced by
+#' setting an R option or environment variable:
+#'
+#' | Scope | R Option | Environment Variable |
+#' |---|---|---|
+#' | User-level | `btw.skills.dirs_user` | `BTW_SKILLS_DIRS_USER` |
+#' | Project-level | `btw.skills.dirs_project` | `BTW_SKILLS_DIRS_PROJECT` |
+#'
+#' When set, the value **replaces** (not appends to) the defaults for that
+#' scope. The R option takes precedence over the environment variable. Multiple
+#' paths can be provided using the OS-native path separator (`:` on Unix/Mac,
+#' `;` on Windows). Non-existent paths are silently skipped. Values are
+#' resolved fresh on every call (at tool-call time, not at registration time),
+#' so they do not need to be set before the tool is registered with the chat
+#' client.
+#'
 #' @param name The name of the skill to load, or `""` to list all available
 #'   skills.
 #' @inheritParams btw_tool_docs_package_news

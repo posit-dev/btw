@@ -44,6 +44,22 @@ legacy \code{tools::R_user_dir("btw", "config")/skills} path used by briefly
 by btw 1.2.0 is also included at lower priority.
 \item Project-level skills (\verb{.btw/skills/} or \verb{.agents/skills/})
 }
+
+The default user-level and project-level directories can be replaced by
+setting an R option or environment variable:\tabular{lll}{
+   Scope \tab R Option \tab Environment Variable \cr
+   User-level \tab \code{btw.skills.dirs_user} \tab \code{BTW_SKILLS_DIRS_USER} \cr
+   Project-level \tab \code{btw.skills.dirs_project} \tab \code{BTW_SKILLS_DIRS_PROJECT} \cr
+}
+
+
+When set, the value \strong{replaces} (not appends to) the defaults for that
+scope. The R option takes precedence over the environment variable. Multiple
+paths can be provided using the OS-native path separator (\code{:} on Unix/Mac,
+\verb{;} on Windows). Non-existent paths are silently skipped. Values are
+resolved fresh on every call (at tool-call time, not at registration time),
+so they do not need to be set before the tool is registered with the chat
+client.
 }
 \seealso{
 Other skills:
