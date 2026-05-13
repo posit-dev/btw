@@ -29,6 +29,25 @@ NULL
 #'    by btw 1.2.0 is also included at lower priority.
 #' 4. Project-level skills (`.btw/skills/` or `.agents/skills/`)
 #'
+#' The default user-level and project-level directories can be replaced by
+#' setting the `btw.skills.paths` R option or the `BTW_SKILLS_PATHS` environment
+#' variable. When set, the value **entirely replaces** all user-level and project-level
+#' directories (items 3 and 4 above). Package-bundled skills and skills from
+#' attached packages (items 1 and 2) are always included regardless of this
+#' setting. The R option takes precedence over the environment variable.
+#' Multiple paths can be provided as a character vector (e.g.
+#' `options(btw.skills.paths = c("/path/a", "/path/b"))`) or as a single
+#' path-separator-delimited string (`:` on Unix/Mac, `;` on Windows, which is
+#' the only form supported by environment variables). Non-existent paths are
+#' silently skipped.
+#'
+#' **Resolution timing:** options and environment variables are read at
+#' **tool-registration time** (i.e. when [btw_tools()] or [btw_client()] is
+#' called). The resolved paths are captured in the tool's closure so that they
+#' remain correct even if the options are later modified or go out of scope
+#' (for example, when `btw_client()` restores options after returning). If you
+#' need different directories for a new session, create a new client.
+#'
 #' @param name The name of the skill to load, or `""` to list all available
 #'   skills.
 #' @inheritParams btw_tool_docs_package_news
@@ -117,8 +136,22 @@ btw_tool_skill_impl <- function(name) {
   group = "skills",
 
   tool = function() {
+    # Capture the resolved skill dir overrides at registration time so the
+    # tool closes over the correct paths even after options set transiently by
+    # btw_client() / btw_app() have been restored to their prior values.
+    captured_paths <- skill_dirs_from_option_or_envvar("btw.skills.paths", "BTW_SKILLS_PATHS")
+
+    # Only replay the options that were actually captured. When a captured
+    # value is NULL (nothing was set at registration time), leave the live
+    # option untouched so btw_skills_directories() sees the real environment.
+    impl <- function(name) {
+      opts <- list()
+      if (!is.null(captured_paths)) opts[["btw.skills.paths"]] <- captured_paths
+      withr::with_options(opts, btw_tool_skill_impl(name))
+    }
+
     ellmer::tool(
-      btw_tool_skill_impl,
+      impl,
       name = "btw_tool_skill",
       description = paste(
         "Load a skill's specialized instructions and list its bundled",
@@ -159,30 +192,69 @@ btw_skills_directories <- function(project_dir = getwd()) {
   # Skills from attached packages
   dirs <- c(dirs, attached_package_skill_dirs())
 
-  # Legacy: btw <= 1.2.0 install target — kept for backwards compatibility only,
-  # never written to by newer versions
-  legacy_skills_dir <- file.path(tools::R_user_dir("btw", "config"), "skills")
-  if (dir.exists(legacy_skills_dir)) {
-    dirs <- c(dirs, legacy_skills_dir)
-  }
+  # Custom paths entirely replace all user-level and project-level defaults.
+  # When not set, fall back to the standard user-level + project-level dirs.
+  custom_paths <- skill_dirs_from_option_or_envvar("btw.skills.paths", "BTW_SKILLS_PATHS")
 
-  # User-level skills from btw_user_dirs() in increasing priority order
-  for (user_dir in rev(btw_user_dirs())) {
-    user_skills_dir <- file.path(user_dir, "skills")
-    if (dir.exists(user_skills_dir) && !user_skills_dir %in% dirs) {
-      dirs <- c(dirs, user_skills_dir)
-    }
-  }
+  search_dirs <- custom_paths %||% c(
+    default_user_skill_dirs(),
+    default_project_skill_dirs(project_dir)
+  )
 
-  # Project-level skills from multiple conventions
-  for (project_subdir in project_skill_subdirs()) {
-    project_skills_dir <- file.path(project_dir, project_subdir)
-    if (dir.exists(project_skills_dir)) {
-      dirs <- c(dirs, project_skills_dir)
+  for (search_dir in search_dirs) {
+    if (dir.exists(search_dir) && !search_dir %in% dirs) {
+      dirs <- c(dirs, search_dir)
     }
   }
 
   dirs
+}
+
+skill_dirs_from_option_or_envvar <- function(option_name, envvar_name) {
+  raw <- getOption(option_name, default = NULL)
+  if (is.null(raw)) {
+    env_val <- Sys.getenv(envvar_name, unset = NA_character_)
+    if (is.na(env_val)) {
+      return(NULL)
+    }
+    raw <- env_val
+  }
+  # Accept either a character vector (idiomatic R / YAML array) or a
+  # path-separator-delimited string (useful from env vars).
+  if (length(raw) > 1) {
+    paths <- as.character(raw)
+  } else {
+    paths <- strsplit(as.character(raw), .Platform$path.sep, fixed = TRUE)[[1]]
+  }
+  paths <- paths[!is.na(paths) & nzchar(paths)]
+  normalizePath(paths, mustWork = FALSE)
+}
+
+default_user_skill_dirs <- function() {
+  # Legacy: btw <= 1.2.0 install target — kept for backwards compatibility only,
+  # never written to by newer versions. Listed first (lowest priority).
+  legacy_skills_dir <- file.path(tools::R_user_dir("btw", "config"), "skills")
+
+  # Current user-level skill dirs in increasing priority order
+  current_dirs <- rev(vapply(
+    btw_user_dirs(),
+    function(d) file.path(d, "skills"),
+    character(1)
+  ))
+
+  # Combine: legacy first, then current dirs in increasing priority order.
+  # The `%in%` guard in the calling loop prevents re-adding dirs already
+  # present from earlier sources (e.g. attached packages). `unique()` removes
+  # any duplicates within this vector itself before the loop sees them.
+  unique(c(legacy_skills_dir, current_dirs))
+}
+
+default_project_skill_dirs <- function(project_dir) {
+  vapply(
+    project_skill_subdirs(),
+    function(s) file.path(project_dir, s),
+    character(1)
+  )
 }
 
 attached_package_skill_dirs <- function() {

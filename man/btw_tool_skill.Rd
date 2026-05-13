@@ -44,6 +44,25 @@ legacy \code{tools::R_user_dir("btw", "config")/skills} path used by briefly
 by btw 1.2.0 is also included at lower priority.
 \item Project-level skills (\verb{.btw/skills/} or \verb{.agents/skills/})
 }
+
+The default user-level and project-level directories can be replaced by
+setting the \code{btw.skills.paths} R option or the \code{BTW_SKILLS_PATHS} environment
+variable. When set, the value \strong{entirely replaces} all user-level and project-level
+directories (items 3 and 4 above). Package-bundled skills and skills from
+attached packages (items 1 and 2) are always included regardless of this
+setting. The R option takes precedence over the environment variable.
+Multiple paths can be provided as a character vector (e.g.
+\code{options(btw.skills.paths = c("/path/a", "/path/b"))}) or as a single
+path-separator-delimited string (\code{:} on Unix/Mac, \verb{;} on Windows, which is
+the only form supported by environment variables). Non-existent paths are
+silently skipped.
+
+\strong{Resolution timing:} options and environment variables are read at
+\strong{tool-registration time} (i.e. when \code{\link[=btw_tools]{btw_tools()}} or \code{\link[=btw_client]{btw_client()}} is
+called). The resolved paths are captured in the tool's closure so that they
+remain correct even if the options are later modified or go out of scope
+(for example, when \code{btw_client()} restores options after returning). If you
+need different directories for a new session, create a new client.
 }
 \seealso{
 Other skills:

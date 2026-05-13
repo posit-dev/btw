@@ -2,6 +2,8 @@
 
 ## New features
 
+* The `btw_tool_skill` tool now supports custom skill search directories via the `btw.skills.paths` R option or `BTW_SKILLS_PATHS` environment variable. When set, the value entirely replaces all user-level and project-level skill directories; package-bundled skills are always preserved. Multiple paths can be provided as a character vector (R option) or OS-native path-separated string (env var). Values are captured at tool-registration time, so custom directories set in `btw.md` survive after `btw_client()` returns (#193).
+
 * Added `btw_tool_files_patch()`, a new files tool that applies a structured diff-style patch envelope to make coordinated changes across multiple files in a single call. One patch can add, update, delete, and rename files atomically: all operations are validated before any file is written, so a partial failure leaves the working tree untouched (#190).
 
 * Added two new commands to the `btw` CLI: `btw app` to launch a `btw_app()` session in the current working directory and `btw skills install` to install skills from the terminal.
