@@ -31,6 +31,31 @@ conflict):
 
 4.  Project-level skills (`.btw/skills/` or `.agents/skills/`)
 
+The default user-level and project-level directories can be replaced by
+setting the `btw.skills.paths` R option or the `BTW_SKILLS_PATHS`
+environment variable. When set, the value **entirely replaces** all
+user-level and project-level directories (items 3 and 4 above).
+Package-bundled skills and skills from attached packages (items 1 and 2)
+are always included regardless of this setting. The R option takes
+precedence over the environment variable. Multiple paths can be provided
+as a character vector (e.g.
+`options(btw.skills.paths = c("/path/a", "/path/b"))`) or as a single
+path-separator-delimited string (`:` on Unix/Mac, `;` on Windows, which
+is the only form supported by environment variables). Non-existent paths
+are silently skipped.
+
+**Resolution timing:** options and environment variables are read at
+**tool-registration time** (i.e. when
+[`btw_tools()`](https://posit-dev.github.io/btw/dev/reference/btw_tools.md)
+or
+[`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+is called). The resolved paths are captured in the tool's closure so
+that they remain correct even if the options are later modified or go
+out of scope (for example, when
+[`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+restores options after returning). If you need different directories for
+a new session, create a new client.
+
 ## Usage
 
 ``` r

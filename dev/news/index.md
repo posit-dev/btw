@@ -4,6 +4,17 @@
 
 ### New features
 
+- The `btw_tool_skill` tool now supports custom skill search directories
+  via the `btw.skills.paths` R option or `BTW_SKILLS_PATHS` environment
+  variable. When set, the value entirely replaces all user-level and
+  project-level skill directories; package-bundled skills are always
+  preserved. Multiple paths can be provided as a character vector (R
+  option) or OS-native path-separated string (env var). Values are
+  captured at tool-registration time, so custom directories set in
+  `btw.md` survive after
+  [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+  returns ([\#193](https://github.com/posit-dev/btw/issues/193)).
+
 - Added
   [`btw_tool_files_patch()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_files_patch.md),
   a new files tool that applies a structured diff-style patch envelope

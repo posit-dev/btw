@@ -20,7 +20,24 @@ legacy tools::R_user_dir(&quot;btw&quot;, &quot;config&quot;)/skills path used b
 by btw 1.2.0 is also included at lower priority.
 Project-level skills (.btw/skills/ or .agents/skills/)
 
-"><meta property="og:description" content="Load a skill's specialized instructions and list its bundled resources.
+
+The default user-level and project-level directories can be replaced by
+setting the btw.skills.paths R option or the BTW_SKILLS_PATHS environment
+variable. When set, the value entirely replaces all user-level and project-level
+directories (items 3 and 4 above). Package-bundled skills and skills from
+attached packages (items 1 and 2) are always included regardless of this
+setting. The R option takes precedence over the environment variable.
+Multiple paths can be provided as a character vector (e.g.
+options(btw.skills.paths = c(&quot;/path/a&quot;, &quot;/path/b&quot;))) or as a single
+path-separator-delimited string (: on Unix/Mac, ; on Windows, which is
+the only form supported by environment variables). Non-existent paths are
+silently skipped.
+Resolution timing: options and environment variables are read at
+tool-registration time (i.e. when btw_tools() or btw_client() is
+called). The resolved paths are captured in the tool's closure so that they
+remain correct even if the options are later modified or go out of scope
+(for example, when btw_client() restores options after returning). If you
+need different directories for a new session, create a new client."><meta property="og:description" content="Load a skill's specialized instructions and list its bundled resources.
 Skills are modular capabilities that extend Claude's functionality with
 specialized knowledge, workflows, and tools. Each skill is a directory
 containing a SKILL.md file with instructions and optional bundled
@@ -41,7 +58,24 @@ legacy tools::R_user_dir(&quot;btw&quot;, &quot;config&quot;)/skills path used b
 by btw 1.2.0 is also included at lower priority.
 Project-level skills (.btw/skills/ or .agents/skills/)
 
-"><meta property="og:image" content="https://posit-dev.github.io/btw/logo.png"><meta name="robots" content="noindex"></head><body>
+
+The default user-level and project-level directories can be replaced by
+setting the btw.skills.paths R option or the BTW_SKILLS_PATHS environment
+variable. When set, the value entirely replaces all user-level and project-level
+directories (items 3 and 4 above). Package-bundled skills and skills from
+attached packages (items 1 and 2) are always included regardless of this
+setting. The R option takes precedence over the environment variable.
+Multiple paths can be provided as a character vector (e.g.
+options(btw.skills.paths = c(&quot;/path/a&quot;, &quot;/path/b&quot;))) or as a single
+path-separator-delimited string (: on Unix/Mac, ; on Windows, which is
+the only form supported by environment variables). Non-existent paths are
+silently skipped.
+Resolution timing: options and environment variables are read at
+tool-registration time (i.e. when btw_tools() or btw_client() is
+called). The resolved paths are captured in the tool's closure so that they
+remain correct even if the options are later modified or go out of scope
+(for example, when btw_client() restores options after returning). If you
+need different directories for a new session, create a new client."><meta property="og:image" content="https://posit-dev.github.io/btw/logo.png"><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -100,7 +134,24 @@ priority (later sources override earlier ones when skill names conflict):</p><ol
 legacy <code>tools::R_user_dir("btw", "config")/skills</code> path used by briefly
 by btw 1.2.0 is also included at lower priority.</p></li>
 <li><p>Project-level skills (<code>.btw/skills/</code> or <code>.agents/skills/</code>)</p></li>
-</ol></div>
+</ol><p>The default user-level and project-level directories can be replaced by
+setting the <code>btw.skills.paths</code> R option or the <code>BTW_SKILLS_PATHS</code> environment
+variable. When set, the value <strong>entirely replaces</strong> all user-level and project-level
+directories (items 3 and 4 above). Package-bundled skills and skills from
+attached packages (items 1 and 2) are always included regardless of this
+setting. The R option takes precedence over the environment variable.
+Multiple paths can be provided as a character vector (e.g.
+<code>options(btw.skills.paths = c("/path/a", "/path/b"))</code>) or as a single
+path-separator-delimited string (<code>:</code> on Unix/Mac, <code>;</code> on Windows, which is
+the only form supported by environment variables). Non-existent paths are
+silently skipped.</p>
+<p><strong>Resolution timing:</strong> options and environment variables are read at
+<strong>tool-registration time</strong> (i.e. when <code><a href="btw_tools.html">btw_tools()</a></code> or <code><a href="btw_client.html">btw_client()</a></code> is
+called). The resolved paths are captured in the tool's closure so that they
+remain correct even if the options are later modified or go out of scope
+(for example, when <code><a href="btw_client.html">btw_client()</a></code> restores options after returning). If you
+need different directories for a new session, create a new client.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
