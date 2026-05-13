@@ -55,11 +55,18 @@ setting an R option or environment variable:\tabular{lll}{
 
 When set, the value \strong{replaces} (not appends to) the defaults for that
 scope. The R option takes precedence over the environment variable. Multiple
-paths can be provided using the OS-native path separator (\code{:} on Unix/Mac,
-\verb{;} on Windows). Non-existent paths are silently skipped. Values are
-resolved fresh on every call (at tool-call time, not at registration time),
-so they do not need to be set before the tool is registered with the chat
-client.
+paths can be provided as a character vector (e.g.
+\code{options(btw.skills.dirs_user = c("/path/a", "/path/b"))}) or as a single
+path-separator-delimited string (\code{:} on Unix/Mac, \verb{;} on Windows, which is
+the only form supported by environment variables). Non-existent paths are
+silently skipped.
+
+\strong{Resolution timing:} options and environment variables are read at
+\strong{tool-registration time} (i.e. when \code{\link[=btw_tools]{btw_tools()}} or \code{\link[=btw_client]{btw_client()}} is
+called). The resolved paths are captured in the tool's closure so that they
+remain correct even if the options are later modified or go out of scope
+(for example, when \code{btw_client()} restores options after returning). If you
+need different directories for a new session, create a new client.
 }
 \seealso{
 Other skills:

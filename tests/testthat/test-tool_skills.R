@@ -481,6 +481,53 @@ test_that("btw_skills_directories() non-existent custom dirs are silently skippe
   expect_false(normalizePath(nonexistent, mustWork = FALSE) %in% dirs)
 })
 
+test_that("skill_dirs_from_option_or_envvar() accepts a character vector option", {
+  dir1 <- withr::local_tempdir()
+  dir2 <- withr::local_tempdir()
+  withr::local_options("btw.test.option" = c(dir1, dir2))
+  result <- skill_dirs_from_option_or_envvar("btw.test.option", "BTW_TEST_ENVVAR")
+  expect_length(result, 2)
+  expect_equal(result, normalizePath(c(dir1, dir2), mustWork = FALSE))
+})
+
+test_that("btw_skills_directories() package-bundled skills are present even when custom user dirs are set", {
+  custom_user <- withr::local_tempdir()
+  withr::local_options("btw.skills.dirs_user" = custom_user)
+  withr::local_envvar("BTW_SKILLS_DIRS_USER" = NA)
+
+  project <- withr::local_tempdir()
+  dirs <- btw_skills_directories(project_dir = project)
+
+  # btw's own bundled skills directory must always be present
+  bundled <- system.file("skills", package = "btw")
+  if (nzchar(bundled) && dir.exists(bundled)) {
+    expect_true(bundled %in% dirs)
+  } else {
+    skip("btw bundled skills directory not found (dev environment without installed skills)")
+  }
+})
+
+test_that("btw_skills_directories() no duplicate when custom project dir matches an existing user dir", {
+  shared_dir <- withr::local_tempdir()
+  dir.create(file.path(shared_dir, "a-skill"), recursive = TRUE)
+  writeLines("---\nname: a-skill\ndescription: A skill.\n---\n",
+             file.path(shared_dir, "a-skill", "SKILL.md"))
+
+  withr::local_options(
+    "btw.skills.dirs_user"    = shared_dir,
+    "btw.skills.dirs_project" = shared_dir
+  )
+  withr::local_envvar(
+    "BTW_SKILLS_DIRS_USER"    = NA,
+    "BTW_SKILLS_DIRS_PROJECT" = NA
+  )
+
+  project <- withr::local_tempdir()
+  dirs <- btw_skills_directories(project_dir = project)
+  norm_shared <- normalizePath(shared_dir, mustWork = FALSE)
+  expect_equal(sum(dirs == norm_shared), 1L)
+})
+
 test_that("resolve_project_skill_dir() defaults to .btw/skills when none exist", {
   project <- withr::local_tempdir()
   withr::local_dir(project)
