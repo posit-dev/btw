@@ -146,19 +146,15 @@ btw_tool_skill_impl <- function(name) {
     captured_user_dirs    <- skill_dirs_from_option_or_envvar("btw.skills.dirs_user",    "BTW_SKILLS_DIRS_USER")
     captured_project_dirs <- skill_dirs_from_option_or_envvar("btw.skills.dirs_project", "BTW_SKILLS_DIRS_PROJECT")
 
-    impl <- local({
-      u <- captured_user_dirs
-      p <- captured_project_dirs
-      function(name) {
-        withr::with_options(
-          list(
-            btw.skills.dirs_user    = u %||% getOption("btw.skills.dirs_user"),
-            btw.skills.dirs_project = p %||% getOption("btw.skills.dirs_project")
-          ),
-          btw_tool_skill_impl(name)
-        )
-      }
-    })
+    # Only replay the options that were actually captured. When a captured
+    # value is NULL (nothing was set at registration time), leave the live
+    # option untouched so btw_skills_directories() sees the real environment.
+    impl <- function(name) {
+      opts <- list()
+      if (!is.null(captured_user_dirs))    opts[["btw.skills.dirs_user"]]    <- captured_user_dirs
+      if (!is.null(captured_project_dirs)) opts[["btw.skills.dirs_project"]] <- captured_project_dirs
+      withr::with_options(opts, btw_tool_skill_impl(name))
+    }
 
     ellmer::tool(
       impl,
@@ -241,7 +237,7 @@ skill_dirs_from_option_or_envvar <- function(option_name, envvar_name) {
   } else {
     paths <- strsplit(as.character(raw), .Platform$path.sep, fixed = TRUE)[[1]]
   }
-  paths <- paths[nzchar(paths)]
+  paths <- paths[!is.na(paths) & nzchar(paths)]
   normalizePath(paths, mustWork = FALSE)
 }
 

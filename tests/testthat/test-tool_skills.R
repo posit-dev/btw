@@ -350,6 +350,14 @@ test_that("skill_dirs_from_option_or_envvar() handles single path (no separator)
   expect_equal(result, normalizePath(dir1, mustWork = FALSE))
 })
 
+test_that("skill_dirs_from_option_or_envvar() ignores NA entries in character-vector options", {
+  dir1 <- withr::local_tempdir()
+  withr::local_options("btw.test.option" = c(dir1, NA_character_))
+  result <- skill_dirs_from_option_or_envvar("btw.test.option", "BTW_TEST_ENVVAR")
+  expect_length(result, 1)
+  expect_equal(result, normalizePath(dir1, mustWork = FALSE))
+})
+
 # btw_skills_directories() with custom user/project dirs ---------------------
 
 test_that("btw_skills_directories() uses BTW_SKILLS_DIRS_USER envvar when set", {
@@ -526,6 +534,54 @@ test_that("btw_skills_directories() no duplicate when custom project dir matches
   dirs <- btw_skills_directories(project_dir = project)
   norm_shared <- normalizePath(shared_dir, mustWork = FALSE)
   expect_equal(sum(dirs == norm_shared), 1L)
+})
+
+# btw_tool_skill tool factory (closure / registration-time capture) -----------
+
+test_that("btw_tool_skill tool freezes dirs captured at registration, ignores later option changes", {
+  reg_dir <- withr::local_tempdir()
+  create_temp_skill(name = "reg-skill", dir = reg_dir)
+  withr::local_options(
+    "btw.skills.dirs_user"    = reg_dir,
+    "btw.skills.dirs_project" = NULL
+  )
+  withr::local_envvar(
+    "BTW_SKILLS_DIRS_USER"    = NA,
+    "BTW_SKILLS_DIRS_PROJECT" = NA
+  )
+
+  # Instantiate the tool while reg_dir is the active user-skills option.
+  tool_obj <- btw_tools("btw_tool_skill")[[1]]
+
+  # Change the option *after* registration to a different (empty) directory.
+  post_dir <- withr::local_tempdir()
+  withr::local_options("btw.skills.dirs_user" = post_dir)
+
+  # The tool should still find reg-skill because it froze reg_dir at
+  # registration time. It should NOT see post_dir's empty directory.
+  result <- tool_obj(name = "", `_intent` = "test")
+  expect_match(result@value, "reg-skill")
+})
+
+test_that("btw_tool_skill tool defers to live options when nothing was captured at registration", {
+  # Register with no custom dirs set.
+  withr::local_options(
+    "btw.skills.dirs_user"    = NULL,
+    "btw.skills.dirs_project" = NULL
+  )
+  withr::local_envvar(
+    "BTW_SKILLS_DIRS_USER"    = NA,
+    "BTW_SKILLS_DIRS_PROJECT" = NA
+  )
+  tool_obj <- btw_tools("btw_tool_skill")[[1]]
+
+  # Now set a user-skills dir *after* registration — the tool should pick it up.
+  post_dir <- withr::local_tempdir()
+  create_temp_skill(name = "post-skill", dir = post_dir)
+  withr::local_options("btw.skills.dirs_user" = post_dir)
+
+  result <- tool_obj(name = "", `_intent` = "test")
+  expect_match(result@value, "post-skill")
 })
 
 test_that("resolve_project_skill_dir() defaults to .btw/skills when none exist", {
