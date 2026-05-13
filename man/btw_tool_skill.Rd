@@ -46,17 +46,18 @@ by btw 1.2.0 is also included at lower priority.
 }
 
 The default user-level and project-level directories can be replaced by
-setting an R option or environment variable:\tabular{lll}{
-   Scope \tab R Option \tab Environment Variable \cr
-   User-level \tab \code{btw.skills.dirs_user} \tab \code{BTW_SKILLS_DIRS_USER} \cr
-   Project-level \tab \code{btw.skills.dirs_project} \tab \code{BTW_SKILLS_DIRS_PROJECT} \cr
+setting an R option or environment variable:\tabular{ll}{
+   R Option \tab Environment Variable \cr
+   \code{btw.skills.paths} \tab \code{BTW_SKILLS_PATHS} \cr
 }
 
 
-When set, the value \strong{replaces} (not appends to) the defaults for that
-scope. The R option takes precedence over the environment variable. Multiple
-paths can be provided as a character vector (e.g.
-\code{options(btw.skills.dirs_user = c("/path/a", "/path/b"))}) or as a single
+When set, the value \strong{entirely replaces} all user-level and project-level
+directories (items 3 and 4 above). Package-bundled skills and skills from
+attached packages (items 1 and 2) are always included regardless of this
+setting. The R option takes precedence over the environment variable.
+Multiple paths can be provided as a character vector (e.g.
+\code{options(btw.skills.paths = c("/path/a", "/path/b"))}) or as a single
 path-separator-delimited string (\code{:} on Unix/Mac, \verb{;} on Windows, which is
 the only form supported by environment variables). Non-existent paths are
 silently skipped.

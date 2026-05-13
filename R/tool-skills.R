@@ -32,15 +32,16 @@ NULL
 #' The default user-level and project-level directories can be replaced by
 #' setting an R option or environment variable:
 #'
-#' | Scope | R Option | Environment Variable |
-#' |---|---|---|
-#' | User-level | `btw.skills.dirs_user` | `BTW_SKILLS_DIRS_USER` |
-#' | Project-level | `btw.skills.dirs_project` | `BTW_SKILLS_DIRS_PROJECT` |
+#' | R Option | Environment Variable |
+#' |---|---|
+#' | `btw.skills.paths` | `BTW_SKILLS_PATHS` |
 #'
-#' When set, the value **replaces** (not appends to) the defaults for that
-#' scope. The R option takes precedence over the environment variable. Multiple
-#' paths can be provided as a character vector (e.g.
-#' `options(btw.skills.dirs_user = c("/path/a", "/path/b"))`) or as a single
+#' When set, the value **entirely replaces** all user-level and project-level
+#' directories (items 3 and 4 above). Package-bundled skills and skills from
+#' attached packages (items 1 and 2) are always included regardless of this
+#' setting. The R option takes precedence over the environment variable.
+#' Multiple paths can be provided as a character vector (e.g.
+#' `options(btw.skills.paths = c("/path/a", "/path/b"))`) or as a single
 #' path-separator-delimited string (`:` on Unix/Mac, `;` on Windows, which is
 #' the only form supported by environment variables). Non-existent paths are
 #' silently skipped.
@@ -143,16 +144,14 @@ btw_tool_skill_impl <- function(name) {
     # Capture the resolved skill dir overrides at registration time so the
     # tool closes over the correct paths even after options set transiently by
     # btw_client() / btw_app() have been restored to their prior values.
-    captured_user_dirs    <- skill_dirs_from_option_or_envvar("btw.skills.dirs_user",    "BTW_SKILLS_DIRS_USER")
-    captured_project_dirs <- skill_dirs_from_option_or_envvar("btw.skills.dirs_project", "BTW_SKILLS_DIRS_PROJECT")
+    captured_paths <- skill_dirs_from_option_or_envvar("btw.skills.paths", "BTW_SKILLS_PATHS")
 
     # Only replay the options that were actually captured. When a captured
     # value is NULL (nothing was set at registration time), leave the live
     # option untouched so btw_skills_directories() sees the real environment.
     impl <- function(name) {
       opts <- list()
-      if (!is.null(captured_user_dirs))    opts[["btw.skills.dirs_user"]]    <- captured_user_dirs
-      if (!is.null(captured_project_dirs)) opts[["btw.skills.dirs_project"]] <- captured_project_dirs
+      if (!is.null(captured_paths)) opts[["btw.skills.paths"]] <- captured_paths
       withr::with_options(opts, btw_tool_skill_impl(name))
     }
 
@@ -198,23 +197,18 @@ btw_skills_directories <- function(project_dir = getwd()) {
   # Skills from attached packages
   dirs <- c(dirs, attached_package_skill_dirs())
 
-  user_dirs <- skill_dirs_from_option_or_envvar(
-    "btw.skills.dirs_user", "BTW_SKILLS_DIRS_USER"
-  ) %||% default_user_skill_dirs()
+  # Custom paths entirely replace all user-level and project-level defaults.
+  # When not set, fall back to the standard user-level + project-level dirs.
+  custom_paths <- skill_dirs_from_option_or_envvar("btw.skills.paths", "BTW_SKILLS_PATHS")
 
-  for (user_dir in user_dirs) {
-    if (dir.exists(user_dir) && !user_dir %in% dirs) {
-      dirs <- c(dirs, user_dir)
-    }
-  }
+  search_dirs <- custom_paths %||% c(
+    default_user_skill_dirs(),
+    default_project_skill_dirs(project_dir)
+  )
 
-  project_dirs <- skill_dirs_from_option_or_envvar(
-    "btw.skills.dirs_project", "BTW_SKILLS_DIRS_PROJECT"
-  ) %||% default_project_skill_dirs(project_dir)
-
-  for (project_dir_path in project_dirs) {
-    if (dir.exists(project_dir_path) && !project_dir_path %in% dirs) {
-      dirs <- c(dirs, project_dir_path)
+  for (search_dir in search_dirs) {
+    if (dir.exists(search_dir) && !search_dir %in% dirs) {
+      dirs <- c(dirs, search_dir)
     }
   }
 
