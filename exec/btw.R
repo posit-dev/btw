@@ -78,6 +78,16 @@ btw_docs_help <- function(topic, package) {
   }
 }
 
+format_as_yaml_rows <- function(df) {
+  rows <- lapply(seq_len(nrow(df)), function(i) {
+    paste(
+      mapply(function(key, val) paste0(key, ": ", val), names(df), df[i, ]),
+      collapse = "\n"
+    )
+  })
+  paste(rows, collapse = "\n\n")
+}
+
 btw_docs_topics <- function(package, only) {
   if (!only %in% c("", "help", "vignettes")) {
     stop("--only must be \"help\" or \"vignettes\"", call. = FALSE)
@@ -87,11 +97,18 @@ btw_docs_topics <- function(package, only) {
   include_vignettes <- only == "" || only == "vignettes"
 
   if (include_help) {
-    btw_output(btw_this(btw:::as_btw_docs_package(package)))
+    result <- btw:::btw_tool_docs_package_help_topics_impl(package)
+    df <- S7::prop(result, "extra")$data[, c("topic_id", "title")]
+    cat("## Help topics\n\n")
+    cat(format_as_yaml_rows(df), "\n")
   }
 
   if (include_vignettes) {
-    btw_output(btw_this(utils::vignette(package = package)))
+    result <- btw:::btw_tool_docs_available_vignettes_impl(package)
+    df <- S7::prop(result, "extra")$data
+    if (include_help) cat("\n")
+    cat("## Vignettes\n\n")
+    cat(format_as_yaml_rows(df), "\n")
   }
 }
 
