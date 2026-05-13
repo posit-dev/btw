@@ -46,13 +46,8 @@ by btw 1.2.0 is also included at lower priority.
 }
 
 The default user-level and project-level directories can be replaced by
-setting an R option or environment variable:\tabular{ll}{
-   R Option \tab Environment Variable \cr
-   \code{btw.skills.paths} \tab \code{BTW_SKILLS_PATHS} \cr
-}
-
-
-When set, the value \strong{entirely replaces} all user-level and project-level
+setting the \code{btw.skills.paths} R option or the \code{BTW_SKILLS_PATHS} environment
+variable. When set, the value \strong{entirely replaces} all user-level and project-level
 directories (items 3 and 4 above). Package-bundled skills and skills from
 attached packages (items 1 and 2) are always included regardless of this
 setting. The R option takes precedence over the environment variable.

@@ -30,13 +30,8 @@ NULL
 #' 4. Project-level skills (`.btw/skills/` or `.agents/skills/`)
 #'
 #' The default user-level and project-level directories can be replaced by
-#' setting an R option or environment variable:
-#'
-#' | R Option | Environment Variable |
-#' |---|---|
-#' | `btw.skills.paths` | `BTW_SKILLS_PATHS` |
-#'
-#' When set, the value **entirely replaces** all user-level and project-level
+#' setting the `btw.skills.paths` R option or the `BTW_SKILLS_PATHS` environment
+#' variable. When set, the value **entirely replaces** all user-level and project-level
 #' directories (items 3 and 4 above). Package-bundled skills and skills from
 #' attached packages (items 1 and 2) are always included regardless of this
 #' setting. The R option takes precedence over the environment variable.
