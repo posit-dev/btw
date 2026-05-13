@@ -303,6 +303,184 @@ test_that("btw_skills_directories() discovers .agents/skills", {
   expect_true(agents_dir %in% dirs)
 })
 
+# skill_dirs_from_option_or_envvar() ----------------------------------------
+
+test_that("skill_dirs_from_option_or_envvar() returns NULL when neither option nor envvar is set", {
+  withr::local_options("btw.test.option" = NULL)
+  withr::local_envvar("BTW_TEST_ENVVAR" = NA)
+  result <- skill_dirs_from_option_or_envvar("btw.test.option", "BTW_TEST_ENVVAR")
+  expect_null(result)
+})
+
+test_that("skill_dirs_from_option_or_envvar() reads from envvar when option is not set", {
+  dir1 <- withr::local_tempdir()
+  dir2 <- withr::local_tempdir()
+  raw <- paste(dir1, dir2, sep = .Platform$path.sep)
+  withr::local_options("btw.test.option" = NULL)
+  withr::local_envvar("BTW_TEST_ENVVAR" = raw)
+  result <- skill_dirs_from_option_or_envvar("btw.test.option", "BTW_TEST_ENVVAR")
+  expect_equal(result, normalizePath(c(dir1, dir2), mustWork = FALSE))
+})
+
+test_that("skill_dirs_from_option_or_envvar() option takes precedence over envvar", {
+  dir_opt <- withr::local_tempdir()
+  dir_env <- withr::local_tempdir()
+  withr::local_options("btw.test.option" = dir_opt)
+  withr::local_envvar("BTW_TEST_ENVVAR" = dir_env)
+  result <- skill_dirs_from_option_or_envvar("btw.test.option", "BTW_TEST_ENVVAR")
+  expect_equal(result, normalizePath(dir_opt, mustWork = FALSE))
+  expect_false(normalizePath(dir_env, mustWork = FALSE) %in% result)
+})
+
+test_that("skill_dirs_from_option_or_envvar() splits on OS path separator and normalizes", {
+  dir1 <- withr::local_tempdir()
+  dir2 <- withr::local_tempdir()
+  raw <- paste(dir1, dir2, sep = .Platform$path.sep)
+  withr::local_options("btw.test.option" = raw)
+  result <- skill_dirs_from_option_or_envvar("btw.test.option", "BTW_TEST_ENVVAR")
+  expect_length(result, 2)
+  expect_equal(result, normalizePath(c(dir1, dir2), mustWork = FALSE))
+})
+
+test_that("skill_dirs_from_option_or_envvar() handles single path (no separator)", {
+  dir1 <- withr::local_tempdir()
+  withr::local_options("btw.test.option" = dir1)
+  result <- skill_dirs_from_option_or_envvar("btw.test.option", "BTW_TEST_ENVVAR")
+  expect_length(result, 1)
+  expect_equal(result, normalizePath(dir1, mustWork = FALSE))
+})
+
+# btw_skills_directories() with custom user/project dirs ---------------------
+
+test_that("btw_skills_directories() uses BTW_SKILLS_DIRS_USER envvar when set", {
+  custom_user <- withr::local_tempdir()
+  dir.create(file.path(custom_user, "my-skill"), recursive = TRUE)
+  writeLines(
+    "---\nname: my-skill\ndescription: A skill.\n---\n",
+    file.path(custom_user, "my-skill", "SKILL.md")
+  )
+  withr::local_envvar("BTW_SKILLS_DIRS_USER" = custom_user)
+  withr::local_options("btw.skills.dirs_user" = NULL)
+
+  # Use a temp dir as project_dir so no project skills are found
+  project <- withr::local_tempdir()
+  dirs <- btw_skills_directories(project_dir = project)
+  expect_true(normalizePath(custom_user, mustWork = FALSE) %in% dirs)
+})
+
+test_that("btw_skills_directories() uses btw.skills.dirs_user option when set", {
+  custom_user <- withr::local_tempdir()
+  withr::local_options("btw.skills.dirs_user" = custom_user)
+
+  project <- withr::local_tempdir()
+  dirs <- btw_skills_directories(project_dir = project)
+  expect_true(normalizePath(custom_user, mustWork = FALSE) %in% dirs)
+})
+
+test_that("btw_skills_directories() option overrides envvar for user dirs", {
+  opt_dir <- withr::local_tempdir()
+  env_dir <- withr::local_tempdir()
+  withr::local_options("btw.skills.dirs_user" = opt_dir)
+  withr::local_envvar("BTW_SKILLS_DIRS_USER" = env_dir)
+
+  project <- withr::local_tempdir()
+  dirs <- btw_skills_directories(project_dir = project)
+  expect_true(normalizePath(opt_dir, mustWork = FALSE) %in% dirs)
+  expect_false(normalizePath(env_dir, mustWork = FALSE) %in% dirs)
+})
+
+test_that("btw_skills_directories() uses BTW_SKILLS_DIRS_PROJECT envvar when set", {
+  custom_proj <- withr::local_tempdir()
+  withr::local_envvar("BTW_SKILLS_DIRS_PROJECT" = custom_proj)
+  withr::local_options("btw.skills.dirs_project" = NULL)
+
+  project <- withr::local_tempdir()
+  dirs <- btw_skills_directories(project_dir = project)
+  expect_true(normalizePath(custom_proj, mustWork = FALSE) %in% dirs)
+})
+
+test_that("btw_skills_directories() uses btw.skills.dirs_project option when set", {
+  custom_proj <- withr::local_tempdir()
+  withr::local_options("btw.skills.dirs_project" = custom_proj)
+
+  project <- withr::local_tempdir()
+  dirs <- btw_skills_directories(project_dir = project)
+  expect_true(normalizePath(custom_proj, mustWork = FALSE) %in% dirs)
+})
+
+test_that("btw_skills_directories() option overrides envvar for project dirs", {
+  opt_dir <- withr::local_tempdir()
+  env_dir <- withr::local_tempdir()
+  withr::local_options("btw.skills.dirs_project" = opt_dir)
+  withr::local_envvar("BTW_SKILLS_DIRS_PROJECT" = env_dir)
+
+  project <- withr::local_tempdir()
+  dirs <- btw_skills_directories(project_dir = project)
+  expect_true(normalizePath(opt_dir, mustWork = FALSE) %in% dirs)
+  expect_false(normalizePath(env_dir, mustWork = FALSE) %in% dirs)
+})
+
+test_that("btw_skills_directories() falls back to defaults when no option/envvar set", {
+  withr::local_options(
+    "btw.skills.dirs_user" = NULL,
+    "btw.skills.dirs_project" = NULL
+  )
+  withr::local_envvar(
+    "BTW_SKILLS_DIRS_USER" = NA,
+    "BTW_SKILLS_DIRS_PROJECT" = NA
+  )
+
+  project <- withr::local_tempdir()
+  btw_dir <- file.path(project, ".btw", "skills")
+  dir.create(btw_dir, recursive = TRUE)
+
+  dirs <- btw_skills_directories(project_dir = project)
+  expect_true(btw_dir %in% dirs)
+})
+
+test_that("btw_skills_directories() custom user dirs replace (not append to) defaults", {
+  custom_user <- withr::local_tempdir()
+  withr::local_options("btw.skills.dirs_user" = custom_user)
+  withr::local_envvar("BTW_SKILLS_DIRS_USER" = NA)
+
+  # Mock btw_user_dirs so we can detect if defaults sneak through
+  default_user <- withr::local_tempdir()
+  default_skills <- file.path(default_user, "skills")
+  dir.create(default_skills, recursive = TRUE)
+  local_mocked_bindings(btw_user_dirs = function() default_user)
+
+  project <- withr::local_tempdir()
+  dirs <- btw_skills_directories(project_dir = project)
+
+  expect_true(normalizePath(custom_user, mustWork = FALSE) %in% dirs)
+  expect_false(normalizePath(default_skills, mustWork = FALSE) %in% dirs)
+})
+
+test_that("btw_skills_directories() custom project dirs replace (not append to) defaults", {
+  custom_proj <- withr::local_tempdir()
+  withr::local_options("btw.skills.dirs_project" = custom_proj)
+  withr::local_envvar("BTW_SKILLS_DIRS_PROJECT" = NA)
+
+  # Create the default project skills dir so we can confirm it's NOT included
+  project <- withr::local_tempdir()
+  default_proj_dir <- file.path(project, ".btw", "skills")
+  dir.create(default_proj_dir, recursive = TRUE)
+
+  dirs <- btw_skills_directories(project_dir = project)
+
+  expect_true(normalizePath(custom_proj, mustWork = FALSE) %in% dirs)
+  expect_false(normalizePath(default_proj_dir, mustWork = FALSE) %in% dirs)
+})
+
+test_that("btw_skills_directories() non-existent custom dirs are silently skipped", {
+  nonexistent <- file.path(withr::local_tempdir(), "does-not-exist")
+  withr::local_options("btw.skills.dirs_user" = nonexistent)
+
+  project <- withr::local_tempdir()
+  dirs <- btw_skills_directories(project_dir = project)
+  expect_false(normalizePath(nonexistent, mustWork = FALSE) %in% dirs)
+})
+
 test_that("resolve_project_skill_dir() defaults to .btw/skills when none exist", {
   project <- withr::local_tempdir()
   withr::local_dir(project)

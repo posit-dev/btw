@@ -159,30 +159,67 @@ btw_skills_directories <- function(project_dir = getwd()) {
   # Skills from attached packages
   dirs <- c(dirs, attached_package_skill_dirs())
 
-  # Legacy: btw <= 1.2.0 install target — kept for backwards compatibility only,
-  # never written to by newer versions
-  legacy_skills_dir <- file.path(tools::R_user_dir("btw", "config"), "skills")
-  if (dir.exists(legacy_skills_dir)) {
-    dirs <- c(dirs, legacy_skills_dir)
-  }
+  user_dirs <- skill_dirs_from_option_or_envvar(
+    "btw.skills.dirs_user", "BTW_SKILLS_DIRS_USER"
+  ) %||% default_user_skill_dirs()
 
-  # User-level skills from btw_user_dirs() in increasing priority order
-  for (user_dir in rev(btw_user_dirs())) {
-    user_skills_dir <- file.path(user_dir, "skills")
-    if (dir.exists(user_skills_dir) && !user_skills_dir %in% dirs) {
-      dirs <- c(dirs, user_skills_dir)
+  for (user_dir in user_dirs) {
+    if (dir.exists(user_dir) && !user_dir %in% dirs) {
+      dirs <- c(dirs, user_dir)
     }
   }
 
-  # Project-level skills from multiple conventions
-  for (project_subdir in project_skill_subdirs()) {
-    project_skills_dir <- file.path(project_dir, project_subdir)
-    if (dir.exists(project_skills_dir)) {
-      dirs <- c(dirs, project_skills_dir)
+  project_dirs <- skill_dirs_from_option_or_envvar(
+    "btw.skills.dirs_project", "BTW_SKILLS_DIRS_PROJECT"
+  ) %||% default_project_skill_dirs(project_dir)
+
+  for (project_dir_path in project_dirs) {
+    if (dir.exists(project_dir_path)) {
+      dirs <- c(dirs, project_dir_path)
     }
   }
 
   dirs
+}
+
+skill_dirs_from_option_or_envvar <- function(option_name, envvar_name) {
+  raw <- getOption(option_name, default = NULL)
+  if (is.null(raw)) {
+    env_val <- Sys.getenv(envvar_name, unset = NA_character_)
+    if (is.na(env_val)) {
+      return(NULL)
+    }
+    raw <- env_val
+  }
+  paths <- strsplit(raw, .Platform$path.sep, fixed = TRUE)[[1]]
+  paths <- paths[nzchar(paths)]
+  normalizePath(paths, mustWork = FALSE)
+}
+
+default_user_skill_dirs <- function() {
+  # Legacy: btw <= 1.2.0 install target — kept for backwards compatibility only,
+  # never written to by newer versions. Listed first (lowest priority).
+  legacy_skills_dir <- file.path(tools::R_user_dir("btw", "config"), "skills")
+
+  # Current user-level skill dirs in increasing priority order
+  current_dirs <- rev(vapply(
+    btw_user_dirs(),
+    function(d) file.path(d, "skills"),
+    character(1)
+  ))
+
+  # Combine: legacy first, then current dirs in increasing priority order.
+  # Duplicates are filtered out at resolution time (dir.exists + %in% check),
+  # but filter obvious duplication here to be safe.
+  unique(c(legacy_skills_dir, current_dirs))
+}
+
+default_project_skill_dirs <- function(project_dir) {
+  vapply(
+    project_skill_subdirs(),
+    function(s) file.path(project_dir, s),
+    character(1)
+  )
 }
 
 attached_package_skill_dirs <- function() {
@@ -1093,4 +1130,29 @@ install_skill_from_dir <- function(
   maybe_use_build_ignore(target_parent)
 
   invisible(target_dir)
+}
+resolve_skill_dirs_envvar_or_option <- function(option_name, envvar_name) {
+  value <- getOption(option_name)
+  if (is.null(value)) {
+    value <- Sys.getenv(envvar_name, NA_character_)
+    if (identical(value, NA_character_)) value <- NULL
+  }
+  value
+}
+
+parse_skill_dirs <- function(value, scope) {
+  sep <- if (.Platform$OS.type == "unix") ":" else ";"
+  paths <- trimws(strsplit(value, sep, fixed = TRUE)[[1]])
+  paths <- paths[nzchar(paths)]
+  normalizePath(paths, mustWork = FALSE)
+}
+
+default_user_skill_dirs <- function() {
+  legacy <- file.path(tools::R_user_dir("btw", "config"), "skills")
+  current <- file.path(btw_user_dirs(), "skills")
+  c(legacy, current)
+}
+
+default_project_skill_dirs <- function(project_dir) {
+  file.path(project_dir, project_skill_subdirs())
 }
