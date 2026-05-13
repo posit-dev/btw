@@ -70,45 +70,69 @@
 btw_tool_files_patch <- function(patch, `_intent`) {}
 
 btw_tool_files_patch_impl <- function(patch) {
-  ops <- parse_patch(patch)
-  validate_patch_ops(ops)
-  results <- apply_patch_ops(ops)
-
-  n <- length(ops)
-  lines <- vapply(
-    ops,
-    function(op) {
-      switch(
-        op$op,
-        "add" = paste0("  - Added: ", op$path),
-        "delete" = paste0("  - Deleted: ", op$path),
-        "update" = if (!is.null(op$move_to)) {
-          paste0("  - Moved: ", op$path, " -> ", op$move_to)
-        } else {
-          paste0("  - Updated: ", op$path)
-        }
-      )
-    },
-    character(1)
+  display_md <- c(
+    "**Patch**",
+    md_code_block("diff", patch),
+    ""
   )
+
+  res <- tryCatch(
+    {
+      ops <- parse_patch(patch)
+      validate_patch_ops(ops)
+      results <- apply_patch_ops(ops)
+      list(ops = ops, results = results)
+    },
+    error = function(e) {
+      list(ops = NULL, results = NULL, error = e)
+    }
+  )
+
+  if (!is.null(res$error)) {
+    display_md <- c(
+      display_md,
+      "**Error applying patch**\n\n",
+      md_code_block("diff", conditionMessage(res$error))
+    )
+    return(
+      ellmer::ContentToolResult(
+        error = res$error,
+        extra = list(
+          display = list(
+            markdown = paste(display_md, collapse = "\n"),
+            show_request = FALSE
+          )
+        )
+      )
+    )
+  }
+
+  n <- length(res$ops)
+  lines <- map_chr(res$ops, function(op) {
+    switch(
+      op$op,
+      "add" = paste0("  - Added: ", op$path),
+      "delete" = paste0("  - Deleted: ", op$path),
+      "update" = if (!is.null(op$move_to)) {
+        paste0("  - Moved: ", op$path, " -> ", op$move_to)
+      } else {
+        paste0("  - Updated: ", op$path)
+      }
+    )
+  })
 
   value <- paste(
     c(
-      sprintf("Applied patch: %d operation%s.", n, if (n != 1) "s" else ""),
+      cli::format_inline("Applied patch with {n} operation{?s}."),
       lines
     ),
     collapse = "\n"
   )
 
-  display_md <- paste(
-    c(
-      "**Patch**",
-      md_code_block("diff", patch),
-      "",
-      "**Results**",
-      value
-    ),
-    collapse = "\n"
+  display_md <- c(
+    display_md,
+    "**Results**\n\n",
+    value
   )
 
   # Use BtwToolResult rather than BtwFileDiffToolResult: a patch can touch
@@ -116,7 +140,7 @@ btw_tool_files_patch_impl <- function(patch) {
   btw_tool_result(
     value,
     display = list(
-      markdown = display_md,
+      markdown = paste(display_md, collapse = "\n"),
       show_request = FALSE,
       icon = tool_icon("file-save")
     )
@@ -389,31 +413,31 @@ validate_patch_ops <- function(ops) {
       "add" = {
         if (fs::file_exists(op$path)) {
           cli::cli_abort(
-            "Add File: {.path {op$path}} already exists. Use Update File to modify it."
+            "Add File: {op$path} already exists. Use Update File to modify it."
           )
         }
       },
       "update" = {
         if (!fs::file_exists(op$path)) {
           cli::cli_abort(
-            "Update File: {.path {op$path}} does not exist."
+            "Update File: {op$path} does not exist."
           )
         }
         if (length(op$hunks) == 0L) {
           cli::cli_abort(
-            "Update File: {.path {op$path}} has no hunks."
+            "Update File: {op$path} has no hunks."
           )
         }
         if (!is.null(op$move_to) && fs::file_exists(op$move_to)) {
           cli::cli_abort(
-            "Move to: {.path {op$move_to}} already exists."
+            "Move to: {op$move_to} already exists."
           )
         }
       },
       "delete" = {
         if (!fs::file_exists(op$path)) {
           cli::cli_abort(
-            "Delete File: {.path {op$path}} does not exist."
+            "Delete File: {op$path} does not exist."
           )
         }
       }

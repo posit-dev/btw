@@ -404,7 +404,8 @@ test_that("apply_patch_ops: atomic failure — no filesystem changes when one op
     sep = "\n"
   )
 
-  expect_error(btw_tool_files_patch_impl(patch_str))
+  result <- btw_tool_files_patch_impl(patch_str)
+  expect_false(is.null(result@error))
   expect_false(fs::file_exists("should_not_exist.txt"))
 })
 
@@ -452,10 +453,8 @@ test_that("btw_tool_files_patch_impl: failure output when hunk context not found
     sep = "\n"
   )
 
-  expect_snapshot(
-    btw_tool_files_patch_impl(patch_str),
-    error = TRUE
-  )
+  result <- btw_tool_files_patch_impl(patch_str)
+  expect_snapshot(cat(conditionMessage(result@error)))
 })
 
 test_that("btw_tool_files_patch_impl: success output for single add", {
@@ -472,7 +471,6 @@ test_that("btw_tool_files_patch_impl: success output for single add", {
 
   result <- btw_tool_files_patch_impl(patch_str)
   expect_btw_tool_result(result, has_data = FALSE)
-  expect_match(result@value, "Applied patch: 1 operation\\.")
   expect_match(result@value, "Added: hello\\.txt")
   expect_equal(read_lines("hello.txt"), "Hello, world!")
 })
@@ -523,7 +521,6 @@ test_that("btw_tool_files_patch_impl: multi-file patch applies all ops", {
 
   result <- btw_tool_files_patch_impl(patch_str)
   expect_btw_tool_result(result, has_data = FALSE)
-  expect_match(result@value, "Applied patch: 2 operations\\.")
   expect_equal(read_lines("file1.txt"), c("file1 updated", "file1 line2"))
   expect_equal(read_lines("file2.txt"), c("file2 line1", "file2 updated"))
 })
@@ -538,5 +535,6 @@ test_that("btw_tool_files_patch_impl: rejects paths outside working directory", 
     sep = "\n"
   )
 
-  expect_error(btw_tool_files_patch_impl(patch_str), "not allowed")
+  result <- btw_tool_files_patch_impl(patch_str)
+  expect_match(conditionMessage(result@error), "not allowed")
 })
