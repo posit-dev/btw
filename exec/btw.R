@@ -78,10 +78,6 @@ btw_docs_help <- function(topic, package) {
   }
 }
 
-format_as_md_list <- function(df) {
-  paste0("* `", df[[1]], "` - ", df[[2]], collapse = "\n")
-}
-
 btw_docs_topics <- function(package, only) {
   if (!only %in% c("", "help", "vignettes")) {
     stop("--only must be \"help\" or \"vignettes\"", call. = FALSE)
@@ -92,17 +88,34 @@ btw_docs_topics <- function(package, only) {
 
   if (include_help) {
     result <- btw:::btw_tool_docs_package_help_topics_impl(package)
-    df <- S7::prop(result, "extra")$data[, c("topic_id", "title")]
+    df <- S7::prop(result, "extra")$data
+    lines <- mapply(
+      function(topic_id, title, aliases) {
+        other <- aliases[aliases != topic_id]
+        also <- if (length(other) > 0) {
+          paste0(" *(also: ", paste(other, collapse = ", "), ")*")
+        } else {
+          ""
+        }
+        paste0("* `", topic_id, "`", also, " - ", title)
+      },
+      df$topic_id,
+      df$title,
+      df$aliases
+    )
     cat("## Help topics\n\n")
-    cat(format_as_md_list(df), "\n")
+    cat(paste(lines, collapse = "\n"), "\n")
   }
 
   if (include_vignettes) {
     result <- btw:::btw_tool_docs_available_vignettes_impl(package)
     df <- S7::prop(result, "extra")$data
-    if (include_help) cat("\n")
+    lines <- paste0("* `", df$vignette, "` - ", df$title)
+    if (include_help) {
+      cat("\n")
+    }
     cat("## Vignettes\n\n")
-    cat(format_as_md_list(df), "\n")
+    cat(paste(lines, collapse = "\n"), "\n")
   }
 }
 
@@ -453,7 +466,9 @@ switch(
   #| title: Show btw CLI usage guide for AI agents
   help = {
     skill_path <- system.file(
-      "cli-skill", "r-btw-cli", "SKILL.md",
+      "cli-skill",
+      "r-btw-cli",
+      "SKILL.md",
       package = "btw"
     )
     if (!nzchar(skill_path)) {
