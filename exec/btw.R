@@ -63,9 +63,6 @@ btw_docs_help <- function(topic, package) {
       )
     }
     btw_output(btw_this(btw:::as_btw_docs_topic(parts[1], parts[2])))
-  } else if (grepl("^\\{.+\\}$", topic)) {
-    pkg_name <- sub("^\\{(.+)\\}$", "\\1", topic)
-    btw_output(btw_this(btw:::as_btw_docs_package(pkg_name)))
   } else if (has_value(package)) {
     btw_output(btw_this(btw:::as_btw_docs_topic(package, topic)))
   } else {
@@ -78,6 +75,23 @@ btw_docs_help <- function(topic, package) {
     } else {
       btw_output(result)
     }
+  }
+}
+
+btw_docs_topics <- function(package, only) {
+  if (!only %in% c("", "help", "vignettes")) {
+    stop("--only must be \"help\" or \"vignettes\"", call. = FALSE)
+  }
+
+  include_help <- only == "" || only == "help"
+  include_vignettes <- only == "" || only == "vignettes"
+
+  if (include_help) {
+    btw_output(btw_this(btw:::as_btw_docs_package(package)))
+  }
+
+  if (include_vignettes) {
+    btw_output(btw_this(utils::vignette(package = package)))
   }
 }
 
@@ -243,9 +257,20 @@ switch(
     switch(
       docs_cmd <- "",
 
+      #| title: List help topics and vignettes for a package
+      topics = {
+        #| description: Package name.
+        package <- NULL
+        #| description: Limit output to "help" topics or "vignettes".
+        #| short: 'o'
+        only <- ""
+
+        tryCatch(btw_docs_topics(package, only), error = btw_error)
+      },
+
       #| title: Show help for a topic or package
       help = {
-        #| description: Help topic, package name, or {package} for package listing.
+        #| description: Help topic, or pkg::topic to scope to a specific package.
         topic <- NULL
         #| description: Package name to scope the help topic.
         #| short: 'p'
