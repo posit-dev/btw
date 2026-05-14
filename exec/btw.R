@@ -91,13 +91,7 @@ btw_docs_topics <- function(package, only) {
     df <- S7::prop(result, "extra")$data
     lines <- mapply(
       function(topic_id, title, aliases) {
-        other <- aliases[aliases != topic_id]
-        also <- if (length(other) > 0) {
-          paste0(" *(also: ", paste(other, collapse = ", "), ")*")
-        } else {
-          ""
-        }
-        paste0("* `", topic_id, "`", also, " - ", title)
+        sprintf("* `%s` - %s", topic_id, title)
       },
       df$topic_id,
       df$title,
@@ -116,7 +110,7 @@ btw_docs_topics <- function(package, only) {
       {
         result <- btw:::btw_tool_docs_available_vignettes_impl(package)
         df <- S7::prop(result, "extra")$data
-        lines <- paste0("* `", df$vignette, "` - ", df$title)
+        lines <- sprintf("* `%s` - %s", df$vignette, df$title)
         cat(paste(lines, collapse = "\n"), "\n")
       },
       error = function(e) {
