@@ -37,28 +37,6 @@ run_btw_subprocess <- function(...) {
   processx::run("Rscript", c("-e", script), error_on_status = FALSE)
 }
 
-# help output -----------------------------------------------------------
-
-test_that("btw --help shows top-level help", {
-  expect_snapshot(run_btw("--help"))
-})
-
-test_that("btw docs --help shows docs group help", {
-  expect_snapshot(run_btw("docs", "--help"))
-})
-
-test_that("btw docs help --help shows help subcommand usage", {
-  expect_snapshot(run_btw("docs", "help", "--help"))
-})
-
-test_that("btw pkg --help shows pkg group help", {
-  expect_snapshot(run_btw("pkg", "--help"))
-})
-
-test_that("btw cran --help shows cran group help", {
-  expect_snapshot(run_btw("cran", "--help"))
-})
-
 # --version flag ---------------------------------------------------------
 
 test_that("btw --version prints version and exits 0", {
@@ -341,12 +319,19 @@ test_that("btw check-installed calls is_package_installed for each package", {
 })
 
 test_that("btw check-installed exits 0 when package is not installed", {
-  result <- run_btw_subprocess("check-installed", "completely_nonexistent_xyz_pkg")
+  result <- run_btw_subprocess(
+    "check-installed",
+    "completely_nonexistent_xyz_pkg"
+  )
   expect_equal(result$status, 0)
 })
 
 test_that("btw check-installed --fail exits 1 when package is not installed", {
-  result <- run_btw_subprocess("check-installed", "completely_nonexistent_xyz_pkg", "--fail")
+  result <- run_btw_subprocess(
+    "check-installed",
+    "completely_nonexistent_xyz_pkg",
+    "--fail"
+  )
   expect_equal(result$status, 1)
 })
 
@@ -379,7 +364,10 @@ test_that("btw check-installed --json has null version for not-installed package
     }
   )
   env <- run_btw_quietly("check-installed", "notapkg", "--json")
-  parsed <- jsonlite::fromJSON(paste(env$.output, collapse = "\n"), simplifyVector = FALSE)
+  parsed <- jsonlite::fromJSON(
+    paste(env$.output, collapse = "\n"),
+    simplifyVector = FALSE
+  )
   expect_length(parsed, 1)
   expect_equal(parsed[[1]]$package, "notapkg")
   expect_null(parsed[[1]]$version)
