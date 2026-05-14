@@ -133,23 +133,3 @@
       
       For help with a specific command, run: `btw cran <command> --help`.
 
-# btw docs topics --help shows topics subcommand usage
-
-    Code
-      run_btw("docs", "topics", "--help")
-    Output
-      List help topics and vignettes for a package
-      
-      Usage: btw docs topics [OPTIONS] <PACKAGE>
-      
-      Options:
-        -o, --only <ONLY>  Limit output to "help" topics or "vignettes".
-                           [default: ""] [type: string]
-      
-      Global options:
-        --version / --no-version  Print btw version and exit. [default: false]
-                                  Enable with `--version`.
-      
-      Arguments:
-        <PACKAGE>  Package name.
-

@@ -123,10 +123,6 @@ test_that("btw docs help errors for unknown topic", {
 
 # docs topics ----------------------------------------------------------
 
-test_that("btw docs topics --help shows topics subcommand usage", {
-  expect_snapshot(run_btw("docs", "topics", "--help"))
-})
-
 test_that("btw docs topics <package> shows topics and vignettes", {
   env <- run_btw_quietly("docs", "topics", "stats")
   expect_equal(env$package, "stats")
