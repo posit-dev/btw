@@ -24,7 +24,7 @@
 #' R package development is:
 #'
 #' ```r
-#' btw_mcp_server(tools = btw_tools("docs", "pkg"))
+#' btw_mcp_server(btw_tools("docs", "pkg"))
 #' ```
 #'
 #' This gives the agent access to R documentation (help pages, vignettes, news)
@@ -36,15 +36,18 @@
 #' * `"sessioninfo"`: Tools to check installed packages and platform details
 #' * `"cran"`: Tools to search for and describe CRAN packages
 #'
+#' ```r
+#' btw_mcp_server(list("docs", "pkg", "env", "sessioninfo", "cran"))
+#' ```
+#'
 #' See [btw_tools()] for a complete list of available tool groups and their
 #' contents.
 #'
 #' @section Configuration:
 #' To configure this server with MCP clients, use the command `Rscript` and the
-#' args `-e "btw::btw_mcp_server()"`. The examples below all use
-#' `btw_mcp_server()`, which includes *all of btw's tools* by default. We
-#' recommend customizing the tool set as described above to avoid overlap with
-#' your client's built-in capabilities.
+#' args `-e "btw::btw_mcp_server()"`. We recommend customizing the tool set as
+#' described above to avoid overlap with your client's built-in capabilities and
+#' to choose the tools that make the most sense for your workflow.
 #'
 #' For [Claude Desktop's configuration
 #' format](https://code.claude.com/docs/en/mcp#add-mcp-servers-from-json-configuration):
@@ -54,7 +57,7 @@
 #'   "mcpServers": {
 #'     "r-btw": {
 #'       "command": "Rscript",
-#'       "args": ["-e", "btw::btw_mcp_server()"]
+#'       "args": ["-e", "btw::btw_mcp_server(list('docs', 'pkg', 'env', 'sessioninfo', 'cran'))"]
 #'     }
 #'   }
 #' }
@@ -63,7 +66,7 @@
 #' For [Claude Code](https://code.claude.com/docs/en/overview):
 #'
 #' ```bash
-#' claude mcp add -s "user" r-btw -- Rscript -e "btw::btw_mcp_server()"
+#' claude mcp add -s "user" r-btw -- Rscript -e "btw::btw_mcp_server(list('docs', 'pkg', 'env', 'sessioninfo', 'cran'))"
 #' ```
 #'
 #' For [Positron](https://positron.posit.co) or [VS
@@ -78,7 +81,7 @@
 #'     "r-btw": {
 #'       "type": "stdio",
 #'       "command": "Rscript",
-#'       "args": ["-e", "btw::btw_mcp_server()"]
+#'       "args": ["-e", "btw::btw_mcp_server(list('docs', 'pkg', 'env', 'sessioninfo', 'cran'))"]
 #'     }
 #'   }
 #' }
@@ -101,7 +104,7 @@
 #'         "command": "Rscript",
 #'         "args": [
 #'           "-e",
-#'           "btw::btw_mcp_server()"
+#'           "btw::btw_mcp_server(list('docs', 'pkg', 'env', 'sessioninfo', 'cran'))"
 #'         ]
 #'       }
 #'     }
@@ -124,7 +127,13 @@
 #' documentation:
 #'
 #' ```r
-#' btw_mcp_server(tools = btw_tools("docs"))
+#' btw_mcp_server(btw_tools("docs"))
+#'
+#' # alternatively a bare list
+#' btw_mcp_server(list("docs"))
+#'
+#' # or a list of btw tools and custom tools
+#' btw_mcp_server(list("docs", my_custom_tool))
 #' ```
 #'
 #' To allow the server to access variables in specific sessions, call
@@ -153,7 +162,7 @@
 #'
 #' @name mcp
 #' @export
-btw_mcp_server <- function(tools = btw_mcp_tools()) {
+btw_mcp_server <- function(tools = NULL) {
   # If given a path to an R script, we'll pass it on to mcp_server()
   is_likely_r_file <-
     is.character(tools) &&
@@ -161,6 +170,7 @@ btw_mcp_server <- function(tools = btw_mcp_tools()) {
     grepl("[.]r$", tools, ignore.case = TRUE)
 
   if (!is_likely_r_file) {
+    tools <- tools %||% btw_mcp_tools()
     tools <- flatten_and_check_tools(tools)
   }
 
