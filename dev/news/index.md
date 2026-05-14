@@ -29,6 +29,12 @@
   session in the current working directory and `btw skills install` to
   install skills from the terminal.
 
+- Added `btw docs topics <pkg>` to the `btw` CLI for discovering a
+  package’s help topics and vignettes. Use `--only help` or
+  `--only vignettes` to limit output to one section, or `--json` for
+  machine-readable output
+  ([\#195](https://github.com/posit-dev/btw/issues/195)).
+
 - Added `btw help` to the `btw` CLI, which prints the `r-btw-cli` skill
   — a usage guide designed for AI agents.
 

@@ -96,6 +96,6 @@ withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
 #> #
 #> function (prompt, name = NULL) 
 #> btw_task_create_skill_tool(prompt, name)
-#> <bytecode: 0x55a286242118>
-#> <environment: 0x55a286242850>
+#> <bytecode: 0x555986f24b60>
+#> <environment: 0x555986f24428>
 ```
