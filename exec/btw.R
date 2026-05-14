@@ -22,7 +22,16 @@ if (version) {
 has_value <- function(x) !is.na(x) && nzchar(x)
 
 btw_json_output <- function(x) {
-  cat(jsonlite::toJSON(x, auto_unbox = TRUE, pretty = TRUE, na = "null"), "\n")
+  cat(
+    jsonlite::toJSON(
+      x,
+      auto_unbox = TRUE,
+      pretty = TRUE,
+      na = "null",
+      null = "null"
+    ),
+    "\n"
+  )
 }
 
 btw_output <- function(x) {
@@ -145,7 +154,7 @@ btw_pkg_coverage <- function(path, file, json = FALSE) {
   }
 }
 
-btw_info_platform <- function(json = FALSE) {
+btw_system_info <- function(json = FALSE) {
   result <- btw:::btw_tool_sessioninfo_platform_impl()
   if (json) {
     btw_json_output(S7::prop(result, "extra"))
@@ -154,31 +163,50 @@ btw_info_platform <- function(json = FALSE) {
   }
 }
 
-btw_info_packages <- function(packages, deps, check, json = FALSE) {
-  pkgs <- packages
-  if (check && length(pkgs) > 0) {
-    if (json) {
-      results <- lapply(pkgs, function(pkg) {
-        result <- btw:::btw_tool_sessioninfo_is_package_installed_impl(pkg)
-        S7::prop(result, "extra")
-      })
-      btw_json_output(results)
-    } else {
-      for (pkg in pkgs) {
-        btw_output(btw:::btw_tool_sessioninfo_is_package_installed_impl(pkg))
+btw_check_installed <- function(packages, fail = FALSE, json = FALSE) {
+  results <- lapply(packages, function(pkg) {
+    tryCatch(
+      btw:::btw_tool_sessioninfo_is_package_installed_impl(pkg),
+      error = function(e) e
+    )
+  })
+
+  errors <- vapply(results, inherits, logical(1), "error")
+
+  if (json) {
+    data <- unname(Map(
+      function(pkg, r) {
+        if (inherits(r, "error")) {
+          list(package = pkg, version = NULL, installed = FALSE)
+        } else {
+          c(S7::prop(r, "extra"), list(installed = TRUE))
+        }
+      },
+      packages,
+      results
+    ))
+    btw_json_output(data)
+  } else {
+    for (r in results) {
+      if (inherits(r, "error")) {
+        cat(cli::ansi_strip(conditionMessage(r)), "\n")
+      } else {
+        btw_output(r)
       }
     }
+  }
+
+  if (fail && any(errors)) quit(status = 1)
+}
+
+btw_installed_packages <- function(packages, deps, json = FALSE) {
+  pkgs <- packages
+  deps_val <- if (has_value(deps)) deps else ""
+  result <- btw:::btw_tool_sessioninfo_package_impl(pkgs, deps_val)
+  if (json) {
+    btw_json_output(S7::prop(result, "extra")$data)
   } else {
-    if (length(pkgs) == 0) {
-      pkgs <- "attached"
-    }
-    deps_val <- if (has_value(deps)) deps else ""
-    result <- btw:::btw_tool_sessioninfo_package_impl(pkgs, deps_val)
-    if (json) {
-      btw_json_output(S7::prop(result, "extra")$data)
-    } else {
-      btw_output(result)
-    }
+    btw_output(result)
   }
 }
 
@@ -325,36 +353,62 @@ switch(
     if (pkg_cmd == "") btw_self_help("pkg")
   },
 
-  #| title: Inspect the R session and environment
+  #| title: "[Deprecated] Inspect the R session and environment"
   info = {
-    #| description: Output as JSON.
-    json <- FALSE
-
     switch(
       info_cmd <- "",
-
-      #| title: Show platform and session info
-      platform = {
-        tryCatch(btw_info_platform(json), error = btw_error)
-      },
-
-      #| title: Show installed package information
+      platform = {},
       packages = {
-        #| description: Package names to query.
         `packages...` <- c()
-        #| description: Dependency types to include.
         deps <- ""
-        #| description: Check if packages are installed.
-        #| short: 'c'
         check <- FALSE
-
-        tryCatch(
-          btw_info_packages(`packages...`, deps, check, json),
-          error = btw_error
-        )
       }
     )
-    if (info_cmd == "") btw_self_help("info")
+    cat(
+      "btw info is deprecated. Use:\n",
+      "  btw system-info        (was: btw info platform)\n",
+      "  btw check-installed    (was: btw info packages --check)\n",
+      "  btw installed-packages (was: btw info packages)\n",
+      file = stderr()
+    )
+    quit(status = 1)
+  },
+
+  #| title: Show platform and R session info
+  system_info = {
+    #| description: "Output as JSON object with fields: r_version, os, system, ui, language, locale, encoding, timezone, date."
+    json <- FALSE
+
+    tryCatch(btw_system_info(json), error = btw_error)
+  },
+
+  #| title: Check if packages are installed
+  check_installed = {
+    #| description: Package names to check.
+    #| required: true
+    `packages...` <- c()
+    #| description: Exit with a non-zero status if any package is not installed.
+    fail <- FALSE
+    #| description: "Output as JSON array of objects with fields: package (string), version (string or null if not installed), installed (bool)."
+    json <- FALSE
+
+    tryCatch(btw_check_installed(`packages...`, fail, json), error = btw_error)
+  },
+
+  #| title: Show installed package information
+  installed_packages = {
+    #| description: Package names to query.
+    #| required: true
+    `packages...` <- c()
+    #| description: "Dependency types to include. Use TRUE for all types, FALSE for none, or a comma-separated list of types: Depends, Imports, Suggests, LinkingTo, Enhances."
+    deps <- ""
+    #| description: "Output as JSON array of objects with fields: package, ondiskversion, loadedversion, path, loadedpath, attached, is_base, date, source, md5ok, library."
+    json <- FALSE
+
+    tryCatch(
+      btw_installed_packages(`packages...`, deps, json),
+      error = btw_error
+    )
   },
 
   #| title: Query CRAN package metadata
@@ -417,7 +471,9 @@ switch(
   #| title: Show btw CLI usage guide for AI agents
   help = {
     skill_path <- system.file(
-      "cli-skill", "r-btw-cli", "SKILL.md",
+      "cli-skill",
+      "r-btw-cli",
+      "SKILL.md",
       package = "btw"
     )
     if (!nzchar(skill_path)) {
