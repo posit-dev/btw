@@ -78,13 +78,41 @@ btw_docs_help <- function(topic, package) {
   }
 }
 
-btw_docs_topics <- function(package, only) {
+btw_docs_topics <- function(package, only, json = FALSE) {
   if (!only %in% c("", "help", "vignettes")) {
     stop("--only must be \"help\" or \"vignettes\"", call. = FALSE)
   }
 
   include_help <- only == "" || only == "help"
   include_vignettes <- only == "" || only == "vignettes"
+
+  if (json) {
+    out <- list()
+
+    if (include_help) {
+      result <- btw:::btw_tool_docs_package_help_topics_impl(package)
+      df <- S7::prop(result, "extra")$data
+      out$help <- lapply(seq_len(nrow(df)), function(i) {
+        list(topic_id = df$topic_id[[i]], title = df$title[[i]], aliases = df$aliases[[i]])
+      })
+    }
+
+    if (include_vignettes) {
+      out$vignettes <- tryCatch(
+        {
+          result <- btw:::btw_tool_docs_available_vignettes_impl(package)
+          df <- S7::prop(result, "extra")$data
+          lapply(seq_len(nrow(df)), function(i) {
+            list(vignette = df$vignette[[i]], title = df$title[[i]])
+          })
+        },
+        error = function(e) list()
+      )
+    }
+
+    btw_json_output(out)
+    return(invisible(NULL))
+  }
 
   if (include_help) {
     result <- btw:::btw_tool_docs_package_help_topics_impl(package)
@@ -304,8 +332,10 @@ switch(
         #| description: Limit output to "help" topics or "vignettes".
         #| short: 'o'
         only <- ""
+        #| description: Output as JSON with top-level keys "help" (array of {topic_id, title, aliases[]}) and "vignettes" (array of {vignette, title}).
+        json <- FALSE
 
-        tryCatch(btw_docs_topics(package, only), error = btw_error)
+        tryCatch(btw_docs_topics(package, only, json), error = btw_error)
       },
 
       #| title: Show help for a topic or package
