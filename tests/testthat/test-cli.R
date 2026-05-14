@@ -355,6 +355,7 @@ test_that("btw check-installed --json outputs array with installed field", {
   expect_true(all(parsed$installed))
 })
 
+
 test_that("btw check-installed --json has null version for not-installed package", {
   local_mocked_bindings(
     btw_tool_sessioninfo_is_package_installed_impl = function(package_name) {

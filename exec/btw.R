@@ -179,7 +179,9 @@ btw_check_installed <- function(packages, fail = FALSE, json = FALSE) {
         if (inherits(r, "error")) {
           list(package = pkg, version = NULL, installed = FALSE)
         } else {
-          c(S7::prop(r, "extra"), list(installed = TRUE))
+          extra <- S7::prop(r, "extra")
+          extra[["installed"]] <- TRUE
+          extra
         }
       },
       packages,
@@ -189,7 +191,7 @@ btw_check_installed <- function(packages, fail = FALSE, json = FALSE) {
   } else {
     for (r in results) {
       if (inherits(r, "error")) {
-        cat(cli::ansi_strip(conditionMessage(r)), "\n")
+        cat(cli::ansi_strip(conditionMessage(r)), "\n", file = stderr())
       } else {
         btw_output(r)
       }
@@ -200,9 +202,8 @@ btw_check_installed <- function(packages, fail = FALSE, json = FALSE) {
 }
 
 btw_installed_packages <- function(packages, deps, json = FALSE) {
-  pkgs <- packages
   deps_val <- if (has_value(deps)) deps else ""
-  result <- btw:::btw_tool_sessioninfo_package_impl(pkgs, deps_val)
+  result <- btw:::btw_tool_sessioninfo_package_impl(packages, deps_val)
   if (json) {
     btw_json_output(S7::prop(result, "extra")$data)
   } else {
