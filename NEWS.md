@@ -6,6 +6,8 @@
 
 * Added `btw_tool_files_patch()`, a new files tool that applies a structured diff-style patch envelope to make coordinated changes across multiple files in a single call. One patch can add, update, delete, and rename files atomically: all operations are validated before any file is written, so a partial failure leaves the working tree untouched (#190).
 
+* The `btw info` CLI command group has been replaced by three focused top-level commands: `btw system-info` (platform and R session info), `btw check-installed <pkgs>` (check if packages are installed, exits 0 by default with `--fail` for non-zero exit on missing packages), and `btw installed-packages <pkgs>` (show installed package versions). `btw info` is retained as a deprecated stub that prints migration guidance. All three commands support `--json` output with documented field shapes (#195).
+
 * Added two new commands to the `btw` CLI: `btw app` to launch a `btw_app()` session in the current working directory and `btw skills install` to install skills from the terminal.
 
 * Added `btw docs topics <pkg>` to the `btw` CLI for discovering a package's help topics and vignettes. Use `--only help` or `--only vignettes` to limit output to one section, or `--json` for machine-readable output (#195).
