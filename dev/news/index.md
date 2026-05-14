@@ -24,6 +24,15 @@
   failure leaves the working tree untouched
   ([\#190](https://github.com/posit-dev/btw/issues/190)).
 
+- The `btw info` CLI command group has been replaced by three focused
+  top-level commands: `btw system-info` (platform and R session info),
+  `btw check-installed <pkgs>` (check if packages are installed, exits 0
+  by default with `--fail` for non-zero exit on missing packages), and
+  `btw installed-packages <pkgs>` (show installed package versions).
+  `btw info` is retained as a deprecated stub that prints migration
+  guidance. All three commands support `--json` output with documented
+  field shapes ([\#195](https://github.com/posit-dev/btw/issues/195)).
+
 - Added two new commands to the `btw` CLI: `btw app` to launch a
   [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
   session in the current working directory and `btw skills install` to
