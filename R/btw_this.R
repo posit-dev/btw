@@ -776,7 +776,7 @@ btw_user_prompt <- function(...) {
 }
 
 # https://github.com/RConsortium/S7/issues/501#issuecomment-2494609728
-#' @rawNamespace S3method(base::print, btw_ignore)
+#' @exportS3Method base::print
 print.btw_ignore <- function(x, ...) {
   invisible(x)
 }
