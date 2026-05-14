@@ -18,11 +18,11 @@ description: "Use the `btw` CLI to access R documentation, manage R package deve
 Use `btw docs` to read R help pages, vignettes, and package NEWS for locally installed packages.
 
 ```
-btw docs help <topic> [-p <pkg>]     Read an R help page (tries topic first, falls back to package listing)
-btw docs help {<pkg>}                List help topics for a package
-btw docs help <pkg>::<topic>         Read a specific help page (scoped)
-btw docs vignette <pkg> [-n <name>]  Read a vignette (--list to list available)
-btw docs news <pkg> [-s <term>]      Read package NEWS/changelog
+btw docs topics <pkg> [--only help|vignettes]  List help topics and vignettes for a package
+btw docs help <topic> [-p <pkg>]               Read an R help page
+btw docs help <pkg>::<topic>                   Read a specific help page (scoped)
+btw docs vignette <pkg> [-n <name>]            Read a vignette (--list to list available)
+btw docs news <pkg> [-s <term>]               Read package NEWS/changelog
 ```
 
 Use `btw pkg` to run development tasks on an R package under active development.

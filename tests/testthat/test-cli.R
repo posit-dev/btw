@@ -81,12 +81,6 @@ test_that("btw docs help <topic> resolves topic first", {
   expect_equal(env$package, "")
 })
 
-test_that("btw docs help {package} lists help topics", {
-  env <- run_btw_quietly("docs", "help", "{stats}")
-  expect_true(is.environment(env))
-  expect_equal(env$topic, "{stats}")
-  expect_equal(env$package, "")
-})
 
 test_that("btw docs help <topic> -p <package> reads help page", {
   local_skip_pandoc_convert_text()
@@ -124,6 +118,28 @@ test_that("btw docs help errors for unknown topic", {
   result <- run_btw_subprocess("docs", "help", "completely_nonexistent_xyz")
   expect_equal(result$status, 1)
   expect_match(result$stderr, "completely_nonexistent_xyz", ignore.case = TRUE)
+})
+
+
+# docs topics ----------------------------------------------------------
+
+test_that("btw docs topics <package> shows topics and vignettes", {
+  env <- run_btw_quietly("docs", "topics", "stats")
+  expect_equal(env$package, "stats")
+  expect_equal(env$only, "")
+})
+
+test_that("btw docs topics --only help shows only help topics", {
+  env <- run_btw_quietly("docs", "topics", "stats", "--only", "help")
+  expect_equal(env$package, "stats")
+  expect_equal(env$only, "help")
+})
+
+test_that("btw docs topics --only vignettes shows only vignettes", {
+  skip_if_not_installed("dplyr")
+  env <- run_btw_quietly("docs", "topics", "dplyr", "--only", "vignettes")
+  expect_equal(env$package, "dplyr")
+  expect_equal(env$only, "vignettes")
 })
 
 # docs vignette ----------------------------------------------------------

@@ -33,6 +33,7 @@
       Usage: btw docs [OPTIONS] <COMMAND>
       
       Commands:
+        topics    List help topics and vignettes for a package
         help      Show help for a topic or package
         vignette  Read a package vignette
         news      Show package NEWS
@@ -61,7 +62,7 @@
                                   Enable with `--version`.
       
       Arguments:
-        <TOPIC>  Help topic, package name, or {package} for package listing.
+        <TOPIC>  Help topic, or pkg::topic to scope to a specific package.
 
 # btw pkg --help shows pkg group help
 
