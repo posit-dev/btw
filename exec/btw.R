@@ -318,7 +318,9 @@ btw_skills_install <- function(source, skill, scope, overwrite) {
   scope_val <- if (has_value(scope)) scope else "project"
   overwrite_val <- if (is.na(overwrite)) NULL else overwrite
 
-  if (grepl("/", source, fixed = TRUE)) {
+  if (source == ".") {
+    btw_skill_install_project(scope = scope_val, overwrite = overwrite_val)
+  } else if (grepl("/", source, fixed = TRUE)) {
     btw_skill_install_github(
       source,
       skill = skill_val,
@@ -545,7 +547,7 @@ switch(
 
       #| title: Install a skill from a package or GitHub repository
       install = {
-        #| description: Package name (e.g. "btw") or GitHub repo spec (e.g. "posit-dev/btw").
+        #| description: Package name (e.g. "btw"), GitHub repo spec (e.g. "posit-dev/btw"), or "." to install skills from all project dependencies (requires renv).
         source <- NULL
         #| description: Skill name to install (if the source has multiple skills).
         #| short: 's'

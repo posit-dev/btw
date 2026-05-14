@@ -10,6 +10,8 @@
 
 * Added two new commands to the `btw` CLI: `btw app` to launch a `btw_app()` session in the current working directory and `btw skills install` to install skills from the terminal.
 
+* `btw skills install .` installs skills from all project dependencies. In packages (directories with a `DESCRIPTION` file), `Imports` and `Suggests` are scanned; otherwise `renv::dependencies()` is used as a fallback. The same behaviour is available in R via `btw_skill_install_project()`.
+
 * Added `btw docs topics <pkg>` to the `btw` CLI for discovering a package's help topics and vignettes. Use `--only help` or `--only vignettes` to limit output to one section, or `--json` for machine-readable output (#195).
 
 * Added `btw help` to the `btw` CLI, which prints the `r-btw-cli` skill — a usage guide designed for AI agents.

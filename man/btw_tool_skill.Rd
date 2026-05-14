@@ -67,6 +67,7 @@ need different directories for a new session, create a new client.
 \seealso{
 Other skills:
 \code{\link[=btw_skill_install_github]{btw_skill_install_github()}},
-\code{\link[=btw_skill_install_package]{btw_skill_install_package()}}
+\code{\link[=btw_skill_install_package]{btw_skill_install_package()}},
+\code{\link[=btw_skill_install_project]{btw_skill_install_project()}}
 }
 \concept{skills}

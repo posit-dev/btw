@@ -54,6 +54,7 @@ available regardless of which packages are loaded.
 \seealso{
 Other skills:
 \code{\link[=btw_skill_install_github]{btw_skill_install_github()}},
+\code{\link[=btw_skill_install_project]{btw_skill_install_project()}},
 \code{\link[=btw_tool_skill]{btw_tool_skill()}}
 }
 \concept{skills}

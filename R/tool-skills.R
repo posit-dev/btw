@@ -1091,6 +1091,86 @@ btw_skill_install_package <- function(
   install_skill_from_dir(selected, scope = scope, overwrite = overwrite)
 }
 
+description_packages <- function(path) {
+  dcf <- read.dcf(path)
+  fields <- intersect(c("Imports", "Suggests"), colnames(dcf))
+  pkgs <- unlist(map(fields, function(field) {
+    parts <- map_chr(strsplit(dcf[1, field], ",")[[1]], function(x) {
+      sub("\\s*\\(.*\\)$", "", trimws(x))
+    })
+    parts[nzchar(parts) & parts != "R"]
+  }))
+  unique(pkgs)
+}
+
+#' Install skills from all project dependencies
+#'
+#' @description
+#' Discovers R packages that are dependencies of the current project and
+#' installs skills from any that bundle them in `inst/skills/`. If a
+#' `DESCRIPTION` file exists in the working directory, packages are read from
+#' its `Imports` and `Suggests` fields. Otherwise, [renv::dependencies()] is
+#' used as a fallback (requires the renv package).
+#'
+#' Packages without skills are silently skipped. If no dependencies bundle
+#' skills, a message is printed and nothing is installed.
+#'
+#' @param path Path to the project directory. Defaults to the current working
+#'   directory.
+#' @param scope Where to install the skills. See [btw_skill_install_package()]
+#'   for details.
+#' @param overwrite Whether to overwrite existing skills. See
+#'   [btw_skill_install_package()] for details.
+#'
+#' @return The paths to all installed skill directories, invisibly.
+#'
+#' @family skills
+#' @export
+btw_skill_install_project <- function(path = ".", scope = "project", overwrite = NULL) {
+  check_string(path)
+  check_string(scope)
+  if (!is.null(overwrite)) {
+    check_bool(overwrite)
+  }
+
+  desc_path <- file.path(path, "DESCRIPTION")
+  deps <- if (file.exists(desc_path)) {
+    description_packages(desc_path)
+  } else {
+    rlang::check_installed("renv", reason = "to discover project dependencies.")
+    tryCatch(
+      unique(renv::dependencies(path, progress = FALSE)$Package),
+      error = function(e) {
+        cli::cli_abort("Could not determine project dependencies.", parent = e)
+      }
+    )
+  }
+
+  packages_with_skills <- keep(deps, function(pkg) {
+    skills_dir <- system.file("skills", package = pkg)
+    nzchar(skills_dir) && length(list.dirs(skills_dir, recursive = FALSE)) > 0
+  })
+
+  if (length(packages_with_skills) == 0) {
+    cli::cli_inform("No project dependencies found with available skills.")
+    return(invisible(character(0)))
+  }
+
+  installed <- map(packages_with_skills, function(pkg) {
+    tryCatch(
+      btw_skill_install_package(pkg, scope = scope, overwrite = overwrite),
+      error = function(e) {
+        cli::cli_warn(
+          "Could not install skills from {.pkg {pkg}}: {conditionMessage(e)}"
+        )
+        character(0)
+      }
+    )
+  })
+
+  invisible(unlist(installed))
+}
+
 install_skill_from_dir <- function(
   source_dir,
   scope = "project",

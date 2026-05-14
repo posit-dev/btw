@@ -70,6 +70,7 @@ Suggests:
     processx,
     ragg,
     Rapp (>= 0.3.0),
+    renv,
     roxygen2,
     shiny,
     shinychat (>= 0.3.0),
