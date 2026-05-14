@@ -108,14 +108,22 @@ btw_docs_topics <- function(package, only) {
   }
 
   if (include_vignettes) {
-    result <- btw:::btw_tool_docs_available_vignettes_impl(package)
-    df <- S7::prop(result, "extra")$data
-    lines <- paste0("* `", df$vignette, "` - ", df$title)
     if (include_help) {
       cat("\n")
     }
     cat("## Vignettes\n\n")
-    cat(paste(lines, collapse = "\n"), "\n")
+    tryCatch(
+      {
+        result <- btw:::btw_tool_docs_available_vignettes_impl(package)
+        df <- S7::prop(result, "extra")$data
+        lines <- paste0("* `", df$vignette, "` - ", df$title)
+        cat(paste(lines, collapse = "\n"), "\n")
+      },
+      error = function(e) {
+        msg <- cli::ansi_strip(conditionMessage(e))
+        cat(msg, "\n")
+      }
+    )
   }
 }
 
