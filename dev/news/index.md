@@ -38,6 +38,13 @@
   session in the current working directory and `btw skills install` to
   install skills from the terminal.
 
+- `btw skills install .` installs skills from all project dependencies.
+  In packages (directories with a `DESCRIPTION` file), `Imports` and
+  `Suggests` are scanned; otherwise
+  [`renv::dependencies()`](https://rstudio.github.io/renv/reference/dependencies.html)
+  is used as a fallback. The same behaviour is available in R via
+  [`btw_skill_install_project()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_install_project.md).
+
 - Added `btw docs topics <pkg>` to the `btw` CLI for discovering a
   package’s help topics and vignettes. Use `--only help` or
   `--only vignettes` to limit output to one section, or `--json` for

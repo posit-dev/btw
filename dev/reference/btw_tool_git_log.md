@@ -66,13 +66,13 @@ withr::with_tempdir({
 })
 #> message: Update hello.md
 #> author: R Example <ex@example.com>
-#> time: 2026-05-14 14:59:06
+#> time: 2026-05-14 15:54:36
 #> n_files: 1
-#> commit: 15189cb
+#> commit: a19df3f
 #> 
 #> message: Initial commit
 #> author: R Example <ex@example.com>
-#> time: 2026-05-14 14:59:06
+#> time: 2026-05-14 15:54:36
 #> n_files: 1
-#> commit: 388242d
+#> commit: e721027
 ```

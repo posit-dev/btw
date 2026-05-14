@@ -65,4 +65,5 @@ The path to the installed skill directory, invisibly.
 
 Other skills:
 [`btw_skill_install_github()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_install_github.md),
+[`btw_skill_install_project()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_install_project.md),
 [`btw_tool_skill()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_skill.md)

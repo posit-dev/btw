@@ -45,6 +45,8 @@
   : Install a skill from GitHub
 - [`btw_skill_install_package()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_install_package.md)
   : Install a skill from an R package
+- [`btw_skill_install_project()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_install_project.md)
+  : Install skills from all project dependencies
 - [`btw_task_create_skill()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_skill.md)
   : Task: Create a Skill
 
