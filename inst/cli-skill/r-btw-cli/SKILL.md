@@ -9,7 +9,7 @@ description: "Use the `btw` CLI to access R documentation, manage R package deve
 
 ## When to use which command
 
-- Use `btw info packages --check` to quickly verify whether a package is installed.
+- Use `btw check-installed` to quickly verify whether a package is installed.
 - Use `btw docs` to read documentation for a locally-installed package.
 - Use `btw cran` only to search for packages or retrieve basic CRAN metadata (version, description, dependencies); do not use it as a substitute for `btw docs` when the package is available locally.
 
@@ -18,11 +18,11 @@ description: "Use the `btw` CLI to access R documentation, manage R package deve
 Use `btw docs` to read R help pages, vignettes, and package NEWS for locally installed packages.
 
 ```
-btw docs topics <pkg> [--only help|vignettes]  List help topics and vignettes for a package
-btw docs help <topic> [-p <pkg>]               Read an R help page
-btw docs help <pkg>::<topic>                   Read a specific help page (scoped)
-btw docs vignette <pkg> [-n <name>]            Read a vignette (--list to list available)
-btw docs news <pkg> [-s <term>]               Read package NEWS/changelog
+btw docs topics <pkg> [--only help|vignettes] [--json]  List help topics and vignettes for a package
+btw docs help <topic> [-p <pkg>]                        Read an R help page
+btw docs help <pkg>::<topic>                            Read a specific help page (scoped)
+btw docs vignette <pkg> [-n <name>]                     Read a vignette (--list to list available)
+btw docs news <pkg> [-s <term>]                         Read package NEWS/changelog
 ```
 
 Use `btw pkg` to run development tasks on an R package under active development.
@@ -35,11 +35,12 @@ btw pkg load [--path <dir>]                Load package with pkgload
 btw pkg coverage [--file <f>] [--json]     Compute test coverage
 ```
 
-Use `btw info` to inspect the current R installation and installed packages. Use `btw info packages --check` to verify whether a specific package is installed before deciding whether to use `btw docs` or `btw cran`.
+Use these commands to inspect the current R installation and installed packages. Use `btw check-installed` to verify whether a specific package is installed before deciding whether to use `btw docs` or `btw cran`.
 
 ```
-btw info platform [--json]             R version, OS, locale
-btw info packages [<pkg>...] [--json]  Installed package details (--check for quick lookup, --deps for dep types)
+btw system-info [--json]                             R version, OS, locale
+btw check-installed <pkg>... [--fail] [--json]       Check if packages are installed
+btw installed-packages <pkg>... [--deps <types>] [--json]  Installed package details
 ```
 
 Use `btw cran` to search CRAN for packages or retrieve basic metadata (version, description, dependencies) for a package. Prefer `btw docs` over `btw cran` for reading documentation when the package is installed locally.
@@ -49,4 +50,4 @@ btw cran search <query> [-n <count>] [--json]  Search CRAN for packages
 btw cran info <pkg> [--json]                   CRAN package details
 ```
 
-Run `btw --help`, `btw <group> --help`, or `btw <group> <cmd> --help` for full usage details.
+Run `btw --help`, `btw <group> --help`, or `btw <group> <cmd> --help` for full usage details, including the field names and types returned by `--json` flags.
