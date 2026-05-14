@@ -9,13 +9,16 @@
       Wraps btw package tools for docs, pkg, info, and cran operations.
       
       Commands:
-        docs    Access R documentation
-        pkg     Work with an R package under development
-        info    Inspect the R session and environment
-        cran    Query CRAN package metadata
-        skills  Manage btw skills
-        help    Show btw CLI usage guide for AI agents
-        app     Run btw_app() in the current directory
+        docs                Access R documentation
+        pkg                 Work with an R package under development
+        info                [Deprecated] Inspect the R session and environment
+        system-info         Show platform and R session info
+        check-installed     Check if packages are installed
+        installed-packages  Show installed package information
+        cran                Query CRAN package metadata
+        skills              Manage btw skills
+        help                Show btw CLI usage guide for AI agents
+        app                 Run btw_app() in the current directory
       
       Options:
         --version / --no-version  Print btw version and exit. [default: false]
@@ -87,28 +90,6 @@
                                   Enable with `--version`.
       
       For help with a specific command, run: `btw pkg <command> --help`.
-
-# btw info --help shows info group help
-
-    Code
-      run_btw("info", "--help")
-    Output
-      Inspect the R session and environment
-      
-      Usage: btw info [OPTIONS] <COMMAND>
-      
-      Commands:
-        platform  Show platform and session info
-        packages  Show installed package information
-      
-      Options:
-        --json / --no-json  Output as JSON. [default: false] Enable with `--json`.
-      
-      Global options:
-        --version / --no-version  Print btw version and exit. [default: false]
-                                  Enable with `--version`.
-      
-      For help with a specific command, run: `btw info <command> --help`.
 
 # btw cran --help shows cran group help
 
