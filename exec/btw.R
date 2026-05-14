@@ -396,7 +396,7 @@ switch(
     tryCatch(btw_check_installed(`packages...`, fail, json), error = btw_error)
   },
 
-  #| title: Show installed package information
+  #| title: Show installed package versions
   installed_packages = {
     #| description: Package names to query.
     #| required: true
