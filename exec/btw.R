@@ -97,8 +97,15 @@ btw_docs_topics <- function(package, only) {
       df$title,
       df$aliases
     )
-    cat("## Help topics\n\n")
-    cat(paste(lines, collapse = "\n"), "\n")
+    cat(
+      "## Help topics\n\n",
+      lines,
+      sprintf(
+        "\nUse `btw docs help %s::<topic>` to read a help page.\n",
+        package
+      ),
+      sep = "\n"
+    )
   }
 
   if (include_vignettes) {
@@ -111,7 +118,14 @@ btw_docs_topics <- function(package, only) {
         result <- btw:::btw_tool_docs_available_vignettes_impl(package)
         df <- S7::prop(result, "extra")$data
         lines <- sprintf("* `%s` - %s", df$vignette, df$title)
-        cat(paste(lines, collapse = "\n"), "\n")
+        cat(
+          lines,
+          sprintf(
+            "\nUse `btw docs vignette %s --name <name>` to read a vignette.\n",
+            package
+          ),
+          sep = "\n"
+        )
       },
       error = function(e) {
         msg <- cli::ansi_strip(conditionMessage(e))
