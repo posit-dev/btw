@@ -313,27 +313,22 @@ btw_cran_search <- function(query, format, n, json = FALSE) {
   }
 }
 
-btw_skills_install <- function(source, skill, scope, overwrite) {
-  skill_val <- if (has_value(skill)) skill else NULL
+btw_skills_install <- function(source, skills, scope, overwrite) {
+  skills_val <- if (length(skills)) skills else list(NULL)
   scope_val <- if (has_value(scope)) scope else "project"
   overwrite_val <- if (is.na(overwrite)) NULL else overwrite
 
   if (source == ".") {
     btw_skill_install_project(scope = scope_val, overwrite = overwrite_val)
-  } else if (grepl("/", source, fixed = TRUE)) {
-    btw_skill_install_github(
-      source,
-      skill = skill_val,
-      scope = scope_val,
-      overwrite = overwrite_val
-    )
   } else {
-    btw_skill_install_package(
-      source,
-      skill = skill_val,
-      scope = scope_val,
-      overwrite = overwrite_val
-    )
+    install_one <- if (grepl("/", source, fixed = TRUE)) {
+      btw_skill_install_github
+    } else {
+      btw_skill_install_package
+    }
+    for (skill_val in skills_val) {
+      install_one(source, skill = skill_val, scope = scope_val, overwrite = overwrite_val)
+    }
   }
 }
 
@@ -551,7 +546,8 @@ switch(
         source <- NULL
         #| description: Skill name to install (if the source has multiple skills).
         #| short: 's'
-        skill <- ""
+        #| action: append
+        skill <- c()
         #| description: Scope for installation ("project" or "user").
         scope <- "project"
         #| description: Overwrite an existing skill if it is already installed.
