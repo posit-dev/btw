@@ -77,12 +77,7 @@ btw_app_from_client <- function(
   path_figures_installed <- system.file("help", "figures", package = "btw")
   path_figures_dev <- system.file("man", "figures", package = "btw")
   path_logo <- "btw_figures/logo.png"
-
-  provider_model <- sprintf(
-    "%s/%s",
-    client$get_provider()@name,
-    client$get_model()
-  )
+  current_model <- client$get_model()
 
   # Store original client tools (preserves configuration like closures)
   # $get_tools() returns a named list where names are tool names
@@ -182,7 +177,7 @@ btw_app_from_client <- function(
         width = "min(750px, 100%)"
       ),
       if (utils::packageVersion("shinychat") >= "0.2.0.9000") {
-        btw_status_bar_ui("status_bar", provider_model)
+        btw_status_bar_ui("status_bar", current_model = current_model)
       },
       btw_app_html_dep(),
     )
@@ -470,51 +465,60 @@ notifier <- function(icon, action, error = NULL, ...) {
   bslib_show_toast(toast)
 }
 
-btw_status_bar_ui <- function(id, provider_model) {
+btw_status_bar_ui <- function(id, current_model) {
   ns <- shiny::NS(id)
   shiny::tagList(
     shiny::tags$footer(
-      class = "status-footer d-flex align-items-center gap-3 small text-muted",
+      class = "status-footer small text-muted",
       style = "width: min(725px, 100%); margin-inline: auto;",
-      bslib::tooltip(
-        shiny::actionLink(ns("show_sys_prompt"), tool_icon("quick-reference")),
-        "Show system prompt"
-      ),
-      shiny::div(
-        class = "status-provider-model",
-        shiny::span(class = "font-monospace", provider_model),
-      ),
-      shiny::div(
-        class = "ms-auto status-tokens font-monospace",
-        bslib::tooltip(
-          id = ns("status_tokens_input_tooltip"),
-          shiny::span(
-            id = ns("status_tokens_input"),
-            class = "status-countup",
-            "data-type" = "tokens_input"
-          ),
-          "Input tokens"
+      bslib::toolbar(
+        bslib::toolbar_input_button(
+          id = ns("show_sys_prompt"),
+          label = "Show system prompt",
+          icon = tool_icon("quick-reference")
         ),
-        bslib::tooltip(
-          shiny::span(
-            id = ns("status_tokens_output"),
-            class = "status-countup",
-            "data-type" = "tokens_output"
+        bslib::toolbar_divider(),
+        bslib::toolbar_input_select(
+          id = ns("model"),
+          label = "Model",
+          choices = current_model,
+          selected = current_model,
+          style = bslib::css(min_width = "12rem")
+        ),
+        bslib::toolbar_spacer(),
+        shiny::div(
+          class = "status-tokens font-monospace",
+          bslib::tooltip(
+            id = ns("status_tokens_input_tooltip"),
+            shiny::span(
+              id = ns("status_tokens_input"),
+              class = "status-countup",
+              "data-type" = "tokens_input"
+            ),
+            "Input tokens"
           ),
-          "Output tokens"
-        )
-      ),
-      shiny::div(
-        class = "status-cost font-monospace",
-        bslib::tooltip(
-          id = ns("status_cost_tooltip"),
-          shiny::span(
-            id = ns("status_cost"),
-            class = "status-countup",
-            "data-type" = "cost"
-          ),
-          "Estimated cost"
-        )
+          bslib::tooltip(
+            shiny::span(
+              id = ns("status_tokens_output"),
+              class = "status-countup",
+              "data-type" = "tokens_output"
+            ),
+            "Output tokens"
+          )
+        ),
+        shiny::div(
+          class = "status-cost font-monospace",
+          bslib::tooltip(
+            id = ns("status_cost_tooltip"),
+            shiny::span(
+              id = ns("status_cost"),
+              class = "status-countup",
+              "data-type" = "cost"
+            ),
+            "Estimated cost"
+          )
+        ),
+        width = "100%"
       )
     )
   )

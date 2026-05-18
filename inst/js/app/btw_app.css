@@ -66,10 +66,13 @@ shiny-chat-message .message-icon {
   height: 1em;
   width: 1em;
 }
-.status-provider-model {
-  text-overflow: ellipsis;
-  text-wrap-mode: nowrap;
-  overflow: hidden;
+.status-footer .status-tokens,
+.status-footer .status-cost {
+  display: inline-flex;
+  gap: 0.75rem;
+}
+.status-footer .status-cost {
+  margin-left: 0.5rem;
 }
 .modal {
   --bs-modal-margin: min(2rem, 10%);

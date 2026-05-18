@@ -52,7 +52,7 @@ Imports:
     withr,
     xml2
 Suggests:
-    bslib (>= 0.7.0),
+    bslib (>= 0.11.0),
     callr,
     chromote,
     covr,
