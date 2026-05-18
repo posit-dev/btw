@@ -13,7 +13,7 @@ btw_app <- function(
   messages = list()
 ) {
   rlang::check_installed("shiny")
-  rlang::check_installed("bslib")
+  rlang::check_installed("bslib", version = "0.11.0")
   rlang::check_installed("htmltools")
   rlang::check_installed("shinychat", version = "0.3.0")
 
@@ -77,7 +77,6 @@ btw_app_from_client <- function(
   path_figures_installed <- system.file("help", "figures", package = "btw")
   path_figures_dev <- system.file("man", "figures", package = "btw")
   path_logo <- "btw_figures/logo.png"
-  current_model <- client$get_model()
 
   # Store original client tools (preserves configuration like closures)
   # $get_tools() returns a named list where names are tool names
@@ -177,7 +176,7 @@ btw_app_from_client <- function(
         width = "min(750px, 100%)"
       ),
       if (utils::packageVersion("shinychat") >= "0.2.0.9000") {
-        btw_status_bar_ui("status_bar", current_model = current_model)
+        btw_status_bar_ui("status_bar", client = client)
       },
       btw_app_html_dep(),
     )
@@ -187,7 +186,35 @@ btw_app_from_client <- function(
     chat <- shinychat::chat_mod_server("chat", client = client)
 
     if (utils::packageVersion("shinychat") >= "0.2.0.9000") {
-      btw_status_bar_server("status_bar", chat)
+      res <- btw_status_bar_server("status_bar", chat)
+
+      shiny::observeEvent(res$clear_chat(), {
+        chat$clear(client_history = "clear")
+      })
+
+      shiny::observeEvent(res$model(), {
+        new_model <- res$model()
+        if (is.null(new_model) || identical(new_model, client$get_model())) {
+          return()
+        }
+
+        tryCatch(
+          {
+            client$set_model(new_model)
+            notifier(
+              shiny::icon("check"),
+              sprintf("Switched model to %s", new_model)
+            )
+          },
+          error = function(err) {
+            notifier(
+              shiny::icon("warning"),
+              sprintf("Failed to switch model to %s", new_model),
+              error = err
+            )
+          }
+        )
+      })
     }
 
     shiny::observeEvent(input$show_sidebar, {
@@ -465,27 +492,47 @@ notifier <- function(icon, action, error = NULL, ...) {
   bslib_show_toast(toast)
 }
 
-btw_status_bar_ui <- function(id, current_model) {
+btw_status_bar_ui <- function(id, client) {
   ns <- shiny::NS(id)
+
+  models <- client_get_models(client)
+
   shiny::tagList(
     shiny::tags$footer(
       class = "status-footer small text-muted",
       style = "width: min(725px, 100%); margin-inline: auto;",
       bslib::toolbar(
+        gap = "0.25em",
+        shiny::div(
+          class = "status-provider badge text-bg-default",
+          client$get_provider()@name,
+        ),
+        if (is.null(models)) {
+          shiny::div(
+            class = "status-model badge text-body-secondary fw-normal",
+            client$get_model()
+          )
+        } else {
+          bslib::toolbar_input_select(
+            id = ns("model"),
+            label = "Model",
+            selected = client$get_model(),
+            choices = union(client$get_model(), sort(models$id)),
+            style = bslib::css(min_width = "12rem")
+          )
+        },
+        bslib::toolbar_spacer(),
         bslib::toolbar_input_button(
           id = ns("show_sys_prompt"),
           label = "Show system prompt",
           icon = tool_icon("quick-reference")
         ),
-        bslib::toolbar_divider(),
-        bslib::toolbar_input_select(
-          id = ns("model"),
-          label = "Model",
-          choices = current_model,
-          selected = current_model,
-          style = bslib::css(min_width = "12rem")
+        bslib::toolbar_input_button(
+          id = ns("clear_chat"),
+          label = "Clear chat",
+          icon = tool_icon("ink-eraser"),
         ),
-        bslib::toolbar_spacer(),
+        bslib::toolbar_divider(),
         shiny::div(
           class = "status-tokens font-monospace",
           bslib::tooltip(
@@ -686,6 +733,14 @@ btw_status_bar_server <- function(id, chat) {
             }
           )
         }
+      )
+
+      # Return model choice
+      return(
+        list(
+          model = reactive(input$model),
+          clear_chat = reactive(input$clear_chat)
+        )
       )
     }
   )

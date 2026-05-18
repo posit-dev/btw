@@ -1,3 +1,66 @@
+client_get_models <- function(client) {
+  provider <- client$get_provider()
+
+  models_fns <- list(
+    ProviderAnthropic = function(p) {
+      ellmer::models_anthropic(
+        base_url = p@base_url,
+        credentials = p@credentials
+      )
+    },
+    ProviderGoogleGemini = function(p) {
+      ellmer::models_google_gemini(
+        base_url = p@base_url,
+        credentials = p@credentials
+      )
+    },
+    ProviderAWSBedrock = function(p) {
+      base_url <- sub("bedrock-runtime", "bedrock", p@base_url)
+      ellmer::models_aws_bedrock(profile = p@profile, base_url = base_url)
+    },
+    ProviderOpenAI = function(p) {
+      ellmer::models_openai(base_url = p@base_url, credentials = p@credentials)
+    },
+    ProviderMistral = function(p) {
+      ellmer::models_mistral()
+    },
+    ProviderLMStudio = function(p) {
+      base_url <- sub("/v1$", "", p@base_url)
+      ellmer::models_lmstudio(base_url = base_url, credentials = p@credentials)
+    },
+    ProviderVllm = function(p) {
+      ellmer::models_vllm(base_url = p@base_url, credentials = p@credentials)
+    },
+    ProviderOllama = function(p) {
+      base_url <- sub("/v1$", "", p@base_url)
+      ellmer::models_ollama(base_url = base_url, credentials = p@credentials)
+    },
+    ProviderPortkeyAI = function(p) {
+      ellmer::models_portkey(base_url = p@base_url)
+    },
+    ProviderOpenAICompatible = function(p) {
+      base_url <- sub("/v1$", "", p@base_url)
+      ellmer::models_openai(base_url = p@base_url, credentials = p@credentials)
+    }
+  )
+
+  for (cls in names(models_fns)) {
+    if (inherits(provider, sprintf("ellmer::%s", cls))) {
+      return(
+        tryCatch(models_fns[[cls]](provider), error = function(e) {
+          cli::cli_warn(
+            "Failed to fetch models for provider {provider@name}",
+            parent = e
+          )
+          NULL
+        })
+      )
+    }
+  }
+
+  NULL
+}
+
 btw_prompt <- function(path, ..., .envir = parent.frame()) {
   path <- system.file("prompts", path, package = "btw")
   ellmer::interpolate_file(path, ..., .envir = .envir)
@@ -78,7 +141,8 @@ BtwToolBuiltIn <- tryCatch(
 )
 
 built_in_tool_info <- function(name) {
-  switch(name,
+  switch(
+    name,
     web_search = list(
       title = "Web Search",
       description = "Search the web for up-to-date information.",
