@@ -507,9 +507,7 @@ btw_status_bar_ui <- function(
 
   if (identical(models, "provider")) {
     selected <- client$get_model()
-    provider_df <- client_get_models(client)
-    choices <- if (!is.null(provider_df)) sort(provider_df$id) else NULL
-    choices <- union(selected, choices)
+    choices <- selected  # full list populated asynchronously in server
   } else if (length(models) > 0) {
     selected <- selected %||% names(models)[[1]]
     choices <- names(models)
@@ -598,6 +596,17 @@ btw_status_bar_server <- function(id, chat, models = "provider") {
       model_name <- shiny::reactiveVal({
         chat$client$get_model()
       })
+
+      if (identical(models, "provider")) {
+        shiny::observe({
+          provider_df <- client_get_models(chat$client)
+          if (!is.null(provider_df)) {
+            current <- shiny::isolate(model_name())
+            all_choices <- union(current, sort(provider_df$id))
+            shiny::updateSelectInput(session, "model", choices = all_choices, selected = current)
+          }
+        })
+      }
 
       output$provider <- shiny::renderUI({
         badge <- shiny::div(
