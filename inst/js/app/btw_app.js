@@ -51,7 +51,7 @@ if (typeof Shiny !== "undefined") {
     const element = document.getElementById(message.id)
     if (element) {
       const counter = statusCounters.get(element)
-      const lastValue = parseFloat(element.dataset.value | "0")
+      const lastValue = parseFloat(element.dataset.value || "0")
 
       if (counter && Object.hasOwn(message, "value")) {
         if (
