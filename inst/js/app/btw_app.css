@@ -80,9 +80,8 @@ shiny-chat-message .message-icon {
 
 .status-provider.badge {
   color: var(--bs-body-color);
-  background-color: RGBA(var(--bs-body-color-rgb), 0.1);
+  background-color: rgba(var(--bs-body-color-rgb), 0.1);
 }
-
 
 /* ---------------- Tool Results ---------------- */
 .btw-tool-result-write-file > .card > .card-body {
