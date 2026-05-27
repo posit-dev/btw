@@ -693,6 +693,13 @@ btw_status_bar_server <- function(id, chat, models = "provider") {
         }
       })
 
+      shiny::observeEvent(input$clear_chat, {
+        ids <- sprintf("status_%s", c("tokens_input", "tokens_output", "cost"))
+        for (id in ids) {
+          send_status_message(id, "ready", value = 0)
+        }
+      })
+
       shiny::observeEvent(chat_tokens(), {
         tokens <- chat_tokens()
 

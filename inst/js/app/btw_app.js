@@ -53,9 +53,10 @@ if (typeof Shiny !== "undefined") {
       const counter = statusCounters.get(element)
       const lastValue = parseFloat(element.dataset.value | "0")
 
-      if (counter && message.value) {
+      if (counter && Object.hasOwn(message, "value")) {
         if (
           element.dataset.type === "cost" &&
+          message.value > 0 &&
           (lastValue < 0.1 || message.value < 0.1)
         ) {
           const newCounter = initializeCountUp(element, lastValue, {
