@@ -214,7 +214,7 @@ btw_app_from_client <- function(
   server <- function(input, output, session) {
     chat <- shinychat::chat_mod_server("chat", client = client)
 
-    if (utils::packageVersion("shinychat") >= "0.2.0.9000") {
+    if (utils::packageVersion("shinychat") >= "0.3.0.9000") {
       res <- btw_status_bar_server("status_bar", chat, app_models)
 
       shiny::observeEvent(res$clear_chat(), {
