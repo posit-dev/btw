@@ -73,7 +73,7 @@ Suggests:
     renv,
     roxygen2,
     shiny,
-    shinychat (>= 0.3.0),
+    shinychat (>= 0.3.0.9000),
     testthat (>= 3.0.0),
     tibble,
     usethis
@@ -137,3 +137,5 @@ Collate:
     'utils-r.R'
     'utils.R'
     'zzz.R'
+Remotes:  
+    posit-dev/shinychat

@@ -61,6 +61,94 @@ client_get_models <- function(client) {
   NULL
 }
 
+# Returns NULL (no selector), "provider" (lazy fetch), or list of btw.md client configs
+app_resolve_model_choices <- function(
+  model_choices,
+  path_btw,
+  client_name = NULL
+) {
+  if (model_choices == "none") {
+    return(NULL)
+  }
+  if (model_choices == "provider") {
+    return("provider")
+  }
+
+  config <- read_btw_file(path_btw)
+  btw_models <- config$client
+
+  if (is.null(btw_models)) {
+    return("provider")
+  }
+
+  if (is_list(btw_models)) {
+    if (all(nzchar(names2(btw_models)))) {
+      if (
+        model_choices == "auto" &&
+        !is.null(client_name) &&
+        is.null(resolve_model_choice_name(client_name, names(btw_models)))
+      ) {
+        return("provider")
+      }
+      return(btw_models)
+    }
+    cli::cli_inform(
+      "Model choices in `client` in {.path {btw_md}} must be named for model selection to work."
+    )
+  }
+
+  "provider"
+}
+
+resolve_model_choice_name <- function(name, choices) {
+  idx <- match(tolower(name), tolower(choices))
+  if (is.na(idx)) NULL else choices[[idx]]
+}
+
+client_models_from_config <- function(client_config) {
+  aliases <- client_aliases(client_config)
+  if (is.null(aliases)) {
+    return(NULL)
+  }
+
+  model_ids <- vapply(
+    client_config,
+    function(cfg) {
+      if (is_string(cfg)) {
+        parts <- strsplit(cfg, "/", fixed = TRUE)[[1]]
+        if (length(parts) > 1) paste(parts[-1], collapse = "/") else ""
+      } else if (is.list(cfg) && !inherits(cfg, "Chat")) {
+        cfg$model %||% ""
+      } else if (inherits(cfg, "Chat")) {
+        cfg$get_model()
+      } else {
+        ""
+      }
+    },
+    character(1)
+  )
+
+  valid <- nzchar(model_ids)
+  if (!any(valid)) {
+    return(NULL)
+  }
+
+  model_ids[valid]
+}
+
+turns_replace_thinking <- function(turns) {
+  lapply(turns, function(turn) {
+    turn@contents <- lapply(turn@contents, function(content) {
+      if (S7::S7_inherits(content, ellmer::ContentThinking)) {
+        ellmer::ContentText(format(content))
+      } else {
+        content
+      }
+    })
+    turn
+  })
+}
+
 btw_prompt <- function(path, ..., .envir = parent.frame()) {
   path <- system.file("prompts", path, package = "btw")
   ellmer::interpolate_file(path, ..., .envir = .envir)

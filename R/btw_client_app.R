@@ -4,27 +4,37 @@
 #'   chat
 #' @param messages A list of initial messages to show in the chat, passed to
 #'   [shinychat::chat_mod_ui()].
+#' @param model_choices Can be one of `"btw_md"` (model choices from your
+#'   `path_btw` configuration), `"provider"` (models from the provider API),
+#'   `"auto"` (uses `path_btw` if `client` comes from `path_btw`, otherwise
+#'   falling back to provider), or `"none"` (don't show model choices).
 #' @export
 btw_app <- function(
   ...,
   client = NULL,
   tools = NULL,
   path_btw = NULL,
-  messages = list()
+  messages = list(),
+  model_choices = c("auto", "btw_md", "provider", "none")
 ) {
   rlang::check_installed("shiny")
   rlang::check_installed("bslib", version = "0.11.0")
   rlang::check_installed("htmltools")
-  rlang::check_installed("shinychat", version = "0.3.0")
+  rlang::check_installed("shinychat", version = "0.3.0.9000")
+
+  model_choices <- rlang::arg_match(model_choices)
 
   if (getOption("btw.app.close_on_session_end", FALSE)) {
     cli::cli_alert("Starting up {.fn btw::btw_app} ...")
   }
 
+  client_name <- if (is_string(client)) client
+
   # Get reference tools for the app
   if (inherits(client, "AsIs")) {
     # When client is AsIs (pre-configured), use btw_tools() as reference
     reference_tools <- btw_tools()
+    app_models <- app_resolve_model_choices(model_choices, path_btw = FALSE)
   } else {
     client <- btw_client(
       client = client,
@@ -44,12 +54,24 @@ btw_app <- function(
       )
       reference_tools <- reference_client$get_tools()
     })
+
+    app_models <- app_resolve_model_choices(
+      model_choices,
+      path_btw,
+      client_name = client_name
+    )
+  }
+
+  selected_client <- if (is.list(app_models) && !is.null(client_name)) {
+    resolve_model_choice_name(client_name, names(app_models))
   }
 
   btw_app_from_client(
     client,
     messages = messages,
     allowed_tools = reference_tools,
+    app_models = app_models,
+    selected_client = selected_client,
     ...
   )
 }
@@ -72,6 +94,8 @@ btw_app_from_client <- function(
   client,
   messages = list(),
   allowed_tools = btw_tools(),
+  app_models = "provider",
+  selected_client = NULL,
   ...
 ) {
   path_figures_installed <- system.file("help", "figures", package = "btw")
@@ -176,7 +200,12 @@ btw_app_from_client <- function(
         width = "min(750px, 100%)"
       ),
       if (utils::packageVersion("shinychat") >= "0.2.0.9000") {
-        btw_status_bar_ui("status_bar", client = client)
+        btw_status_bar_ui(
+          "status_bar",
+          client = client,
+          models = app_models,
+          selected = selected_client
+        )
       },
       btw_app_html_dep(),
     )
@@ -186,34 +215,10 @@ btw_app_from_client <- function(
     chat <- shinychat::chat_mod_server("chat", client = client)
 
     if (utils::packageVersion("shinychat") >= "0.2.0.9000") {
-      res <- btw_status_bar_server("status_bar", chat)
+      res <- btw_status_bar_server("status_bar", chat, app_models)
 
       shiny::observeEvent(res$clear_chat(), {
         chat$clear(client_history = "clear")
-      })
-
-      shiny::observeEvent(res$model(), {
-        new_model <- res$model()
-        if (is.null(new_model) || identical(new_model, client$get_model())) {
-          return()
-        }
-
-        tryCatch(
-          {
-            client$set_model(new_model)
-            notifier(
-              shiny::icon("check"),
-              sprintf("Switched model to %s", new_model)
-            )
-          },
-          error = function(err) {
-            notifier(
-              shiny::icon("warning"),
-              sprintf("Failed to switch model to %s", new_model),
-              error = err
-            )
-          }
-        )
       })
     }
 
@@ -492,10 +497,23 @@ notifier <- function(icon, action, error = NULL, ...) {
   bslib_show_toast(toast)
 }
 
-btw_status_bar_ui <- function(id, client) {
+btw_status_bar_ui <- function(
+  id,
+  client,
+  models = "provider",
+  selected = NULL
+) {
   ns <- shiny::NS(id)
 
-  models <- client_get_models(client)
+  if (identical(models, "provider")) {
+    selected <- client$get_model()
+    provider_df <- client_get_models(client)
+    choices <- if (!is.null(provider_df)) sort(provider_df$id) else NULL
+    choices <- union(selected, choices)
+  } else if (length(models) > 0) {
+    selected <- selected %||% names(models)[[1]]
+    choices <- names(models)
+  }
 
   shiny::tagList(
     shiny::tags$footer(
@@ -503,10 +521,7 @@ btw_status_bar_ui <- function(id, client) {
       style = "width: min(725px, 100%); margin-inline: auto;",
       bslib::toolbar(
         gap = "0.25em",
-        shiny::div(
-          class = "status-provider badge text-bg-default",
-          client$get_provider()@name,
-        ),
+        shiny::uiOutput(ns("provider")),
         if (is.null(models)) {
           shiny::div(
             class = "status-model badge text-body-secondary fw-normal",
@@ -516,8 +531,8 @@ btw_status_bar_ui <- function(id, client) {
           bslib::toolbar_input_select(
             id = ns("model"),
             label = "Model",
-            selected = client$get_model(),
-            choices = union(client$get_model(), sort(models$id)),
+            selected = selected,
+            choices = choices,
             style = bslib::css(min_width = "12rem")
           )
         },
@@ -571,10 +586,78 @@ btw_status_bar_ui <- function(id, client) {
   )
 }
 
-btw_status_bar_server <- function(id, chat) {
+btw_status_bar_server <- function(id, chat, models = "provider") {
   shiny::moduleServer(
     id,
     function(input, output, session) {
+      provider_name <- shiny::reactiveVal({
+        # chat$client is not reactive, will be updated manually on model change
+        chat$client$get_provider()@name
+      })
+
+      model_name <- shiny::reactiveVal({
+        chat$client$get_model()
+      })
+
+      output$provider <- shiny::renderUI({
+        badge <- shiny::div(
+          class = "status-provider badge text-bg-default",
+          provider_name()
+        )
+        if (identical(models, "provider")) {
+          badge
+        } else {
+          bslib::tooltip(badge, model_name(), placement = "top")
+        }
+      })
+
+      shiny::observeEvent(input$model, ignoreInit = TRUE, {
+        tryCatch(
+          {
+            old_provider <- chat$client$get_provider()@name
+
+            if (identical(models, "provider")) {
+              new_client <- chat$client$clone()
+              new_client$set_model(input$model)
+            } else {
+              new_config <- models[[input$model]]
+              new_client <- btw_client(client = new_config, tools = FALSE)
+              new_client$set_system_prompt(chat$client$get_system_prompt())
+              turns <- chat$client$get_turns()
+              new_provider <- new_client$get_provider()@name
+              if (!identical(old_provider, new_provider)) {
+                turns <- turns_replace_thinking(turns)
+              }
+              new_client$set_turns(turns)
+              new_client$set_tools(chat$client$get_tools())
+            }
+
+            chat$set_client(new_client, sync = FALSE)
+            new_provider <- chat$client$get_provider()@name
+            provider_name(new_provider)
+            model_name(chat$client$get_model())
+
+            notifier(
+              shiny::icon("check"),
+              shiny::HTML(
+                sprintf(
+                  "Switched model to <code>%s</code> from %s.",
+                  new_client$get_model(),
+                  new_provider
+                )
+              )
+            )
+          },
+          error = function(err) {
+            notifier(
+              shiny::icon("warning"),
+              sprintf("Failed to switch model to %s", input$model),
+              error = err
+            )
+          }
+        )
+      })
+
       chat_tokens <- shiny::reactiveVal(
         chat_get_tokens(chat$client),
         label = "btw_app_tokens"
@@ -735,10 +818,8 @@ btw_status_bar_server <- function(id, chat) {
         }
       )
 
-      # Return model choice
       return(
         list(
-          model = reactive(input$model),
           clear_chat = reactive(input$clear_chat)
         )
       )
