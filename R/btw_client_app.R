@@ -601,7 +601,7 @@ btw_status_bar_server <- function(id, chat, models = "provider") {
 
       output$provider <- shiny::renderUI({
         badge <- shiny::div(
-          class = "status-provider badge text-bg-default",
+          class = "status-provider badge",
           provider_name()
         )
         if (identical(models, "provider")) {
