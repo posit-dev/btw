@@ -20,11 +20,30 @@ function initializeCountUp(element, initialValue, options) {
   return counter
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  document.querySelectorAll(".status-countup").forEach((element) => {
+function initializeStatusCountups() {
+  const elements = document.querySelectorAll(".status-countup")
+  elements.forEach((element) => {
+    if (statusCounters.has(element)) return
     const counter = initializeCountUp(element, 0)
     statusCounters.set(element, counter)
   })
+  return elements.length > 0
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  if (initializeStatusCountups()) return
+
+  let attempt = 0
+  const maxAttempts = 5
+  const baseDelay = 100
+
+  function retry() {
+    attempt++
+    if (initializeStatusCountups() || attempt >= maxAttempts) return
+    setTimeout(retry, baseDelay * Math.pow(2, attempt))
+  }
+
+  setTimeout(retry, baseDelay)
 })
 
 if (typeof Shiny !== "undefined") {

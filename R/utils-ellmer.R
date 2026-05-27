@@ -44,6 +44,20 @@ client_get_models <- function(client) {
     }
   )
 
+  try_get_models <- function(fn, provider) {
+    tryCatch(fn(provider), error = function(e) {
+      cli::cli_warn(
+        "Failed to fetch models for provider {provider@name}",
+        parent = e
+      )
+      NULL
+    })
+  }
+
+  if (provider@name == "LM Studio") {
+    return(try_get_models(models_fns$ProviderLMStudio, provider))
+  }
+
   for (cls in names(models_fns)) {
     if (inherits(provider, sprintf("ellmer::%s", cls))) {
       return(
@@ -85,8 +99,8 @@ app_resolve_model_choices <- function(
     if (all(nzchar(names2(btw_models)))) {
       if (
         model_choices == "auto" &&
-        !is.null(client_name) &&
-        is.null(resolve_model_choice_name(client_name, names(btw_models)))
+          !is.null(client_name) &&
+          is.null(resolve_model_choice_name(client_name, names(btw_models)))
       ) {
         return("provider")
       }

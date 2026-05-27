@@ -197,16 +197,16 @@ btw_app_from_client <- function(
       shinychat::chat_mod_ui(
         "chat",
         messages = messages,
-        width = "min(750px, 100%)"
+        width = "min(750px, 100%)",
+        footer = if (utils::packageVersion("shinychat") >= "0.3.0.9000") {
+          btw_status_bar_ui(
+            "status_bar",
+            client = client,
+            models = app_models,
+            selected = selected_client
+          )
+        }
       ),
-      if (utils::packageVersion("shinychat") >= "0.2.0.9000") {
-        btw_status_bar_ui(
-          "status_bar",
-          client = client,
-          models = app_models,
-          selected = selected_client
-        )
-      },
       btw_app_html_dep(),
     )
   }
