@@ -81,6 +81,19 @@ if (typeof Shiny !== "undefined") {
       }
     }
   })
+
+  Shiny.addCustomMessageHandler("btw_reset_status", function (message) {
+    const elements = document.querySelectorAll(".status-countup")
+    elements.forEach((element) => {
+      if (!element.id.startsWith(message.ns)) return
+      element.classList.remove("btw-status-recalculating", "btw-status-unknown")
+      element.dataset.value = 0
+      const counter = statusCounters.get(element)
+      if (counter) {
+        counter.update(0)
+      }
+    })
+  })
 }
 
 // Open File Buttons ----------------------------------------------------------
