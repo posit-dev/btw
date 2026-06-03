@@ -20,7 +20,7 @@ btw_app <- function(
   rlang::check_installed("shiny")
   rlang::check_installed("bslib", version = "0.11.0")
   rlang::check_installed("htmltools")
-  rlang::check_installed("shinychat", version = "0.3.0.9000")
+  rlang::check_installed("shinychat", version = "0.4.0")
 
   model_choices <- rlang::arg_match(model_choices)
 
@@ -198,7 +198,7 @@ btw_app_from_client <- function(
         "chat",
         messages = messages,
         width = "min(750px, 100%)",
-        footer = if (utils::packageVersion("shinychat") >= "0.3.0.9000") {
+        footer = if (utils::packageVersion("shinychat") >= "0.4.0") {
           btw_status_bar_ui(
             "status_bar",
             client = client,
@@ -214,7 +214,7 @@ btw_app_from_client <- function(
   server <- function(input, output, session) {
     chat <- shinychat::chat_mod_server("chat", client = client)
 
-    if (utils::packageVersion("shinychat") >= "0.3.0.9000") {
+    if (utils::packageVersion("shinychat") >= "0.4.0") {
       res <- btw_status_bar_server("status_bar", chat, app_models)
 
       shiny::observeEvent(res$clear_chat(), {
@@ -507,7 +507,7 @@ btw_status_bar_ui <- function(
 
   if (identical(models, "provider")) {
     selected <- client$get_model()
-    choices <- selected  # full list populated asynchronously in server
+    choices <- selected # full list populated asynchronously in server
   } else if (length(models) > 0) {
     selected <- selected %||% names(models)[[1]]
     choices <- names(models)
@@ -603,7 +603,12 @@ btw_status_bar_server <- function(id, chat, models = "provider") {
           if (!is.null(provider_df)) {
             current <- shiny::isolate(model_name())
             all_choices <- union(current, sort(provider_df$id))
-            shiny::updateSelectInput(session, "model", choices = all_choices, selected = current)
+            shiny::updateSelectInput(
+              session,
+              "model",
+              choices = all_choices,
+              selected = current
+            )
           }
         })
       }
