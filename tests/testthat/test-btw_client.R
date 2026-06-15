@@ -1217,6 +1217,27 @@ describe("app_resolve_model_choices()", {
     )
   })
 
+  it("returns 'provider' when client is a Chat object", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  fast: openai/gpt-4.1-mini",
+        "  smart: anthropic/claude-sonnet-4",
+        "---"
+      )
+    )
+
+    withr::local_envvar(list(OPENAI_API_KEY = "beep"))
+    chat <- ellmer::chat_openai()
+    expect_equal(
+      app_resolve_model_choices("auto", path_btw = btw_md, client_is_object = TRUE),
+      "provider"
+    )
+  })
+
   it("returns 'provider' when client_name is not found in btw.md clients", {
     btw_md <- withr::local_tempfile(fileext = ".md")
     writeLines(

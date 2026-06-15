@@ -29,6 +29,7 @@ btw_app <- function(
   }
 
   client_name <- if (is_string(client)) client
+  client_is_object <- inherits(client, "Chat")
 
   # Get reference tools for the app
   if (inherits(client, "AsIs")) {
@@ -58,7 +59,8 @@ btw_app <- function(
     app_models <- app_resolve_model_choices(
       model_choices,
       path_btw,
-      client_name = client_name
+      client_name = client_name,
+      client_is_object = client_is_object
     )
   }
 

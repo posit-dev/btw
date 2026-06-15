@@ -79,7 +79,8 @@ client_get_models <- function(client) {
 app_resolve_model_choices <- function(
   model_choices,
   path_btw,
-  client_name = NULL
+  client_name = NULL,
+  client_is_object = FALSE
 ) {
   if (model_choices == "none") {
     return(NULL)
@@ -97,6 +98,10 @@ app_resolve_model_choices <- function(
 
   if (is_list(btw_models)) {
     if (all(nzchar(names2(btw_models)))) {
+      # A directly-passed Chat object is not a btw.md alias; use its own provider.
+      if (model_choices == "auto" && client_is_object) {
+        return("provider")
+      }
       if (
         model_choices == "auto" &&
           !is.null(client_name) &&
