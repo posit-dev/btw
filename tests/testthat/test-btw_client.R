@@ -1159,3 +1159,82 @@ test_that("warn_skills_without_read_file() is silent when skills not present", {
 test_that("warn_skills_without_read_file() is silent when no tools", {
   expect_no_warning(warn_skills_without_read_file(list()))
 })
+
+# app_resolve_model_choices() --------------------------------------------------
+
+describe("app_resolve_model_choices()", {
+  it("returns 'provider' for model_choices = 'provider'", {
+    expect_equal(
+      app_resolve_model_choices("provider", path_btw = FALSE),
+      "provider"
+    )
+  })
+
+  it("returns NULL for model_choices = 'none'", {
+    expect_null(app_resolve_model_choices("none", path_btw = FALSE))
+  })
+
+  it("returns 'provider' when no btw.md is found", {
+    expect_equal(
+      app_resolve_model_choices("auto", path_btw = FALSE),
+      "provider"
+    )
+  })
+
+  it("returns btw.md client list when multiple clients are defined", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  fast: openai/gpt-4.1-mini",
+        "  smart: anthropic/claude-sonnet-4",
+        "---"
+      )
+    )
+
+    result <- app_resolve_model_choices("auto", path_btw = btw_md)
+    expect_type(result, "list")
+    expect_named(result, c("fast", "smart"))
+  })
+
+  it("returns 'provider' when btw.md has only one client", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  smart: anthropic/claude-sonnet-4",
+        "---"
+      )
+    )
+
+    expect_equal(
+      app_resolve_model_choices("auto", path_btw = btw_md),
+      "provider"
+    )
+  })
+
+  it("returns 'provider' when client_name is not found in btw.md clients", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  fast: openai/gpt-4.1-mini",
+        "  smart: anthropic/claude-sonnet-4",
+        "---"
+      )
+    )
+
+    result <- app_resolve_model_choices(
+      "auto",
+      path_btw = btw_md,
+      client_name = "unknown"
+    )
+    expect_equal(result, "provider")
+  })
+})

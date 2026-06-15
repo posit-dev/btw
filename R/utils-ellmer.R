@@ -104,6 +104,11 @@ app_resolve_model_choices <- function(
       ) {
         return("provider")
       }
+      # A single btw.md client gives a pointless one-item selector; show all
+      # provider models instead so the user can actually switch models.
+      if (model_choices == "auto" && length(btw_models) == 1) {
+        return("provider")
+      }
       return(btw_models)
     }
     cli::cli_inform(
