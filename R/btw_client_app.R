@@ -547,7 +547,7 @@ btw_status_bar_ui <- function(
         bslib::toolbar_input_button(
           id = ns("clear_chat"),
           label = "Clear chat",
-          icon = tool_icon("ink-eraser"),
+          icon = tool_icon("ink-eraser")
         ),
         bslib::toolbar_divider(),
         shiny::div(
@@ -842,7 +842,7 @@ btw_status_bar_server <- function(id, chat, models = "provider") {
 
       return(
         list(
-          clear_chat = reactive(input$clear_chat)
+          clear_chat = shiny::reactive(input$clear_chat)
         )
       )
     }
