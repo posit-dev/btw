@@ -121,7 +121,7 @@ app_resolve_model_choices <- function(
   btw_models <- config$client
 
   if (is.null(btw_models)) {
-    return("provider")
+    return(if (model_choices == "btw_md") NULL else "provider")
   }
 
   # A YAML string array parses to a character vector; convert to a list first.
@@ -130,6 +130,12 @@ app_resolve_model_choices <- function(
   }
 
   if (is_list(btw_models)) {
+    # A single-client config (e.g. `client: {provider: openai, model: ...}`) is a
+    # flat named list with a top-level `provider` key — not a switchable client array.
+    if (!is.null(btw_models$provider)) {
+      return(if (model_choices == "btw_md") NULL else "provider")
+    }
+
     # Auto-name unnamed lists (e.g. YAML arrays) from their provider/model fields.
     if (!all(nzchar(names2(btw_models)))) {
       nms <- vapply(btw_models, btw_client_config_name, character(1))
@@ -157,7 +163,7 @@ app_resolve_model_choices <- function(
     }
   }
 
-  "provider"
+  if (model_choices == "btw_md") NULL else "provider"
 }
 
 resolve_model_choice_name <- function(name, choices) {

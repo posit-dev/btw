@@ -1294,6 +1294,42 @@ describe("app_resolve_model_choices()", {
     expect_type(result, "list")
     expect_named(result, c("openai/gpt-4.1-mini", "anthropic/claude-sonnet-4"))
   })
+
+  it("returns 'provider' for a single-client config (not an array)", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  provider: openai",
+        "  model: gpt-4.1-mini",
+        "---"
+      )
+    )
+
+    expect_equal(
+      app_resolve_model_choices("auto", path_btw = btw_md),
+      "provider"
+    )
+  })
+
+  it("returns NULL for model_choices = 'btw_md' when no multi-client config exists", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  provider: openai",
+        "  model: gpt-4.1-mini",
+        "---"
+      )
+    )
+
+    expect_null(app_resolve_model_choices("btw_md", path_btw = btw_md))
+    expect_null(app_resolve_model_choices("btw_md", path_btw = FALSE))
+  })
 })
 
 # btw_client_config_name() / deduplicate_names() --------------------------------
