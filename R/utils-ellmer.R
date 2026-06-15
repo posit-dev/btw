@@ -75,6 +75,34 @@ client_get_models <- function(client) {
   NULL
 }
 
+btw_client_config_name <- function(cfg) {
+  if (is_string(cfg)) {
+    return(cfg)
+  }
+  if (is.list(cfg) && !inherits(cfg, "Chat") && !is.null(cfg$provider)) {
+    if (!is.null(cfg$model)) {
+      return(paste0(cfg$provider, "/", cfg$model))
+    }
+    return(cfg$provider)
+  }
+  if (inherits(cfg, "Chat")) {
+    provider <- tryCatch(cfg$get_provider()@name, error = function(e) NULL)
+    model <- tryCatch(cfg$get_model(), error = function(e) NULL)
+    if (!is.null(provider) && !is.null(model)) return(paste0(provider, "/", model))
+    return(model %||% provider %||% "unknown")
+  }
+  "unknown"
+}
+
+deduplicate_names <- function(nms) {
+  result <- nms
+  for (nm in unique(nms[duplicated(nms)])) {
+    idx <- which(nms == nm)
+    result[idx] <- paste0(nm, " (", seq_along(idx), ")")
+  }
+  result
+}
+
 # Returns NULL (no selector), "provider" (lazy fetch), or list of btw.md client configs
 app_resolve_model_choices <- function(
   model_choices,
@@ -96,7 +124,18 @@ app_resolve_model_choices <- function(
     return("provider")
   }
 
+  # A YAML string array parses to a character vector; convert to a list first.
+  if (is.character(btw_models) && length(btw_models) > 1) {
+    btw_models <- as.list(btw_models)
+  }
+
   if (is_list(btw_models)) {
+    # Auto-name unnamed lists (e.g. YAML arrays) from their provider/model fields.
+    if (!all(nzchar(names2(btw_models)))) {
+      nms <- vapply(btw_models, btw_client_config_name, character(1))
+      btw_models <- stats::setNames(btw_models, deduplicate_names(nms))
+    }
+
     if (all(nzchar(names2(btw_models)))) {
       # A directly-passed Chat object is not a btw.md alias; use its own provider.
       if (model_choices == "auto" && client_is_object) {
@@ -116,9 +155,6 @@ app_resolve_model_choices <- function(
       }
       return(btw_models)
     }
-    cli::cli_inform(
-      "Model choices in `client` in {.path {btw_md}} must be named for model selection to work."
-    )
   }
 
   "provider"
