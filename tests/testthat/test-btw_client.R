@@ -1230,8 +1230,6 @@ describe("app_resolve_model_choices()", {
       )
     )
 
-    withr::local_envvar(list(OPENAI_API_KEY = "beep"))
-    chat <- ellmer::chat_openai()
     expect_equal(
       app_resolve_model_choices("auto", path_btw = btw_md, client_is_object = TRUE),
       "provider"
