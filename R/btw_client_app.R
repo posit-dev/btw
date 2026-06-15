@@ -174,7 +174,9 @@ btw_app_from_client <- function(
           class = "overflow-y-auto overflow-x-visible",
           app_tool_group_inputs(
             btw_tools_df(all_available_tools),
-            initial_tool_names = names(original_client_tools)
+            # names(list()) is NULL, but NULL means "select all" in
+            # app_tool_group_choice_input; use character(0) for "select none".
+            initial_tool_names = names(original_client_tools) %||% character(0)
           ),
           shiny::uiOutput("ui_other_tools")
         ),
