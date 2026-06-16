@@ -4,6 +4,16 @@
 
 ### New features
 
+- [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+  gains a `model_choices` parameter for switching between AI providers
+  and models from the status bar. Set to `"auto"` (default) to show
+  named `btw.md` client configs when two or more are present, `"btw_md"`
+  to always use `btw.md` configs, `"provider"` to browse the active
+  provider’s model list, or `"none"` to hide the selector. When
+  switching providers, the chat history, system prompt, and tools are
+  carried over to the new client
+  ([\#196](https://github.com/posit-dev/btw/issues/196)).
+
 - The `btw_tool_skill` tool now supports custom skill search directories
   via the `btw.skills.paths` R option or `BTW_SKILLS_PATHS` environment
   variable. When set, the value entirely replaces all user-level and

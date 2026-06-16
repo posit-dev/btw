@@ -29,16 +29,16 @@ install_btw_cli(destdir = NULL, ...)
 
   `lib.loc`
 
-  :   Additional library paths forwarded to
-      [`base::system.file()`](https://rdrr.io/r/base/system.file.html)
-      while locating package scripts. Discovery happens at install time;
-      written launchers embed absolute script paths.
+  : Additional library paths forwarded to
+    [`base::system.file()`](https://rdrr.io/r/base/system.file.html)
+    while locating package scripts. Discovery happens at install time;
+    written launchers embed absolute script paths.
 
   `overwrite`
 
-  :   Whether to replace an existing executable. `TRUE` always
-      overwrites, `FALSE` never overwrites non-Rapp executables, and
-      `NA` (the default) prompts interactively and otherwise skips.
+  : Whether to replace an existing executable. `TRUE` always overwrites,
+    `FALSE` never overwrites non-Rapp executables, and `NA` (the
+    default) prompts interactively and otherwise skips.
 
 ## Value
 
