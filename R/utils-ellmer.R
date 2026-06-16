@@ -1,3 +1,220 @@
+client_get_models <- function(client) {
+  provider <- client$get_provider()
+
+  models_fns <- list(
+    ProviderAnthropic = function(p) {
+      ellmer::models_anthropic(
+        base_url = p@base_url,
+        credentials = p@credentials
+      )
+    },
+    ProviderGoogleGemini = function(p) {
+      ellmer::models_google_gemini(
+        base_url = p@base_url,
+        credentials = p@credentials
+      )
+    },
+    ProviderAWSBedrock = function(p) {
+      base_url <- sub("bedrock-runtime", "bedrock", p@base_url)
+      ellmer::models_aws_bedrock(profile = p@profile, base_url = base_url)
+    },
+    ProviderOpenAI = function(p) {
+      ellmer::models_openai(base_url = p@base_url, credentials = p@credentials)
+    },
+    ProviderMistral = function(p) {
+      ellmer::models_mistral()
+    },
+    ProviderLMStudio = function(p) {
+      base_url <- sub("/v1$", "", p@base_url)
+      ellmer::models_lmstudio(base_url = base_url, credentials = p@credentials)
+    },
+    ProviderVllm = function(p) {
+      ellmer::models_vllm(base_url = p@base_url, credentials = p@credentials)
+    },
+    ProviderOllama = function(p) {
+      base_url <- sub("/v1$", "", p@base_url)
+      ellmer::models_ollama(base_url = base_url, credentials = p@credentials)
+    },
+    ProviderPortkeyAI = function(p) {
+      ellmer::models_portkey(base_url = p@base_url)
+    },
+    ProviderOpenAICompatible = function(p) {
+      base_url <- sub("/v1$", "", p@base_url)
+      ellmer::models_openai(base_url = p@base_url, credentials = p@credentials)
+    }
+  )
+
+  try_get_models <- function(fn, provider) {
+    tryCatch(fn(provider), error = function(e) {
+      cli::cli_warn(
+        "Failed to fetch models for provider {provider@name}",
+        parent = e
+      )
+      NULL
+    })
+  }
+
+  if (provider@name == "LM Studio") {
+    return(try_get_models(models_fns$ProviderLMStudio, provider))
+  }
+
+  for (cls in names(models_fns)) {
+    if (inherits(provider, sprintf("ellmer::%s", cls))) {
+      return(
+        tryCatch(models_fns[[cls]](provider), error = function(e) {
+          cli::cli_warn(
+            "Failed to fetch models for provider {provider@name}",
+            parent = e
+          )
+          NULL
+        })
+      )
+    }
+  }
+
+  NULL
+}
+
+btw_client_config_name <- function(cfg) {
+  if (is_string(cfg)) {
+    return(cfg)
+  }
+  if (is.list(cfg) && !inherits(cfg, "Chat") && !is.null(cfg$provider)) {
+    if (!is.null(cfg$model)) {
+      return(paste0(cfg$provider, "/", cfg$model))
+    }
+    return(cfg$provider)
+  }
+  if (inherits(cfg, "Chat")) {
+    provider <- tryCatch(cfg$get_provider()@name, error = function(e) NULL)
+    model <- tryCatch(cfg$get_model(), error = function(e) NULL)
+    if (!is.null(provider) && !is.null(model)) return(paste0(provider, "/", model))
+    return(model %||% provider %||% "unknown")
+  }
+  "unknown"
+}
+
+deduplicate_names <- function(nms) {
+  result <- nms
+  for (nm in unique(nms[duplicated(nms)])) {
+    idx <- which(nms == nm)
+    result[idx] <- paste0(nm, " (", seq_along(idx), ")")
+  }
+  result
+}
+
+# Returns NULL (no selector), "provider" (lazy fetch), or list of btw.md client configs
+app_resolve_model_choices <- function(
+  model_choices,
+  path_btw,
+  client_name = NULL,
+  client_is_object = FALSE
+) {
+  if (model_choices == "none") {
+    return(NULL)
+  }
+  if (model_choices == "provider") {
+    return("provider")
+  }
+
+  config <- read_btw_file(path_btw)
+  btw_models <- config$client
+
+  if (is.null(btw_models)) {
+    return(if (model_choices == "btw_md") NULL else "provider")
+  }
+
+  # A YAML string array parses to a character vector; convert to a list first.
+  if (is.character(btw_models) && length(btw_models) > 1) {
+    btw_models <- as.list(btw_models)
+  }
+
+  if (is_list(btw_models)) {
+    # A single-client config (e.g. `client: {provider: openai, model: ...}`) is a
+    # flat named list with a top-level `provider` key — not a switchable client array.
+    if (!is.null(btw_models$provider)) {
+      return(if (model_choices == "btw_md") NULL else "provider")
+    }
+
+    # Auto-name unnamed lists (e.g. YAML arrays) from their provider/model fields.
+    if (!all(nzchar(names2(btw_models)))) {
+      nms <- vapply(btw_models, btw_client_config_name, character(1))
+      btw_models <- stats::setNames(btw_models, deduplicate_names(nms))
+    }
+
+    if (all(nzchar(names2(btw_models)))) {
+      # A directly-passed Chat object is not a btw.md alias; use its own provider.
+      if (model_choices == "auto" && client_is_object) {
+        return("provider")
+      }
+      if (
+        model_choices == "auto" &&
+          !is.null(client_name) &&
+          is.null(resolve_model_choice_name(client_name, names(btw_models)))
+      ) {
+        return("provider")
+      }
+      # A single btw.md client gives a pointless one-item selector; show all
+      # provider models instead so the user can actually switch models.
+      if (model_choices == "auto" && length(btw_models) == 1) {
+        return("provider")
+      }
+      return(btw_models)
+    }
+  }
+
+  if (model_choices == "btw_md") NULL else "provider"
+}
+
+resolve_model_choice_name <- function(name, choices) {
+  idx <- match(tolower(name), tolower(choices))
+  if (is.na(idx)) NULL else choices[[idx]]
+}
+
+client_models_from_config <- function(client_config) {
+  aliases <- client_aliases(client_config)
+  if (is.null(aliases)) {
+    return(NULL)
+  }
+
+  model_ids <- vapply(
+    client_config,
+    function(cfg) {
+      if (is_string(cfg)) {
+        parts <- strsplit(cfg, "/", fixed = TRUE)[[1]]
+        if (length(parts) > 1) paste(parts[-1], collapse = "/") else ""
+      } else if (is.list(cfg) && !inherits(cfg, "Chat")) {
+        cfg$model %||% ""
+      } else if (inherits(cfg, "Chat")) {
+        cfg$get_model()
+      } else {
+        ""
+      }
+    },
+    character(1)
+  )
+
+  valid <- nzchar(model_ids)
+  if (!any(valid)) {
+    return(NULL)
+  }
+
+  model_ids[valid]
+}
+
+turns_replace_thinking <- function(turns) {
+  lapply(turns, function(turn) {
+    turn@contents <- lapply(turn@contents, function(content) {
+      if (S7::S7_inherits(content, ellmer::ContentThinking)) {
+        ellmer::ContentText(format(content))
+      } else {
+        content
+      }
+    })
+    turn
+  })
+}
+
 btw_prompt <- function(path, ..., .envir = parent.frame()) {
   path <- system.file("prompts", path, package = "btw")
   ellmer::interpolate_file(path, ..., .envir = .envir)
@@ -78,7 +295,8 @@ BtwToolBuiltIn <- tryCatch(
 )
 
 built_in_tool_info <- function(name) {
-  switch(name,
+  switch(
+    name,
     web_search = list(
       title = "Web Search",
       description = "Search the web for up-to-date information.",

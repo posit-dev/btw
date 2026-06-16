@@ -1159,3 +1159,220 @@ test_that("warn_skills_without_read_file() is silent when skills not present", {
 test_that("warn_skills_without_read_file() is silent when no tools", {
   expect_no_warning(warn_skills_without_read_file(list()))
 })
+
+# app_resolve_model_choices() --------------------------------------------------
+
+describe("app_resolve_model_choices()", {
+  it("returns 'provider' for model_choices = 'provider'", {
+    expect_equal(
+      app_resolve_model_choices("provider", path_btw = FALSE),
+      "provider"
+    )
+  })
+
+  it("returns NULL for model_choices = 'none'", {
+    expect_null(app_resolve_model_choices("none", path_btw = FALSE))
+  })
+
+  it("returns 'provider' when no btw.md is found", {
+    expect_equal(
+      app_resolve_model_choices("auto", path_btw = FALSE),
+      "provider"
+    )
+  })
+
+  it("returns btw.md client list when multiple clients are defined", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  fast: openai/gpt-4.1-mini",
+        "  smart: anthropic/claude-sonnet-4",
+        "---"
+      )
+    )
+
+    result <- app_resolve_model_choices("auto", path_btw = btw_md)
+    expect_type(result, "list")
+    expect_named(result, c("fast", "smart"))
+  })
+
+  it("returns 'provider' when btw.md has only one client", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  smart: anthropic/claude-sonnet-4",
+        "---"
+      )
+    )
+
+    expect_equal(
+      app_resolve_model_choices("auto", path_btw = btw_md),
+      "provider"
+    )
+  })
+
+  it("returns 'provider' when client is a Chat object", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  fast: openai/gpt-4.1-mini",
+        "  smart: anthropic/claude-sonnet-4",
+        "---"
+      )
+    )
+
+    expect_equal(
+      app_resolve_model_choices("auto", path_btw = btw_md, client_is_object = TRUE),
+      "provider"
+    )
+  })
+
+  it("returns 'provider' when client_name is not found in btw.md clients", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  fast: openai/gpt-4.1-mini",
+        "  smart: anthropic/claude-sonnet-4",
+        "---"
+      )
+    )
+
+    result <- app_resolve_model_choices(
+      "auto",
+      path_btw = btw_md,
+      client_name = "unknown"
+    )
+    expect_equal(result, "provider")
+  })
+
+  it("auto-names an unnamed string array from btw.md", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  - openai/gpt-4.1-mini",
+        "  - anthropic/claude-sonnet-4",
+        "---"
+      )
+    )
+
+    result <- app_resolve_model_choices("auto", path_btw = btw_md)
+    expect_type(result, "list")
+    expect_named(result, c("openai/gpt-4.1-mini", "anthropic/claude-sonnet-4"))
+  })
+
+  it("auto-names an unnamed config-list array from btw.md", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  - provider: openai",
+        "    model: gpt-4.1-mini",
+        "  - provider: anthropic",
+        "    model: claude-sonnet-4",
+        "---"
+      )
+    )
+
+    result <- app_resolve_model_choices("auto", path_btw = btw_md)
+    expect_type(result, "list")
+    expect_named(result, c("openai/gpt-4.1-mini", "anthropic/claude-sonnet-4"))
+  })
+
+  it("returns 'provider' for a single-client config (not an array)", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  provider: openai",
+        "  model: gpt-4.1-mini",
+        "---"
+      )
+    )
+
+    expect_equal(
+      app_resolve_model_choices("auto", path_btw = btw_md),
+      "provider"
+    )
+  })
+
+  it("returns NULL for model_choices = 'btw_md' when no multi-client config exists", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  provider: openai",
+        "  model: gpt-4.1-mini",
+        "---"
+      )
+    )
+
+    expect_null(app_resolve_model_choices("btw_md", path_btw = btw_md))
+    expect_null(app_resolve_model_choices("btw_md", path_btw = FALSE))
+  })
+})
+
+# btw_client_config_name() / deduplicate_names() --------------------------------
+
+describe("btw_client_config_name()", {
+  it("returns a string entry unchanged", {
+    expect_equal(btw_client_config_name("openai/gpt-4.1-mini"), "openai/gpt-4.1-mini")
+  })
+
+  it("combines provider and model from a list", {
+    expect_equal(
+      btw_client_config_name(list(provider = "openai", model = "gpt-4.1-mini")),
+      "openai/gpt-4.1-mini"
+    )
+  })
+
+  it("returns just provider when model is absent", {
+    expect_equal(
+      btw_client_config_name(list(provider = "openai")),
+      "openai"
+    )
+  })
+})
+
+describe("deduplicate_names()", {
+  it("leaves unique names unchanged", {
+    expect_equal(
+      deduplicate_names(c("a", "b", "c")),
+      c("a", "b", "c")
+    )
+  })
+
+  it("appends (N) to duplicate names", {
+    expect_equal(
+      deduplicate_names(c("a", "b", "a")),
+      c("a (1)", "b", "a (2)")
+    )
+  })
+
+  it("handles all-duplicate names", {
+    expect_equal(
+      deduplicate_names(c("x", "x", "x")),
+      c("x (1)", "x (2)", "x (3)")
+    )
+  })
+})

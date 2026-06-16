@@ -20,11 +20,30 @@ function initializeCountUp(element, initialValue, options) {
   return counter
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  document.querySelectorAll(".status-countup").forEach((element) => {
+function initializeStatusCountups() {
+  const elements = document.querySelectorAll(".status-countup")
+  elements.forEach((element) => {
+    if (statusCounters.has(element)) return
     const counter = initializeCountUp(element, 0)
     statusCounters.set(element, counter)
   })
+  return elements.length > 0
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  if (initializeStatusCountups()) return
+
+  let attempt = 0
+  const maxAttempts = 5
+  const baseDelay = 100
+
+  function retry() {
+    attempt++
+    if (initializeStatusCountups() || attempt >= maxAttempts) return
+    setTimeout(retry, baseDelay * Math.pow(2, attempt))
+  }
+
+  setTimeout(retry, baseDelay)
 })
 
 if (typeof Shiny !== "undefined") {
@@ -32,11 +51,12 @@ if (typeof Shiny !== "undefined") {
     const element = document.getElementById(message.id)
     if (element) {
       const counter = statusCounters.get(element)
-      const lastValue = parseFloat(element.dataset.value | "0")
+      const lastValue = parseFloat(element.dataset.value || "0")
 
-      if (counter && message.value) {
+      if (counter && Object.hasOwn(message, "value")) {
         if (
           element.dataset.type === "cost" &&
+          message.value > 0 &&
           (lastValue < 0.1 || message.value < 0.1)
         ) {
           const newCounter = initializeCountUp(element, lastValue, {
@@ -60,6 +80,19 @@ if (typeof Shiny !== "undefined") {
         element.classList.add("btw-status-unknown")
       }
     }
+  })
+
+  Shiny.addCustomMessageHandler("btw_reset_status", function (message) {
+    const elements = document.querySelectorAll(".status-countup")
+    elements.forEach((element) => {
+      if (!element.id.startsWith(message.ns)) return
+      element.classList.remove("btw-status-recalculating", "btw-status-unknown")
+      element.dataset.value = 0
+      const counter = statusCounters.get(element)
+      if (counter) {
+        counter.update(0)
+      }
+    })
   })
 }
 

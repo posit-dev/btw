@@ -13,7 +13,14 @@ btw_client(
   path_llms_txt = NULL
 )
 
-btw_app(..., client = NULL, tools = NULL, path_btw = NULL, messages = list())
+btw_app(
+  ...,
+  client = NULL,
+  tools = NULL,
+  path_btw = NULL,
+  messages = list(),
+  model_choices = c("auto", "btw_md", "provider", "none")
+)
 }
 \arguments{
 \item{...}{In \code{btw_app()}, additional arguments are passed to
@@ -54,6 +61,11 @@ the your current working directory or its parents. Set \code{path_llms_txt = FAL
 
 \item{messages}{A list of initial messages to show in the chat, passed to
 \code{\link[shinychat:chat_mod_ui]{shinychat::chat_mod_ui()}}.}
+
+\item{model_choices}{Can be one of \code{"btw_md"} (model choices from your
+\code{path_btw} configuration), \code{"provider"} (models from the provider API),
+\code{"auto"} (uses \code{path_btw} if \code{client} comes from \code{path_btw}, otherwise
+falling back to provider), or \code{"none"} (don't show model choices).}
 }
 \value{
 Returns an \link[ellmer:Chat]{ellmer::Chat} object with additional tools registered
