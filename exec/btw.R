@@ -4,8 +4,14 @@
 #|   Describe R objects, documentation, and workspace state in LLM-friendly
 #|   text. Wraps btw package tools for docs, pkg, info, and cran operations.
 #| launcher:
-#|   default-packages: [base, datasets, utils, stats, methods, btw]
-library(utils)
+#|   default-packages: [base, datasets, utils, stats, methods]
+suppressPackageStartupMessages({
+  suppressMessages({
+    library(utils)
+    library(datasets)
+    library(btw)
+  })
+})
 
 # Global options --------------------------------------------------------------
 
@@ -102,7 +108,11 @@ btw_docs_topics <- function(package, only, json = FALSE) {
       result <- btw:::btw_tool_docs_package_help_topics_impl(package)
       df <- S7::prop(result, "extra")$data
       out$help <- lapply(seq_len(nrow(df)), function(i) {
-        list(topic_id = df$topic_id[[i]], title = df$title[[i]], aliases = df$aliases[[i]])
+        list(
+          topic_id = df$topic_id[[i]],
+          title = df$title[[i]],
+          aliases = df$aliases[[i]]
+        )
       })
     }
 
@@ -327,7 +337,12 @@ btw_skills_install <- function(source, skills, scope, overwrite) {
       btw_skill_install_package
     }
     for (skill_val in skills_val) {
-      install_one(source, skill = skill_val, scope = scope_val, overwrite = overwrite_val)
+      install_one(
+        source,
+        skill = skill_val,
+        scope = scope_val,
+        overwrite = overwrite_val
+      )
     }
   }
 }
@@ -592,7 +607,7 @@ switch(
       strsplit(tools, ",", fixed = TRUE)[[1]]
     }
 
-    btw_app(
+    btw::btw_app(
       client = if (has_value(client)) client,
       tools = tools,
       path_btw = if (has_value(path_btw)) path_btw
