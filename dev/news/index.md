@@ -4,6 +4,17 @@
 
 ### New features
 
+- Added three new `btw skills` CLI commands for discovering and fetching
+  skills without entering R: `btw skills list <source>` lists available
+  skills from a package or GitHub repository (with `--json` output
+  support); `btw skills get <source> [names...]` fetches one or more
+  skills by name, or lists them when no names are given (use `--all` to
+  fetch all); `btw skills resource <source> <name> <paths...>` fetches
+  individual resource files bundled with a skill. When the source is a
+  GitHub repository, local path information is omitted from the output
+  since the temporary download directory is removed when `btw` exits.
+  ([\#199](https://github.com/posit-dev/btw/issues/199))
+
 - [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
   gains a `model_choices` parameter for switching between AI providers
   and models from the status bar. Set to `"auto"` (default) to show
