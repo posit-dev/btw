@@ -4,8 +4,14 @@
 #|   Describe R objects, documentation, and workspace state in LLM-friendly
 #|   text. Wraps btw package tools for docs, pkg, info, and cran operations.
 #| launcher:
-#|   default-packages: [base, datasets, utils, stats, methods, btw]
-library(utils)
+#|   default-packages: [base, datasets, utils, stats, methods]
+suppressPackageStartupMessages({
+  suppressMessages({
+    library(utils)
+    library(datasets)
+    library(btw)
+  })
+})
 
 # Global options --------------------------------------------------------------
 
@@ -102,7 +108,11 @@ btw_docs_topics <- function(package, only, json = FALSE) {
       result <- btw:::btw_tool_docs_package_help_topics_impl(package)
       df <- S7::prop(result, "extra")$data
       out$help <- lapply(seq_len(nrow(df)), function(i) {
-        list(topic_id = df$topic_id[[i]], title = df$title[[i]], aliases = df$aliases[[i]])
+        list(
+          topic_id = df$topic_id[[i]],
+          title = df$title[[i]],
+          aliases = df$aliases[[i]]
+        )
       })
     }
 
@@ -313,6 +323,226 @@ btw_cran_search <- function(query, format, n, json = FALSE) {
   }
 }
 
+btw_skills_get <- function(source, skills, all, json = FALSE) {
+  is_github <- grepl("/", source, fixed = TRUE)
+  skill_dirs <- if (is_github) {
+    btw_skills_get_dirs_from_github(source)
+  } else {
+    btw_skills_get_dirs_from_package(source)
+  }
+
+  if (all) {
+    btw_skills_get_content_output(skill_dirs, is_github = is_github)
+  } else if (length(skills) > 0) {
+    dir_names <- basename(skill_dirs)
+    missing_skills <- setdiff(skills, dir_names)
+    if (length(missing_skills) > 0) {
+      stop(
+        "Skills not found: ",
+        paste(missing_skills, collapse = ", "),
+        ". Available: ",
+        paste(dir_names, collapse = ", "),
+        call. = FALSE
+      )
+    }
+    btw_skills_get_content_output(skill_dirs[dir_names %in% skills], is_github = is_github)
+  } else {
+    btw_skills_get_list_output(skill_dirs, json = json, is_github = is_github)
+  }
+}
+
+btw_skills_get_dirs_from_package <- function(package) {
+  rlang::check_installed(package, reason = "to list skills from it.")
+  skills_dir <- system.file("skills", package = package)
+  if (!nzchar(skills_dir) || !dir.exists(skills_dir)) {
+    stop("Package '", package, "' does not bundle any skills.", call. = FALSE)
+  }
+  subdirs <- list.dirs(skills_dir, full.names = TRUE, recursive = FALSE)
+  skill_dirs <- subdirs[file.exists(file.path(subdirs, "SKILL.md"))]
+  if (length(skill_dirs) == 0) {
+    stop("Package '", package, "' does not bundle any skills.", call. = FALSE)
+  }
+  skill_dirs
+}
+
+btw_skills_get_dirs_from_github <- function(repo) {
+  rlang::check_installed("gh", reason = "to fetch skills from GitHub.")
+  repo_og <- repo
+  repo <- btw:::parse_github_repo(repo)
+
+  tmp_zip <- tempfile(fileext = ".zip")
+  tryCatch(
+    gh::gh(
+      "/repos/{owner}/{repo}/zipball/{ref}",
+      owner = repo$owner,
+      repo = repo$repo,
+      ref = repo$ref,
+      .destfile = tmp_zip
+    ),
+    error = function(e) {
+      stop(
+        "Failed to download from GitHub repository '",
+        repo_og,
+        "': ",
+        conditionMessage(e),
+        call. = FALSE
+      )
+    }
+  )
+
+  tmp_dir <- tempfile("btw_gh_skill_")
+  utils::unzip(tmp_zip, exdir = tmp_dir)
+
+  skill_files <- list.files(
+    tmp_dir,
+    pattern = "^SKILL\\.md$",
+    recursive = TRUE,
+    full.names = TRUE
+  )
+  if (length(skill_files) == 0) {
+    stop(
+      "No skills found in GitHub repository '",
+      repo_og,
+      "'.",
+      call. = FALSE
+    )
+  }
+  dirname(skill_files)
+}
+
+btw_skills_get_list_output <- function(skill_dirs, json = FALSE, is_github = FALSE) {
+  skills <- lapply(skill_dirs, function(skill_dir) {
+    skill_md_path <- file.path(skill_dir, "SKILL.md")
+    metadata <- btw:::extract_skill_metadata(skill_md_path)
+    name <- if (!is.null(metadata$name) && nzchar(metadata$name)) {
+      metadata$name
+    } else {
+      basename(skill_dir)
+    }
+    description <- if (!is.null(metadata$description)) metadata$description else ""
+    entry <- list(name = name, description = description)
+    if (!is_github) entry$location <- skill_md_path
+    entry
+  })
+
+  if (json) {
+    btw_json_output(skills)
+    return(invisible(NULL))
+  }
+
+  for (skill in skills) {
+    location_xml <- if (!is_github) {
+      sprintf("<location>%s</location>\n", btw:::xml_escape(skill$location))
+    } else {
+      ""
+    }
+    cat(sprintf(
+      "<skill>\n<name>%s</name>\n<description>%s</description>\n%s</skill>\n",
+      btw:::xml_escape(skill$name),
+      btw:::xml_escape(skill$description),
+      location_xml
+    ))
+  }
+}
+
+btw_skills_get_content_output <- function(skill_dirs, is_github = FALSE) {
+  outputs <- character(length(skill_dirs))
+  for (i in seq_along(skill_dirs)) {
+    skill_dir <- skill_dirs[[i]]
+    skill_md_path <- file.path(skill_dir, "SKILL.md")
+    fm <- frontmatter::read_front_matter(skill_md_path)
+    skill_text <- if (!is.null(fm$body)) fm$body else ""
+    metadata <- if (!is.null(fm$data)) fm$data else list()
+    name <- if (!is.null(metadata$name) && nzchar(metadata$name)) {
+      metadata$name
+    } else {
+      basename(skill_dir)
+    }
+    resources <- btw:::list_skill_resources(skill_dir)
+    resources_listing <- format_resources_listing_relative(resources)
+    full_content <- paste0(skill_text, resources_listing)
+    tag_open <- if (!is_github) {
+      sprintf('<skill name="%s" path="%s">', btw:::xml_escape(name), btw:::xml_escape(skill_dir))
+    } else {
+      sprintf('<skill name="%s">', btw:::xml_escape(name))
+    }
+    outputs[[i]] <- sprintf("%s\n%s\n</skill>", tag_open, full_content)
+  }
+  cat(paste(outputs, collapse = "\n\n"), "\n")
+}
+
+format_resources_listing_relative <- function(resources) {
+  if (!btw:::has_skill_resources(resources)) {
+    return("")
+  }
+  parts <- "\n\n---\n\n## Bundled Resources\n"
+  if (length(resources$scripts) > 0) {
+    parts <- c(
+      parts,
+      "\n\n**Scripts:**\n",
+      paste0("- ", file.path("scripts", resources$scripts), collapse = "\n")
+    )
+  }
+  if (length(resources$references) > 0) {
+    parts <- c(
+      parts,
+      "\n\n**References:**\n",
+      paste0(
+        "- ",
+        file.path("references", resources$references),
+        collapse = "\n"
+      )
+    )
+  }
+  if (length(resources$assets) > 0) {
+    parts <- c(
+      parts,
+      "\n\n**Assets:**\n",
+      paste0("- ", file.path("assets", resources$assets), collapse = "\n")
+    )
+  }
+  paste(parts, collapse = "")
+}
+
+btw_skills_get_resource <- function(source, skill_name, resources) {
+  if (length(resources) == 0) {
+    stop("At least one resource path is required", call. = FALSE)
+  }
+
+  skill_dirs <- if (grepl("/", source, fixed = TRUE)) {
+    btw_skills_get_dirs_from_github(source)
+  } else {
+    btw_skills_get_dirs_from_package(source)
+  }
+
+  skill_dir <- NULL
+  for (d in skill_dirs) {
+    md <- btw:::extract_skill_metadata(file.path(d, "SKILL.md"))
+    if (identical(md$name, skill_name) || identical(basename(d), skill_name)) {
+      skill_dir <- d
+      break
+    }
+  }
+  if (is.null(skill_dir)) {
+    stop(
+      "Skill '",
+      skill_name,
+      "' not found. Available: ",
+      paste(basename(skill_dirs), collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  for (resource_path in resources) {
+    full_path <- file.path(skill_dir, resource_path)
+    if (!file.exists(full_path)) {
+      stop("Resource not found: ", resource_path, call. = FALSE)
+    }
+    cat(readLines(full_path, warn = FALSE), sep = "\n")
+    cat("\n")
+  }
+}
+
 btw_skills_install <- function(source, skills, scope, overwrite) {
   skills_val <- if (length(skills)) skills else list(NULL)
   scope_val <- if (has_value(scope)) scope else "project"
@@ -327,7 +557,12 @@ btw_skills_install <- function(source, skills, scope, overwrite) {
       btw_skill_install_package
     }
     for (skill_val in skills_val) {
-      install_one(source, skill = skill_val, scope = scope_val, overwrite = overwrite_val)
+      install_one(
+        source,
+        skill = skill_val,
+        scope = scope_val,
+        overwrite = overwrite_val
+      )
     }
   }
 }
@@ -540,6 +775,54 @@ switch(
     switch(
       skills_cmd <- "",
 
+      #| title: List available skills from a package or GitHub repository
+      #| examples:
+      #|   - btw skills list btw
+      #|   - btw skills list posit-dev/btw
+      list = {
+        #| description: Package name (e.g. "btw") or GitHub repo spec (e.g. "posit-dev/btw").
+        source <- NULL
+        #| description: "Output as JSON array of objects with fields: name, description, location."
+        json <- FALSE
+
+        tryCatch(btw_skills_get(source, c(), FALSE, json), error = btw_error)
+      },
+
+      #| title: Fetch skills from a package or GitHub repository
+      #| examples:
+      #|   - btw skills get btw
+      #|   - btw skills get btw r-btw-cli
+      #|   - btw skills get btw --all
+      #|   - btw skills get posit-dev/btw my-skill
+      get = {
+        #| description: Package name (e.g. "btw") or GitHub repo spec (e.g. "posit-dev/btw").
+        source <- NULL
+        #| description: "Skill names to fetch. If omitted, lists available skills."
+        `skills...` <- c()
+        #| description: Fetch all skills from the source.
+        all <- FALSE
+
+        tryCatch(btw_skills_get(source, `skills...`, all), error = btw_error)
+      },
+
+      #| title: Fetch a resource file from a skill
+      #| examples:
+      #|   - btw skills resource posit-dev/skills shiny-bslib references/accordions.md
+      #|   - btw skills resource posit-dev/skills shiny-bslib references/accordions.md references/best-practices.md
+      resource = {
+        #| description: Package name (e.g. "btw") or GitHub repo spec (e.g. "posit-dev/btw").
+        source <- NULL
+        #| description: Skill name.
+        skill <- NULL
+        #| description: Resource paths relative to the skill directory.
+        `resources...` <- c()
+
+        tryCatch(
+          btw_skills_get_resource(source, skill, `resources...`),
+          error = btw_error
+        )
+      },
+
       #| title: Install a skill from a package or GitHub repository
       install = {
         #| description: Package name (e.g. "btw"), GitHub repo spec (e.g. "posit-dev/btw"), or "." to install skills from all project dependencies (requires renv).
@@ -592,7 +875,7 @@ switch(
       strsplit(tools, ",", fixed = TRUE)[[1]]
     }
 
-    btw_app(
+    btw::btw_app(
       client = if (has_value(client)) client,
       tools = tools,
       path_btw = if (has_value(path_btw)) path_btw

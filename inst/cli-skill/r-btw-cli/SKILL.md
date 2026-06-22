@@ -1,6 +1,6 @@
 ---
 name: r-btw-cli
-description: "Use the `btw` CLI to access R documentation, manage R package development, query CRAN, and inspect the R environment from the command line. Use when you need to: (1) read R help pages or vignettes, (2) run R CMD check, tests, or devtools::document(), (3) search CRAN for packages, (4) check installed package versions or R platform info."
+description: "Use the `btw` CLI to access R documentation, manage R package development, query CRAN, inspect the R environment, and discover or fetch skills from the command line. Use when you need to: (1) read R help pages or vignettes, (2) run R CMD check, tests, or devtools::document(), (3) search CRAN for packages, (4) check installed package versions or R platform info, (5) list or fetch skills from R packages or GitHub repositories."
 ---
 
 # btw CLI
@@ -49,5 +49,16 @@ Use `btw cran` to search CRAN for packages or retrieve basic metadata (version, 
 btw cran search <query> [-n <count>] [--json]  Search CRAN for packages
 btw cran info <pkg> [--json]                   CRAN package details
 ```
+
+Use `btw skills` to discover and fetch skills from R packages or GitHub repositories.
+
+```
+btw skills list <source> [--json]                        List available skills
+btw skills get <source> [names...] [--all]               Fetch skill content (list if no names given)
+btw skills resource <source> <name> <paths...>           Fetch resource files bundled with a skill
+btw skills install <source> [--skill <name>] [--scope]   Install a skill locally
+```
+
+`<source>` is a package name (e.g. `btw`) or a GitHub repo spec (e.g. `posit-dev/btw`).
 
 Run `btw --help`, `btw <group> --help`, or `btw <group> <cmd> --help` for full usage details, including the field names and types returned by `--json` flags.

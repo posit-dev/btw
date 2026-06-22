@@ -2,6 +2,8 @@
 
 ## New features
 
+* Added three new `btw skills` CLI commands for discovering and fetching skills without entering R: `btw skills list <source>` lists available skills from a package or GitHub repository (with `--json` output support); `btw skills get <source> [names...]` fetches one or more skills by name, or lists them when no names are given (use `--all` to fetch all); `btw skills resource <source> <name> <paths...>` fetches individual resource files bundled with a skill. When the source is a GitHub repository, local path information is omitted from the output since the temporary download directory is removed when `btw` exits. (#199)
+
 * `btw_app()` gains a `model_choices` parameter for switching between AI providers and models from the status bar. Set to `"auto"` (default) to show named `btw.md` client configs when two or more are present, `"btw_md"` to always use `btw.md` configs, `"provider"` to browse the active provider's model list, or `"none"` to hide the selector. When switching providers, the chat history, system prompt, and tools are carried over to the new client (#196).
 
 * The `btw_tool_skill` tool now supports custom skill search directories via the `btw.skills.paths` R option or `BTW_SKILLS_PATHS` environment variable. When set, the value entirely replaces all user-level and project-level skill directories; package-bundled skills are always preserved. Multiple paths can be provided as a character vector (R option) or OS-native path-separated string (env var). Values are captured at tool-registration time, so custom directories set in `btw.md` survive after `btw_client()` returns (#193).
