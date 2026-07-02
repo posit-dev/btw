@@ -513,7 +513,7 @@ btw_app_greeting <- function(path_logo) {
       ),
       shiny::tags$p(
         class = "text-muted small font-monospace",
-        paste(unlist(versions), collapse = " · ")
+        paste(unlist(versions), collapse = " \u00b7 ")
       ),
       shiny::uiOutput("ui_greeting_n_tools")
     )
