@@ -5,6 +5,9 @@ test_that("btw_tool_sessioninfo_is_package_installed()", {
     },
     package_version = function(package_name) {
       "1.0.0"
+    },
+    find_package_candidates = function(package_name) {
+      if (tolower(package_name) == "dplyr") "dplyr" else character(0)
     }
   )
 
@@ -12,9 +15,6 @@ test_that("btw_tool_sessioninfo_is_package_installed()", {
   expect_btw_tool_result(res_installed, has_data = FALSE)
   expect_equal(res_installed@extra$package, "dplyr")
   expect_equal(res_installed@extra$version, "1.0.0")
-
-  # Listing available packages requires an internet connection
-  skip_if_offline()
 
   expect_error(
     btw_tool_sessioninfo_is_package_installed("skibidi")
