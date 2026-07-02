@@ -22,6 +22,8 @@
 
 ## Bug fixes
 
+* `btw_app()` is now compatible with and requires shinychat v0.4.0. Per-block copy buttons and IDE action buttons (insert at cursor, insert in new file, run in console) are restored for R output blocks in the new React-based shinychat (#188).
+
 * `btw_tool_agent_subagent()` now correctly uses the options from your `btw.md` file when called directly rather than through `btw_client()` or `btw_app()` (#185).
 
 # btw 1.2.1
