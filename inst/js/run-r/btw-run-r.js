@@ -5,11 +5,6 @@
 
 import { ICONS } from "./btw-icons.js"
 
-// Ensure shinychat's hidden requests set exists
-window.shinychat = window.shinychat || {}
-window.shinychat.hiddenToolRequests =
-  window.shinychat.hiddenToolRequests || new Set()
-
 /**
  * Formats code as a Markdown code block for rendering.
  * @param {string} content - The code content
@@ -66,20 +61,6 @@ class BtwRunRResult extends HTMLElement {
     } else {
       this.classStatus = ""
       this.titleTemplate = "{title}"
-    }
-
-    // Hide the corresponding tool request
-    const requestId = this.getAttribute("request-id")
-    if (requestId) {
-      // TODO: Remove after next shinychat release (posit-dev/shinychat#163)
-      window.shinychat.hiddenToolRequests.add(requestId)
-      this.dispatchEvent(
-        new CustomEvent("shiny-tool-request-hide", {
-          detail: { request_id: requestId },
-          bubbles: true,
-          cancelable: true,
-        }),
-      )
     }
 
     this.render()
