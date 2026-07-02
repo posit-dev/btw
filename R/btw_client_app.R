@@ -119,7 +119,7 @@ btw_app_from_client <- function(
     path_logo <- NULL
   }
 
-  btw_title <- function(in_sidebar) {
+  btw_title <- function() {
     logo <- shiny::img(
       src = path_logo,
       class = "me-2 dib",
@@ -128,15 +128,7 @@ btw_app_from_client <- function(
     )
     shiny::tags$header(
       if (!is.null(path_logo)) {
-        if (in_sidebar) {
-          shiny::span(logo)
-        } else {
-          shiny::actionLink(
-            "show_sidebar",
-            logo,
-            class = "text-decoration-none"
-          )
-        }
+        shiny::span(logo)
       },
       "Chat with",
       shiny::code("{btw}"),
@@ -150,7 +142,7 @@ btw_app_from_client <- function(
       window_title = "Chat with {btw} tools",
       sidebar = bslib::sidebar(
         id = "tools_sidebar",
-        title = btw_title(TRUE),
+        title = btw_title(),
         width = NULL,
         height = "100%",
         style = bslib::css(max_height = "100%"),
