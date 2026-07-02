@@ -15,9 +15,6 @@
 .sidebar-collapsed > .main > main .sidebar-title {
   display: block;
 }
-.bslib-sidebar-layout.sidebar-collapsed > .collapse-toggle {
-  top: 1.8rem;
-}
 .bslib-page-main {
   gap: 0.5rem;
 }

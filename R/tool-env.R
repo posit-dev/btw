@@ -53,8 +53,6 @@ btw_tool_env_describe_environment_impl <- function(
   check_dots_empty()
 
   if (!is.environment(environment)) {
-    # TODO: does the env name live in the global env?
-    # is it in `search_envs`?
     cli::cli_abort("Not implemented yet.")
   }
 
