@@ -197,10 +197,10 @@ btw_app_from_client <- function(
         "aria-keyshortcuts" = "?",
         class = "visually-hidden"
       ),
-      btw_title(FALSE),
       shinychat::chat_mod_ui(
         "chat",
         messages = messages,
+        greeting = btw_app_greeting(path_logo),
         width = "min(750px, 100%)",
         footer = if (utils::packageVersion("shinychat") >= "0.4.0") {
           btw_status_bar_ui(
@@ -228,6 +228,27 @@ btw_app_from_client <- function(
 
     shiny::observeEvent(input$show_sidebar, {
       bslib::toggle_sidebar("tools_sidebar")
+    })
+
+    shiny::observeEvent(input$greeting_reveal_tools, {
+      bslib::toggle_sidebar("tools_sidebar")
+    })
+
+    output$ui_greeting_n_tools <- shiny::renderUI({
+      n_tools <- length(selected_tools())
+      if (n_tools > 0) {
+        shiny::tags$p(
+          class = "text-muted small",
+          shiny::actionLink(
+            "greeting_reveal_tools",
+            sprintf(
+              "%d tool%s enabled",
+              n_tools,
+              if (n_tools == 1) " is" else "s are"
+            )
+          )
+        )
+      }
     })
 
     tool_groups <- unique(btw_tools_df(all_available_tools)$group)
@@ -456,6 +477,55 @@ btw_app_from_client <- function(
     tryCatch(shiny::runGadget(app), interrupt = function(cnd) NULL)
     invisible(client)
   }
+}
+
+btw_app_greeting <- function(path_logo) {
+  pkg_ver <- function(pkg) {
+    tryCatch(as.character(utils::packageVersion(pkg)), error = function(e) NULL)
+  }
+
+  ver_label <- function(pkg) {
+    v <- pkg_ver(pkg)
+    if (!is.null(v)) paste0(pkg, " ", v)
+  }
+
+  versions <- Filter(
+    Negate(is.null),
+    list(
+      ver_label("btw"),
+      ver_label("shinychat"),
+      ver_label("ellmer")
+    )
+  )
+
+  shinychat::chat_greeting(
+    htmltools::div(
+      class = "text-center",
+      if (!is.null(path_logo)) {
+        shiny::img(
+          src = path_logo,
+          alt = "btw",
+          style = bslib::css(
+            width = "100%",
+            width = "clamp(100px, 40vw, 200px)",
+            margin_bottom = "1rem",
+            filter = "drop-shadow(0px 6px 10px #00000030)"
+          )
+        )
+      },
+      shiny::tags$h2(
+        "Chat with ",
+        shiny::code("{btw}"),
+        " tools",
+        class = "mb-2"
+      ),
+      shiny::tags$p(
+        class = "text-muted small font-monospace",
+        paste(unlist(versions), collapse = " · ")
+      ),
+      shiny::uiOutput("ui_greeting_n_tools")
+    )
+  )
 }
 
 # Status Bar ----
