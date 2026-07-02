@@ -112,17 +112,14 @@ withr::with_tempdir({
     show_lines = TRUE
   )
 })
-#> ℹ Indexing files in /tmp/RtmpXqYR8P/file220b68063676 for code search
-#> duckdb: caching downloaded extensions in the package library:
-#> ℹ /home/runner/work/_temp/Library/duckdb/extensions
-#> ℹ This is removed when the package is re-installed; see `?duckdb_storage` to choose a different location.
-#> ✔ Indexing files in /tmp/RtmpXqYR8P/file220b68063676 for code search [457ms]
+#> ℹ Indexing files in /tmp/RtmpqnrOGR/file21f5653fa2c3 for code search
+#> ✔ Indexing files in /tmp/RtmpqnrOGR/file21f5653fa2c3 for code search [101ms]
 #> 
 #> <btw::BtwToolResult>
 #>  @ value  :'data.frame': 1 obs. of  5 variables:
 #>  .. $ filename     : chr "state_names_1.md"
 #>  .. $ size         : 'fs_bytes' num 219
-#>  .. $ last_modified: POSIXct, format: "2026-07-02 20:17:13"
+#>  .. $ last_modified: POSIXct, format: "2026-07-02 20:20:13"
 #>  .. $ content      : chr "Kentucky"
 #>  .. $ line         : num 17
 #>  @ error  : NULL
