@@ -2,6 +2,8 @@
 
 ## btw (development version)
 
+## btw 1.3.0
+
 ### New features
 
 - Added three new `btw skills` CLI commands for discovering and fetching
