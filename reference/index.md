@@ -45,6 +45,8 @@
   : Install a skill from GitHub
 - [`btw_skill_install_package()`](https://posit-dev.github.io/btw/reference/btw_skill_install_package.md)
   : Install a skill from an R package
+- [`btw_skill_install_project()`](https://posit-dev.github.io/btw/reference/btw_skill_install_project.md)
+  : Install skills from all project dependencies
 - [`btw_task_create_skill()`](https://posit-dev.github.io/btw/reference/btw_task_create_skill.md)
   : Task: Create a Skill
 
@@ -95,6 +97,8 @@ and to avoid name clashes with other tools.
   : Tool: Edit a text file
 - [`btw_tool_files_list()`](https://posit-dev.github.io/btw/reference/btw_tool_files_list.md)
   : Tool: List files
+- [`btw_tool_files_patch()`](https://posit-dev.github.io/btw/reference/btw_tool_files_patch.md)
+  : Tool: Apply a patch to files
 - [`btw_tool_files_read()`](https://posit-dev.github.io/btw/reference/btw_tool_files_read.md)
   : Tool: Read a file
 - [`btw_tool_files_replace()`](https://posit-dev.github.io/btw/reference/btw_tool_files_replace.md)

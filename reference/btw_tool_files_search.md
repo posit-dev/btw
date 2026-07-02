@@ -93,6 +93,7 @@ paths, regardless of the `btw.files_search.exclusions` option.
 Other files tools:
 [`btw_tool_files_edit()`](https://posit-dev.github.io/btw/reference/btw_tool_files_edit.md),
 [`btw_tool_files_list()`](https://posit-dev.github.io/btw/reference/btw_tool_files_list.md),
+[`btw_tool_files_patch()`](https://posit-dev.github.io/btw/reference/btw_tool_files_patch.md),
 [`btw_tool_files_read()`](https://posit-dev.github.io/btw/reference/btw_tool_files_read.md),
 [`btw_tool_files_replace()`](https://posit-dev.github.io/btw/reference/btw_tool_files_replace.md),
 [`btw_tool_files_write()`](https://posit-dev.github.io/btw/reference/btw_tool_files_write.md)
@@ -111,14 +112,17 @@ withr::with_tempdir({
     show_lines = TRUE
   )
 })
-#> ℹ Indexing files in /tmp/Rtmp3VZHOJ/file244432f753e1 for code search
-#> ✔ Indexing files in /tmp/Rtmp3VZHOJ/file244432f753e1 for code search [320ms]
+#> ℹ Indexing files in /tmp/RtmpXqYR8P/file220b68063676 for code search
+#> duckdb: caching downloaded extensions in the package library:
+#> ℹ /home/runner/work/_temp/Library/duckdb/extensions
+#> ℹ This is removed when the package is re-installed; see `?duckdb_storage` to choose a different location.
+#> ✔ Indexing files in /tmp/RtmpXqYR8P/file220b68063676 for code search [457ms]
 #> 
 #> <btw::BtwToolResult>
 #>  @ value  :'data.frame': 1 obs. of  5 variables:
 #>  .. $ filename     : chr "state_names_1.md"
 #>  .. $ size         : 'fs_bytes' num 219
-#>  .. $ last_modified: POSIXct, format: "2026-03-23 18:25:04"
+#>  .. $ last_modified: POSIXct, format: "2026-07-02 20:17:13"
 #>  .. $ content      : chr "Kentucky"
 #>  .. $ line         : num 17
 #>  @ error  : NULL

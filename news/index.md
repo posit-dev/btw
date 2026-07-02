@@ -1,5 +1,97 @@
 # Changelog
 
+## btw 1.3.0
+
+### New features
+
+- Added three new `btw skills` CLI commands for discovering and fetching
+  skills without entering R: `btw skills list <source>` lists available
+  skills from a package or GitHub repository (with `--json` output
+  support); `btw skills get <source> [names...]` fetches one or more
+  skills by name, or lists them when no names are given (use `--all` to
+  fetch all); `btw skills resource <source> <name> <paths...>` fetches
+  individual resource files bundled with a skill. When the source is a
+  GitHub repository, local path information is omitted from the output
+  since the temporary download directory is removed when `btw` exits.
+  ([\#199](https://github.com/posit-dev/btw/issues/199))
+
+- [`btw_app()`](https://posit-dev.github.io/btw/reference/btw_client.md)
+  gains a `model_choices` parameter for switching between AI providers
+  and models from the status bar. Set to `"auto"` (default) to show
+  named `btw.md` client configs when two or more are present, `"btw_md"`
+  to always use `btw.md` configs, `"provider"` to browse the active
+  provider’s model list, or `"none"` to hide the selector. When
+  switching providers, the chat history, system prompt, and tools are
+  carried over to the new client
+  ([\#196](https://github.com/posit-dev/btw/issues/196)).
+
+- The `btw_tool_skill` tool now supports custom skill search directories
+  via the `btw.skills.paths` R option or `BTW_SKILLS_PATHS` environment
+  variable. When set, the value entirely replaces all user-level and
+  project-level skill directories; package-bundled skills are always
+  preserved. Multiple paths can be provided as a character vector (R
+  option) or OS-native path-separated string (env var). Values are
+  captured at tool-registration time, so custom directories set in
+  `btw.md` survive after
+  [`btw_client()`](https://posit-dev.github.io/btw/reference/btw_client.md)
+  returns ([\#193](https://github.com/posit-dev/btw/issues/193)).
+
+- Added
+  [`btw_tool_files_patch()`](https://posit-dev.github.io/btw/reference/btw_tool_files_patch.md),
+  a new files tool that applies a structured diff-style patch envelope
+  to make coordinated changes across multiple files in a single call.
+  One patch can add, update, delete, and rename files atomically: all
+  operations are validated before any file is written, so a partial
+  failure leaves the working tree untouched
+  ([\#190](https://github.com/posit-dev/btw/issues/190)).
+
+- The `btw info` CLI command group has been replaced by three focused
+  top-level commands: `btw system-info` (platform and R session info),
+  `btw check-installed <pkgs>` (check if packages are installed, exits 0
+  by default with `--fail` for non-zero exit on missing packages), and
+  `btw installed-packages <pkgs>` (show installed package versions).
+  `btw info` is retained as a deprecated stub that prints migration
+  guidance. All three commands support `--json` output with documented
+  field shapes ([\#195](https://github.com/posit-dev/btw/issues/195)).
+
+- Added two new commands to the `btw` CLI: `btw app` to launch a
+  [`btw_app()`](https://posit-dev.github.io/btw/reference/btw_client.md)
+  session in the current working directory and `btw skills install` to
+  install skills from the terminal.
+
+- `btw skills install .` installs skills from all project dependencies.
+  In packages (directories with a `DESCRIPTION` file), `Imports` and
+  `Suggests` are scanned; otherwise
+  [`renv::dependencies()`](https://rstudio.github.io/renv/reference/dependencies.html)
+  is used as a fallback. The same behaviour is available in R via
+  [`btw_skill_install_project()`](https://posit-dev.github.io/btw/reference/btw_skill_install_project.md).
+
+- Added `btw docs topics <pkg>` to the `btw` CLI for discovering a
+  package’s help topics and vignettes. Use `--only help` or
+  `--only vignettes` to limit output to one section, or `--json` for
+  machine-readable output
+  ([\#195](https://github.com/posit-dev/btw/issues/195)).
+
+- Added `btw help` to the `btw` CLI, which prints the `r-btw-cli` skill
+  — a usage guide designed for AI agents.
+
+### Bug fixes
+
+- [`btw_app()`](https://posit-dev.github.io/btw/reference/btw_client.md)
+  is now compatible with and requires shinychat v0.4.0. Per-block copy
+  buttons and IDE action buttons (insert at cursor, insert in new file,
+  run in console) are restored for R output blocks in the new
+  React-based shinychat
+  ([\#188](https://github.com/posit-dev/btw/issues/188)).
+
+- [`btw_tool_agent_subagent()`](https://posit-dev.github.io/btw/reference/btw_tool_agent_subagent.md)
+  now correctly uses the options from your `btw.md` file when called
+  directly rather than through
+  [`btw_client()`](https://posit-dev.github.io/btw/reference/btw_client.md)
+  or
+  [`btw_app()`](https://posit-dev.github.io/btw/reference/btw_client.md)
+  ([\#185](https://github.com/posit-dev/btw/issues/185)).
+
 ## btw 1.2.1
 
 CRAN release: 2026-03-23

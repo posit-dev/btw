@@ -88,7 +88,14 @@ btw_client(
   path_llms_txt = NULL
 )
 
-btw_app(..., client = NULL, tools = NULL, path_btw = NULL, messages = list())
+btw_app(
+  ...,
+  client = NULL,
+  tools = NULL,
+  path_btw = NULL,
+  messages = list(),
+  model_choices = c("auto", "btw_md", "provider", "none")
+)
 ```
 
 ## Arguments
@@ -152,6 +159,13 @@ btw_app(..., client = NULL, tools = NULL, path_btw = NULL, messages = list())
 
   A list of initial messages to show in the chat, passed to
   [`shinychat::chat_mod_ui()`](https://posit-dev.github.io/shinychat/r/reference/chat_app.html).
+
+- model_choices:
+
+  Can be one of `"btw_md"` (model choices from your `path_btw`
+  configuration), `"provider"` (models from the provider API), `"auto"`
+  (uses `path_btw` if `client` comes from `path_btw`, otherwise falling
+  back to provider), or `"none"` (don't show model choices).
 
 ## Value
 

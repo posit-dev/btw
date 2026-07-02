@@ -23,8 +23,8 @@ btw_skill_install_github(
   reference (branch, tag, or SHA) as `"owner/repo@ref"`, following the
   convention used by
   [`pak::pak()`](https://pak.r-lib.org/reference/pak.html) and
-  [`remotes::install_github()`](https://remotes.r-lib.org/reference/install_github.html).
-  Defaults to `"HEAD"` when no ref is specified.
+  `remotes::install_github()`. Defaults to `"HEAD"` when no ref is
+  specified.
 
 - skill:
 
@@ -63,4 +63,5 @@ The path to the installed skill directory, invisibly.
 
 Other skills:
 [`btw_skill_install_package()`](https://posit-dev.github.io/btw/reference/btw_skill_install_package.md),
+[`btw_skill_install_project()`](https://posit-dev.github.io/btw/reference/btw_skill_install_project.md),
 [`btw_tool_skill()`](https://posit-dev.github.io/btw/reference/btw_tool_skill.md)

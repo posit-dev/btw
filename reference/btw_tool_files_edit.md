@@ -135,6 +135,7 @@ for find-and-replace edits that don't require hashline references.
 
 Other files tools:
 [`btw_tool_files_list()`](https://posit-dev.github.io/btw/reference/btw_tool_files_list.md),
+[`btw_tool_files_patch()`](https://posit-dev.github.io/btw/reference/btw_tool_files_patch.md),
 [`btw_tool_files_read()`](https://posit-dev.github.io/btw/reference/btw_tool_files_read.md),
 [`btw_tool_files_replace()`](https://posit-dev.github.io/btw/reference/btw_tool_files_replace.md),
 [`btw_tool_files_search()`](https://posit-dev.github.io/btw/reference/btw_tool_files_search.md),

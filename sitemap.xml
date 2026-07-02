@@ -15,6 +15,7 @@
 <url><loc>https://posit-dev.github.io/btw/reference/btw_client.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_skill_install_github.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_skill_install_package.html</loc></url>
+<url><loc>https://posit-dev.github.io/btw/reference/btw_skill_install_project.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_task.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_task_create_btw_md.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_task_create_readme.html</loc></url>
@@ -31,6 +32,7 @@
 <url><loc>https://posit-dev.github.io/btw/reference/btw_tool_env_describe_environment.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_tool_files_edit.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_tool_files_list.html</loc></url>
+<url><loc>https://posit-dev.github.io/btw/reference/btw_tool_files_patch.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_tool_files_read.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_tool_files_replace.html</loc></url>
 <url><loc>https://posit-dev.github.io/btw/reference/btw_tool_files_search.html</loc></url>

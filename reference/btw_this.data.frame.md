@@ -93,11 +93,6 @@ Other btw formatting methods:
 [`btw_this.character()`](https://posit-dev.github.io/btw/reference/btw_this.character.md),
 [`btw_this.environment()`](https://posit-dev.github.io/btw/reference/btw_this.environment.md)
 
-Other btw formatting methods:
-[`btw_this()`](https://posit-dev.github.io/btw/reference/btw_this.md),
-[`btw_this.character()`](https://posit-dev.github.io/btw/reference/btw_this.character.md),
-[`btw_this.environment()`](https://posit-dev.github.io/btw/reference/btw_this.environment.md)
-
 ## Examples
 
 ``` r
