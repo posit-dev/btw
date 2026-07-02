@@ -70,11 +70,11 @@ btw(
 #> ## Context
 #> 
 #> pkgsearch::pkg_search("network visualization", size = 1)
-#> Found 3582 packages matching `network visualization`, showing 1 result.
+#> Found 3635 packages matching `network visualization`, showing 1 result.
 #> 
 #> | package | title | version | date | url | downloads_last_month |
 #> |---------|-------|---------|------|-----|----------------------|
-#> | visNetwork | Network Visualization using 'vis.js' Library | 2.1.4 | 2025-09-04 | https://datastorm-open.github.io/visNetwork/ | 77,605 |
+#> | visNetwork | Network Visualization using 'vis.js' Library | 2.1.4 | 2025-09-04 | https://datastorm-open.github.io/visNetwork/ | 84,589 |
 btw(
   pkgsearch::pkg_search("network visualization", format = "long", size = 1),
   clipboard = FALSE
@@ -87,14 +87,14 @@ btw(
 #> ## Context
 #> 
 #> pkgsearch::pkg_search(...)
-#> Found 3582 packages matching `network visualization`, showing 1 result.
+#> Found 3635 packages matching `network visualization`, showing 1 result.
 #> 
 #> ### visNetwork (v2.1.4) -- Network Visualization using 'vis.js' Library
 #> 
 #> * Maintainer: Benoit Thieurmel
 #> * Homepage: https://datastorm-open.github.io/visNetwork/
 #> * Date: 2025-09-04
-#> * Downloads Last Month: 77,605
+#> * Downloads Last Month: 84,589
 #> 
 #> Provides an R interface to the 'vis.js' JavaScript charting
 #> library. It allows an interactive visualization of networks.

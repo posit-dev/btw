@@ -77,6 +77,13 @@
 
 ### Bug fixes
 
+- [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+  is now compatible with and requires shinychat v0.4.0. Per-block copy
+  buttons and IDE action buttons (insert at cursor, insert in new file,
+  run in console) are restored for R output blocks in the new
+  React-based shinychat
+  ([\#188](https://github.com/posit-dev/btw/issues/188)).
+
 - [`btw_tool_agent_subagent()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_agent_subagent.md)
   now correctly uses the options from your `btw.md` file when called
   directly rather than through
