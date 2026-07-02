@@ -131,6 +131,12 @@ if (inIframe && inIDE) {
     enhanceBtwCodeActions(e.target)
   })
 
+  // Backfill any btw-run-r-result elements that rendered before this listener
+  // was installed (e.g. initial page load when btw-run-r executes first).
+  document.querySelectorAll("btw-run-r-result").forEach((result) => {
+    enhanceBtwCodeActions(result)
+  })
+
   function isMarkdownStream(el) {
     return el.matches(STREAM_SELECTOR)
   }
