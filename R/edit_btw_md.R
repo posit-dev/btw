@@ -327,7 +327,7 @@ use_btw_md_user <- function() {
 maybe_migrate_user_btw_md <- function(loose, canonical) {
   cli::cli_inform(c(
     "!" = "Your user config is at {.file {path_display(loose)}}.",
-    "i" = "The recommended location is now {.path {canonical}}."
+    "i" = "The recommended location is now {.path {path_home_display(canonical)}}."
   ))
 
   if (!is_interactive()) {

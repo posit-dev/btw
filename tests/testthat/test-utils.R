@@ -310,10 +310,10 @@ test_that("path_find_user() prefers ~/btw.md and warns on multiple configs", {
   fs::dir_create(fs::path(user_dir, ".btw"))
   fs::file_create(fs::path(user_dir, ".btw", "btw.md"))
 
-  expect_warning(
-    result <- path_find_user("btw.md"),
-    "more than one user-level"
+  expect_snapshot(
+    result <- path_find_user("btw.md")
   )
+
   # The loose ~/btw.md takes precedence over ~/.btw/btw.md.
   expect_equal(result, fs::path_norm(fs::path(user_dir, "btw.md")))
 })

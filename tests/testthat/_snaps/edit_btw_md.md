@@ -18,6 +18,35 @@
       i See `?btw::btw_tools()` for available tools
       i Call `btw::btw_task_create_btw_md()` to use an LLM to help you initialize the project context.
 
+# use_btw_md('user') uses an existing ~/.btw/btw.md
+
+    Code
+      path <- use_btw_md("user")
+    Message
+      v '~/.btw/btw.md' already exists
+      i Call `btw::edit_btw_md("user")` to edit it
+
+# use_btw_md('user') keeps a loose ~/btw.md when non-interactive
+
+    Code
+      path <- use_btw_md("user")
+    Message
+      ! Your user config is at '~/btw.md'.
+      i The recommended location is now '~/.btw/btw.md'.
+      i Move it there when convenient; btw reads '~/btw.md' for now.
+      i Call `btw::edit_btw_md("user")` to edit it
+
+# use_btw_md('user') migrates a loose ~/btw.md when confirmed
+
+    Code
+      path <- use_btw_md("user")
+    Message
+      ! Your user config is at '~/btw.md'.
+      i The recommended location is now '~/.btw/btw.md'.
+      Move it to the recommended location now?
+      v Moved to '~/.btw/btw.md'.
+      i Call `btw::edit_btw_md("user")` to edit it
+
 # use_btw_md() creates btw.md in sub-directory path
 
     Code

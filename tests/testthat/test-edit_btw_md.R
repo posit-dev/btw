@@ -51,7 +51,9 @@ test_that("use_btw_md('user') uses an existing ~/.btw/btw.md", {
   fs::dir_create(fs::path(wd, ".btw"))
   fs::file_create(fs::path(wd, ".btw", "btw.md"))
 
-  path <- suppressMessages(use_btw_md("user"))
+  expect_snapshot(
+    path <- use_btw_md("user")
+  )
 
   expect_equal(path, fs::path(wd, ".btw", "btw.md"))
   expect_false(fs::file_exists(fs::path(wd, "btw.md")))
@@ -68,7 +70,9 @@ test_that("use_btw_md('user') keeps a loose ~/btw.md when non-interactive", {
 
   fs::file_create(fs::path(wd, "btw.md"))
 
-  path <- suppressMessages(use_btw_md("user"))
+  expect_snapshot(
+    path <- use_btw_md("user")
+  )
 
   expect_equal(path, fs::path(wd, "btw.md"))
   expect_true(fs::file_exists(fs::path(wd, "btw.md")))
@@ -87,7 +91,9 @@ test_that("use_btw_md('user') migrates a loose ~/btw.md when confirmed", {
 
   fs::file_create(fs::path(wd, "btw.md"))
 
-  path <- suppressMessages(use_btw_md("user"))
+  expect_snapshot(
+    path <- use_btw_md("user")
+  )
 
   expect_equal(path, fs::path(wd, ".btw", "btw.md"))
   expect_true(fs::file_exists(fs::path(wd, ".btw", "btw.md")))

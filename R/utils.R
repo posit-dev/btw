@@ -195,16 +195,29 @@ path_find_user <- function(filename) {
 # Warn once per session when more than one user-level config file exists, so a
 # user editing a now-shadowed file has a hint about which one btw reads.
 warn_multiple_user_config <- function(paths) {
+  shown <- path_home_display(paths)
+  target <- path_home_display(fs::path(fs::path_home(".btw"), "btw.md"))
   cli::cli_warn(
     c(
       "!" = "Found more than one user-level {.file btw.md} config file.",
-      "i" = "Using {.path {paths[[1]]}}.",
-      "i" = "Ignoring lower-priority: {.path {paths[-1]}}.",
-      "i" = "Consider consolidating your btw configuration into {.path {fs::path(fs::path_home('.btw'), 'btw.md')}}."
+      "i" = "Using {.path {shown[[1]]}}.",
+      "i" = "Ignoring lower-priority: {.path {shown[-1]}}.",
+      "i" = "Consider consolidating your btw configuration into {.path {target}}."
     ),
     .frequency = "once",
     .frequency_id = "btw_multiple_user_config"
   )
+}
+
+# Render a path under the user's home directory as "~/..." without requiring
+# the path to exist (unlike path_display(), which resolves via fs::path_real()).
+# Vectorized; paths outside home are returned unchanged.
+path_home_display <- function(path) {
+  home <- fs::path_home()
+  under <- fs::path_has_parent(path, home)
+  out <- as.character(path)
+  out[under] <- as.character(fs::path("~", fs::path_rel(path[under], home)))
+  out
 }
 
 detect_project_is_r_package <- function(dir = getwd()) {
