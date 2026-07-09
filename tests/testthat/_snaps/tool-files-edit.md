@@ -5,10 +5,10 @@
     Output
       Applied 2 edit(s) to test.txt (5 lines).
       
-      1:262|AAA
-      2:1ba|bbb
-      3:62d|CCC
-      4:f8c|ddd
+      1:1bf|AAA
+      2:9bf|bbb
+      3:70f|CCC
+      4:37b|ddd
 
 # edit response: insert adds shift hint
 
@@ -17,10 +17,10 @@
     Output
       Applied 1 edit(s) to test.txt (now 7 lines, previously 5).
       
-      2:1ba|bbb
-      3:426|new1
-      4:1b3|new2
-      5:73c|ccc
+      2:9bf|bbb
+      3:6fa|new1
+      4:0b0|new2
+      5:675|ccc
       
       Content below line 5 was not modified.
       Cached hashes are still valid — update line numbers by +2 (old line 3 → new line 5).
@@ -32,8 +32,8 @@
     Output
       Applied 1 edit(s) to test.txt (now 3 lines, previously 5).
       
-      1:066|aaa
-      2:f8c|ddd
+      1:40a|aaa
+      2:37b|ddd
       
       Content below line 2 was not modified.
       Cached hashes are still valid — update line numbers by -2 (old line 4 → new line 2).
@@ -45,14 +45,14 @@
     Output
       Applied 2 edit(s) to test.txt (30 lines).
       
-      4:6cc|line04
-      5:493|FIVE
-      6:a37|line06
-      7:735|line07
-      8:4b8|line08
-      9:2af|line09
-      10:1b4|TEN
-      11:f00|line11
+      4:17c|line04
+      5:566|FIVE
+      6:948|line06
+      7:c30|line07
+      8:729|line08
+      9:f13|line09
+      10:848|TEN
+      11:de6|line11
 
 # edit response: distant edits produce multiple regions
 
@@ -61,17 +61,17 @@
     Output
       Applied 2 edit(s) to test.txt (now 51 lines, previously 50).
       
-      2:dec|line02
-      3:bf2|THREE-A
-      4:0ac|THREE-B
-      5:6cc|line04
+      2:2f9|line02
+      3:f47|THREE-A
+      4:52e|THREE-B
+      5:17c|line04
       
       Content between here and the next edit region was not modified.
       Cached hashes are still valid — update line numbers by +1 (old line 4 → new line 5).
       
-      40:3d9|line39
-      41:958|FORTY
-      42:778|line41
+      40:ebd|line39
+      41:51b|FORTY
+      42:bb7|line41
       
       Content below line 42 was not modified.
       Cached hashes are still valid — update line numbers by +1 (old line 41 → new line 42).
@@ -83,19 +83,19 @@
     Output
       Applied 2 edit(s) to test.txt (now 53 lines, previously 50).
       
-      2:dec|line02
-      3:bf2|THREE-A
-      4:0ac|THREE-B
-      5:6cc|line04
+      2:2f9|line02
+      3:f47|THREE-A
+      4:52e|THREE-B
+      5:17c|line04
       
       Content between here and the next edit region was not modified.
       Cached hashes are still valid — update line numbers by +1 (old line 4 → new line 5).
       
-      40:3d9|line39
-      41:582|FORTY-A
-      42:e77|FORTY-B
-      43:136|FORTY-C
-      44:778|line41
+      40:ebd|line39
+      41:569|FORTY-A
+      42:77b|FORTY-B
+      43:f05|FORTY-C
+      44:bb7|line41
       
       Content below line 44 was not modified.
       Cached hashes are still valid — update line numbers by +3 (old line 41 → new line 44).
@@ -107,9 +107,9 @@
     Output
       Applied 1 edit(s) to test.txt (now 5 lines, previously 3).
       
-      1:ae1|header1
-      2:c40|header2
-      3:066|aaa
+      1:53f|header1
+      2:294|header2
+      3:40a|aaa
       
       Content below line 3 was not modified.
       Cached hashes are still valid — update line numbers by +2 (old line 1 → new line 3).
