@@ -173,7 +173,9 @@
 #' `tools::R_user_dir("btw")`, in that order (see [btw-config] for the full
 #' picture, including skills and agents). `use_btw_md("user")` creates new
 #' configuration in the recommended `~/.btw/` directory, and offers to migrate
-#' an existing `~/btw.md` there. Whichever user-level `btw.md` file is found is
+#' an existing user-level configuration found elsewhere. When more than one
+#' user-level `btw.md` file exists, `edit_btw_md("user")` asks which one to open.
+#' Whichever user-level `btw.md` file is found is
 #' used by default when a project-specific `btw.md` file is not found. Note that
 #' \pkg{btw} only looks for a user-level `btw.md` if no project-specific
 #' `btw.md` or `AGENTS.md` file is present. It also does not look for
@@ -196,10 +198,11 @@
 #' @param scope The scope of the context file. Can be:
 #'   - `"project"` (default): Creates/opens `btw.md` (by default) or `AGENTS.md`
 #'     in the project root
-#'   - `"user"`: Opens your user-level `btw.md` (`~/btw.md` if present,
-#'     otherwise `~/.btw/btw.md`). When creating, `use_btw_md("user")` uses the
-#'     recommended `~/.btw/` location and offers to migrate an existing
-#'     `~/btw.md`.
+#'   - `"user"`: Opens your user-level `btw.md`. When multiple user-level
+#'     configuration files exist, `edit_btw_md("user")` asks which one to open,
+#'     indicating the file that [btw_client()] and [btw_app()] load. When
+#'     creating, `use_btw_md("user")` uses the recommended `~/.btw/` location and
+#'     offers to migrate an existing user-level configuration found elsewhere.
 #'   - A directory path: Creates/opens `btw.md` in that directory
 #'   - A file path: Creates/opens that specific file
 #'
@@ -290,63 +293,125 @@ edit_btw_md <- function(scope = NULL) {
 
 # Helpers -----------------------------------------------------------------
 
+# Existing user-level btw.md files, in decreasing priority order (empty if
+# none). Uses the same search order btw_client()/btw_app() load with, so
+# use_btw_md("user") never creates a file that silently shadows an existing one.
+existing_user_btw_md <- function() {
+  paths <- user_config_paths("btw.md")
+  fs::path(paths[fs::file_exists(paths)])
+}
+
 use_btw_md_user <- function() {
-  loose <- fs::path_home("btw.md")
   canonical <- fs::path_home(".btw", "btw.md")
+  existing <- existing_user_btw_md()
 
-  # A loose ~/btw.md exists but the tidy location does not: offer to migrate it
-  # rather than creating a second, shadowed file at ~/.btw/btw.md.
-  if (fs::file_exists(loose) && !fs::file_exists(canonical)) {
-    path <- maybe_migrate_user_btw_md(loose, canonical)
-    cli::cli_inform(c("i" = "Call {.run btw::edit_btw_md(\"user\")} to edit it"))
-    return(invisible(path))
+  # No user-level config anywhere: create it in the recommended ~/.btw/ location.
+  if (length(existing) == 0) {
+    fs::dir_create(fs::path_dir(canonical))
+    fs::file_copy(btw_md_template(canonical), canonical)
+    cli::cli_inform(c("v" = "Created {.file {path_display(canonical)}}"))
+    cli::cli_inform(c(
+      "i" = "See {.help btw::btw_client} for format details",
+      "i" = "See {.help btw::btw_tools} for available tools",
+      "i" = "Call {.fn btw::btw_task_create_btw_md} to use an LLM to help you initialize the project context."
+    ))
+    return(invisible(canonical))
   }
 
-  path <- canonical
+  active <- existing[[1]]
 
-  if (fs::file_exists(path)) {
-    cli::cli_inform(c("v" = "{.file {path_display(path)}} already exists"))
+  # The active config already lives in the recommended location.
+  if (identical(fs::path_norm(active), fs::path_norm(canonical))) {
+    cli::cli_inform(c("v" = "{.file {path_display(canonical)}} already exists"))
     cli::cli_inform(c("i" = "Call {.run btw::edit_btw_md(\"user\")} to edit it"))
-    return(invisible(path))
+    return(invisible(canonical))
   }
 
-  fs::dir_create(fs::path_dir(path))
-  fs::file_copy(btw_md_template(path), path)
-  cli::cli_inform(c("v" = "Created {.file {path_display(path)}}"))
-  cli::cli_inform(c(
-    "i" = "See {.help btw::btw_client} for format details",
-    "i" = "See {.help btw::btw_tools} for available tools",
-    "i" = "Call {.fn btw::btw_task_create_btw_md} to use an LLM to help you initialize the project context."
-  ))
-
+  # A config exists elsewhere (~/btw.md, ~/.config/btw/btw.md, R's user dir, or
+  # -- on Windows -- R's home root): offer to consolidate it into ~/.btw/ rather
+  # than creating a second file that would shadow or be shadowed.
+  path <- maybe_migrate_user_btw_md(active, canonical)
+  cli::cli_inform(c("i" = "Call {.run btw::edit_btw_md(\"user\")} to edit it"))
   invisible(path)
 }
 
-# Offer to move a loose ~/btw.md to the recommended ~/.btw/ location. Returns
-# the path in effect afterward (canonical if migrated, otherwise loose).
-maybe_migrate_user_btw_md <- function(loose, canonical) {
+# Offer to move an existing user config to the recommended ~/.btw/ location.
+# Returns the path in effect afterward (canonical if migrated, otherwise the
+# original `source`).
+maybe_migrate_user_btw_md <- function(source, canonical) {
   cli::cli_inform(c(
-    "!" = "Your user config is at {.file {path_display(loose)}}.",
+    "!" = "Your user config is at {.file {path_display(source)}}.",
     "i" = "The recommended location is now {.path {path_home_display(canonical)}}."
   ))
 
+  # The recommended file already exists but is shadowed by the higher-priority
+  # `source`. Don't clobber it; let edit_btw_md("user") sort out which to edit.
+  if (fs::file_exists(canonical)) {
+    cli::cli_inform(c(
+      "i" = "A config also exists at {.path {path_home_display(canonical)}}, shadowed by {.file {path_display(source)}}."
+    ))
+    return(source)
+  }
+
   if (!is_interactive()) {
     cli::cli_inform(c(
-      "i" = "Move it there when convenient; btw reads {.file {path_display(loose)}} for now."
+      "i" = "Move it there when convenient; btw reads {.file {path_display(source)}} for now."
     ))
-    return(loose)
+    return(source)
   }
 
   cli::cli_inform("Move it to the recommended location now?")
   if (!identical(utils::menu(c("Yes", "No"), graphics = FALSE), 1L)) {
-    cli::cli_inform(c("i" = "Keeping {.file {path_display(loose)}}."))
-    return(loose)
+    cli::cli_inform(c("i" = "Keeping {.file {path_display(source)}}."))
+    return(source)
   }
 
   fs::dir_create(fs::path_dir(canonical))
-  fs::file_move(loose, canonical)
+  fs::file_move(source, canonical)
   cli::cli_inform(c("v" = "Moved to {.file {path_display(canonical)}}."))
   canonical
+}
+
+# Choose which user-level btw.md edit_btw_md("user") opens. When several exist,
+# prompt interactively, making clear which one btw_client()/btw_app() actually
+# read and nudging toward consolidating in ~/.btw/.
+resolve_user_btw_md_for_edit <- function() {
+  existing <- existing_user_btw_md()
+  recommended <- fs::path_home(".btw", "btw.md")
+
+  # Nothing exists yet: point at the recommended location so edit_btw_md()
+  # reports it's missing and suggests use_btw_md("user").
+  if (length(existing) == 0) {
+    return(recommended)
+  }
+
+  active <- existing[[1]]
+
+  if (length(existing) == 1 || !is_interactive()) {
+    return(active)
+  }
+
+  labels <- path_home_display(existing)
+  labels[[1]] <- paste0(labels[[1]], "  (read by btw_client()/btw_app())")
+
+  cli::cli_inform(c(
+    "!" = "You have more than one user-level {.file btw.md} config file.",
+    "i" = "{.run btw::btw_client()} and {.run btw::btw_app()} read the highest-priority one, marked below.",
+    "i" = "Consider consolidating your config into {.path {path_home_display(recommended)}}."
+  ))
+
+  choice <- utils::menu(
+    labels,
+    graphics = FALSE,
+    title = "Which user-level btw.md do you want to edit?"
+  )
+
+  # Selection cancelled (0): default to the file btw actually reads.
+  if (identical(choice, 0L)) {
+    return(active)
+  }
+
+  existing[[choice]]
 }
 
 resolve_btw_md_path <- function(scope, for_creation = FALSE) {
@@ -389,14 +454,7 @@ resolve_btw_md_path <- function(scope, for_creation = FALSE) {
   }
 
   if (identical(scope, "user")) {
-    # ~/btw.md takes precedence when loading (see path_find_user()), so edit the
-    # loose file if it exists; otherwise the tidy ~/.btw/ location.
-    loose <- fs::path_home("btw.md")
-    canonical <- fs::path_home(".btw", "btw.md")
-    if (fs::file_exists(loose)) {
-      return(loose)
-    }
-    return(canonical)
+    return(resolve_user_btw_md_for_edit())
   }
 
   scope <- fs::path_expand(scope)

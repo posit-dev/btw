@@ -14,10 +14,11 @@ edit_btw_md(scope = NULL)
 \itemize{
 \item \code{"project"} (default): Creates/opens \code{btw.md} (by default) or \code{AGENTS.md}
 in the project root
-\item \code{"user"}: Opens your user-level \code{btw.md} (\verb{~/btw.md} if present,
-otherwise \verb{~/.btw/btw.md}). When creating, \code{use_btw_md("user")} uses the
-recommended \verb{~/.btw/} location and offers to migrate an existing
-\verb{~/btw.md}.
+\item \code{"user"}: Opens your user-level \code{btw.md}. When multiple user-level
+configuration files exist, \code{edit_btw_md("user")} asks which one to open,
+indicating the file that \code{\link[=btw_client]{btw_client()}} and \code{\link[=btw_app]{btw_app()}} load. When
+creating, \code{use_btw_md("user")} uses the recommended \verb{~/.btw/} location and
+offers to migrate an existing user-level configuration found elsewhere.
 \item A directory path: Creates/opens \code{btw.md} in that directory
 \item A file path: Creates/opens that specific file
 }
@@ -214,7 +215,9 @@ looks in \verb{~/.btw/btw.md}, \verb{~/.config/btw/btw.md}, and
 \code{tools::R_user_dir("btw")}, in that order (see \link{btw-config} for the full
 picture, including skills and agents). \code{use_btw_md("user")} creates new
 configuration in the recommended \verb{~/.btw/} directory, and offers to migrate
-an existing \verb{~/btw.md} there. Whichever user-level \code{btw.md} file is found is
+an existing user-level configuration found elsewhere. When more than one
+user-level \code{btw.md} file exists, \code{edit_btw_md("user")} asks which one to open.
+Whichever user-level \code{btw.md} file is found is
 used by default when a project-specific \code{btw.md} file is not found. Note that
 \pkg{btw} only looks for a user-level \code{btw.md} if no project-specific
 \code{btw.md} or \code{AGENTS.md} file is present. It also does not look for

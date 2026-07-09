@@ -166,19 +166,27 @@ btw_user_dirs <- function() {
   )))
 }
 
+# Ordered user-level candidate paths for a config `filename` (e.g. "btw.md"),
+# in decreasing priority. The loose home-root file (~/btw.md) takes precedence
+# over the trio in btw_user_dirs() (~/.btw/btw.md, ...); see ?btw-config.
+# btw_client()/btw_app() load the first that exists via path_find_user(), and
+# use_btw_md()/edit_btw_md() reuse this order so creation and editing agree with
+# loading.
+user_config_paths <- function(filename) {
+  unique(as.character(c(
+    fs::path_home(filename),
+    fs::path_home_r(filename),
+    file.path(btw_user_dirs(), filename)
+  )))
+}
+
 path_find_user <- function(filename) {
   if (identical(Sys.getenv("TESTTHAT"), "true")) {
     # In testthat, we don't want to use the home directory
     return(NULL)
   }
 
-  # The loose home-root file (~/btw.md) takes precedence over the trio in
-  # btw_user_dirs() (~/.btw/btw.md, ...); see ?btw-config.
-  possibilities <- unique(c(
-    fs::path_home(filename),
-    fs::path_home_r(filename),
-    file.path(btw_user_dirs(), filename)
-  ))
+  possibilities <- user_config_paths(filename)
 
   existing <- possibilities[fs::file_exists(possibilities)]
   if (length(existing) == 0) {
