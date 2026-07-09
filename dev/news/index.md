@@ -4,6 +4,8 @@
 
 ## btw 1.3.0
 
+CRAN release: 2026-07-02
+
 ### New features
 
 - Added three new `btw skills` CLI commands for discovering and fetching

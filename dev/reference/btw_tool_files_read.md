@@ -86,7 +86,7 @@ withr::with_tempdir({
   btw_tool_files_read("mtcars.csv", line_end = 5)
 })
 #> <btw::BtwTextFileToolResult>
-#>  @ value  : chr "1:8e0|\"\",\"mpg\",\"cyl\",\"disp\",\"hp\",\"drat\",\"wt\",\"qsec\",\"vs\",\"am\",\"gear\",\"carb\"\n2:847|\"Ma"| __truncated__
+#>  @ value  : chr "1:3d1|\"\",\"mpg\",\"cyl\",\"disp\",\"hp\",\"drat\",\"wt\",\"qsec\",\"vs\",\"am\",\"gear\",\"carb\"\n2:b7f|\"Ma"| __truncated__
 #>  @ error  : NULL
 #>  @ extra  :List of 2
 #>  .. $ path   : 'fs_path' chr "mtcars.csv"
