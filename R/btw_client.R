@@ -24,12 +24,12 @@
 #'
 #' Client settings in `client` and `tools` from a project-level `btw.md` or
 #' `AGENTS.md` file take precedence. If a project file doesn't specify a
-#' setting, btw will fall back to settings in a user-level `btw.md` file,
-#' found in `~/.btw/btw.md` (recommended), `~/.config/btw/btw.md`,
-#' `tools::R_user_dir("btw")`, or as a convenience directly at `~/btw.md`. See
-#' `?btw-config` for the complete list of user-level locations. Project-level
-#' btw tool options under the `options` key are merged with user-level
-#' options, with project-level options taking precedence.
+#' setting, btw will fall back to settings in a user-level `btw.md` file. This
+#' is `~/btw.md` if present, otherwise `~/.btw/btw.md`, `~/.config/btw/btw.md`,
+#' or `tools::R_user_dir("btw")`, in that order. See `?btw-config` for the
+#' complete list of user-level locations. Project-level btw tool options under
+#' the `options` key are merged with user-level options, with project-level
+#' options taking precedence.
 #'
 #' Project-specific instructions from both files are combined with a divider,
 #' allowing you to maintain global guidelines in your user file and

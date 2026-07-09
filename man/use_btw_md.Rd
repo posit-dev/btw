@@ -14,7 +14,10 @@ edit_btw_md(scope = NULL)
 \itemize{
 \item \code{"project"} (default): Creates/opens \code{btw.md} (by default) or \code{AGENTS.md}
 in the project root
-\item \code{"user"}: Creates/opens \code{btw.md} in your home directory
+\item \code{"user"}: Opens your user-level \code{btw.md} (\verb{~/btw.md} if present,
+otherwise \verb{~/.btw/btw.md}). When creating, \code{use_btw_md("user")} uses the
+recommended \verb{~/.btw/} location and offers to migrate an existing
+\verb{~/btw.md}.
 \item A directory path: Creates/opens \code{btw.md} in that directory
 \item A file path: Creates/opens that specific file
 }
@@ -205,15 +208,15 @@ project, in which case the one closest to your current working directory
 will be used. This makes it easy to have different \code{btw.md} files for
 different sub-projects or sub-directories within a larger project.
 
-For global configuration, the recommended location is a \code{btw.md} file at
-\verb{~/.btw/btw.md}. As a convenience, btw also looks directly at \verb{~/btw.md} in
-your home directory, though this is a de-emphasized fallback rather than the
-canonical location. The complete set of user-level locations, in decreasing
-priority, is \verb{~/.btw/}, \verb{~/.config/btw/}, and
-\code{tools::R_user_dir("btw")}, plus the \verb{~/btw.md} convenience path; see
-\link{btw-config} for details. Whichever user-level \code{btw.md} file is found will
-be used by default when a project-specific \code{btw.md} file is not found. Note
-that \pkg{btw} only looks for a user-level \code{btw.md} if no project-specific
+For global configuration, btw uses a user-level \code{btw.md} file. A \code{btw.md}
+directly in your home directory (\verb{~/btw.md}) takes precedence; otherwise btw
+looks in \verb{~/.btw/btw.md}, \verb{~/.config/btw/btw.md}, and
+\code{tools::R_user_dir("btw")}, in that order (see \link{btw-config} for the full
+picture, including skills and agents). \code{use_btw_md("user")} creates new
+configuration in the recommended \verb{~/.btw/} directory, and offers to migrate
+an existing \verb{~/btw.md} there. Whichever user-level \code{btw.md} file is found is
+used by default when a project-specific \code{btw.md} file is not found. Note that
+\pkg{btw} only looks for a user-level \code{btw.md} if no project-specific
 \code{btw.md} or \code{AGENTS.md} file is present. It also does not look for
 \code{AGENTS.md} in your home directory.
 }

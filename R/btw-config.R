@@ -9,22 +9,29 @@
 #'
 #' @section User (global) locations:
 #'
-#' User-level (global) configuration is discovered from the following
-#' directories, in decreasing order of priority:
+#' btw's user-level home is the `~/.btw/` directory. Skills and btw-style agents
+#' live there (and in two additional directories), while the user-level `btw.md`
+#' configuration file may also live directly in your home directory.
+#'
+#' The user-level directories, in decreasing order of priority, are:
 #'
 #' 1. `~/.btw/` (recommended)
 #' 2. `~/.config/btw/`
 #' 3. The platform-specific R user config directory,
 #'    `tools::R_user_dir("btw")`
 #'
-#' Skills are discovered in the `skills/` subdirectory of each of these
-#' directories (e.g. `~/.btw/skills/`), and btw-style agents are discovered as
-#' `agent-*.md` files directly inside each directory (e.g.
-#' `~/.btw/agent-my_agent.md`).
+#' Skills are discovered in the `skills/` subdirectory of each (e.g.
+#' `~/.btw/skills/`), and btw-style agents are discovered as `agent-*.md` files
+#' directly inside each (e.g. `~/.btw/agent-my_agent.md`).
 #'
-#' For the loose `btw.md` configuration file only, btw additionally checks for
-#' a `btw.md` file directly in your home directory (`~/btw.md`) as a
-#' convenience, though `~/.btw/btw.md` is the preferred, canonical location.
+#' The user-level `btw.md` **configuration file** is searched for in a slightly
+#' different order: a `btw.md` directly in your home directory (`~/btw.md`)
+#' takes precedence, followed by `btw.md` in each of the directories above
+#' (`~/.btw/btw.md`, `~/.config/btw/btw.md`, `tools::R_user_dir("btw")/btw.md`).
+#' `~/btw.md` remains a first-class location; `use_btw_md("user")` creates new
+#' configuration in the recommended `~/.btw/` directory. If more than one
+#' user-level `btw.md` exists, the highest-priority one is used and btw warns
+#' once per session.
 #'
 #' On Windows, R's notion of your home directory (`fs::path_home_r()`,
 #' typically your `Documents` folder) can differ from your user profile

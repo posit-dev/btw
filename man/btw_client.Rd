@@ -97,12 +97,12 @@ the \code{path_llms_txt} argument.
 
 Client settings in \code{client} and \code{tools} from a project-level \code{btw.md} or
 \code{AGENTS.md} file take precedence. If a project file doesn't specify a
-setting, btw will fall back to settings in a user-level \code{btw.md} file,
-found in \verb{~/.btw/btw.md} (recommended), \verb{~/.config/btw/btw.md},
-\code{tools::R_user_dir("btw")}, or as a convenience directly at \verb{~/btw.md}. See
-\code{?btw-config} for the complete list of user-level locations. Project-level
-btw tool options under the \code{options} key are merged with user-level
-options, with project-level options taking precedence.
+setting, btw will fall back to settings in a user-level \code{btw.md} file. This
+is \verb{~/btw.md} if present, otherwise \verb{~/.btw/btw.md}, \verb{~/.config/btw/btw.md},
+or \code{tools::R_user_dir("btw")}, in that order. See \code{?btw-config} for the
+complete list of user-level locations. Project-level btw tool options under
+the \code{options} key are merged with user-level options, with project-level
+options taking precedence.
 
 Project-specific instructions from both files are combined with a divider,
 allowing you to maintain global guidelines in your user file and
@@ -161,8 +161,11 @@ chat
 \section{User (global) locations}{
 
 
-User-level (global) configuration is discovered from the following
-directories, in decreasing order of priority:
+btw's user-level home is the \verb{~/.btw/} directory. Skills and btw-style agents
+live there (and in two additional directories), while the user-level \code{btw.md}
+configuration file may also live directly in your home directory.
+
+The user-level directories, in decreasing order of priority, are:
 \enumerate{
 \item \verb{~/.btw/} (recommended)
 \item \verb{~/.config/btw/}
@@ -170,14 +173,18 @@ directories, in decreasing order of priority:
 \code{tools::R_user_dir("btw")}
 }
 
-Skills are discovered in the \verb{skills/} subdirectory of each of these
-directories (e.g. \verb{~/.btw/skills/}), and btw-style agents are discovered as
-\verb{agent-*.md} files directly inside each directory (e.g.
-\verb{~/.btw/agent-my_agent.md}).
+Skills are discovered in the \verb{skills/} subdirectory of each (e.g.
+\verb{~/.btw/skills/}), and btw-style agents are discovered as \verb{agent-*.md} files
+directly inside each (e.g. \verb{~/.btw/agent-my_agent.md}).
 
-For the loose \code{btw.md} configuration file only, btw additionally checks for
-a \code{btw.md} file directly in your home directory (\verb{~/btw.md}) as a
-convenience, though \verb{~/.btw/btw.md} is the preferred, canonical location.
+The user-level \code{btw.md} \strong{configuration file} is searched for in a slightly
+different order: a \code{btw.md} directly in your home directory (\verb{~/btw.md})
+takes precedence, followed by \code{btw.md} in each of the directories above
+(\verb{~/.btw/btw.md}, \verb{~/.config/btw/btw.md}, \code{tools::R_user_dir("btw")/btw.md}).
+\verb{~/btw.md} remains a first-class location; \code{use_btw_md("user")} creates new
+configuration in the recommended \verb{~/.btw/} directory. If more than one
+user-level \code{btw.md} exists, the highest-priority one is used and btw warns
+once per session.
 
 On Windows, R's notion of your home directory (\code{fs::path_home_r()},
 typically your \code{Documents} folder) can differ from your user profile

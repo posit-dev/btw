@@ -6,6 +6,8 @@
 
 ## Bug fixes
 
+* `use_btw_md("user")` now creates user-level configuration in `~/.btw/btw.md` (btw's recommended user directory) and offers to migrate an existing `~/btw.md` there instead of creating a second file. A `~/btw.md` in your home directory still takes precedence when present; if more than one user-level `btw.md` exists, btw uses the highest-priority one and warns once per session. See `?btw-config` for the full set of configuration locations.
+
 * On Windows, btw now discovers user-level agents and skills under R's home directory (`~`, typically `Documents`) in addition to the user profile, matching how it already searched for user-level `btw.md` config files. macOS and Linux behavior is unchanged.
 
 # btw 1.3.0

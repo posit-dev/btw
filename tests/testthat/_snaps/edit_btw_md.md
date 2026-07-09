@@ -13,7 +13,7 @@
     Code
       path <- use_btw_md("user")
     Message
-      v Created '~/btw.md'
+      v Created '~/.btw/btw.md'
       i See `?btw::btw_client()` for format details
       i See `?btw::btw_tools()` for available tools
       i Call `btw::btw_task_create_btw_md()` to use an LLM to help you initialize the project context.

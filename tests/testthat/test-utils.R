@@ -294,3 +294,26 @@ test_that("path_find_user() finds btw.md under a home root", {
   withr::local_envvar(TESTTHAT = "true")
   expect_null(path_find_user("btw.md"))
 })
+
+test_that("path_find_user() prefers ~/btw.md and warns on multiple configs", {
+  user_dir <- withr::local_tempdir()
+
+  local_mocked_bindings(
+    path_home = function(...) fs::path(user_dir, ...),
+    path_home_r = function(...) fs::path(user_dir, ...),
+    .package = "fs"
+  )
+  withr::local_envvar(TESTTHAT = NA)
+  withr::local_options(rlib_warning_verbosity = "verbose")
+
+  fs::file_create(fs::path(user_dir, "btw.md"))
+  fs::dir_create(fs::path(user_dir, ".btw"))
+  fs::file_create(fs::path(user_dir, ".btw", "btw.md"))
+
+  expect_warning(
+    result <- path_find_user("btw.md"),
+    "more than one user-level"
+  )
+  # The loose ~/btw.md takes precedence over ~/.btw/btw.md.
+  expect_equal(result, fs::path_norm(fs::path(user_dir, "btw.md")))
+})

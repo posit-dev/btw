@@ -172,19 +172,39 @@ path_find_user <- function(filename) {
     return(NULL)
   }
 
+  # The loose home-root file (~/btw.md) takes precedence over the trio in
+  # btw_user_dirs() (~/.btw/btw.md, ...); see ?btw-config.
   possibilities <- unique(c(
     fs::path_home(filename),
     fs::path_home_r(filename),
     file.path(btw_user_dirs(), filename)
   ))
 
-  for (path in possibilities) {
-    if (fs::file_exists(path)) {
-      return(fs::path_norm(path))
-    }
+  existing <- possibilities[fs::file_exists(possibilities)]
+  if (length(existing) == 0) {
+    return(NULL)
   }
 
-  NULL
+  if (length(existing) > 1) {
+    warn_multiple_user_config(existing)
+  }
+
+  fs::path_norm(existing[[1]])
+}
+
+# Warn once per session when more than one user-level config file exists, so a
+# user editing a now-shadowed file has a hint about which one btw reads.
+warn_multiple_user_config <- function(paths) {
+  cli::cli_warn(
+    c(
+      "!" = "Found more than one user-level {.file btw.md} config file.",
+      "i" = "Using {.path {paths[[1]]}}.",
+      "i" = "Ignoring lower-priority: {.path {paths[-1]}}.",
+      "i" = "Consider consolidating your btw configuration into {.path {fs::path(fs::path_home('.btw'), 'btw.md')}}."
+    ),
+    .frequency = "once",
+    .frequency_id = "btw_multiple_user_config"
+  )
 }
 
 detect_project_is_r_package <- function(dir = getwd()) {

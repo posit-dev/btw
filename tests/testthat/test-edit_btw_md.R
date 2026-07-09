@@ -31,16 +31,67 @@ test_that("use_btw_md() creates btw.md in user scope", {
     path_home = function(...) fs::path(wd, ...),
     .package = "fs"
   )
-  local_mocked_bindings(
-    use_build_ignore_btw_md = function(...) invisible()
-  )
 
   expect_snapshot(
     path <- use_btw_md("user")
   )
 
+  expect_true(fs::file_exists(fs::path(wd, ".btw", "btw.md")))
+  expect_equal(path, fs::path(wd, ".btw", "btw.md"))
+})
+
+test_that("use_btw_md('user') uses an existing ~/.btw/btw.md", {
+  wd <- withr::local_tempdir()
+
+  local_mocked_bindings(
+    path_home = function(...) fs::path(wd, ...),
+    .package = "fs"
+  )
+
+  fs::dir_create(fs::path(wd, ".btw"))
+  fs::file_create(fs::path(wd, ".btw", "btw.md"))
+
+  path <- suppressMessages(use_btw_md("user"))
+
+  expect_equal(path, fs::path(wd, ".btw", "btw.md"))
+  expect_false(fs::file_exists(fs::path(wd, "btw.md")))
+})
+
+test_that("use_btw_md('user') keeps a loose ~/btw.md when non-interactive", {
+  wd <- withr::local_tempdir()
+
+  local_mocked_bindings(
+    path_home = function(...) fs::path(wd, ...),
+    .package = "fs"
+  )
+  local_mocked_bindings(is_interactive = function() FALSE)
+
+  fs::file_create(fs::path(wd, "btw.md"))
+
+  path <- suppressMessages(use_btw_md("user"))
+
+  expect_equal(path, fs::path(wd, "btw.md"))
   expect_true(fs::file_exists(fs::path(wd, "btw.md")))
-  expect_equal(basename(path), "btw.md")
+  expect_false(fs::file_exists(fs::path(wd, ".btw", "btw.md")))
+})
+
+test_that("use_btw_md('user') migrates a loose ~/btw.md when confirmed", {
+  wd <- withr::local_tempdir()
+
+  local_mocked_bindings(
+    path_home = function(...) fs::path(wd, ...),
+    .package = "fs"
+  )
+  local_mocked_bindings(is_interactive = function() TRUE)
+  local_mocked_bindings(menu = function(...) 1L, .package = "utils")
+
+  fs::file_create(fs::path(wd, "btw.md"))
+
+  path <- suppressMessages(use_btw_md("user"))
+
+  expect_equal(path, fs::path(wd, ".btw", "btw.md"))
+  expect_true(fs::file_exists(fs::path(wd, ".btw", "btw.md")))
+  expect_false(fs::file_exists(fs::path(wd, "btw.md")))
 })
 
 test_that("use_btw_md() creates btw.md in sub-directory path", {
