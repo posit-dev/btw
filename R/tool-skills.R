@@ -275,7 +275,7 @@ warn_legacy_skill_dir <- function(dir) {
   cli::cli_warn(
     c(
       "!" = "Skills found in a deprecated location: {.path {dir}}",
-      "i" = "Move them to {.path {fs::path(fs::path_home('.btw'), 'skills')}}.",
+      "i" = "Move them to {.path {fs::path(btw_user_dir_preferred(), 'skills')}}.",
       "i" = "This location (btw <= 1.2.0) is deprecated and will stop being read in btw 1.5.0."
     ),
     .frequency = "once",

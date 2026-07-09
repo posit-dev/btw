@@ -166,6 +166,14 @@ btw_user_dirs <- function() {
   )))
 }
 
+# The single recommended user-level directory for new config and skills: the
+# highest-priority entry from btw_user_dirs() (~/.btw, or %USERPROFILE%/.btw on
+# Windows). Every "we recommend ..." message and default install target derives
+# from this so guidance stays consistent with the actual search order.
+btw_user_dir_preferred <- function() {
+  btw_user_dirs()[[1]]
+}
+
 # Ordered user-level candidate paths for a config `filename` (e.g. "btw.md"),
 # in decreasing priority. The loose home-root file (~/btw.md) takes precedence
 # over the trio in btw_user_dirs() (~/.btw/btw.md, ...); see ?btw-config.
@@ -204,7 +212,7 @@ path_find_user <- function(filename) {
 # user editing a now-shadowed file has a hint about which one btw reads.
 warn_multiple_user_config <- function(paths) {
   shown <- path_home_display(paths)
-  target <- path_home_display(fs::path(fs::path_home(".btw"), "btw.md"))
+  target <- path_home_display(fs::path(btw_user_dir_preferred(), "btw.md"))
   cli::cli_warn(
     c(
       "!" = "Found more than one user-level {.file btw.md} config file.",
@@ -217,11 +225,14 @@ warn_multiple_user_config <- function(paths) {
   )
 }
 
-# Render a path under the user's home directory as "~/..." without requiring
-# the path to exist (unlike path_display(), which resolves via fs::path_real()).
-# Vectorized; paths outside home are returned unchanged.
+# Render a path under R's home directory as "~/..." without requiring the path
+# to exist (unlike path_display(), which resolves via fs::path_real()). Uses
+# fs::path_home_r() -- what R actually expands "~" to -- so the abbreviation
+# round-trips when a user pastes it back into R. On Windows this differs from
+# fs::path_home() (user profile), so profile-only paths are left native rather
+# than mislabeled "~". Vectorized; paths outside R's home are returned unchanged.
 path_home_display <- function(path) {
-  home <- fs::path_home()
+  home <- fs::path_home_r()
   under <- fs::path_has_parent(path, home)
   out <- as.character(path)
   out[under] <- as.character(fs::path("~", fs::path_rel(path[under], home)))

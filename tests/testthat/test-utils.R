@@ -255,6 +255,41 @@ describe("btw_user_dirs()", {
   })
 })
 
+test_that("btw_user_dir_preferred() is the highest-priority user dir", {
+  local_mocked_bindings(
+    path_home = function(...) fs::path("/profile", ...),
+    path_home_r = function(...) fs::path("/docs", ...),
+    .package = "fs"
+  )
+
+  expect_equal(btw_user_dir_preferred(), "/profile/.btw")
+  expect_equal(btw_user_dir_preferred(), btw_user_dirs()[[1]])
+})
+
+test_that("path_home_display() abbreviates against R's home, not the profile", {
+  # Windows: R's "~" (path_home_r) differs from the user profile (path_home).
+  local_mocked_bindings(
+    path_home = function(...) fs::path("/profile", ...),
+    path_home_r = function(...) fs::path("/docs", ...),
+    .package = "fs"
+  )
+
+  # A path under R's home abbreviates to "~" (round-trips when pasted into R).
+  expect_equal(path_home_display(fs::path("/docs", ".btw", "btw.md")), "~/.btw/btw.md")
+
+  # A profile-only path is left native rather than mislabeled "~".
+  expect_equal(
+    path_home_display(fs::path("/profile", ".btw", "btw.md")),
+    "/profile/.btw/btw.md"
+  )
+
+  # Vectorized and leaves unrelated paths untouched.
+  expect_equal(
+    path_home_display(c(fs::path("/docs", "btw.md"), "/elsewhere/btw.md")),
+    c("~/btw.md", "/elsewhere/btw.md")
+  )
+})
+
 # Tests for find_user_agent_files() -----------------------------------------
 
 test_that("find_user_agent_files() discovers agent files across user dirs", {

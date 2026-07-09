@@ -302,7 +302,7 @@ existing_user_btw_md <- function() {
 }
 
 use_btw_md_user <- function() {
-  canonical <- fs::path_home(".btw", "btw.md")
+  canonical <- fs::path(btw_user_dir_preferred(), "btw.md")
   existing <- existing_user_btw_md()
 
   # No user-level config anywhere: create it in the recommended ~/.btw/ location.
@@ -377,7 +377,7 @@ maybe_migrate_user_btw_md <- function(source, canonical) {
 # read and nudging toward consolidating in ~/.btw/.
 resolve_user_btw_md_for_edit <- function() {
   existing <- existing_user_btw_md()
-  recommended <- fs::path_home(".btw", "btw.md")
+  recommended <- fs::path(btw_user_dir_preferred(), "btw.md")
 
   # Nothing exists yet: point at the recommended location so edit_btw_md()
   # reports it's missing and suggests use_btw_md("user").
@@ -541,7 +541,9 @@ path_display <- function(path, parent = getwd()) {
   path_og <- path
   path <- fs::path_real(path)
   parent <- fs::path_real(parent)
-  home <- fs::path_real(fs::path_home())
+  # "~" must match what R expands it to (path_home_r()), not the user profile,
+  # so a printed "~/..." path round-trips when pasted back into R on Windows.
+  home <- fs::path_real(fs::path_home_r())
 
   if (fs::path_has_parent(path, parent)) {
     fs::path_rel(path, parent)
