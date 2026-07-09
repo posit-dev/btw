@@ -215,6 +215,9 @@ describe("pandoc_html_simplify()", {
 
 describe("btw_user_dirs()", {
   it("orders category-major across distinct home roots (Windows)", {
+    # Pin R_USER_DATA_DIR so the R-user-dir entry is a known literal
+    # ("<R_USER_DATA_DIR>/R/btw") rather than the developer's real dir.
+    withr::local_envvar(R_USER_DATA_DIR = "/data")
     local_mocked_bindings(
       path_home = function(...) fs::path("/profile", ...),
       path_home_r = function(...) fs::path("/docs", ...),
@@ -230,12 +233,13 @@ describe("btw_user_dirs()", {
         "/docs/.btw",
         "/profile/.config/btw",
         "/docs/.config/btw",
-        tools::R_user_dir("btw")
+        "/data/R/btw"
       )
     )
   })
 
   it("collapses identical home roots (macOS/Linux)", {
+    withr::local_envvar(R_USER_DATA_DIR = "/data")
     local_mocked_bindings(
       path_home = function(...) fs::path("/home/user", ...),
       path_home_r = function(...) fs::path("/home/user", ...),
@@ -249,13 +253,14 @@ describe("btw_user_dirs()", {
       c(
         "/home/user/.btw",
         "/home/user/.config/btw",
-        tools::R_user_dir("btw")
+        "/data/R/btw"
       )
     )
   })
 })
 
 test_that("btw_user_dir_preferred() is the highest-priority user dir", {
+  withr::local_envvar(R_USER_DATA_DIR = "/data")
   local_mocked_bindings(
     path_home = function(...) fs::path("/profile", ...),
     path_home_r = function(...) fs::path("/docs", ...),
@@ -294,12 +299,7 @@ test_that("path_home_display() abbreviates against R's home, not the profile", {
 
 test_that("find_user_agent_files() discovers agent files across user dirs", {
   user_dir <- withr::local_tempdir()
-
-  local_mocked_bindings(
-    path_home = function(...) fs::path(user_dir, ...),
-    path_home_r = function(...) fs::path(user_dir, ...),
-    .package = "fs"
-  )
+  local_user_home(user_dir)
   withr::local_envvar(TESTTHAT = NA)
 
   btw_dir <- fs::path(user_dir, ".btw")
@@ -315,12 +315,7 @@ test_that("find_user_agent_files() discovers agent files across user dirs", {
 
 test_that("path_find_user() finds btw.md under a home root", {
   user_dir <- withr::local_tempdir()
-
-  local_mocked_bindings(
-    path_home = function(...) fs::path(user_dir, ...),
-    path_home_r = function(...) fs::path(user_dir, ...),
-    .package = "fs"
-  )
+  local_user_home(user_dir)
   fs::file_create(fs::path(user_dir, "btw.md"))
 
   withr::local_envvar(TESTTHAT = NA)
@@ -332,12 +327,7 @@ test_that("path_find_user() finds btw.md under a home root", {
 
 test_that("path_find_user() prefers ~/btw.md and warns on multiple configs", {
   user_dir <- withr::local_tempdir()
-
-  local_mocked_bindings(
-    path_home = function(...) fs::path(user_dir, ...),
-    path_home_r = function(...) fs::path(user_dir, ...),
-    .package = "fs"
-  )
+  local_user_home(user_dir)
   withr::local_envvar(TESTTHAT = NA)
   withr::local_options(rlib_warning_verbosity = "verbose")
 

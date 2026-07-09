@@ -595,14 +595,9 @@ test_that("warn_legacy_skill_dir() warns when legacy dir contains a skill", {
   fs::dir_create(skill_dir)
   fs::file_create(fs::path(skill_dir, "SKILL.md"))
 
-  expect_warning(
-    warn_legacy_skill_dir(dir),
-    "deprecated location"
-  )
-  expect_warning(
-    warn_legacy_skill_dir(dir),
-    "1.5.0"
-  )
+  w <- expect_warning(warn_legacy_skill_dir(dir))
+  expect_match(conditionMessage(w), "deprecated location")
+  expect_match(conditionMessage(w), "1.5.0")
 })
 
 test_that("warn_legacy_skill_dir() does not warn when legacy dir is empty", {
@@ -640,6 +635,7 @@ test_that("warn_legacy_skill_dir() is guarded off during the test suite", {
 test_that("default_user_skill_dirs() includes R-home skills dirs when home roots differ", {
   profile_dir <- withr::local_tempdir()
   docs_dir <- withr::local_tempdir()
+  withr::local_envvar(R_USER_DATA_DIR = withr::local_tempdir())
 
   local_mocked_bindings(
     path_home = function(...) fs::path(profile_dir, ...),
@@ -656,6 +652,7 @@ test_that("default_user_skill_dirs() includes R-home skills dirs when home roots
 test_that("resolve_user_skill_dir() returns ~/.btw/skills as the default install target", {
   profile_dir <- withr::local_tempdir()
   docs_dir <- withr::local_tempdir()
+  withr::local_envvar(R_USER_DATA_DIR = withr::local_tempdir())
 
   local_mocked_bindings(
     path_home = function(...) fs::path(profile_dir, ...),

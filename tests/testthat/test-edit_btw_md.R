@@ -84,6 +84,23 @@ test_that("use_btw_md('user') migrates a loose ~/btw.md when confirmed", {
   expect_false(fs::file_exists(fs::path(wd, "btw.md")))
 })
 
+test_that("use_btw_md('user') keeps a loose ~/btw.md when migration declined", {
+  wd <- withr::local_tempdir()
+  local_user_home(wd)
+  local_mocked_bindings(is_interactive = function() TRUE)
+  local_mocked_bindings(menu = function(...) 2L, .package = "utils")
+
+  fs::file_create(fs::path(wd, "btw.md"))
+
+  expect_snapshot(
+    path <- use_btw_md("user")
+  )
+
+  expect_equal(path, fs::path(wd, "btw.md"))
+  expect_true(fs::file_exists(fs::path(wd, "btw.md")))
+  expect_false(fs::file_exists(fs::path(wd, ".btw", "btw.md")))
+})
+
 test_that("use_btw_md('user') migrates a config from a non-loose location", {
   wd <- withr::local_tempdir()
   local_user_home(wd)
@@ -335,6 +352,33 @@ test_that("edit_btw_md('user') prompts to pick among multiple configs", {
 
   expect_equal(path, fs::path(wd, ".btw", "btw.md"))
   expect_equal(edited, fs::path(wd, ".btw", "btw.md"))
+})
+
+test_that("edit_btw_md('user') falls back to the active config when the menu is cancelled", {
+  wd <- withr::local_tempdir()
+  local_user_home(wd)
+  local_mocked_bindings(is_interactive = function() TRUE)
+
+  fs::file_create(fs::path(wd, "btw.md"))
+  fs::dir_create(fs::path(wd, ".btw"))
+  fs::file_create(fs::path(wd, ".btw", "btw.md"))
+
+  # Cancelling the menu (0) defaults to the file btw actually reads.
+  local_mocked_bindings(menu = function(...) 0L, .package = "utils")
+  local_mocked_bindings(
+    is_installed = function(pkg) pkg != "rstudioapi",
+    .package = "rlang"
+  )
+
+  edited <- NULL
+  with_mocked_bindings(
+    file.edit = function(file) edited <<- file,
+    .package = "utils",
+    expect_snapshot(path <- edit_btw_md("user"))
+  )
+
+  expect_equal(path, fs::path(wd, "btw.md"))
+  expect_equal(edited, fs::path(wd, "btw.md"))
 })
 
 test_that("edit_btw_md('user') opens the active config without prompting when only one exists", {
