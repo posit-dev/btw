@@ -234,6 +234,7 @@ default_user_skill_dirs <- function() {
   # Legacy: btw <= 1.2.0 install target — kept for backwards compatibility only,
   # never written to by newer versions. Listed first (lowest priority).
   legacy_skills_dir <- file.path(tools::R_user_dir("btw", "config"), "skills")
+  warn_legacy_skill_dir(legacy_skills_dir)
 
   # Current user-level skill dirs in increasing priority order
   current_dirs <- rev(vapply(
@@ -247,6 +248,37 @@ default_user_skill_dirs <- function() {
   # present from earlier sources (e.g. attached packages). `unique()` removes
   # any duplicates within this vector itself before the loop sees them.
   unique(c(legacy_skills_dir, current_dirs))
+}
+
+warn_legacy_skill_dir <- function(dir) {
+  # Skip in tests, consistent with path_find_user() / find_user_agent_files().
+  # A maintainer's real legacy dir must not inject warnings into the suite.
+  if (identical(Sys.getenv("TESTTHAT"), "true")) {
+    return(invisible())
+  }
+  if (!fs::dir_exists(dir)) {
+    return(invisible())
+  }
+  # Warn on use: only when the legacy dir actually contains a skill.
+  has_skill <- length(fs::dir_ls(
+    dir,
+    recurse = 1,
+    regexp = "/SKILL\\.md$",
+    fail = FALSE
+  )) > 0
+  if (!has_skill) {
+    return(invisible())
+  }
+
+  cli::cli_warn(
+    c(
+      "!" = "Skills found in a deprecated location: {.path {dir}}",
+      "i" = "Move them to {.path {fs::path(fs::path_home('.btw'), 'skills')}}.",
+      "i" = "This location (btw <= 1.2.0) is deprecated and will stop being read in btw 1.5.0."
+    ),
+    .frequency = "once",
+    .frequency_id = "btw_legacy_skills_dir"
+  )
 }
 
 default_project_skill_dirs <- function(project_dir) {

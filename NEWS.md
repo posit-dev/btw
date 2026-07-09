@@ -1,5 +1,9 @@
 # btw (development version)
 
+## Deprecations
+
+* The legacy user skills directory used by btw <= 1.2.0 (`skills/` under `tools::R_user_dir("btw", "config")`) is deprecated. btw still reads skills from it but now warns once per session when it contains skills, prompting you to move them to `~/.btw/skills`. Read support for the legacy location will be removed in btw 1.5.0.
+
 ## Bug fixes
 
 * On Windows, btw now discovers user-level agents and skills under R's home directory (`~`, typically `Documents`) in addition to the user profile, matching how it already searched for user-level `btw.md` config files. macOS and Linux behavior is unchanged.
