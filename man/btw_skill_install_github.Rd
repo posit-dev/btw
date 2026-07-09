@@ -48,6 +48,9 @@ Download and install a skill from a GitHub repository. The repository
 should contain one or more skill directories, each with a \code{SKILL.md} file.
 }
 \seealso{
+\link{btw-config} for the complete list of project and user
+configuration locations.
+
 Other skills:
 \code{\link[=btw_skill_install_package]{btw_skill_install_package()}},
 \code{\link[=btw_skill_install_project]{btw_skill_install_project()}},

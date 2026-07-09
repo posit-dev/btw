@@ -87,6 +87,7 @@ Roxygen: list(markdown = TRUE)
 Collate:
     'aaa-tools.R'
     'addins.R'
+    'btw-config.R'
     'btw-package.R'
     'btw.R'
     'btw_client.R'

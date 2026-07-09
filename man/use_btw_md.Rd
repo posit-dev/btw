@@ -205,12 +205,17 @@ project, in which case the one closest to your current working directory
 will be used. This makes it easy to have different \code{btw.md} files for
 different sub-projects or sub-directories within a larger project.
 
-For global configuration, you can maintain a \code{btw.md} file in your home
-directory (at \code{btw.md} or \code{.config/btw/btw.md} in your home directory, using
-\code{fs::path_home()}). This file will be used by default when a project-specific
-\code{btw.md} file is not found. Note that \pkg{btw} only looks for \code{btw.md} in
-your home directory if no project-specific \code{btw.md} or \code{AGENTS.md} file is
-present. It also does not look for \code{AGENTS.md} in your home directory.
+For global configuration, the recommended location is a \code{btw.md} file at
+\verb{~/.btw/btw.md}. As a convenience, btw also looks directly at \verb{~/btw.md} in
+your home directory, though this is a de-emphasized fallback rather than the
+canonical location. The complete set of user-level locations, in decreasing
+priority, is \verb{~/.btw/}, \verb{~/.config/btw/}, and
+\code{tools::R_user_dir("btw")}, plus the \verb{~/btw.md} convenience path; see
+\link{btw-config} for details. Whichever user-level \code{btw.md} file is found will
+be used by default when a project-specific \code{btw.md} file is not found. Note
+that \pkg{btw} only looks for a user-level \code{btw.md} if no project-specific
+\code{btw.md} or \code{AGENTS.md} file is present. It also does not look for
+\code{AGENTS.md} in your home directory.
 }
 
 \section{Interactive Setup}{
@@ -233,5 +238,6 @@ withr::with_tempdir({
 \seealso{
 Project context files are discovered automatically and included in
 the system prompt by \code{\link[=btw_client]{btw_client()}}. See \code{\link[=btw_tools]{btw_tools()}} for a list of
-available tools.
+available tools. See \link{btw-config} for the complete list of project and
+user configuration locations.
 }

@@ -65,6 +65,9 @@ remain correct even if the options are later modified or go out of scope
 need different directories for a new session, create a new client.
 }
 \seealso{
+\link{btw-config} for the complete list of project and user
+configuration locations.
+
 Other skills:
 \code{\link[=btw_skill_install_github]{btw_skill_install_github()}},
 \code{\link[=btw_skill_install_package]{btw_skill_install_package()}},

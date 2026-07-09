@@ -52,6 +52,9 @@ permanently copy a skill to your project or user directory so it remains
 available regardless of which packages are loaded.
 }
 \seealso{
+\link{btw-config} for the complete list of project and user
+configuration locations.
+
 Other skills:
 \code{\link[=btw_skill_install_github]{btw_skill_install_github()}},
 \code{\link[=btw_skill_install_project]{btw_skill_install_project()}},

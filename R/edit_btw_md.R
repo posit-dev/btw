@@ -167,12 +167,17 @@
 #' will be used. This makes it easy to have different `btw.md` files for
 #' different sub-projects or sub-directories within a larger project.
 #'
-#' For global configuration, you can maintain a `btw.md` file in your home
-#' directory (at `btw.md` or `.config/btw/btw.md` in your home directory, using
-#' `fs::path_home()`). This file will be used by default when a project-specific
-#' `btw.md` file is not found. Note that \pkg{btw} only looks for `btw.md` in
-#' your home directory if no project-specific `btw.md` or `AGENTS.md` file is
-#' present. It also does not look for `AGENTS.md` in your home directory.
+#' For global configuration, the recommended location is a `btw.md` file at
+#' `~/.btw/btw.md`. As a convenience, btw also looks directly at `~/btw.md` in
+#' your home directory, though this is a de-emphasized fallback rather than the
+#' canonical location. The complete set of user-level locations, in decreasing
+#' priority, is `~/.btw/`, `~/.config/btw/`, and
+#' `tools::R_user_dir("btw")`, plus the `~/btw.md` convenience path; see
+#' [btw-config] for details. Whichever user-level `btw.md` file is found will
+#' be used by default when a project-specific `btw.md` file is not found. Note
+#' that \pkg{btw} only looks for a user-level `btw.md` if no project-specific
+#' `btw.md` or `AGENTS.md` file is present. It also does not look for
+#' `AGENTS.md` in your home directory.
 #'
 #' @section Interactive Setup:
 #'
@@ -205,7 +210,8 @@
 #'
 #' @seealso Project context files are discovered automatically and included in
 #'   the system prompt by [btw_client()]. See [btw_tools()] for a list of
-#'   available tools.
+#'   available tools. See [btw-config] for the complete list of project and
+#'   user configuration locations.
 #'
 #' @describeIn use_btw_md Create a new `btw.md` or `AGENTS.md` context file in
 #'   the current directory, the project directory or your home directory.

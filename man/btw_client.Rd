@@ -49,11 +49,12 @@ set \code{tools = FALSE} to skip registering \pkg{btw} tools with the chat
 client.}
 
 \item{path_btw}{A path to a \code{btw.md}, \code{AGENTS.md}, or \code{CLAUDE.md} project
-context file. If \code{NULL}, btw will find a project-specific \code{btw.md},
-\code{AGENTS.md}, or \code{CLAUDE.md} file in the parents of the current working
-directory, with fallback to user-level \code{btw.md} if no project file is
-found. Set \code{path_btw = FALSE} to create a chat client without using a
-\code{btw.md} file.}
+context file. If \code{NULL}, btw will find a project-specific context file by
+walking up the parents of the current working directory, preferring
+\code{btw.md}, then \code{AGENTS.md}, then \code{CLAUDE.md}, with fallback to a
+user-level \code{btw.md} file if no project file is found. See \code{?btw-config}
+for the complete list of locations. Set \code{path_btw = FALSE} to create a
+chat client without using a \code{btw.md} file.}
 
 \item{path_llms_txt}{A path to an \code{llms.txt} file containing context about
 the current project. By default, btw will look for an \code{llms.txt} file in
@@ -96,10 +97,12 @@ the \code{path_llms_txt} argument.
 
 Client settings in \code{client} and \code{tools} from a project-level \code{btw.md} or
 \code{AGENTS.md} file take precedence. If a project file doesn't specify a
-setting, btw will fall back to settings in a user-level \code{btw.md} file
-(typically in \verb{~/btw.md} or \verb{~/.config/btw/btw.md}). Project-level btw tool
-options under the \code{options} key are merged with user-level options, with
-project-level options taking precedence.
+setting, btw will fall back to settings in a user-level \code{btw.md} file,
+found in \verb{~/.btw/btw.md} (recommended), \verb{~/.config/btw/btw.md},
+\code{tools::R_user_dir("btw")}, or as a convenience directly at \verb{~/btw.md}. See
+\code{?btw-config} for the complete list of user-level locations. Project-level
+btw tool options under the \code{options} key are merged with user-level
+options, with project-level options taking precedence.
 
 Project-specific instructions from both files are combined with a divider,
 allowing you to maintain global guidelines in your user file and
@@ -155,6 +158,48 @@ the alias directly: \code{btw_client(client = "sonnet")}.
 chat
 
 }}
+\section{User (global) locations}{
+
+
+User-level (global) configuration is discovered from the following
+directories, in decreasing order of priority:
+\enumerate{
+\item \verb{~/.btw/} (recommended)
+\item \verb{~/.config/btw/}
+\item The platform-specific R user config directory,
+\code{tools::R_user_dir("btw")}
+}
+
+Skills are discovered in the \verb{skills/} subdirectory of each of these
+directories (e.g. \verb{~/.btw/skills/}), and btw-style agents are discovered as
+\verb{agent-*.md} files directly inside each directory (e.g.
+\verb{~/.btw/agent-my_agent.md}).
+
+For the loose \code{btw.md} configuration file only, btw additionally checks for
+a \code{btw.md} file directly in your home directory (\verb{~/btw.md}) as a
+convenience, though \verb{~/.btw/btw.md} is the preferred, canonical location.
+
+On Windows, R's notion of your home directory (\code{fs::path_home_r()},
+typically your \code{Documents} folder) can differ from your user profile
+directory (\code{fs::path_home()}); btw searches both.
+}
+
+\section{Project locations}{
+
+
+Project-level configuration is discovered by walking up from the current
+working directory to the project root, where the project root is
+identified by the presence of a \code{DESCRIPTION}, \code{.git}, \code{.vscode}, \code{.here},
+or \verb{*.Rproj} file.
+\itemize{
+\item \strong{Config file}: the nearest \code{btw.md} file, or if none is found, the
+nearest \code{AGENTS.md} file, or if neither is found, the nearest \code{CLAUDE.md}
+file. (\code{btw.md} > \code{AGENTS.md} > \code{CLAUDE.md})
+\item \strong{btw-style agents}: \verb{.btw/agent-*.md}
+\item \strong{Skills}: \verb{.btw/skills/} or \verb{.agents/skills/}
+}
+}
+
 \examples{
 \dontshow{if (rlang::is_interactive()) withAutoprint(\{ # examplesIf}
 withr::local_options(list(

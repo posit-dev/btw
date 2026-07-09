@@ -56,6 +56,8 @@ NULL
 #'   of bundled resources with their paths.
 #'
 #' @family skills
+#' @seealso [btw-config] for the complete list of project and user
+#'   configuration locations.
 #' @export
 btw_tool_skill <- function(name, `_intent`) {}
 
@@ -978,6 +980,8 @@ select_skill_dir <- function(
 #' @return The path to the installed skill directory, invisibly.
 #'
 #' @family skills
+#' @seealso [btw-config] for the complete list of project and user
+#'   configuration locations.
 #' @export
 btw_skill_install_github <- function(
   repo,
@@ -1083,6 +1087,8 @@ btw_skill_install_github <- function(
 #' @return The path to the installed skill directory, invisibly.
 #'
 #' @family skills
+#' @seealso [btw-config] for the complete list of project and user
+#'   configuration locations.
 #' @export
 btw_skill_install_package <- function(
   package,
