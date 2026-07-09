@@ -210,3 +210,87 @@ describe("pandoc_html_simplify()", {
     expect_true(any(grepl("\\|", result)))
   })
 })
+
+# Tests for btw_user_dirs() ------------------------------------------------
+
+describe("btw_user_dirs()", {
+  it("orders category-major across distinct home roots (Windows)", {
+    local_mocked_bindings(
+      path_home = function(...) fs::path("/profile", ...),
+      path_home_r = function(...) fs::path("/docs", ...),
+      .package = "fs"
+    )
+
+    result <- btw_user_dirs()
+
+    expect_equal(
+      result,
+      c(
+        "/profile/.btw",
+        "/docs/.btw",
+        "/profile/.config/btw",
+        "/docs/.config/btw",
+        tools::R_user_dir("btw")
+      )
+    )
+  })
+
+  it("collapses identical home roots (macOS/Linux)", {
+    local_mocked_bindings(
+      path_home = function(...) fs::path("/home/user", ...),
+      path_home_r = function(...) fs::path("/home/user", ...),
+      .package = "fs"
+    )
+
+    result <- btw_user_dirs()
+
+    expect_equal(
+      result,
+      c(
+        "/home/user/.btw",
+        "/home/user/.config/btw",
+        tools::R_user_dir("btw")
+      )
+    )
+  })
+})
+
+# Tests for find_user_agent_files() -----------------------------------------
+
+test_that("find_user_agent_files() discovers agent files across user dirs", {
+  user_dir <- withr::local_tempdir()
+
+  local_mocked_bindings(
+    path_home = function(...) fs::path(user_dir, ...),
+    path_home_r = function(...) fs::path(user_dir, ...),
+    .package = "fs"
+  )
+  withr::local_envvar(TESTTHAT = NA)
+
+  btw_dir <- fs::path(user_dir, ".btw")
+  fs::dir_create(btw_dir)
+  fs::file_create(fs::path(btw_dir, "agent-foo.md"))
+
+  files <- find_user_agent_files()
+
+  expect_true(fs::path(btw_dir, "agent-foo.md") %in% fs::path(files))
+})
+
+# Regression tests for path_find_user() -------------------------------------
+
+test_that("path_find_user() finds btw.md under a home root", {
+  user_dir <- withr::local_tempdir()
+
+  local_mocked_bindings(
+    path_home = function(...) fs::path(user_dir, ...),
+    path_home_r = function(...) fs::path(user_dir, ...),
+    .package = "fs"
+  )
+  fs::file_create(fs::path(user_dir, "btw.md"))
+
+  withr::local_envvar(TESTTHAT = NA)
+  expect_equal(path_find_user("btw.md"), fs::path_norm(fs::path(user_dir, "btw.md")))
+
+  withr::local_envvar(TESTTHAT = "true")
+  expect_null(path_find_user("btw.md"))
+})

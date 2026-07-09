@@ -1,5 +1,9 @@
 # btw (development version)
 
+## Bug fixes
+
+* On Windows, btw now discovers user-level agents and skills under R's home directory (`~`, typically `Documents`) in addition to the user profile, matching how it already searched for user-level `btw.md` config files. macOS and Linux behavior is unchanged.
+
 # btw 1.3.0
 
 ## New features

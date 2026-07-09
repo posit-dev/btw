@@ -153,14 +153,17 @@ path_find_in_project <- function(filename, dir = getwd()) {
 }
 
 # Returns user-level config directories in decreasing priority order.
-# Consumers iterate and use the first match (or rev() when building
-# an increasing-priority list like btw_skills_directories()).
+# On Windows, fs::path_home() (user profile) and fs::path_home_r() (R's "~",
+# typically Documents) differ, so both are included; on macOS/Linux they are
+# identical and collapse via unique(). Consumers iterate and use the first
+# match, or rev() when building an increasing-priority list.
 btw_user_dirs <- function() {
-  c(
-    fs::path_home(".btw"),
-    fs::path_home(".config", "btw"),
+  homes <- unique(c(fs::path_home(), fs::path_home_r()))
+  unique(as.character(c(
+    fs::path(homes, ".btw"),
+    fs::path(homes, ".config", "btw"),
     tools::R_user_dir("btw")
-  )
+  )))
 }
 
 path_find_user <- function(filename) {
