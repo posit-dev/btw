@@ -155,6 +155,23 @@ btw_pkg_src_has_source_tree <- function(r_dir) {
   length(files) > 0
 }
 
+# Resolve a package's install path + whether real R source is on disk.
+# Pure lookup: no namespace load (`pkgload::pkg_path()` reads DESCRIPTION
+# without loading), so callers that also resolve the namespace don't pay for
+# a redundant `load_all()`/`loadNamespace()`.
+btw_pkg_src_path_info <- function(package) {
+  if (identical(package, ".")) {
+    check_installed("pkgload")
+    list(path = pkgload::pkg_path("."), source_available = TRUE)
+  } else {
+    path <- find.package(package)
+    list(
+      path = path,
+      source_available = btw_pkg_src_has_source_tree(file.path(path, "R"))
+    )
+  }
+}
+
 btw_tool_pkg_src_path_impl <- function(packages) {
   check_character(packages)
 
@@ -163,20 +180,11 @@ btw_tool_pkg_src_path_impl <- function(packages) {
   }
 
   rows <- lapply(packages, function(package) {
-    if (identical(package, ".")) {
-      check_installed("pkgload")
-      pkgload::load_all(".", export_all = FALSE, quiet = TRUE)
-      path <- pkgload::pkg_path(".")
-      source_available <- TRUE
-    } else {
-      path <- find.package(package)
-      source_available <- btw_pkg_src_has_source_tree(file.path(path, "R"))
-    }
-
+    info <- btw_pkg_src_path_info(package)
     data.frame(
       package = package,
-      path = path,
-      source_available = source_available,
+      path = info$path,
+      source_available = info$source_available,
       stringsAsFactors = FALSE
     )
   })
@@ -321,17 +329,14 @@ btw_tool_pkg_src_get_impl <- function(package, objects) {
   btw_tool_result(value = value, data = data)
 }
 
-btw_pkg_src_materialize_dir <- function(package) {
-  resolved <- btw_pkg_src_resolve_ns(package)
-  ns <- resolved$ns
-
+btw_pkg_src_materialize_dir <- function(ns) {
   dir <- withr::local_tempdir(.local_envir = parent.frame())
   names <- sort(btw_pkg_src_namespace_objects(ns, all = TRUE))
 
   for (name in names) {
     # Deparsed source loses original comments/formatting and has no
     # original line numbers; each object is written to its own file so
-    # search results still carry meaningful filenames/line numbers.
+    # search results still carry the object name.
     # Skip objects that error when forced (active bindings, erroring
     # promises) rather than aborting the whole materialization.
     tryCatch(
@@ -340,8 +345,12 @@ btw_pkg_src_materialize_dir <- function(package) {
         type <- btw_pkg_src_classify(name, x, ns)
         source <- btw_pkg_src_render_source(name, x, type, ns)
 
-        file <- file.path(dir, paste0(fs::path_sanitize(name), ".R"))
-        writeLines(source, file)
+        # Objects with no renderable source (e.g. an S4 class whose def
+        # can't be resolved) would otherwise write the literal "NA".
+        if (!(length(source) == 1 && is.na(source))) {
+          file <- file.path(dir, paste0(fs::path_sanitize(name), ".R"))
+          writeLines(source, file)
+        }
       },
       error = function(e) NULL
     )
@@ -367,13 +376,17 @@ btw_tool_pkg_src_search_impl <- function(
   check_installed("duckdb")
   check_installed("DBI")
 
-  path_info <- btw_tool_pkg_src_path_impl(package)
-  path_data <- S7::prop(path_info, "extra")$data
+  path_info <- btw_pkg_src_path_info(package)
 
-  search_dir <- if (path_data$source_available) {
-    file.path(path_data$path, "R")
+  # Real R source is searched in place; binary installs are materialized as
+  # deparsed source in a temp dir. `materialized` flags the latter so we can
+  # replace the transient temp paths with plain object names below.
+  materialized <- !path_info$source_available
+  if (materialized) {
+    resolved <- btw_pkg_src_resolve_ns(package)
+    search_dir <- btw_pkg_src_materialize_dir(resolved$ns)
   } else {
-    btw_pkg_src_materialize_dir(package)
+    search_dir <- file.path(path_info$path, "R")
   }
 
   search_fn <- btw_tool_files_search_factory(
@@ -401,7 +414,25 @@ btw_tool_pkg_src_search_impl <- function(
   data <- do.call(rbind, results)
   rownames(data) <- NULL
 
-  value <- if (nrow(data) > 0) md_table(data) else "No matches found."
+  if (materialized) {
+    # Deparsed source lives in a temp dir that is removed when this call
+    # returns, so the paths aren't readable. Surface the object name instead
+    # (search `filename` is `<object>.R`) so the agent uses `pkg src get`
+    # rather than trying to read a stale temp path.
+    data$filename <- fs::path_ext_remove(basename(data$filename))
+  }
+
+  max_display <- 20L
+  value <- if (nrow(data) == 0) {
+    "No matches found."
+  } else {
+    paste0(
+      md_table(utils::head(data, max_display)),
+      if (nrow(data) > max_display) {
+        paste0("\n\n... and ", nrow(data) - max_display, " more matches.")
+      }
+    )
+  }
 
   btw_tool_result(value = value, data = data)
 }

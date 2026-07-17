@@ -168,7 +168,8 @@ test_that("btw_tool_pkg_src_get_impl validates arguments", {
 # Test btw_pkg_src_materialize_dir -------------------------------------------
 
 test_that("btw_pkg_src_materialize_dir writes deparsed sources to a temp dir", {
-  dir <- btw:::btw_pkg_src_materialize_dir("tools")
+  ns <- btw:::btw_pkg_src_resolve_ns("tools")$ns
+  dir <- btw:::btw_pkg_src_materialize_dir(ns)
 
   expect_true(dir.exists(dir))
   files <- list.files(dir, pattern = "\\.R$")
@@ -204,6 +205,11 @@ test_that("btw_tool_pkg_src_search_impl searches materialized source for binary-
   expect_true(nrow(data) > 0)
   expect_true(all(data$term == "file.path"))
   expect_true(all(grepl("file.path", data$content, fixed = TRUE)))
+
+  # Materialized source lives in a temp dir that is gone by now; results
+  # surface the bare object name, not a transient (and unreadable) temp path.
+  expect_false(any(grepl(.Platform$file.sep, data$filename, fixed = TRUE)))
+  expect_false(any(grepl("\\.R$", data$filename)))
 })
 
 test_that("btw_tool_pkg_src_search_impl combines results across multiple terms", {
