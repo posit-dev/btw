@@ -79,11 +79,14 @@ btw_tool_files_search <- function(
 btw_tool_files_search_factory <- function(
   path = getwd(),
   extensions = files_search_extensions(),
-  exclusions = files_search_exclusions()
+  exclusions = files_search_exclusions(),
+  restrict_to_wd = TRUE
 ) {
   check_path_exists(path)
-  check_path_within_current_wd(path)
-  path <- fs::path_rel(path)
+  if (restrict_to_wd) {
+    check_path_within_current_wd(path)
+    path <- fs::path_rel(path)
+  }
   check_character(extensions, allow_na = FALSE)
   check_character(exclusions, allow_na = FALSE, allow_null = TRUE)
 
@@ -99,7 +102,7 @@ btw_tool_files_search_factory <- function(
     cli::cli_progress_step(
       "Indexing files in {.path {fs::path_real(path)}} for code search"
     )
-    db_create_local_files(path, extensions, exclusions)
+    db_create_local_files(path, extensions, exclusions, restrict_to_wd = restrict_to_wd)
   }
 
   function(
@@ -231,9 +234,12 @@ Use the `btw_tool_files_read` tool, if available, to read the full content of a 
 db_create_local_files <- function(
   path = getwd(),
   extensions = files_search_extensions(),
-  exclusions = files_search_exclusions()
+  exclusions = files_search_exclusions(),
+  restrict_to_wd = TRUE
 ) {
-  check_path_within_current_wd(path)
+  if (restrict_to_wd) {
+    check_path_within_current_wd(path)
+  }
   check_character(extensions, allow_na = FALSE)
   check_character(exclusions, allow_na = FALSE, allow_null = TRUE)
 
