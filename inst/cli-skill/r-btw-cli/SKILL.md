@@ -1,6 +1,6 @@
 ---
 name: r-btw-cli
-description: "Use the `btw` CLI to access R documentation, manage R package development, query CRAN, inspect the R environment, and discover or fetch skills from the command line. Use when you need to: (1) read R help pages or vignettes, (2) run R CMD check, tests, or devtools::document(), (3) search CRAN for packages, (4) check installed package versions or R platform info, (5) list or fetch skills from R packages or GitHub repositories."
+description: "Use the `btw` CLI to access R documentation, manage R package development, query CRAN, inspect the R environment, and discover or fetch skills from the command line. Use when you need to: (1) read R help pages or vignettes, (2) run R CMD check, tests, or devtools::document(), (3) search CRAN for packages, (4) check installed package versions or R platform info, (5) list or fetch skills from R packages or GitHub repositories, (6) inspect the source code of installed packages."
 ---
 
 # btw CLI
@@ -33,6 +33,16 @@ btw pkg check [--path <dir>]               Run R CMD check
 btw pkg test [-f <filter>] [--path <dir>]  Run testthat tests
 btw pkg load [--path <dir>]                Load package with pkgload
 btw pkg coverage [--file <f>] [--json]     Compute test coverage
+```
+
+Use `btw pkg src` to inspect the **source code** of installed packages (or the
+dev package via `.`), e.g. to understand behavior the docs don't cover.
+
+```
+btw pkg src list <pkg> [-a|--all] [--json]      List namespace objects and their types
+btw pkg src get <pkg> <objects>... [--json]     Show source for objects (srcref or deparse)
+btw pkg src path <pkg>... [--json]              Install paths and whether R source is present
+btw pkg src search <pkg> <terms>... [--json]    Code-search the package source
 ```
 
 Use these commands to inspect the current R installation and installed packages. Use `btw check-installed` to verify whether a specific package is installed before deciding whether to use `btw docs` or `btw cran`.
