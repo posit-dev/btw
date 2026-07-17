@@ -21,8 +21,10 @@
 #'    `tools::R_user_dir("btw")`
 #'
 #' Skills are discovered in the `skills/` subdirectory of each (e.g.
-#' `~/.btw/skills/`), and btw-style agents are discovered as `agent-*.md` files
-#' directly inside each (e.g. `~/.btw/agent-my_agent.md`).
+#' `~/.btw/skills/`), and btw-style agents are discovered both as
+#' `agent-*.md` files directly inside each (e.g. `~/.btw/agent-my_agent.md`)
+#' and as `*.md` files in an `agents/` subdirectory of each (e.g.
+#' `~/.btw/agents/my_agent.md`).
 #'
 #' The user-level `btw.md` **configuration file** is searched for in a slightly
 #' different order: a `btw.md` directly in your home directory (`~/btw.md`)
@@ -47,7 +49,7 @@
 #' * **Config file**: the nearest `btw.md` file, or if none is found, the
 #'   nearest `AGENTS.md` file, or if neither is found, the nearest `CLAUDE.md`
 #'   file. (`btw.md` > `AGENTS.md` > `CLAUDE.md`)
-#' * **btw-style agents**: `.btw/agent-*.md`
+#' * **btw-style agents**: `.btw/agents/*.md` or `.btw/agent-*.md`
 #' * **Skills**: `.btw/skills/` or `.agents/skills/`
 #'
 #' @section Claude Code agents:

@@ -1,5 +1,9 @@
 # btw (development version)
 
+## New features
+
+* btw now discovers project- and user-level custom agents from an `agents/` subdirectory (e.g. `.btw/agents/my_agent.md` or `~/.btw/agents/my_agent.md`) in addition to the flat `agent-*.md` files. Files in the `agents/` directory use plain `{name}.md` filenames, with the agent name taken from the YAML frontmatter (#202).
+
 ## Deprecations
 
 * The legacy user skills directory used by btw <= 1.2.0 (`skills/` under `tools::R_user_dir("btw", "config")`) is deprecated. btw still reads skills from it but now warns once per session when it contains skills, prompting you to move them to `~/.btw/skills`. Read support for the legacy location will be removed in btw 1.5.0 (#203).

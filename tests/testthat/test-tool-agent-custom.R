@@ -150,6 +150,44 @@ Bad YAML."
   )
 })
 
+test_that("custom_agent_discover_tools() prefers agents/ subdir over flat agent-*.md on name conflict", {
+  skip_if_not_installed("ellmer")
+
+  tmp_dir <- withr::local_tempdir()
+  btw_dir <- file.path(tmp_dir, ".btw")
+  dir.create(btw_dir)
+  agents_dir <- file.path(btw_dir, "agents")
+  dir.create(agents_dir)
+
+  writeLines(
+    "---
+name: conflict_agent
+description: From agents subdir
+---
+Subdir prompt.",
+    file.path(agents_dir, "conflict_agent.md")
+  )
+
+  writeLines(
+    "---
+name: conflict_agent
+description: From flat file
+---
+Flat prompt.",
+    file.path(btw_dir, "agent-conflict_agent.md")
+  )
+
+  expect_warning(
+    tools <- withr::with_dir(tmp_dir, custom_agent_discover_tools()),
+    "Skipping duplicate agent"
+  )
+
+  expect_length(tools, 1)
+  tool_def <- tools[["btw_tool_agent_conflict_agent"]]
+  tool <- tool_def$tool()
+  expect_equal(tool@description, "From agents subdir")
+})
+
 test_that("custom_agent_discover_tools() handles multiple agents", {
   skip_if_not_installed("ellmer")
 

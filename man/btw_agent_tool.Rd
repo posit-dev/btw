@@ -104,8 +104,10 @@ Provide specific, actionable feedback.
 Agent files are automatically discovered by \code{\link[=btw_tools]{btw_tools()}} when placed in
 the following locations (in order of priority):
 \itemize{
-\item \strong{Project level (btw)}: \verb{.btw/agent-*.md} in your project directory
-\item \strong{User level (btw)}: \verb{~/.btw/agent-*.md} or \verb{~/.config/btw/agent-*.md}
+\item \strong{Project level (btw)}: \verb{.btw/agents/*.md} or \verb{.btw/agent-*.md} in your
+project directory
+\item \strong{User level (btw)}: \verb{~/.btw/agents/*.md} or \verb{~/.btw/agent-*.md} (and
+the same in \verb{~/.config/btw/})
 \item \strong{Project level (Claude Code)}: \verb{.claude/agents/*.md} in your project directory
 \item \strong{User level (Claude Code)}: \verb{~/.claude/agents/*.md}
 }

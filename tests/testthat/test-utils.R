@@ -311,6 +311,61 @@ test_that("find_user_agent_files() discovers agent files across user dirs", {
   expect_true(fs::path(btw_dir, "agent-foo.md") %in% fs::path(files))
 })
 
+test_that("find_user_agent_files() discovers agents/ subdirectory files before flat files", {
+  user_dir <- withr::local_tempdir()
+  local_user_home(user_dir)
+  withr::local_envvar(TESTTHAT = NA)
+
+  btw_dir <- fs::path(user_dir, ".btw")
+  agents_dir <- fs::path(btw_dir, "agents")
+  fs::dir_create(agents_dir)
+  fs::file_create(fs::path(agents_dir, "foo.md"))
+  fs::file_create(fs::path(btw_dir, "agent-bar.md"))
+
+  files <- fs::path(find_user_agent_files())
+
+  expect_true(fs::path(agents_dir, "foo.md") %in% files)
+  expect_true(fs::path(btw_dir, "agent-bar.md") %in% files)
+  expect_lt(
+    match(fs::path(agents_dir, "foo.md"), files),
+    match(fs::path(btw_dir, "agent-bar.md"), files)
+  )
+})
+
+# Tests for find_project_agent_files() ---------------------------------------
+
+test_that("find_project_agent_files() discovers agents/ subdirectory files", {
+  tmp_dir <- withr::local_tempdir()
+  btw_dir <- fs::path(tmp_dir, ".btw")
+  agents_dir <- fs::path(btw_dir, "agents")
+  fs::dir_create(agents_dir)
+  fs::file_create(fs::path(agents_dir, "foo.md"))
+
+  files <- fs::path_real(withr::with_dir(tmp_dir, find_project_agent_files()))
+
+  expect_true(fs::path_real(fs::path(agents_dir, "foo.md")) %in% files)
+})
+
+test_that("find_project_agent_files() returns agents/ subdir files before flat agent-*.md files", {
+  tmp_dir <- withr::local_tempdir()
+  btw_dir <- fs::path(tmp_dir, ".btw")
+  agents_dir <- fs::path(btw_dir, "agents")
+  fs::dir_create(agents_dir)
+  fs::file_create(fs::path(agents_dir, "foo.md"))
+  fs::file_create(fs::path(btw_dir, "agent-bar.md"))
+
+  files <- fs::path_real(withr::with_dir(tmp_dir, find_project_agent_files()))
+  agents_file <- fs::path_real(fs::path(agents_dir, "foo.md"))
+  flat_file <- fs::path_real(fs::path(btw_dir, "agent-bar.md"))
+
+  expect_true(agents_file %in% files)
+  expect_true(flat_file %in% files)
+  expect_lt(
+    match(agents_file, files),
+    match(flat_file, files)
+  )
+})
+
 # Regression tests for path_find_user() -------------------------------------
 
 test_that("path_find_user() finds btw.md under a home root", {

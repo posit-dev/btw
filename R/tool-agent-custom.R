@@ -85,8 +85,10 @@ NULL
 #' Agent files are automatically discovered by [btw_tools()] when placed in
 #' the following locations (in order of priority):
 #'
-#' * **Project level (btw)**: `.btw/agent-*.md` in your project directory
-#' * **User level (btw)**: `~/.btw/agent-*.md` or `~/.config/btw/agent-*.md`
+#' * **Project level (btw)**: `.btw/agents/*.md` or `.btw/agent-*.md` in your
+#'   project directory
+#' * **User level (btw)**: `~/.btw/agents/*.md` or `~/.btw/agent-*.md` (and
+#'   the same in `~/.config/btw/`)
 #' * **Project level (Claude Code)**: `.claude/agents/*.md` in your project directory
 #' * **User level (Claude Code)**: `~/.claude/agents/*.md`
 #'
@@ -348,10 +350,11 @@ btw_tool_agent_custom_from_config <- function(agent_config) {
 }
 
 # Discover agent definition files from project and user directories.
-# Priority order (highest first): project .btw/agent-*.md, then user
-# agent-*.md files in btw_user_dirs() (~/.btw/, ~/.config/btw/,
-# tools::R_user_dir("btw"), in that order), then the Claude Code special
-# case: project .claude/agents/, then user ~/.claude/agents/.
+# Priority order (highest first): project .btw/agents/*.md then project
+# .btw/agent-*.md, then for each dir in btw_user_dirs() (~/.btw/,
+# ~/.config/btw/, tools::R_user_dir("btw"), in that order) its agents/*.md
+# then its flat agent-*.md, then the Claude Code special case: project
+# .claude/agents/, then user ~/.claude/agents/.
 discover_agent_md_files <- function() {
   # btw locations (highest priority)
   project_btw <- find_project_agent_files()

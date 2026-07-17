@@ -245,7 +245,8 @@ detect_project_is_r_package <- function(dir = getwd()) {
 
 # Agent file discovery ---------------------------------------------------------
 
-# Find agent-*.md files in project .btw/ directory
+# Find agent-*.md files in project .btw/ directory, including its
+# agents/ subdirectory (agents/*.md takes precedence over flat agent-*.md)
 find_project_agent_files <- function(dir = getwd()) {
   btw_dir <- path_find_in_project(".btw", dir)
 
@@ -253,11 +254,24 @@ find_project_agent_files <- function(dir = getwd()) {
     return(character())
   }
 
-  files <- fs::dir_ls(btw_dir, regexp = "agent-.*\\.md$", type = "file")
-  as.character(files)
+  agents_dir <- fs::path(btw_dir, "agents")
+  subdir_files <- character()
+  if (fs::dir_exists(agents_dir)) {
+    subdir_files <- as.character(
+      fs::dir_ls(agents_dir, regexp = "\\.md$", type = "file")
+    )
+  }
+
+  flat_files <- as.character(
+    fs::dir_ls(btw_dir, regexp = "agent-.*\\.md$", type = "file")
+  )
+
+  c(subdir_files, flat_files)
 }
 
-# Find agent-*.md files in user config directories
+# Find agent-*.md files in user config directories, including each
+# directory's agents/ subdirectory (agents/*.md takes precedence over
+# flat agent-*.md)
 find_user_agent_files <- function() {
   if (identical(Sys.getenv("TESTTHAT"), "true")) {
     return(character())
@@ -266,6 +280,12 @@ find_user_agent_files <- function() {
   files <- character()
   for (dir in btw_user_dirs()) {
     if (fs::dir_exists(dir)) {
+      agents_dir <- fs::path(dir, "agents")
+      if (fs::dir_exists(agents_dir)) {
+        found <- fs::dir_ls(agents_dir, regexp = "\\.md$", type = "file")
+        files <- c(files, as.character(found))
+      }
+
       found <- fs::dir_ls(dir, regexp = "agent-.*\\.md$", type = "file")
       files <- c(files, as.character(found))
     }
