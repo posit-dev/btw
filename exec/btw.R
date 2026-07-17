@@ -246,6 +246,26 @@ btw_pkg_coverage <- function(path, file, json = FALSE) {
   }
 }
 
+btw_pkg_src_list <- function(package, all = FALSE, json = FALSE) {
+  result <- btw:::btw_tool_pkg_src_list_impl(package, all = all)
+  if (json) {
+    data <- S7::prop(result, "extra")$data
+    btw_json_output(if (!is.null(data)) data else list())
+  } else {
+    btw_output(result)
+  }
+}
+
+btw_pkg_src_path <- function(packages, json = FALSE) {
+  result <- btw:::btw_tool_pkg_src_path_impl(packages)
+  if (json) {
+    data <- S7::prop(result, "extra")$data
+    btw_json_output(if (!is.null(data)) data else list())
+  } else {
+    btw_output(result)
+  }
+}
+
 btw_system_info <- function(json = FALSE) {
   result <- btw:::btw_tool_sessioninfo_platform_impl()
   if (json) {
@@ -693,6 +713,40 @@ switch(
         #| description: Output as JSON.
         json <- FALSE
         tryCatch(btw_pkg_coverage(path, file, json), error = btw_error)
+      },
+
+      #| title: Inspect package source code
+      src = {
+        switch(
+          src_cmd <- "",
+
+          #| title: List objects in a package namespace
+          list = {
+            #| description: Package name.
+            #| required: true
+            package <- NULL
+            #| description: Include internal (non-exported) objects.
+            #| short: 'a'
+            all <- FALSE
+            #| description: Output as JSON.
+            json <- FALSE
+            tryCatch(btw_pkg_src_list(package, all, json), error = btw_error)
+          },
+
+          #| title: Show install paths for packages
+          path = {
+            #| description: Package names.
+            #| required: true
+            `packages...` <- c()
+            #| description: Output as JSON.
+            json <- FALSE
+            tryCatch(
+              btw_pkg_src_path(`packages...`, json),
+              error = btw_error
+            )
+          }
+        )
+        if (src_cmd == "") btw_self_help("pkg", "src")
       }
     )
     if (pkg_cmd == "") btw_self_help("pkg")
