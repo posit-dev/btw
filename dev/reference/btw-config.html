@@ -68,8 +68,10 @@ configuration file may also live directly in your home directory.</p>
 <li><p>The platform-specific R user config directory,
 <code>tools::R_user_dir("btw")</code></p></li>
 </ol><p>Skills are discovered in the <code>skills/</code> subdirectory of each (e.g.
-<code>~/.btw/skills/</code>), and btw-style agents are discovered as <code>agent-*.md</code> files
-directly inside each (e.g. <code>~/.btw/agent-my_agent.md</code>).</p>
+<code>~/.btw/skills/</code>), and btw-style agents are discovered both as
+<code>agent-*.md</code> files directly inside each (e.g. <code>~/.btw/agent-my_agent.md</code>)
+and as <code>*.md</code> files in an <code>agents/</code> subdirectory of each (e.g.
+<code>~/.btw/agents/my_agent.md</code>).</p>
 <p>The user-level <code>btw.md</code> <strong>configuration file</strong> is searched for in a slightly
 different order: a <code>btw.md</code> directly in your home directory (<code>~/btw.md</code>)
 takes precedence, followed by <code>btw.md</code> in each of the directories above
@@ -93,7 +95,7 @@ identified by the presence of a <code>DESCRIPTION</code>, <code>.git</code>, <co
 or <code>*.Rproj</code> file.</p><ul><li><p><strong>Config file</strong>: the nearest <code>btw.md</code> file, or if none is found, the
 nearest <code>AGENTS.md</code> file, or if neither is found, the nearest <code>CLAUDE.md</code>
 file. (<code>btw.md</code> &gt; <code>AGENTS.md</code> &gt; <code>CLAUDE.md</code>)</p></li>
-<li><p><strong>btw-style agents</strong>: <code>.btw/agent-*.md</code></p></li>
+<li><p><strong>btw-style agents</strong>: <code>.btw/agents/*.md</code> or <code>.btw/agent-*.md</code></p></li>
 <li><p><strong>Skills</strong>: <code>.btw/skills/</code> or <code>.agents/skills/</code></p></li>
 </ul></div>
     <div class="section level2">

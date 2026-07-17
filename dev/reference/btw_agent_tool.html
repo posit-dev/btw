@@ -96,8 +96,10 @@ Automatic Discovery
 
 Agent files are automatically discovered by btw_tools() when placed in
 the following locations (in order of priority):
-Project level (btw): .btw/agent-*.md in your project directory
-User level (btw): ~/.btw/agent-*.md or ~/.config/btw/agent-*.md
+Project level (btw): .btw/agents/*.md or .btw/agent-*.md in your
+project directory
+User level (btw): ~/.btw/agents/*.md or ~/.btw/agent-*.md (and
+the same in ~/.config/btw/)
 Project level (Claude Code): .claude/agents/*.md in your project directory
 User level (Claude Code): ~/.claude/agents/*.md
 
@@ -221,8 +223,10 @@ Automatic Discovery
 
 Agent files are automatically discovered by btw_tools() when placed in
 the following locations (in order of priority):
-Project level (btw): .btw/agent-*.md in your project directory
-User level (btw): ~/.btw/agent-*.md or ~/.config/btw/agent-*.md
+Project level (btw): .btw/agents/*.md or .btw/agent-*.md in your
+project directory
+User level (btw): ~/.btw/agents/*.md or ~/.btw/agent-*.md (and
+the same in ~/.config/btw/)
 Project level (Claude Code): .claude/agents/*.md in your project directory
 User level (Claude Code): ~/.claude/agents/*.md
 
@@ -363,8 +367,10 @@ used.</p></li>
 
 
 <p>Agent files are automatically discovered by <code><a href="btw_tools.html">btw_tools()</a></code> when placed in
-the following locations (in order of priority):</p><ul><li><p><strong>Project level (btw)</strong>: <code>.btw/agent-*.md</code> in your project directory</p></li>
-<li><p><strong>User level (btw)</strong>: <code>~/.btw/agent-*.md</code> or <code>~/.config/btw/agent-*.md</code></p></li>
+the following locations (in order of priority):</p><ul><li><p><strong>Project level (btw)</strong>: <code>.btw/agents/*.md</code> or <code>.btw/agent-*.md</code> in your
+project directory</p></li>
+<li><p><strong>User level (btw)</strong>: <code>~/.btw/agents/*.md</code> or <code>~/.btw/agent-*.md</code> (and
+the same in <code>~/.config/btw/</code>)</p></li>
 <li><p><strong>Project level (Claude Code)</strong>: <code>.claude/agents/*.md</code> in your project directory</p></li>
 <li><p><strong>User level (Claude Code)</strong>: <code>~/.claude/agents/*.md</code></p></li>
 </ul><p>btw-style agents take precedence over Claude Code agents with the same name.
@@ -453,8 +459,8 @@ creating chat clients with tools.</p></div>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     btw_tool_agent_custom_impl(prompt = prompt, session_id = session_id, </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         agent_config = agent_config)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5632fd4b3870&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5632fd4b3c60&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x561b4c4dd8a8&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x561b4c4dd4b8&gt;</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Create a Claude Code-style agent file (name with hyphens)</span></span></span>
 <span class="r-in"><span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_tempfile.html" class="external-link">with_tempdir</a></span><span class="op">(</span><span class="op">{</span></span></span>
@@ -487,8 +493,8 @@ creating chat clients with tools.</p></div>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     btw_tool_agent_custom_impl(prompt = prompt, session_id = session_id, </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         agent_config = agent_config)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5632fd4b3870&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x56330112a838&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x561b4c4dd8a8&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x561b4c249b98&gt;</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

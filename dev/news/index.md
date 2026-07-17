@@ -2,6 +2,15 @@
 
 ## btw (development version)
 
+### New features
+
+- btw now discovers project- and user-level custom agents from an
+  `agents/` subdirectory (e.g. `.btw/agents/my_agent.md` or
+  `~/.btw/agents/my_agent.md`) in addition to the flat `agent-*.md`
+  files. Files in the `agents/` directory use plain `{name}.md`
+  filenames, with the agent name taken from the YAML frontmatter
+  ([\#202](https://github.com/posit-dev/btw/issues/202)).
+
 ### Deprecations
 
 - The legacy user skills directory used by btw \<= 1.2.0 (`skills/`

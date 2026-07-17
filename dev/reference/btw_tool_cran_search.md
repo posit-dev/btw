@@ -74,7 +74,7 @@ btw(
 #> 
 #> | package | title | version | date | url | downloads_last_month |
 #> |---------|-------|---------|------|-----|----------------------|
-#> | visNetwork | Network Visualization using 'vis.js' Library | 2.1.4 | 2025-09-04 | https://datastorm-open.github.io/visNetwork/ | 78,224 |
+#> | DiagrammeR | Graph/Network Visualization | 1.0.12 | 2026-04-27 | https://rich-iannone.github.io/DiagrammeR/, https://github.com/rich-iannone/DiagrammeR | 55,675 |
 btw(
   pkgsearch::pkg_search("network visualization", format = "long", size = 1),
   clipboard = FALSE
@@ -89,13 +89,18 @@ btw(
 #> pkgsearch::pkg_search(...)
 #> Found 3673 packages matching `network visualization`, showing 1 result.
 #> 
-#> ### visNetwork (v2.1.4) -- Network Visualization using 'vis.js' Library
+#> ### DiagrammeR (v1.0.12) -- Graph/Network Visualization
 #> 
-#> * Maintainer: Benoit Thieurmel
-#> * Homepage: https://datastorm-open.github.io/visNetwork/
-#> * Date: 2025-09-04
-#> * Downloads Last Month: 78,224
+#> * Maintainer: Richard Iannone
+#> * Homepage: https://rich-iannone.github.io/DiagrammeR/, https://github.com/rich-iannone/DiagrammeR
+#> * Date: 2026-04-27
+#> * Downloads Last Month: 55,675
 #> 
-#> Provides an R interface to the 'vis.js' JavaScript charting
-#> library. It allows an interactive visualization of networks.
+#> Build graph/network structures using functions for stepwise
+#> addition and deletion of nodes and edges. Work with data available in
+#> tables for bulk addition of nodes, edges, and associated metadata. Use
+#> graph selections and traversals to apply changes to specific nodes or
+#> edges. A wide selection of graph algorithms allow for the analysis of
+#> graphs. Visualize the graphs and take advantage of any aesthetic
+#> properties assigned to nodes and edges.
 ```

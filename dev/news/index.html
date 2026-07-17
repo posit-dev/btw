@@ -40,6 +40,10 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="btw-development-version">btw (development version)<a class="anchor" aria-label="anchor" href="#btw-development-version"></a></h2>
 <div class="section level3">
+<h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
+<ul><li>btw now discovers project- and user-level custom agents from an <code>agents/</code> subdirectory (e.g. <code>.btw/agents/my_agent.md</code> or <code>~/.btw/agents/my_agent.md</code>) in addition to the flat <code>agent-*.md</code> files. Files in the <code>agents/</code> directory use plain <code>{name}.md</code> filenames, with the agent name taken from the YAML frontmatter (<a href="https://github.com/posit-dev/btw/issues/202" class="external-link">#202</a>).</li>
+</ul></div>
+<div class="section level3">
 <h3 id="deprecations-development-version">Deprecations<a class="anchor" aria-label="anchor" href="#deprecations-development-version"></a></h3>
 <ul><li>The legacy user skills directory used by btw &lt;= 1.2.0 (<code>skills/</code> under <code>tools::R_user_dir("btw", "config")</code>) is deprecated. btw still reads skills from it but now warns once per session when it contains skills, prompting you to move them to <code>~/.btw/skills</code>. Read support for the legacy location will be removed in btw 1.5.0 (<a href="https://github.com/posit-dev/btw/issues/203" class="external-link">#203</a>).</li>
 </ul></div>

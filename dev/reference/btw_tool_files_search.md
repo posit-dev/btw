@@ -112,18 +112,18 @@ withr::with_tempdir({
     show_lines = TRUE
   )
 })
-#> ℹ Indexing files in /tmp/RtmpHOCW3x/file2173f25f72b for code search
+#> ℹ Indexing files in /tmp/RtmpPyVUPC/file21496c878951 for code search
 #> duckdb is keeping downloaded extensions in a temporary directory:
-#> ℹ /tmp/RtmpHOCW3x/duckdb/extensions
+#> ℹ /tmp/RtmpPyVUPC/duckdb/extensions
 #> This is removed when the R session ends, so extensions are re-downloaded each session.
 #> ℹ To keep them, point `options(duckdb.extension_directory =)` or the `DUCKDB_EXTENSION_DIRECTORY` environment variable at a permanent path.
-#> ✔ Indexing files in /tmp/RtmpHOCW3x/file2173f25f72b for code search [261ms]
+#> ✔ Indexing files in /tmp/RtmpPyVUPC/file21496c878951 for code search [307ms]
 #> 
 #> <btw::BtwToolResult>
 #>  @ value  :'data.frame': 1 obs. of  5 variables:
 #>  .. $ filename     : chr "state_names_1.md"
 #>  .. $ size         : 'fs_bytes' num 219
-#>  .. $ last_modified: POSIXct, format: "2026-07-17 19:21:40"
+#>  .. $ last_modified: POSIXct, format: "2026-07-17 20:19:26"
 #>  .. $ content      : chr "Kentucky"
 #>  .. $ line         : num 17
 #>  @ error  : NULL
