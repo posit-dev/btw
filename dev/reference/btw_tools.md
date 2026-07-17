@@ -157,7 +157,7 @@ The `chat` input is returned invisibly.
 ``` r
 # requires an ANTHROPIC_API_KEY
 ch <- ellmer::chat_anthropic()
-#> Using model = "claude-sonnet-4-5-20250929".
+#> Using model = "claude-sonnet-4-6".
 
 # register all of the available tools
 ch1 <- ch$clone()
