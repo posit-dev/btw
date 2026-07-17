@@ -52,6 +52,22 @@ test_that("btw_tool_pkg_src_list_impl validates arguments", {
   expect_error(btw_tool_pkg_src_list_impl("tools", all = "yes"))
 })
 
+test_that("btw_pkg_src_describe degrades objects that error when forced", {
+  ns <- new.env()
+  assign("ok", function() 1, ns)
+  makeActiveBinding("boom", function() stop("cannot force me"), ns)
+
+  ok <- btw:::btw_pkg_src_describe("ok", ns)
+  expect_equal(ok$type, "function")
+
+  # A binding that errors on force degrades to an `other` row rather than
+  # aborting.
+  boom <- btw:::btw_pkg_src_describe("boom", ns)
+  expect_equal(boom$type, "other")
+  expect_true(is.na(boom$path))
+  expect_true(is.na(boom$line))
+})
+
 # Test btw_tool_pkg_src_path_impl ------------------------------------------------
 
 test_that("btw_tool_pkg_src_path_impl reports install path and source availability", {
@@ -78,6 +94,7 @@ test_that("btw_tool_pkg_src_path_impl handles multiple packages", {
 
 test_that("btw_tool_pkg_src_path_impl validates arguments", {
   expect_error(btw_tool_pkg_src_path_impl(123))
+  expect_error(btw_tool_pkg_src_path_impl(character()))
 })
 
 # Test btw_tool_pkg_src_get_impl --------------------------------------------

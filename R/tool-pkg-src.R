@@ -86,6 +86,36 @@ btw_pkg_src_srcref_location <- function(x) {
   list(path = path, line = as.integer(line))
 }
 
+# Describe a single namespace object as a `{name, type, path, line}` row.
+# Forcing an object (to classify it) can error on pathological bindings
+# (active bindings, promises that error); degrade to a bare `other` row
+# instead of aborting the whole listing.
+btw_pkg_src_describe <- function(name, ns) {
+  tryCatch(
+    {
+      x <- get(name, envir = ns, inherits = FALSE)
+      type <- btw_pkg_src_classify(name, x, ns)
+      loc <- btw_pkg_src_srcref_location(x)
+      data.frame(
+        name = name,
+        type = type,
+        path = loc$path,
+        line = loc$line,
+        stringsAsFactors = FALSE
+      )
+    },
+    error = function(e) {
+      data.frame(
+        name = name,
+        type = "other",
+        path = NA_character_,
+        line = NA_integer_,
+        stringsAsFactors = FALSE
+      )
+    }
+  )
+}
+
 btw_tool_pkg_src_list_impl <- function(package, all = FALSE) {
   check_string(package)
   check_bool(all)
@@ -96,19 +126,7 @@ btw_tool_pkg_src_list_impl <- function(package, all = FALSE) {
   names <- btw_pkg_src_namespace_objects(ns, all = all)
   names <- sort(names)
 
-  rows <- lapply(names, function(name) {
-    x <- get(name, envir = ns)
-    type <- btw_pkg_src_classify(name, x, ns)
-    loc <- btw_pkg_src_srcref_location(x)
-
-    data.frame(
-      name = name,
-      type = type,
-      path = loc$path,
-      line = loc$line,
-      stringsAsFactors = FALSE
-    )
-  })
+  rows <- lapply(names, btw_pkg_src_describe, ns = ns)
 
   data <- if (length(rows) > 0) {
     do.call(rbind, rows)
@@ -139,6 +157,10 @@ btw_pkg_src_has_source_tree <- function(r_dir) {
 
 btw_tool_pkg_src_path_impl <- function(packages) {
   check_character(packages)
+
+  if (length(packages) == 0) {
+    cli::cli_abort("`packages` must contain at least one package name.")
+  }
 
   rows <- lapply(packages, function(package) {
     if (identical(package, ".")) {
@@ -307,15 +329,22 @@ btw_pkg_src_materialize_dir <- function(package) {
   names <- sort(btw_pkg_src_namespace_objects(ns, all = TRUE))
 
   for (name in names) {
-    x <- get(name, envir = ns, inherits = FALSE)
-    type <- btw_pkg_src_classify(name, x, ns)
     # Deparsed source loses original comments/formatting and has no
     # original line numbers; each object is written to its own file so
     # search results still carry meaningful filenames/line numbers.
-    source <- btw_pkg_src_render_source(name, x, type, ns)
+    # Skip objects that error when forced (active bindings, erroring
+    # promises) rather than aborting the whole materialization.
+    tryCatch(
+      {
+        x <- get(name, envir = ns, inherits = FALSE)
+        type <- btw_pkg_src_classify(name, x, ns)
+        source <- btw_pkg_src_render_source(name, x, type, ns)
 
-    file <- file.path(dir, paste0(fs::path_sanitize(name), ".R"))
-    writeLines(source, file)
+        file <- file.path(dir, paste0(fs::path_sanitize(name), ".R"))
+        writeLines(source, file)
+      },
+      error = function(e) NULL
+    )
   }
 
   dir
