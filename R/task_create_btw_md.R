@@ -91,7 +91,7 @@ btw_task_create_btw_md <- function(
 
     task_create_btw_md_tool <- function(prompt, path = NULL) {
       sys_prompt <- ellmer::interpolate(
-        this_client$get_system_prompt(),
+        sys_prompt,
         path_summary_file = path %||% path_default
       )
 
