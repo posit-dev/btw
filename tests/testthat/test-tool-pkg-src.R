@@ -28,14 +28,17 @@ test_that("btw_tool_pkg_src_list_impl classifies functions and reports missing s
   result <- btw_tool_pkg_src_list_impl("tools")
   data <- S7::prop(result, "extra")$data
 
-  expect_true(all(data$type %in% c(
-    "function",
-    "S4generic",
-    "S4class",
-    "R6generator",
-    "data",
-    "other"
-  )))
+  expect_true(all(
+    data$type %in%
+      c(
+        "function",
+        "S4generic",
+        "S4class",
+        "R6generator",
+        "data",
+        "other"
+      )
+  ))
 
   # tools is installed as a binary package without srcref, so paths/lines
   # should be unknown for all objects.
@@ -143,4 +146,56 @@ test_that("btw_tool_pkg_src_get_impl handles multiple objects, including a mix o
 test_that("btw_tool_pkg_src_get_impl validates arguments", {
   expect_error(btw_tool_pkg_src_get_impl(123, "toRd"))
   expect_error(btw_tool_pkg_src_get_impl("tools", character()))
+})
+
+# Test btw_pkg_src_materialize_dir -------------------------------------------
+
+test_that("btw_pkg_src_materialize_dir writes deparsed sources to a temp dir", {
+  dir <- btw:::btw_pkg_src_materialize_dir("tools")
+
+  expect_true(dir.exists(dir))
+  files <- list.files(dir, pattern = "\\.R$")
+  expect_true(length(files) > 0)
+  expect_true("toRd.R" %in% files)
+
+  content <- readLines(file.path(dir, "toRd.R"))
+  expect_true(any(grepl("function", content, fixed = TRUE)))
+})
+
+# Test btw_tool_pkg_src_search_impl ------------------------------------------
+
+test_that("btw_tool_pkg_src_search_impl validates arguments", {
+  expect_error(btw_tool_pkg_src_search_impl(123, "file.path"))
+  expect_error(btw_tool_pkg_src_search_impl("tools", character()))
+})
+
+test_that("btw_tool_pkg_src_search_impl searches materialized source for binary-installed packages", {
+  skip_if_not_installed("duckdb")
+  skip_if_not_installed("DBI")
+  withr::local_envvar(TESTTHAT = NA)
+
+  result <- btw_tool_pkg_src_search_impl("tools", "file.path")
+
+  expect_s7_class(result, btw:::BtwToolResult)
+
+  data <- S7::prop(result, "extra")$data
+  expect_s3_class(data, "data.frame")
+  expect_named(
+    data,
+    c("filename", "size", "last_modified", "content", "line", "term")
+  )
+  expect_true(nrow(data) > 0)
+  expect_true(all(data$term == "file.path"))
+  expect_true(all(grepl("file.path", data$content, fixed = TRUE)))
+})
+
+test_that("btw_tool_pkg_src_search_impl combines results across multiple terms", {
+  skip_if_not_installed("duckdb")
+  skip_if_not_installed("DBI")
+  withr::local_envvar(TESTTHAT = NA)
+
+  result <- btw_tool_pkg_src_search_impl("tools", c("file.path", "toRd"))
+  data <- S7::prop(result, "extra")$data
+
+  expect_setequal(unique(data$term), c("file.path", "toRd"))
 })

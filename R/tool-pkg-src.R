@@ -298,3 +298,81 @@ btw_tool_pkg_src_get_impl <- function(package, objects) {
 
   btw_tool_result(value = value, data = data)
 }
+
+btw_pkg_src_materialize_dir <- function(package) {
+  resolved <- btw_pkg_src_resolve_ns(package)
+  ns <- resolved$ns
+
+  dir <- withr::local_tempdir(.local_envir = parent.frame())
+  names <- sort(btw_pkg_src_namespace_objects(ns, all = TRUE))
+
+  for (name in names) {
+    x <- get(name, envir = ns, inherits = FALSE)
+    type <- btw_pkg_src_classify(name, x, ns)
+    # Deparsed source loses original comments/formatting and has no
+    # original line numbers; each object is written to its own file so
+    # search results still carry meaningful filenames/line numbers.
+    source <- btw_pkg_src_render_source(name, x, type, ns)
+
+    file <- file.path(dir, paste0(fs::path_sanitize(name), ".R"))
+    writeLines(source, file)
+  }
+
+  dir
+}
+
+btw_tool_pkg_src_search_impl <- function(
+  package,
+  terms,
+  limit = 100,
+  case_sensitive = TRUE,
+  use_regex = FALSE
+) {
+  check_string(package)
+  check_character(terms)
+
+  if (length(terms) == 0) {
+    cli::cli_abort("`terms` must contain at least one search term.")
+  }
+
+  check_installed("duckdb")
+  check_installed("DBI")
+
+  path_info <- btw_tool_pkg_src_path_impl(package)
+  path_data <- S7::prop(path_info, "extra")$data
+
+  search_dir <- if (path_data$source_available) {
+    file.path(path_data$path, "R")
+  } else {
+    btw_pkg_src_materialize_dir(package)
+  }
+
+  search_fn <- btw_tool_files_search_factory(
+    path = search_dir,
+    restrict_to_wd = FALSE
+  )
+
+  results <- lapply(terms, function(term) {
+    res <- search_fn(
+      term,
+      limit = limit,
+      case_sensitive = case_sensitive,
+      use_regex = use_regex,
+      show_lines = TRUE
+    )
+    data <- S7::prop(res, "value")
+    if (nrow(data) > 0) {
+      data$term <- term
+    } else {
+      data$term <- character()
+    }
+    data
+  })
+
+  data <- do.call(rbind, results)
+  rownames(data) <- NULL
+
+  value <- if (nrow(data) > 0) md_table(data) else "No matches found."
+
+  btw_tool_result(value = value, data = data)
+}

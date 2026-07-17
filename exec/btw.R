@@ -276,6 +276,16 @@ btw_pkg_src_get <- function(package, objects, json = FALSE) {
   }
 }
 
+btw_pkg_src_search <- function(package, terms, json = FALSE) {
+  result <- btw:::btw_tool_pkg_src_search_impl(package, terms)
+  if (json) {
+    data <- S7::prop(result, "extra")$data
+    btw_json_output(if (!is.null(data)) data else list())
+  } else {
+    btw_output(result)
+  }
+}
+
 btw_system_info <- function(json = FALSE) {
   result <- btw:::btw_tool_sessioninfo_platform_impl()
   if (json) {
@@ -766,7 +776,26 @@ switch(
             `objects...` <- c()
             #| description: Output as JSON.
             json <- FALSE
-            tryCatch(btw_pkg_src_get(package, `objects...`, json), error = btw_error)
+            tryCatch(
+              btw_pkg_src_get(package, `objects...`, json),
+              error = btw_error
+            )
+          },
+
+          #| title: Search package source code
+          search = {
+            #| description: Package name.
+            #| required: true
+            package <- NULL
+            #| description: Search terms.
+            #| required: true
+            `terms...` <- c()
+            #| description: Output as JSON.
+            json <- FALSE
+            tryCatch(
+              btw_pkg_src_search(package, `terms...`, json),
+              error = btw_error
+            )
           }
         )
         if (src_cmd == "") btw_self_help("pkg", "src")
