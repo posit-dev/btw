@@ -345,7 +345,10 @@ btw_skills_get <- function(source, skills, all, json = FALSE) {
         call. = FALSE
       )
     }
-    btw_skills_get_content_output(skill_dirs[dir_names %in% skills], is_github = is_github)
+    btw_skills_get_content_output(
+      skill_dirs[dir_names %in% skills],
+      is_github = is_github
+    )
   } else {
     btw_skills_get_list_output(skill_dirs, json = json, is_github = is_github)
   }
@@ -410,7 +413,11 @@ btw_skills_get_dirs_from_github <- function(repo) {
   dirname(skill_files)
 }
 
-btw_skills_get_list_output <- function(skill_dirs, json = FALSE, is_github = FALSE) {
+btw_skills_get_list_output <- function(
+  skill_dirs,
+  json = FALSE,
+  is_github = FALSE
+) {
   skills <- lapply(skill_dirs, function(skill_dir) {
     skill_md_path <- file.path(skill_dir, "SKILL.md")
     metadata <- btw:::extract_skill_metadata(skill_md_path)
@@ -419,9 +426,15 @@ btw_skills_get_list_output <- function(skill_dirs, json = FALSE, is_github = FAL
     } else {
       basename(skill_dir)
     }
-    description <- if (!is.null(metadata$description)) metadata$description else ""
+    description <- if (!is.null(metadata$description)) {
+      metadata$description
+    } else {
+      ""
+    }
     entry <- list(name = name, description = description)
-    if (!is_github) entry$location <- skill_md_path
+    if (!is_github) {
+      entry$location <- skill_md_path
+    }
     entry
   })
 
@@ -462,7 +475,11 @@ btw_skills_get_content_output <- function(skill_dirs, is_github = FALSE) {
     resources_listing <- format_resources_listing_relative(resources)
     full_content <- paste0(skill_text, resources_listing)
     tag_open <- if (!is_github) {
-      sprintf('<skill name="%s" path="%s">', btw:::xml_escape(name), btw:::xml_escape(skill_dir))
+      sprintf(
+        '<skill name="%s" path="%s">',
+        btw:::xml_escape(name),
+        btw:::xml_escape(skill_dir)
+      )
     } else {
       sprintf('<skill name="%s">', btw:::xml_escape(name))
     }
