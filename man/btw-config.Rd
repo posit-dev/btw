@@ -26,8 +26,10 @@ The user-level directories, in decreasing order of priority, are:
 }
 
 Skills are discovered in the \verb{skills/} subdirectory of each (e.g.
-\verb{~/.btw/skills/}), and btw-style agents are discovered as \verb{agent-*.md} files
-directly inside each (e.g. \verb{~/.btw/agent-my_agent.md}).
+\verb{~/.btw/skills/}), and btw-style agents are discovered both as
+\verb{agent-*.md} files directly inside each (e.g. \verb{~/.btw/agent-my_agent.md})
+and as \verb{*.md} files in an \verb{agents/} subdirectory of each (e.g.
+\verb{~/.btw/agents/my_agent.md}).
 
 The user-level \code{btw.md} \strong{configuration file} is searched for in a slightly
 different order: a \code{btw.md} directly in your home directory (\verb{~/btw.md})
@@ -54,7 +56,7 @@ or \verb{*.Rproj} file.
 \item \strong{Config file}: the nearest \code{btw.md} file, or if none is found, the
 nearest \code{AGENTS.md} file, or if neither is found, the nearest \code{CLAUDE.md}
 file. (\code{btw.md} > \code{AGENTS.md} > \code{CLAUDE.md})
-\item \strong{btw-style agents}: \verb{.btw/agent-*.md}
+\item \strong{btw-style agents}: \verb{.btw/agents/*.md} or \verb{.btw/agent-*.md}
 \item \strong{Skills}: \verb{.btw/skills/} or \verb{.agents/skills/}
 }
 }
