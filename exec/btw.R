@@ -266,6 +266,16 @@ btw_pkg_src_path <- function(packages, json = FALSE) {
   }
 }
 
+btw_pkg_src_get <- function(package, objects, json = FALSE) {
+  result <- btw:::btw_tool_pkg_src_get_impl(package, objects)
+  if (json) {
+    data <- S7::prop(result, "extra")$data
+    btw_json_output(if (!is.null(data)) data else list())
+  } else {
+    btw_output(result)
+  }
+}
+
 btw_system_info <- function(json = FALSE) {
   result <- btw:::btw_tool_sessioninfo_platform_impl()
   if (json) {
@@ -744,6 +754,19 @@ switch(
               btw_pkg_src_path(`packages...`, json),
               error = btw_error
             )
+          },
+
+          #| title: Get source for objects in a package
+          get = {
+            #| description: Package name.
+            #| required: true
+            package <- NULL
+            #| description: Object names to fetch.
+            #| required: true
+            `objects...` <- c()
+            #| description: Output as JSON.
+            json <- FALSE
+            tryCatch(btw_pkg_src_get(package, `objects...`, json), error = btw_error)
           }
         )
         if (src_cmd == "") btw_self_help("pkg", "src")

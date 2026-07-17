@@ -164,3 +164,137 @@ btw_tool_pkg_src_path_impl <- function(packages) {
 
   btw_tool_result(value = md_table(data), data = data)
 }
+
+btw_pkg_src_render_closure <- function(x) {
+  # S4 generics/methods carry a lot of metadata as attributes; printing them
+  # directly dumps all of that. Rebuild a plain closure (preserving srcref
+  # when present) so we only render the function itself.
+  if (methods::is(x, "genericFunction") || methods::is(x, "MethodDefinition")) {
+    plain <- function() NULL
+    formals(plain) <- formals(x)
+    body(plain) <- body(x)
+    environment(plain) <- environment(x)
+    attr(plain, "srcref") <- attr(x, "srcref")
+    x <- plain
+  }
+
+  lines <- utils::capture.output(print(x))
+  lines <- lines[!grepl("^<(bytecode|environment): ", lines)]
+  paste(lines, collapse = "\n")
+}
+
+btw_pkg_src_render_str <- function(x) {
+  lines <- utils::capture.output(
+    utils::str(x, max.level = 1, list.len = 10)
+  )
+  paste(lines, collapse = "\n")
+}
+
+btw_pkg_src_render_s4generic <- function(name, x, ns) {
+  default_method <- tryCatch(
+    methods::getMethod(name, "ANY", where = ns),
+    error = function(e) NULL
+  )
+  if (is.null(default_method)) {
+    default_method <- tryCatch(
+      methods::selectMethod(name, "ANY"),
+      error = function(e) NULL
+    )
+  }
+
+  if (!is.null(default_method)) {
+    return(btw_pkg_src_render_closure(default_method))
+  }
+
+  # No default/standard method readily available; fall back to the
+  # generic's own standardGeneric() closure.
+  btw_pkg_src_render_closure(x)
+}
+
+btw_pkg_src_render_s4class <- function(name, ns) {
+  class_def <- tryCatch(
+    methods::getClassDef(name, where = ns),
+    error = function(e) NULL
+  )
+  if (is.null(class_def)) {
+    return(NA_character_)
+  }
+  paste(
+    utils::capture.output(utils::str(class_def, max.level = 2)),
+    collapse = "\n"
+  )
+}
+
+btw_pkg_src_render_source <- function(name, x, type, ns) {
+  switch(
+    type,
+    "function" = btw_pkg_src_render_closure(x),
+    "S4generic" = btw_pkg_src_render_s4generic(name, x, ns),
+    "S4class" = btw_pkg_src_render_s4class(name, ns),
+    btw_pkg_src_render_str(x)
+  )
+}
+
+btw_tool_pkg_src_get_impl <- function(package, objects) {
+  check_string(package)
+  check_character(objects)
+
+  if (length(objects) == 0) {
+    cli::cli_abort("`objects` must contain at least one object name.")
+  }
+
+  resolved <- btw_pkg_src_resolve_ns(package)
+  ns <- resolved$ns
+
+  rows <- lapply(objects, function(name) {
+    if (!exists(name, envir = ns, inherits = FALSE)) {
+      return(data.frame(
+        name = name,
+        type = NA_character_,
+        path = NA_character_,
+        line = NA_integer_,
+        source = "Object not found in namespace.",
+        stringsAsFactors = FALSE
+      ))
+    }
+
+    x <- get(name, envir = ns, inherits = FALSE)
+    type <- btw_pkg_src_classify(name, x, ns)
+    loc <- btw_pkg_src_srcref_location(x)
+    source <- btw_pkg_src_render_source(name, x, type, ns)
+
+    data.frame(
+      name = name,
+      type = type,
+      path = loc$path,
+      line = loc$line,
+      source = source,
+      stringsAsFactors = FALSE
+    )
+  })
+
+  data <- do.call(rbind, rows)
+  rownames(data) <- NULL
+
+  blocks <- lapply(seq_len(nrow(data)), function(i) {
+    row <- data[i, ]
+
+    if (is.na(row$type)) {
+      return(c(paste0("### `", row$name, "`"), "", row$source))
+    }
+
+    header <- paste0("### `", row$name, "` (", row$type, ")")
+    loc <- if (!is.na(row$path)) paste0("`", row$path, ":", row$line, "`")
+
+    code_type <- if (row$type %in% c("function", "S4generic")) "r" else ""
+
+    c(header, loc, "", md_code_block(code_type, row$source))
+  })
+
+  value <- paste(
+    vapply(blocks, paste, character(1), collapse = "\n"),
+    collapse = "\n\n"
+  )
+
+  btw_tool_result(value = value, data = data)
+}
