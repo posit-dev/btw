@@ -7,7 +7,9 @@ test_that("btw_tool_pkg_src_list_impl returns exported objects by default", {
 
   data <- S7::prop(result, "extra")$data
   expect_s3_class(data, "data.frame")
-  expect_named(data, c("name", "type", "path", "line"))
+  # tools is a binary install with no srcref, so the all-NA path/line columns
+  # are dropped, leaving name/type.
+  expect_named(data, c("name", "type"))
   expect_true(nrow(data) > 0)
 
   exported <- getNamespaceExports(asNamespace("tools"))
@@ -40,10 +42,28 @@ test_that("btw_tool_pkg_src_list_impl classifies functions and reports missing s
       )
   ))
 
-  # tools is installed as a binary package without srcref, so paths/lines
-  # should be unknown for all objects.
-  expect_true(all(is.na(data$path)))
-  expect_true(all(is.na(data$line)))
+  # tools is installed as a binary package without srcref, so the path/line
+  # columns are unknown for every object and dropped entirely.
+  expect_false("path" %in% names(data))
+  expect_false("line" %in% names(data))
+})
+
+test_that("btw_pkg_src_drop_na_columns drops only fully-NA columns", {
+  df <- data.frame(
+    name = c("a", "b"),
+    type = c("function", "data"),
+    path = c(NA_character_, NA_character_),
+    line = c(NA_integer_, 12L),
+    stringsAsFactors = FALSE
+  )
+
+  dropped <- btw:::btw_pkg_src_drop_na_columns(df)
+  # `path` is fully NA and dropped; `line` is partially populated and kept.
+  expect_named(dropped, c("name", "type", "line"))
+
+  # An empty frame keeps its full schema.
+  empty <- df[0, ]
+  expect_named(btw:::btw_pkg_src_drop_na_columns(empty), names(df))
 })
 
 test_that("btw_tool_pkg_src_list_impl validates arguments", {

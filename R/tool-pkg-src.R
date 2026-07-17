@@ -116,6 +116,18 @@ btw_pkg_src_describe <- function(name, ns) {
   )
 }
 
+# Drop columns that are entirely NA. On binary installs `path`/`line` are
+# always NA (no srcref on disk), so this keeps both the table and `--json`
+# free of dead columns. Left untouched for an empty frame so the full schema
+# is preserved when there are no objects.
+btw_pkg_src_drop_na_columns <- function(data) {
+  if (nrow(data) == 0) {
+    return(data)
+  }
+  keep <- !vapply(data, function(col) all(is.na(col)), logical(1))
+  data[, keep, drop = FALSE]
+}
+
 btw_tool_pkg_src_list_impl <- function(package, all = FALSE) {
   check_string(package)
   check_bool(all)
@@ -140,6 +152,7 @@ btw_tool_pkg_src_list_impl <- function(package, all = FALSE) {
     )
   }
   rownames(data) <- NULL
+  data <- btw_pkg_src_drop_na_columns(data)
 
   value <- if (nrow(data) > 0) md_table(data) else "No objects found."
 
