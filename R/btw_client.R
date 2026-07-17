@@ -24,10 +24,12 @@
 #'
 #' Client settings in `client` and `tools` from a project-level `btw.md` or
 #' `AGENTS.md` file take precedence. If a project file doesn't specify a
-#' setting, btw will fall back to settings in a user-level `btw.md` file
-#' (typically in `~/btw.md` or `~/.config/btw/btw.md`). Project-level btw tool
-#' options under the `options` key are merged with user-level options, with
-#' project-level options taking precedence.
+#' setting, btw will fall back to settings in a user-level `btw.md` file. This
+#' is `~/btw.md` if present, otherwise `~/.btw/btw.md`, `~/.config/btw/btw.md`,
+#' or `tools::R_user_dir("btw")`, in that order. See `?btw-config` for the
+#' complete list of user-level locations. Project-level btw tool options under
+#' the `options` key are merged with user-level options, with project-level
+#' options taking precedence.
 #'
 #' Project-specific instructions from both files are combined with a divider,
 #' allowing you to maintain global guidelines in your user file and
@@ -102,11 +104,12 @@
 #'   set `tools = FALSE` to skip registering \pkg{btw} tools with the chat
 #'   client.
 #' @param path_btw A path to a `btw.md`, `AGENTS.md`, or `CLAUDE.md` project
-#'   context file. If `NULL`, btw will find a project-specific `btw.md`,
-#'   `AGENTS.md`, or `CLAUDE.md` file in the parents of the current working
-#'   directory, with fallback to user-level `btw.md` if no project file is
-#'   found. Set `path_btw = FALSE` to create a chat client without using a
-#'   `btw.md` file.
+#'   context file. If `NULL`, btw will find a project-specific context file by
+#'   walking up the parents of the current working directory, preferring
+#'   `btw.md`, then `AGENTS.md`, then `CLAUDE.md`, with fallback to a
+#'   user-level `btw.md` file if no project file is found. See `?btw-config`
+#'   for the complete list of locations. Set `path_btw = FALSE` to create a
+#'   chat client without using a `btw.md` file.
 #' @param path_llms_txt A path to an `llms.txt` file containing context about
 #'   the current project. By default, btw will look for an `llms.txt` file in
 #'   the your current working directory or its parents. Set `path_llms_txt =
@@ -117,6 +120,9 @@
 #' @return Returns an [ellmer::Chat] object with additional tools registered
 #'   from [btw_tools()]. `btw_app()` returns the chat object invisibly, and
 #'   the chat object with the messages added during the chat session.
+#'
+#' @inheritSection btw-config User (global) locations
+#' @inheritSection btw-config Project locations
 #'
 #' @describeIn btw_client Create a btw-enhanced [ellmer::Chat] client
 #' @export

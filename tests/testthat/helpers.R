@@ -159,6 +159,22 @@ local_skip_pandoc_convert <- function(.env = caller_env()) {
   )
 }
 
+# Isolate all user-level config locations under `wd`: both home roots and the
+# R user dir resolve inside `wd`, so btw_user_dirs()/user_config_paths() only
+# ever see files the test created.
+local_user_home <- function(wd, .env = caller_env()) {
+  local_mocked_bindings(
+    path_home = function(...) fs::path(wd, ...),
+    path_home_r = function(...) fs::path(wd, ...),
+    .package = "fs",
+    .env = .env
+  )
+  withr::local_envvar(
+    R_USER_DATA_DIR = fs::path(wd, "R_user_dir"),
+    .local_envir = .env
+  )
+}
+
 local_btw_md <- function(project = NULL, user = NULL, .env = caller_env()) {
   local_mocked_bindings(
     find_btw_context_file = function(...) {

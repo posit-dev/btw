@@ -3,7 +3,7 @@
     Code
       print(chat)
     Output
-      <Chat Anthropic/claude-sonnet-4-5-20250929 turns=1 input=0 output=0 cost=$0.00>
+      <Chat Anthropic/claude-sonnet-4-6 turns=1 input=0 output=0 cost=$0.00>
       -- system ----------------------------------------------------------------------
       # System and Session Context
       
@@ -35,7 +35,7 @@
     Code
       print(chat)
     Output
-      <Chat Anthropic/claude-sonnet-4-5-20250929 turns=1 input=0 output=0 cost=$0.00>
+      <Chat Anthropic/claude-sonnet-4-6 turns=1 input=0 output=0 cost=$0.00>
       -- system ----------------------------------------------------------------------
       # System and Session Context
       

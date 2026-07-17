@@ -210,3 +210,135 @@ describe("pandoc_html_simplify()", {
     expect_true(any(grepl("\\|", result)))
   })
 })
+
+# Tests for btw_user_dirs() ------------------------------------------------
+
+describe("btw_user_dirs()", {
+  it("orders category-major across distinct home roots (Windows)", {
+    # Pin R_USER_DATA_DIR so the R-user-dir entry is a known literal
+    # ("<R_USER_DATA_DIR>/R/btw") rather than the developer's real dir.
+    withr::local_envvar(R_USER_DATA_DIR = "/data")
+    local_mocked_bindings(
+      path_home = function(...) fs::path("/profile", ...),
+      path_home_r = function(...) fs::path("/docs", ...),
+      .package = "fs"
+    )
+
+    result <- btw_user_dirs()
+
+    expect_equal(
+      result,
+      c(
+        "/profile/.btw",
+        "/docs/.btw",
+        "/profile/.config/btw",
+        "/docs/.config/btw",
+        "/data/R/btw"
+      )
+    )
+  })
+
+  it("collapses identical home roots (macOS/Linux)", {
+    withr::local_envvar(R_USER_DATA_DIR = "/data")
+    local_mocked_bindings(
+      path_home = function(...) fs::path("/home/user", ...),
+      path_home_r = function(...) fs::path("/home/user", ...),
+      .package = "fs"
+    )
+
+    result <- btw_user_dirs()
+
+    expect_equal(
+      result,
+      c(
+        "/home/user/.btw",
+        "/home/user/.config/btw",
+        "/data/R/btw"
+      )
+    )
+  })
+})
+
+test_that("btw_user_dir_preferred() is the highest-priority user dir", {
+  withr::local_envvar(R_USER_DATA_DIR = "/data")
+  local_mocked_bindings(
+    path_home = function(...) fs::path("/profile", ...),
+    path_home_r = function(...) fs::path("/docs", ...),
+    .package = "fs"
+  )
+
+  expect_equal(btw_user_dir_preferred(), "/profile/.btw")
+  expect_equal(btw_user_dir_preferred(), btw_user_dirs()[[1]])
+})
+
+test_that("path_home_display() abbreviates against R's home, not the profile", {
+  # Windows: R's "~" (path_home_r) differs from the user profile (path_home).
+  local_mocked_bindings(
+    path_home = function(...) fs::path("/profile", ...),
+    path_home_r = function(...) fs::path("/docs", ...),
+    .package = "fs"
+  )
+
+  # A path under R's home abbreviates to "~" (round-trips when pasted into R).
+  expect_equal(path_home_display(fs::path("/docs", ".btw", "btw.md")), "~/.btw/btw.md")
+
+  # A profile-only path is left native rather than mislabeled "~".
+  expect_equal(
+    path_home_display(fs::path("/profile", ".btw", "btw.md")),
+    "/profile/.btw/btw.md"
+  )
+
+  # Vectorized and leaves unrelated paths untouched.
+  expect_equal(
+    path_home_display(c(fs::path("/docs", "btw.md"), "/elsewhere/btw.md")),
+    c("~/btw.md", "/elsewhere/btw.md")
+  )
+})
+
+# Tests for find_user_agent_files() -----------------------------------------
+
+test_that("find_user_agent_files() discovers agent files across user dirs", {
+  user_dir <- withr::local_tempdir()
+  local_user_home(user_dir)
+  withr::local_envvar(TESTTHAT = NA)
+
+  btw_dir <- fs::path(user_dir, ".btw")
+  fs::dir_create(btw_dir)
+  fs::file_create(fs::path(btw_dir, "agent-foo.md"))
+
+  files <- find_user_agent_files()
+
+  expect_true(fs::path(btw_dir, "agent-foo.md") %in% fs::path(files))
+})
+
+# Regression tests for path_find_user() -------------------------------------
+
+test_that("path_find_user() finds btw.md under a home root", {
+  user_dir <- withr::local_tempdir()
+  local_user_home(user_dir)
+  fs::file_create(fs::path(user_dir, "btw.md"))
+
+  withr::local_envvar(TESTTHAT = NA)
+  expect_equal(path_find_user("btw.md"), fs::path_norm(fs::path(user_dir, "btw.md")))
+
+  withr::local_envvar(TESTTHAT = "true")
+  expect_null(path_find_user("btw.md"))
+})
+
+test_that("path_find_user() prefers ~/btw.md and warns on multiple configs", {
+  user_dir <- withr::local_tempdir()
+  local_user_home(user_dir)
+  withr::local_envvar(TESTTHAT = NA)
+  withr::local_options(rlib_warning_verbosity = "verbose")
+
+  fs::file_create(fs::path(user_dir, "btw.md"))
+  fs::dir_create(fs::path(user_dir, ".btw"))
+  fs::file_create(fs::path(user_dir, ".btw", "btw.md"))
+
+  expect_snapshot(
+    result <- path_find_user("btw.md")
+  )
+
+  # The loose ~/btw.md takes precedence over ~/.btw/btw.md.
+  expect_equal(result, fs::path_norm(fs::path(user_dir, "btw.md")))
+})

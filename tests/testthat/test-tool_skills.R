@@ -584,6 +584,88 @@ test_that("find_skill() returns the highest-priority version when skill exists i
   expect_equal(fm$data$description, "High priority version")
 })
 
+# warn_legacy_skill_dir() ---------------------------------------------------
+
+test_that("warn_legacy_skill_dir() warns when legacy dir contains a skill", {
+  withr::local_envvar(TESTTHAT = NA)
+  withr::local_options(rlib_warning_verbosity = "verbose")
+
+  dir <- withr::local_tempdir()
+  skill_dir <- fs::path(dir, "my-skill")
+  fs::dir_create(skill_dir)
+  fs::file_create(fs::path(skill_dir, "SKILL.md"))
+
+  w <- expect_warning(warn_legacy_skill_dir(dir))
+  expect_match(conditionMessage(w), "deprecated location")
+  expect_match(conditionMessage(w), "1.5.0")
+})
+
+test_that("warn_legacy_skill_dir() does not warn when legacy dir is empty", {
+  withr::local_envvar(TESTTHAT = NA)
+  withr::local_options(rlib_warning_verbosity = "verbose")
+
+  dir <- withr::local_tempdir()
+
+  expect_no_warning(warn_legacy_skill_dir(dir))
+})
+
+test_that("warn_legacy_skill_dir() does not warn when legacy dir does not exist", {
+  withr::local_envvar(TESTTHAT = NA)
+  withr::local_options(rlib_warning_verbosity = "verbose")
+
+  dir <- file.path(withr::local_tempdir(), "does-not-exist")
+
+  expect_no_warning(warn_legacy_skill_dir(dir))
+})
+
+test_that("warn_legacy_skill_dir() is guarded off during the test suite", {
+  withr::local_envvar(TESTTHAT = "true")
+  withr::local_options(rlib_warning_verbosity = "verbose")
+
+  dir <- withr::local_tempdir()
+  skill_dir <- fs::path(dir, "my-skill")
+  fs::dir_create(skill_dir)
+  fs::file_create(fs::path(skill_dir, "SKILL.md"))
+
+  expect_no_warning(warn_legacy_skill_dir(dir))
+})
+
+# default_user_skill_dirs() / resolve_user_skill_dir() with distinct home roots
+
+test_that("default_user_skill_dirs() includes R-home skills dirs when home roots differ", {
+  profile_dir <- withr::local_tempdir()
+  docs_dir <- withr::local_tempdir()
+  withr::local_envvar(R_USER_DATA_DIR = withr::local_tempdir())
+
+  local_mocked_bindings(
+    path_home = function(...) fs::path(profile_dir, ...),
+    path_home_r = function(...) fs::path(docs_dir, ...),
+    .package = "fs"
+  )
+
+  dirs <- default_user_skill_dirs()
+
+  expect_true(fs::path(profile_dir, ".btw", "skills") %in% dirs)
+  expect_true(fs::path(docs_dir, ".btw", "skills") %in% dirs)
+})
+
+test_that("resolve_user_skill_dir() returns ~/.btw/skills as the default install target", {
+  profile_dir <- withr::local_tempdir()
+  docs_dir <- withr::local_tempdir()
+  withr::local_envvar(R_USER_DATA_DIR = withr::local_tempdir())
+
+  local_mocked_bindings(
+    path_home = function(...) fs::path(profile_dir, ...),
+    path_home_r = function(...) fs::path(docs_dir, ...),
+    .package = "fs"
+  )
+
+  expect_equal(
+    resolve_user_skill_dir(),
+    file.path(fs::path_home(".btw"), "skills")
+  )
+})
+
 # resolve_user_skill_dir() -------------------------------------------------
 
 test_that("resolve_user_skill_dir() returns first non-empty existing candidate", {

@@ -348,8 +348,10 @@ btw_tool_agent_custom_from_config <- function(agent_config) {
 }
 
 # Discover agent definition files from project and user directories.
-# Priority order (highest first): project .btw/, user .btw/, user .config/btw/,
-# project .claude/agents/, user .claude/agents/
+# Priority order (highest first): project .btw/agent-*.md, then user
+# agent-*.md files in btw_user_dirs() (~/.btw/, ~/.config/btw/,
+# tools::R_user_dir("btw"), in that order), then the Claude Code special
+# case: project .claude/agents/, then user ~/.claude/agents/.
 discover_agent_md_files <- function() {
   # btw locations (highest priority)
   project_btw <- find_project_agent_files()

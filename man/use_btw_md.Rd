@@ -14,7 +14,11 @@ edit_btw_md(scope = NULL)
 \itemize{
 \item \code{"project"} (default): Creates/opens \code{btw.md} (by default) or \code{AGENTS.md}
 in the project root
-\item \code{"user"}: Creates/opens \code{btw.md} in your home directory
+\item \code{"user"}: Opens your user-level \code{btw.md}. When multiple user-level
+configuration files exist, \code{edit_btw_md("user")} asks which one to open,
+indicating the file that \code{\link[=btw_client]{btw_client()}} and \code{\link[=btw_app]{btw_app()}} load. When
+creating, \code{use_btw_md("user")} uses the recommended \verb{~/.btw/} location and
+offers to migrate an existing user-level configuration found elsewhere.
 \item A directory path: Creates/opens \code{btw.md} in that directory
 \item A file path: Creates/opens that specific file
 }
@@ -205,12 +209,19 @@ project, in which case the one closest to your current working directory
 will be used. This makes it easy to have different \code{btw.md} files for
 different sub-projects or sub-directories within a larger project.
 
-For global configuration, you can maintain a \code{btw.md} file in your home
-directory (at \code{btw.md} or \code{.config/btw/btw.md} in your home directory, using
-\code{fs::path_home()}). This file will be used by default when a project-specific
-\code{btw.md} file is not found. Note that \pkg{btw} only looks for \code{btw.md} in
-your home directory if no project-specific \code{btw.md} or \code{AGENTS.md} file is
-present. It also does not look for \code{AGENTS.md} in your home directory.
+For global configuration, btw uses a user-level \code{btw.md} file. A \code{btw.md}
+directly in your home directory (\verb{~/btw.md}) takes precedence; otherwise btw
+looks in \verb{~/.btw/btw.md}, \verb{~/.config/btw/btw.md}, and
+\code{tools::R_user_dir("btw")}, in that order (see \link{btw-config} for the full
+picture, including skills and agents). \code{use_btw_md("user")} creates new
+configuration in the recommended \verb{~/.btw/} directory, and offers to migrate
+an existing user-level configuration found elsewhere. When more than one
+user-level \code{btw.md} file exists, \code{edit_btw_md("user")} asks which one to open.
+Whichever user-level \code{btw.md} file is found is
+used by default when a project-specific \code{btw.md} file is not found. Note that
+\pkg{btw} only looks for a user-level \code{btw.md} if no project-specific
+\code{btw.md} or \code{AGENTS.md} file is present. It also does not look for
+\code{AGENTS.md} in your home directory.
 }
 
 \section{Interactive Setup}{
@@ -233,5 +244,6 @@ withr::with_tempdir({
 \seealso{
 Project context files are discovered automatically and included in
 the system prompt by \code{\link[=btw_client]{btw_client()}}. See \code{\link[=btw_tools]{btw_tools()}} for a list of
-available tools.
+available tools. See \link{btw-config} for the complete list of project and
+user configuration locations.
 }

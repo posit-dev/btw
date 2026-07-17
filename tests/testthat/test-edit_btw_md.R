@@ -26,21 +26,118 @@ test_that("use_btw_md() creates btw.md in project scope", {
 
 test_that("use_btw_md() creates btw.md in user scope", {
   wd <- withr::local_tempdir()
-
-  local_mocked_bindings(
-    path_home = function(...) fs::path(wd, ...),
-    .package = "fs"
-  )
-  local_mocked_bindings(
-    use_build_ignore_btw_md = function(...) invisible()
-  )
+  local_user_home(wd)
 
   expect_snapshot(
     path <- use_btw_md("user")
   )
 
+  expect_true(fs::file_exists(fs::path(wd, ".btw", "btw.md")))
+  expect_equal(path, fs::path(wd, ".btw", "btw.md"))
+})
+
+test_that("use_btw_md('user') uses an existing ~/.btw/btw.md", {
+  wd <- withr::local_tempdir()
+  local_user_home(wd)
+
+  fs::dir_create(fs::path(wd, ".btw"))
+  fs::file_create(fs::path(wd, ".btw", "btw.md"))
+
+  expect_snapshot(
+    path <- use_btw_md("user")
+  )
+
+  expect_equal(path, fs::path(wd, ".btw", "btw.md"))
+  expect_false(fs::file_exists(fs::path(wd, "btw.md")))
+})
+
+test_that("use_btw_md('user') keeps a loose ~/btw.md when non-interactive", {
+  wd <- withr::local_tempdir()
+  local_user_home(wd)
+  local_mocked_bindings(is_interactive = function() FALSE)
+
+  fs::file_create(fs::path(wd, "btw.md"))
+
+  expect_snapshot(
+    path <- use_btw_md("user")
+  )
+
+  expect_equal(path, fs::path(wd, "btw.md"))
   expect_true(fs::file_exists(fs::path(wd, "btw.md")))
-  expect_equal(basename(path), "btw.md")
+  expect_false(fs::file_exists(fs::path(wd, ".btw", "btw.md")))
+})
+
+test_that("use_btw_md('user') migrates a loose ~/btw.md when confirmed", {
+  wd <- withr::local_tempdir()
+  local_user_home(wd)
+  local_mocked_bindings(is_interactive = function() TRUE)
+  local_mocked_bindings(menu = function(...) 1L, .package = "utils")
+
+  fs::file_create(fs::path(wd, "btw.md"))
+
+  expect_snapshot(
+    path <- use_btw_md("user")
+  )
+
+  expect_equal(path, fs::path(wd, ".btw", "btw.md"))
+  expect_true(fs::file_exists(fs::path(wd, ".btw", "btw.md")))
+  expect_false(fs::file_exists(fs::path(wd, "btw.md")))
+})
+
+test_that("use_btw_md('user') keeps a loose ~/btw.md when migration declined", {
+  wd <- withr::local_tempdir()
+  local_user_home(wd)
+  local_mocked_bindings(is_interactive = function() TRUE)
+  local_mocked_bindings(menu = function(...) 2L, .package = "utils")
+
+  fs::file_create(fs::path(wd, "btw.md"))
+
+  expect_snapshot(
+    path <- use_btw_md("user")
+  )
+
+  expect_equal(path, fs::path(wd, "btw.md"))
+  expect_true(fs::file_exists(fs::path(wd, "btw.md")))
+  expect_false(fs::file_exists(fs::path(wd, ".btw", "btw.md")))
+})
+
+test_that("use_btw_md('user') migrates a config from a non-loose location", {
+  wd <- withr::local_tempdir()
+  local_user_home(wd)
+  local_mocked_bindings(is_interactive = function() TRUE)
+  local_mocked_bindings(menu = function(...) 1L, .package = "utils")
+
+  # An existing config lives only in ~/.config/btw/, not ~/btw.md or ~/.btw/.
+  fs::dir_create(fs::path(wd, ".config", "btw"))
+  fs::file_create(fs::path(wd, ".config", "btw", "btw.md"))
+
+  expect_snapshot(
+    path <- use_btw_md("user")
+  )
+
+  expect_equal(path, fs::path(wd, ".btw", "btw.md"))
+  expect_true(fs::file_exists(fs::path(wd, ".btw", "btw.md")))
+  expect_false(fs::file_exists(fs::path(wd, ".config", "btw", "btw.md")))
+})
+
+test_that("use_btw_md('user') does not clobber a shadowed ~/.btw/btw.md", {
+  wd <- withr::local_tempdir()
+  local_user_home(wd)
+  local_mocked_bindings(is_interactive = function() TRUE)
+
+  # Both a loose ~/btw.md (higher priority) and ~/.btw/btw.md exist.
+  fs::file_create(fs::path(wd, "btw.md"))
+  fs::dir_create(fs::path(wd, ".btw"))
+  fs::file_create(fs::path(wd, ".btw", "btw.md"))
+
+  expect_snapshot(
+    path <- use_btw_md("user")
+  )
+
+  # The active (loose) file is left in place; nothing is overwritten.
+  expect_equal(path, fs::path(wd, "btw.md"))
+  expect_true(fs::file_exists(fs::path(wd, "btw.md")))
+  expect_true(fs::file_exists(fs::path(wd, ".btw", "btw.md")))
 })
 
 test_that("use_btw_md() creates btw.md in sub-directory path", {
@@ -228,6 +325,87 @@ test_that("edit_btw_md() uses rstudioapi when available", {
   )
 
   expect_true(navigate_called)
+})
+
+test_that("edit_btw_md('user') prompts to pick among multiple configs", {
+  wd <- withr::local_tempdir()
+  local_user_home(wd)
+  local_mocked_bindings(is_interactive = function() TRUE)
+
+  fs::file_create(fs::path(wd, "btw.md"))
+  fs::dir_create(fs::path(wd, ".btw"))
+  fs::file_create(fs::path(wd, ".btw", "btw.md"))
+
+  # Pick the second (shadowed) file from the menu.
+  local_mocked_bindings(menu = function(...) 2L, .package = "utils")
+  local_mocked_bindings(
+    is_installed = function(pkg) pkg != "rstudioapi",
+    .package = "rlang"
+  )
+
+  edited <- NULL
+  with_mocked_bindings(
+    file.edit = function(file) edited <<- file,
+    .package = "utils",
+    expect_snapshot(path <- edit_btw_md("user"))
+  )
+
+  expect_equal(path, fs::path(wd, ".btw", "btw.md"))
+  expect_equal(edited, fs::path(wd, ".btw", "btw.md"))
+})
+
+test_that("edit_btw_md('user') falls back to the active config when the menu is cancelled", {
+  wd <- withr::local_tempdir()
+  local_user_home(wd)
+  local_mocked_bindings(is_interactive = function() TRUE)
+
+  fs::file_create(fs::path(wd, "btw.md"))
+  fs::dir_create(fs::path(wd, ".btw"))
+  fs::file_create(fs::path(wd, ".btw", "btw.md"))
+
+  # Cancelling the menu (0) defaults to the file btw actually reads.
+  local_mocked_bindings(menu = function(...) 0L, .package = "utils")
+  local_mocked_bindings(
+    is_installed = function(pkg) pkg != "rstudioapi",
+    .package = "rlang"
+  )
+
+  edited <- NULL
+  with_mocked_bindings(
+    file.edit = function(file) edited <<- file,
+    .package = "utils",
+    expect_snapshot(path <- edit_btw_md("user"))
+  )
+
+  expect_equal(path, fs::path(wd, "btw.md"))
+  expect_equal(edited, fs::path(wd, "btw.md"))
+})
+
+test_that("edit_btw_md('user') opens the active config without prompting when only one exists", {
+  wd <- withr::local_tempdir()
+  local_user_home(wd)
+  local_mocked_bindings(is_interactive = function() TRUE)
+
+  fs::file_create(fs::path(wd, "btw.md"))
+
+  # The menu must not be reached when a single config exists.
+  local_mocked_bindings(
+    menu = function(...) stop("menu should not be called"),
+    .package = "utils"
+  )
+  local_mocked_bindings(
+    is_installed = function(pkg) pkg != "rstudioapi",
+    .package = "rlang"
+  )
+
+  edited <- NULL
+  with_mocked_bindings(
+    file.edit = function(file) edited <<- file,
+    .package = "utils",
+    suppressMessages(path <- edit_btw_md("user"))
+  )
+
+  expect_equal(edited, fs::path(wd, "btw.md"))
 })
 
 test_that("resolve_btw_md_path() handles different scopes", {

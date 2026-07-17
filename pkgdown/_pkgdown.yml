@@ -77,6 +77,7 @@ reference:
   contents:
   - use_btw_md
   - btw_task_create_btw_md
+  - btw-config
 
 - title: Describe R stuff
   contents:

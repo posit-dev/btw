@@ -153,14 +153,39 @@ path_find_in_project <- function(filename, dir = getwd()) {
 }
 
 # Returns user-level config directories in decreasing priority order.
-# Consumers iterate and use the first match (or rev() when building
-# an increasing-priority list like btw_skills_directories()).
+# On Windows, fs::path_home() (user profile) and fs::path_home_r() (R's "~",
+# typically Documents) differ, so both are included; on macOS/Linux they are
+# identical and collapse via unique(). Consumers iterate and use the first
+# match, or rev() when building an increasing-priority list.
 btw_user_dirs <- function() {
-  c(
-    fs::path_home(".btw"),
-    fs::path_home(".config", "btw"),
+  homes <- unique(c(fs::path_home(), fs::path_home_r()))
+  unique(as.character(c(
+    fs::path(homes, ".btw"),
+    fs::path(homes, ".config", "btw"),
     tools::R_user_dir("btw")
-  )
+  )))
+}
+
+# The single recommended user-level directory for new config and skills: the
+# highest-priority entry from btw_user_dirs() (~/.btw, or %USERPROFILE%/.btw on
+# Windows). Every "we recommend ..." message and default install target derives
+# from this so guidance stays consistent with the actual search order.
+btw_user_dir_preferred <- function() {
+  btw_user_dirs()[[1]]
+}
+
+# Ordered user-level candidate paths for a config `filename` (e.g. "btw.md"),
+# in decreasing priority. The loose home-root file (~/btw.md) takes precedence
+# over the trio in btw_user_dirs() (~/.btw/btw.md, ...); see ?btw-config.
+# btw_client()/btw_app() load the first that exists via path_find_user(), and
+# use_btw_md()/edit_btw_md() reuse this order so creation and editing agree with
+# loading.
+user_config_paths <- function(filename) {
+  unique(as.character(c(
+    fs::path_home(filename),
+    fs::path_home_r(filename),
+    file.path(btw_user_dirs(), filename)
+  )))
 }
 
 path_find_user <- function(filename) {
@@ -169,19 +194,49 @@ path_find_user <- function(filename) {
     return(NULL)
   }
 
-  possibilities <- unique(c(
-    fs::path_home(filename),
-    fs::path_home_r(filename),
-    file.path(btw_user_dirs(), filename)
-  ))
+  possibilities <- user_config_paths(filename)
 
-  for (path in possibilities) {
-    if (fs::file_exists(path)) {
-      return(fs::path_norm(path))
-    }
+  existing <- possibilities[fs::file_exists(possibilities)]
+  if (length(existing) == 0) {
+    return(NULL)
   }
 
-  NULL
+  if (length(existing) > 1) {
+    warn_multiple_user_config(existing)
+  }
+
+  fs::path_norm(existing[[1]])
+}
+
+# Warn once per session when more than one user-level config file exists, so a
+# user editing a now-shadowed file has a hint about which one btw reads.
+warn_multiple_user_config <- function(paths) {
+  shown <- path_home_display(paths)
+  target <- path_home_display(fs::path(btw_user_dir_preferred(), "btw.md"))
+  cli::cli_warn(
+    c(
+      "!" = "Found more than one user-level {.file btw.md} config file.",
+      "i" = "Using {.path {shown[[1]]}}.",
+      "i" = "Ignoring lower-priority: {.path {shown[-1]}}.",
+      "i" = "Consider consolidating your btw configuration into {.path {target}}."
+    ),
+    .frequency = "once",
+    .frequency_id = "btw_multiple_user_config"
+  )
+}
+
+# Render a path under R's home directory as "~/..." without requiring the path
+# to exist (unlike path_display(), which resolves via fs::path_real()). Uses
+# fs::path_home_r() -- what R actually expands "~" to -- so the abbreviation
+# round-trips when a user pastes it back into R. On Windows this differs from
+# fs::path_home() (user profile), so profile-only paths are left native rather
+# than mislabeled "~". Vectorized; paths outside R's home are returned unchanged.
+path_home_display <- function(path) {
+  home <- fs::path_home_r()
+  under <- fs::path_has_parent(path, home)
+  out <- as.character(path)
+  out[under] <- as.character(fs::path("~", fs::path_rel(path[under], home)))
+  out
 }
 
 detect_project_is_r_package <- function(dir = getwd()) {
