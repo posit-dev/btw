@@ -185,6 +185,58 @@ test_that("btw_tool_pkg_src_get_impl validates arguments", {
   expect_error(btw_tool_pkg_src_get_impl("tools", character()))
 })
 
+# Test btw_tool_pkg_src_methods_impl -----------------------------------------
+
+test_that("btw_tool_pkg_src_methods_impl enumerates S3 methods of a generic", {
+  result <- btw_tool_pkg_src_methods_impl("stats", "predict")
+
+  expect_s7_class(result, btw:::BtwToolResult)
+
+  data <- S7::prop(result, "extra")$data
+  expect_s3_class(data, "data.frame")
+  expect_true(all(c("generic", "method", "class", "type") %in% names(data)))
+  expect_true(nrow(data) > 0)
+  expect_true(all(data$generic == "predict"))
+  expect_true(all(data$type == "S3method"))
+
+  # `method` is the get-able object name; `class` is the dispatch class.
+  expect_true("predict.lm" %in% data$method)
+  expect_equal(data$class[data$method == "predict.lm"], "lm")
+
+  # The listed method name feeds straight back into `get`.
+  got <- btw_tool_pkg_src_get_impl("stats", "predict.lm")
+  expect_equal(S7::prop(got, "extra")$data$type, "function")
+})
+
+test_that("btw_tool_pkg_src_methods_impl enumerates S4 methods with signatures", {
+  result <- btw_tool_pkg_src_methods_impl("stats4", "coef")
+  data <- S7::prop(result, "extra")$data
+
+  expect_true(any(data$type == "S4method"))
+  # S4 methods carry the signature in `class` and are not get-able by name.
+  expect_true("mle" %in% data$class)
+  expect_true(all(is.na(data$method[data$type == "S4method"])))
+})
+
+test_that("btw_tool_pkg_src_methods_impl handles multiple generics", {
+  result <- btw_tool_pkg_src_methods_impl("stats", c("predict", "residuals"))
+  data <- S7::prop(result, "extra")$data
+
+  expect_setequal(unique(data$generic), c("predict", "residuals"))
+})
+
+test_that("btw_tool_pkg_src_methods_impl reports nothing for a non-generic", {
+  result <- btw_tool_pkg_src_methods_impl("stats", "no_such_generic_xyz")
+
+  expect_match(S7::prop(result, "value"), "No methods found", fixed = TRUE)
+  expect_equal(nrow(S7::prop(result, "extra")$data), 0)
+})
+
+test_that("btw_tool_pkg_src_methods_impl validates arguments", {
+  expect_error(btw_tool_pkg_src_methods_impl(123, "predict"))
+  expect_error(btw_tool_pkg_src_methods_impl("stats", character()))
+})
+
 # Test btw_pkg_src_materialize_dir -------------------------------------------
 
 test_that("btw_pkg_src_materialize_dir writes deparsed sources to a temp dir", {

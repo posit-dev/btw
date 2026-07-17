@@ -276,6 +276,16 @@ btw_pkg_src_get <- function(package, objects, json = FALSE) {
   }
 }
 
+btw_pkg_src_methods <- function(package, generics, json = FALSE) {
+  result <- btw:::btw_tool_pkg_src_methods_impl(package, generics)
+  if (json) {
+    data <- S7::prop(result, "extra")$data
+    btw_json_output(if (!is.null(data)) data else list())
+  } else {
+    btw_output(result)
+  }
+}
+
 btw_pkg_src_search <- function(package, terms, json = FALSE) {
   result <- btw:::btw_tool_pkg_src_search_impl(package, terms)
   if (json) {
@@ -778,6 +788,22 @@ switch(
             json <- FALSE
             tryCatch(
               btw_pkg_src_get(package, `objects...`, json),
+              error = btw_error
+            )
+          },
+
+          #| title: List methods of generics in a package
+          methods = {
+            #| description: Package name.
+            #| required: true
+            package <- NULL
+            #| description: Generic names.
+            #| required: true
+            `generics...` <- c()
+            #| description: Output as JSON.
+            json <- FALSE
+            tryCatch(
+              btw_pkg_src_methods(package, `generics...`, json),
               error = btw_error
             )
           },

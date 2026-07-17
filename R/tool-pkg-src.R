@@ -342,6 +342,112 @@ btw_tool_pkg_src_get_impl <- function(package, objects) {
   btw_tool_result(value = value, data = data)
 }
 
+btw_pkg_src_method_row <- function(generic, method, class, type, fn) {
+  loc <- btw_pkg_src_srcref_location(fn)
+  data.frame(
+    generic = generic,
+    method = method,
+    class = class,
+    type = type,
+    path = loc$path,
+    line = loc$line,
+    stringsAsFactors = FALSE
+  )
+}
+
+# Enumerate the S3 and S4 methods of one generic within a namespace.
+# S3 methods come from the namespace's `.__S3MethodsTable__.` registry
+# (`generic.class` -> function); `method` is the get-able object name. S4
+# methods come from `methods::findMethods()`; they aren't reachable by a
+# simple name, so `method` is NA and the signature lives in `class`.
+btw_pkg_src_methods_for <- function(generic, ns) {
+  rows <- list()
+
+  s3_table <- tryCatch(
+    get(".__S3MethodsTable__.", envir = ns, inherits = FALSE),
+    error = function(e) NULL
+  )
+  if (!is.null(s3_table)) {
+    prefix <- paste0(generic, ".")
+    keys <- ls(s3_table, all.names = TRUE)
+    for (key in keys[startsWith(keys, prefix)]) {
+      fn <- tryCatch(get(key, envir = s3_table), error = function(e) NULL)
+      if (is.function(fn)) {
+        rows[[length(rows) + 1]] <- btw_pkg_src_method_row(
+          generic,
+          key,
+          substring(key, nchar(prefix) + 1),
+          "S3method",
+          fn
+        )
+      }
+    }
+  }
+
+  is_s4 <- isTRUE(tryCatch(
+    methods::isGeneric(generic, where = ns),
+    error = function(e) FALSE
+  ))
+  if (is_s4) {
+    s4 <- tryCatch(
+      methods::findMethods(generic, where = ns),
+      error = function(e) NULL
+    )
+    for (i in seq_along(s4)) {
+      fn <- s4[[i]]
+      if (is.function(fn)) {
+        rows[[length(rows) + 1]] <- btw_pkg_src_method_row(
+          generic,
+          NA_character_,
+          names(s4)[i],
+          "S4method",
+          fn
+        )
+      }
+    }
+  }
+
+  if (length(rows) == 0) {
+    return(NULL)
+  }
+  do.call(rbind, rows)
+}
+
+btw_tool_pkg_src_methods_impl <- function(package, generics) {
+  check_string(package)
+  check_character(generics)
+
+  if (length(generics) == 0) {
+    cli::cli_abort("`generics` must contain at least one generic name.")
+  }
+
+  resolved <- btw_pkg_src_resolve_ns(package)
+  ns <- resolved$ns
+
+  rows <- lapply(generics, btw_pkg_src_methods_for, ns = ns)
+  rows <- rows[!vapply(rows, is.null, logical(1))]
+
+  data <- if (length(rows) > 0) {
+    do.call(rbind, rows)
+  } else {
+    data.frame(
+      generic = character(),
+      method = character(),
+      class = character(),
+      type = character(),
+      path = character(),
+      line = integer(),
+      stringsAsFactors = FALSE
+    )
+  }
+  rownames(data) <- NULL
+  data <- btw_pkg_src_drop_na_columns(data)
+
+  value <- if (nrow(data) > 0) md_table(data) else "No methods found."
+
+  btw_tool_result(value = value, data = data)
+}
+
 btw_pkg_src_materialize_dir <- function(ns) {
   dir <- withr::local_tempdir(.local_envir = parent.frame())
   names <- sort(btw_pkg_src_namespace_objects(ns, all = TRUE))
