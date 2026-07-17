@@ -63,6 +63,9 @@ The path to the installed skill directory, invisibly.
 
 ## See also
 
+[btw-config](https://posit-dev.github.io/btw/dev/reference/btw-config.md)
+for the complete list of project and user configuration locations.
+
 Other skills:
 [`btw_skill_install_github()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_install_github.md),
 [`btw_skill_install_project()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_install_project.md),

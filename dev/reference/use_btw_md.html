@@ -77,7 +77,11 @@ arguments, it opens the same file that <code><a href="btw_client.html">btw_clien
 <dl><dt id="arg-scope">scope<a class="anchor" aria-label="anchor" href="#arg-scope"></a></dt>
 <dd><p>The scope of the context file. Can be:</p><ul><li><p><code>"project"</code> (default): Creates/opens <code>btw.md</code> (by default) or <code>AGENTS.md</code>
 in the project root</p></li>
-<li><p><code>"user"</code>: Creates/opens <code>btw.md</code> in your home directory</p></li>
+<li><p><code>"user"</code>: Opens your user-level <code>btw.md</code>. When multiple user-level
+configuration files exist, <code>edit_btw_md("user")</code> asks which one to open,
+indicating the file that <code><a href="btw_client.html">btw_client()</a></code> and <code><a href="btw_client.html">btw_app()</a></code> load. When
+creating, <code>use_btw_md("user")</code> uses the recommended <code>~/.btw/</code> location and
+offers to migrate an existing user-level configuration found elsewhere.</p></li>
 <li><p>A directory path: Creates/opens <code>btw.md</code> in that directory</p></li>
 <li><p>A file path: Creates/opens that specific file</p></li>
 </ul><p>For <code>edit_btw_md()</code>, <code>scope = NULL</code> (default) will find and open the
@@ -234,12 +238,19 @@ your project directory. You can even have multiple <code>btw.md</code> files in 
 project, in which case the one closest to your current working directory
 will be used. This makes it easy to have different <code>btw.md</code> files for
 different sub-projects or sub-directories within a larger project.</p>
-<p>For global configuration, you can maintain a <code>btw.md</code> file in your home
-directory (at <code>btw.md</code> or <code>.config/btw/btw.md</code> in your home directory, using
-<code><a href="https://fs.r-lib.org/reference/path_expand.html" class="external-link">fs::path_home()</a></code>). This file will be used by default when a project-specific
-<code>btw.md</code> file is not found. Note that <span class="pkg">btw</span> only looks for <code>btw.md</code> in
-your home directory if no project-specific <code>btw.md</code> or <code>AGENTS.md</code> file is
-present. It also does not look for <code>AGENTS.md</code> in your home directory.</p>
+<p>For global configuration, btw uses a user-level <code>btw.md</code> file. A <code>btw.md</code>
+directly in your home directory (<code>~/btw.md</code>) takes precedence; otherwise btw
+looks in <code>~/.btw/btw.md</code>, <code>~/.config/btw/btw.md</code>, and
+<code>tools::R_user_dir("btw")</code>, in that order (see <a href="btw-config.html">btw-config</a> for the full
+picture, including skills and agents). <code>use_btw_md("user")</code> creates new
+configuration in the recommended <code>~/.btw/</code> directory, and offers to migrate
+an existing user-level configuration found elsewhere. When more than one
+user-level <code>btw.md</code> file exists, <code>edit_btw_md("user")</code> asks which one to open.
+Whichever user-level <code>btw.md</code> file is found is
+used by default when a project-specific <code>btw.md</code> file is not found. Note that
+<span class="pkg">btw</span> only looks for a user-level <code>btw.md</code> if no project-specific
+<code>btw.md</code> or <code>AGENTS.md</code> file is present. It also does not look for
+<code>AGENTS.md</code> in your home directory.</p>
     </div>
     <div class="section level2">
     <h2 id="interactive-setup">Interactive Setup<a class="anchor" aria-label="anchor" href="#interactive-setup"></a></h2>
@@ -253,7 +264,8 @@ an LLM to help you create a <code>btw.md</code> file for your project.</p>
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Project context files are discovered automatically and included in
 the system prompt by <code><a href="btw_client.html">btw_client()</a></code>. See <code><a href="btw_tools.html">btw_tools()</a></code> for a list of
-available tools.</p></div>
+available tools. See <a href="btw-config.html">btw-config</a> for the complete list of project and
+user configuration locations.</p></div>
     </div>
 
     <div class="section level2">
@@ -265,7 +277,7 @@ available tools.</p></div>
 <span class="r-in"><span>    <span class="fu">use_btw_md</span><span class="op">(</span><span class="va">btw_md_tmp</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">}</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Created <span style="color: #0000BB;">/tmp/RtmpxIfKZx/file21bc40b9e2a3.md</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Created <span style="color: #0000BB;">/tmp/RtmpHOCW3x/file21735f34c9d8.md</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> See `?btw::btw_client()` for format details</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> See `?btw::btw_tools()` for available tools</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Call `btw::btw_task_create_btw_md()` to use an LLM to help you initialize the</span>

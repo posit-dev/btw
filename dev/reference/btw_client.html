@@ -24,10 +24,12 @@ Client Settings with User-Level Fallback
 
 Client settings in client and tools from a project-level btw.md or
 AGENTS.md file take precedence. If a project file doesn't specify a
-setting, btw will fall back to settings in a user-level btw.md file
-(typically in ~/btw.md or ~/.config/btw/btw.md). Project-level btw tool
-options under the options key are merged with user-level options, with
-project-level options taking precedence.
+setting, btw will fall back to settings in a user-level btw.md file. This
+is ~/btw.md if present, otherwise ~/.btw/btw.md, ~/.config/btw/btw.md,
+or tools::R_user_dir(&quot;btw&quot;), in that order. See ?btw-config for the
+complete list of user-level locations. Project-level btw tool options under
+the options key are merged with user-level options, with project-level
+options taking precedence.
 Project-specific instructions from both files are combined with a divider,
 allowing you to maintain global guidelines in your user file and
 project-specific rules in your project file.
@@ -97,10 +99,12 @@ Client Settings with User-Level Fallback
 
 Client settings in client and tools from a project-level btw.md or
 AGENTS.md file take precedence. If a project file doesn't specify a
-setting, btw will fall back to settings in a user-level btw.md file
-(typically in ~/btw.md or ~/.config/btw/btw.md). Project-level btw tool
-options under the options key are merged with user-level options, with
-project-level options taking precedence.
+setting, btw will fall back to settings in a user-level btw.md file. This
+is ~/btw.md if present, otherwise ~/.btw/btw.md, ~/.config/btw/btw.md,
+or tools::R_user_dir(&quot;btw&quot;), in that order. See ?btw-config for the
+complete list of user-level locations. Project-level btw tool options under
+the options key are merged with user-level options, with project-level
+options taking precedence.
 Project-specific instructions from both files are combined with a divider,
 allowing you to maintain global guidelines in your user file and
 project-specific rules in your project file.
@@ -210,10 +214,12 @@ the <code>path_llms_txt</code> argument.</p>
 
 <p>Client settings in <code>client</code> and <code>tools</code> from a project-level <code>btw.md</code> or
 <code>AGENTS.md</code> file take precedence. If a project file doesn't specify a
-setting, btw will fall back to settings in a user-level <code>btw.md</code> file
-(typically in <code>~/btw.md</code> or <code>~/.config/btw/btw.md</code>). Project-level btw tool
-options under the <code>options</code> key are merged with user-level options, with
-project-level options taking precedence.</p>
+setting, btw will fall back to settings in a user-level <code>btw.md</code> file. This
+is <code>~/btw.md</code> if present, otherwise <code>~/.btw/btw.md</code>, <code>~/.config/btw/btw.md</code>,
+or <code>tools::R_user_dir("btw")</code>, in that order. See <code>?btw-config</code> for the
+complete list of user-level locations. Project-level btw tool options under
+the <code>options</code> key are merged with user-level options, with project-level
+options taking precedence.</p>
 <p>Project-specific instructions from both files are combined with a divider,
 allowing you to maintain global guidelines in your user file and
 project-specific rules in your project file.</p>
@@ -313,11 +319,12 @@ client.</p></dd>
 
 <dt id="arg-path-btw">path_btw<a class="anchor" aria-label="anchor" href="#arg-path-btw"></a></dt>
 <dd><p>A path to a <code>btw.md</code>, <code>AGENTS.md</code>, or <code>CLAUDE.md</code> project
-context file. If <code>NULL</code>, btw will find a project-specific <code>btw.md</code>,
-<code>AGENTS.md</code>, or <code>CLAUDE.md</code> file in the parents of the current working
-directory, with fallback to user-level <code>btw.md</code> if no project file is
-found. Set <code>path_btw = FALSE</code> to create a chat client without using a
-<code>btw.md</code> file.</p></dd>
+context file. If <code>NULL</code>, btw will find a project-specific context file by
+walking up the parents of the current working directory, preferring
+<code>btw.md</code>, then <code>AGENTS.md</code>, then <code>CLAUDE.md</code>, with fallback to a
+user-level <code>btw.md</code> file if no project file is found. See <code>?btw-config</code>
+for the complete list of locations. Set <code>path_btw = FALSE</code> to create a
+chat client without using a <code>btw.md</code> file.</p></dd>
 
 
 <dt id="arg-path-llms-txt">path_llms_txt<a class="anchor" aria-label="anchor" href="#arg-path-llms-txt"></a></dt>
@@ -350,6 +357,47 @@ the chat object with the messages added during the chat session.</p>
 <ul><li><p><code>btw_client()</code>: Create a btw-enhanced <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> client</p></li>
 <li><p><code>btw_app()</code>: Create a btw-enhanced client and launch a Shiny app to
 chat</p></li>
+</ul></div>
+    <div class="section level2">
+    <h2 id="user-global-locations">User (global) locations<a class="anchor" aria-label="anchor" href="#user-global-locations"></a></h2>
+
+
+
+<p>btw's user-level home is the <code>~/.btw/</code> directory. Skills and btw-style agents
+live there (and in two additional directories), while the user-level <code>btw.md</code>
+configuration file may also live directly in your home directory.</p>
+<p>The user-level directories, in decreasing order of priority, are:</p><ol><li><p><code>~/.btw/</code> (recommended)</p></li>
+<li><p><code>~/.config/btw/</code></p></li>
+<li><p>The platform-specific R user config directory,
+<code>tools::R_user_dir("btw")</code></p></li>
+</ol><p>Skills are discovered in the <code>skills/</code> subdirectory of each (e.g.
+<code>~/.btw/skills/</code>), and btw-style agents are discovered as <code>agent-*.md</code> files
+directly inside each (e.g. <code>~/.btw/agent-my_agent.md</code>).</p>
+<p>The user-level <code>btw.md</code> <strong>configuration file</strong> is searched for in a slightly
+different order: a <code>btw.md</code> directly in your home directory (<code>~/btw.md</code>)
+takes precedence, followed by <code>btw.md</code> in each of the directories above
+(<code>~/.btw/btw.md</code>, <code>~/.config/btw/btw.md</code>, <code>tools::R_user_dir("btw")/btw.md</code>).
+<code>~/btw.md</code> remains a first-class location; <code>use_btw_md("user")</code> creates new
+configuration in the recommended <code>~/.btw/</code> directory. If more than one
+user-level <code>btw.md</code> exists, the highest-priority one is used and btw warns
+once per session.</p>
+<p>On Windows, R's notion of your home directory (<code><a href="https://fs.r-lib.org/reference/path_expand.html" class="external-link">fs::path_home_r()</a></code>,
+typically your <code>Documents</code> folder) can differ from your user profile
+directory (<code><a href="https://fs.r-lib.org/reference/path_expand.html" class="external-link">fs::path_home()</a></code>); btw searches both.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="project-locations">Project locations<a class="anchor" aria-label="anchor" href="#project-locations"></a></h2>
+
+
+
+<p>Project-level configuration is discovered by walking up from the current
+working directory to the project root, where the project root is
+identified by the presence of a <code>DESCRIPTION</code>, <code>.git</code>, <code>.vscode</code>, <code>.here</code>,
+or <code>*.Rproj</code> file.</p><ul><li><p><strong>Config file</strong>: the nearest <code>btw.md</code> file, or if none is found, the
+nearest <code>AGENTS.md</code> file, or if neither is found, the nearest <code>CLAUDE.md</code>
+file. (<code>btw.md</code> &gt; <code>AGENTS.md</code> &gt; <code>CLAUDE.md</code>)</p></li>
+<li><p><strong>btw-style agents</strong>: <code>.btw/agent-*.md</code></p></li>
+<li><p><strong>Skills</strong>: <code>.btw/skills/</code> or <code>.agents/skills/</code></p></li>
 </ul></div>
 
     <div class="section level2">

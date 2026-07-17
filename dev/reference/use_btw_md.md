@@ -34,7 +34,15 @@ edit_btw_md(scope = NULL)
   - `"project"` (default): Creates/opens `btw.md` (by default) or
     `AGENTS.md` in the project root
 
-  - `"user"`: Creates/opens `btw.md` in your home directory
+  - `"user"`: Opens your user-level `btw.md`. When multiple user-level
+    configuration files exist, `edit_btw_md("user")` asks which one to
+    open, indicating the file that
+    [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+    and
+    [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+    load. When creating, `use_btw_md("user")` uses the recommended
+    `~/.btw/` location and offers to migrate an existing user-level
+    configuration found elsewhere.
 
   - A directory path: Creates/opens `btw.md` in that directory
 
@@ -215,14 +223,20 @@ directory will be used. This makes it easy to have different `btw.md`
 files for different sub-projects or sub-directories within a larger
 project.
 
-For global configuration, you can maintain a `btw.md` file in your home
-directory (at `btw.md` or `.config/btw/btw.md` in your home directory,
-using
-[`fs::path_home()`](https://fs.r-lib.org/reference/path_expand.html)).
-This file will be used by default when a project-specific `btw.md` file
-is not found. Note that btw only looks for `btw.md` in your home
-directory if no project-specific `btw.md` or `AGENTS.md` file is
-present. It also does not look for `AGENTS.md` in your home directory.
+For global configuration, btw uses a user-level `btw.md` file. A
+`btw.md` directly in your home directory (`~/btw.md`) takes precedence;
+otherwise btw looks in `~/.btw/btw.md`, `~/.config/btw/btw.md`, and
+`tools::R_user_dir("btw")`, in that order (see
+[btw-config](https://posit-dev.github.io/btw/dev/reference/btw-config.md)
+for the full picture, including skills and agents). `use_btw_md("user")`
+creates new configuration in the recommended `~/.btw/` directory, and
+offers to migrate an existing user-level configuration found elsewhere.
+When more than one user-level `btw.md` file exists,
+`edit_btw_md("user")` asks which one to open. Whichever user-level
+`btw.md` file is found is used by default when a project-specific
+`btw.md` file is not found. Note that btw only looks for a user-level
+`btw.md` if no project-specific `btw.md` or `AGENTS.md` file is present.
+It also does not look for `AGENTS.md` in your home directory.
 
 ## Interactive Setup
 
@@ -237,7 +251,9 @@ system prompt by
 [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md).
 See
 [`btw_tools()`](https://posit-dev.github.io/btw/dev/reference/btw_tools.md)
-for a list of available tools.
+for a list of available tools. See
+[btw-config](https://posit-dev.github.io/btw/dev/reference/btw-config.md)
+for the complete list of project and user configuration locations.
 
 ## Examples
 
@@ -249,7 +265,7 @@ withr::with_tempdir({
     use_btw_md(btw_md_tmp)
   })
 })
-#> ✔ Created /tmp/RtmpxIfKZx/file21bc40b9e2a3.md
+#> ✔ Created /tmp/RtmpHOCW3x/file21735f34c9d8.md
 #> ℹ See `?btw::btw_client()` for format details
 #> ℹ See `?btw::btw_tools()` for available tools
 #> ℹ Call `btw::btw_task_create_btw_md()` to use an LLM to help you initialize the

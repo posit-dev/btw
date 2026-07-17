@@ -39,6 +39,15 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="btw-development-version">btw (development version)<a class="anchor" aria-label="anchor" href="#btw-development-version"></a></h2>
+<div class="section level3">
+<h3 id="deprecations-development-version">Deprecations<a class="anchor" aria-label="anchor" href="#deprecations-development-version"></a></h3>
+<ul><li>The legacy user skills directory used by btw &lt;= 1.2.0 (<code>skills/</code> under <code>tools::R_user_dir("btw", "config")</code>) is deprecated. btw still reads skills from it but now warns once per session when it contains skills, prompting you to move them to <code>~/.btw/skills</code>. Read support for the legacy location will be removed in btw 1.5.0 (<a href="https://github.com/posit-dev/btw/issues/203" class="external-link">#203</a>).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-development-version">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
+<ul><li><p><code>use_btw_md("user")</code> now creates user-level configuration in <code>~/.btw/btw.md</code> (btw’s recommended user directory) and offers to migrate an existing <code>~/btw.md</code> there instead of creating a second file. A <code>~/btw.md</code> in your home directory still takes precedence when present; if more than one user-level <code>btw.md</code> exists, btw uses the highest-priority one and warns once per session. See <code>?btw-config</code> for the full set of configuration locations (<a href="https://github.com/posit-dev/btw/issues/203" class="external-link">#203</a>).</p></li>
+<li><p>On Windows, btw now discovers user-level agents and skills under R’s home directory (<code>~</code>, typically <code>Documents</code>) in addition to the user profile, matching how it already searched for user-level <code>btw.md</code> config files. macOS and Linux behavior is unchanged (<a href="https://github.com/posit-dev/btw/issues/203" class="external-link">#203</a>).</p></li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.3.0" id="btw-130">btw 1.3.0<a class="anchor" aria-label="anchor" href="#btw-130"></a></h2><p class="text-muted">CRAN release: 2026-07-02</p>

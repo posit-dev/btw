@@ -27,10 +27,12 @@ by the `path_llms_txt` argument.
 
 Client settings in `client` and `tools` from a project-level `btw.md` or
 `AGENTS.md` file take precedence. If a project file doesn't specify a
-setting, btw will fall back to settings in a user-level `btw.md` file
-(typically in `~/btw.md` or `~/.config/btw/btw.md`). Project-level btw
-tool options under the `options` key are merged with user-level options,
-with project-level options taking precedence.
+setting, btw will fall back to settings in a user-level `btw.md` file.
+This is `~/btw.md` if present, otherwise `~/.btw/btw.md`,
+`~/.config/btw/btw.md`, or `tools::R_user_dir("btw")`, in that order.
+See `?btw-config` for the complete list of user-level locations.
+Project-level btw tool options under the `options` key are merged with
+user-level options, with project-level options taking precedence.
 
 Project-specific instructions from both files are combined with a
 divider, allowing you to maintain global guidelines in your user file
@@ -142,11 +144,13 @@ btw_app(
 - path_btw:
 
   A path to a `btw.md`, `AGENTS.md`, or `CLAUDE.md` project context
-  file. If `NULL`, btw will find a project-specific `btw.md`,
-  `AGENTS.md`, or `CLAUDE.md` file in the parents of the current working
-  directory, with fallback to user-level `btw.md` if no project file is
-  found. Set `path_btw = FALSE` to create a chat client without using a
-  `btw.md` file.
+  file. If `NULL`, btw will find a project-specific context file by
+  walking up the parents of the current working directory, preferring
+  `btw.md`, then `AGENTS.md`, then `CLAUDE.md`, with fallback to a
+  user-level `btw.md` file if no project file is found. See
+  `?btw-config` for the complete list of locations. Set
+  `path_btw = FALSE` to create a chat client without using a `btw.md`
+  file.
 
 - path_llms_txt:
 
@@ -184,6 +188,57 @@ the messages added during the chat session.
 
 - `btw_app()`: Create a btw-enhanced client and launch a Shiny app to
   chat
+
+## User (global) locations
+
+btw's user-level home is the `~/.btw/` directory. Skills and btw-style
+agents live there (and in two additional directories), while the
+user-level `btw.md` configuration file may also live directly in your
+home directory.
+
+The user-level directories, in decreasing order of priority, are:
+
+1.  `~/.btw/` (recommended)
+
+2.  `~/.config/btw/`
+
+3.  The platform-specific R user config directory,
+    `tools::R_user_dir("btw")`
+
+Skills are discovered in the `skills/` subdirectory of each (e.g.
+`~/.btw/skills/`), and btw-style agents are discovered as `agent-*.md`
+files directly inside each (e.g. `~/.btw/agent-my_agent.md`).
+
+The user-level `btw.md` **configuration file** is searched for in a
+slightly different order: a `btw.md` directly in your home directory
+(`~/btw.md`) takes precedence, followed by `btw.md` in each of the
+directories above (`~/.btw/btw.md`, `~/.config/btw/btw.md`,
+`tools::R_user_dir("btw")/btw.md`). `~/btw.md` remains a first-class
+location; `use_btw_md("user")` creates new configuration in the
+recommended `~/.btw/` directory. If more than one user-level `btw.md`
+exists, the highest-priority one is used and btw warns once per session.
+
+On Windows, R's notion of your home directory
+([`fs::path_home_r()`](https://fs.r-lib.org/reference/path_expand.html),
+typically your `Documents` folder) can differ from your user profile
+directory
+([`fs::path_home()`](https://fs.r-lib.org/reference/path_expand.html));
+btw searches both.
+
+## Project locations
+
+Project-level configuration is discovered by walking up from the current
+working directory to the project root, where the project root is
+identified by the presence of a `DESCRIPTION`, `.git`, `.vscode`,
+`.here`, or `*.Rproj` file.
+
+- **Config file**: the nearest `btw.md` file, or if none is found, the
+  nearest `AGENTS.md` file, or if neither is found, the nearest
+  `CLAUDE.md` file. (`btw.md` \> `AGENTS.md` \> `CLAUDE.md`)
+
+- **btw-style agents**: `.btw/agent-*.md`
+
+- **Skills**: `.btw/skills/` or `.agents/skills/`
 
 ## Examples
 

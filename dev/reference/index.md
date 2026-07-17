@@ -24,6 +24,8 @@
   : Create or edit a btw.md context file
 - [`btw_task_create_btw_md()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_btw_md.md)
   : Task: Initialize Project Context File
+- [`btw-config`](https://posit-dev.github.io/btw/dev/reference/btw-config.md)
+  : Where btw looks for configuration
 
 ## Describe R stuff
 
