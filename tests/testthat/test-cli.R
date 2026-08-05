@@ -274,6 +274,68 @@ test_that("btw pkg coverage --file passes filename", {
   expect_equal(mock_filename, "utils.R")
 })
 
+test_that("btw pkg src methods parses default and source output", {
+  env <- run_btw_quietly(
+    "pkg",
+    "src",
+    "methods",
+    "stats",
+    "predict"
+  )
+
+  expect_equal(env$package, "stats")
+  expect_equal(env$`generics...`, "predict")
+  expect_false(env$source)
+  expect_false(env$json)
+
+  output <- paste(env$.output, collapse = "\n")
+  expect_match(output, "| generic |", fixed = TRUE)
+  expect_false(grepl("```r", output, fixed = TRUE))
+
+  source_env <- run_btw_quietly(
+    "pkg",
+    "src",
+    "methods",
+    "stats",
+    "predict",
+    "--source"
+  )
+
+  expect_equal(source_env$package, "stats")
+  expect_equal(source_env$`generics...`, "predict")
+  expect_true(source_env$source)
+  expect_false(source_env$json)
+
+  source_output <- paste(source_env$.output, collapse = "\n")
+  expect_match(source_output, "### `predict` method", fixed = TRUE)
+  expect_match(source_output, "```r", fixed = TRUE)
+})
+
+test_that("btw pkg src methods --source --json returns source data", {
+  env <- run_btw_quietly(
+    "pkg",
+    "src",
+    "methods",
+    "stats",
+    "predict",
+    "--source",
+    "--json"
+  )
+
+  expect_true(env$source)
+  expect_true(env$json)
+
+  parsed <- jsonlite::fromJSON(paste(env$.output, collapse = "\n"))
+  expect_s3_class(parsed, "data.frame")
+  expect_true(all(c("generic", "method", "type", "source") %in% names(parsed)))
+
+  row <- parsed[parsed$method == "predict.lm", , drop = FALSE]
+  expect_equal(nrow(row), 1)
+  expect_equal(row$generic, "predict")
+  expect_equal(row$type, "S3method")
+  expect_true(nzchar(row$source))
+})
+
 # btw info deprecated ----------------------------------------------------
 
 test_that("btw info exits 1 with deprecation message", {

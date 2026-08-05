@@ -40,6 +40,7 @@ Imports:
     fs,
     jsonlite,
     lifecycle,
+    methods,
     mcptools,
     pkgsearch,
     rlang (>= 1.1.0),
@@ -125,6 +126,7 @@ Collate:
     'tool-ide.R'
     'tool-pkg-covr.R'
     'tool-pkg-devtools.R'
+    'tool-pkg-src.R'
     'tool-run.R'
     'tool-session-package-installed.R'
     'tool-sessioninfo.R'
