@@ -233,6 +233,103 @@ btw_pkg_load <- function(path) {
   btw_output(btw:::btw_tool_pkg_load_all_impl(path))
 }
 
+btw_pkg_desc <- function(packages, fields = "", json = FALSE) {
+  rlang::check_installed("desc", reason = "to read package DESCRIPTION files.")
+
+  always_fields <- c(
+    "Package",
+    "Version",
+    "Title",
+    "Description",
+    "Date",
+    "Date/Publication"
+  )
+  default_fields <- c(
+    always_fields,
+    "Authors@R",
+    "Author",
+    "Maintainer",
+    "License",
+    "URL",
+    "BugReports",
+    desc::dep_types,
+    "Remotes",
+    "Additional_repositories",
+    "SystemRequirements",
+    "NeedsCompilation"
+  )
+  description_paths <- vapply(
+    packages,
+    function(package) system.file("DESCRIPTION", package = package),
+    character(1)
+  )
+  missing <- !nzchar(description_paths)
+  if (any(missing)) {
+    stop(
+      "Package '",
+      packages[[which(missing)[[1]]]],
+      "' is not installed.",
+      call. = FALSE
+    )
+  }
+  descriptions <- lapply(description_paths, function(path) {
+    desc::desc(file = path)
+  })
+
+  requested_fields <- trimws(strsplit(fields, ",", fixed = TRUE)[[1]])
+  requested_fields <- requested_fields[nzchar(requested_fields)]
+  include_all <- any(tolower(requested_fields) == "all")
+
+  if (include_all && length(requested_fields) > 1) {
+    stop("`all` cannot be combined with other --fields values.", call. = FALSE)
+  }
+
+  if (!include_all && length(requested_fields)) {
+    available_fields <- unique(unlist(lapply(descriptions, function(x) {
+      x$fields()
+    })))
+    matches <- match(tolower(requested_fields), tolower(available_fields))
+    if (anyNA(matches)) {
+      stop(
+        "Unknown DESCRIPTION field: ",
+        paste(requested_fields[is.na(matches)], collapse = ", "),
+        call. = FALSE
+      )
+    }
+    selected_fields <- unique(c(always_fields, available_fields[matches]))
+  } else {
+    selected_fields <- default_fields
+  }
+
+  select_fields <- function(description) {
+    available <- description$fields()
+    if (include_all) {
+      return(available)
+    }
+    matches <- match(tolower(selected_fields), tolower(available))
+    available[matches[!is.na(matches)]]
+  }
+
+  if (json) {
+    output <- lapply(descriptions, function(description) {
+      as.list(description$get(select_fields(description)))
+    })
+    names(output) <- vapply(output, `[[`, character(1), "Package")
+    btw_json_output(output)
+    return(invisible(NULL))
+  }
+
+  output <- Map(function(description, path) {
+    if (include_all) {
+      return(paste(readLines(path, warn = FALSE), collapse = "\n"))
+    }
+
+    description$del(setdiff(description$fields(), select_fields(description)))
+    description$str(normalize = FALSE, mode = "file")
+  }, descriptions, description_paths)
+  cat(paste(output, collapse = "\n\n---\n\n"), "\n", sep = "")
+}
+
 btw_pkg_coverage <- function(path, file, json = FALSE) {
   result <- btw:::btw_tool_pkg_coverage_impl(
     path,
@@ -743,6 +840,19 @@ switch(
       #| title: Load package with pkgload
       load = {
         tryCatch(btw_pkg_load(path), error = btw_error)
+      },
+
+      #| title: Show package DESCRIPTION files
+      desc = {
+        #| description: Installed package names.
+        #| required: true
+        `packages...` <- c()
+        #| description: Comma-separated fields to include, or "all". Package identity fields are always included.
+        #| short: 'f'
+        fields <- ""
+        #| description: Output parsed DESCRIPTION fields as a JSON object keyed by package name.
+        json <- FALSE
+        tryCatch(btw_pkg_desc(`packages...`, fields, json), error = btw_error)
       },
 
       #| title: Measure package test coverage
