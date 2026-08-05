@@ -276,8 +276,17 @@ btw_pkg_src_get <- function(package, objects, json = FALSE) {
   }
 }
 
-btw_pkg_src_methods <- function(package, generics, json = FALSE) {
-  result <- btw:::btw_tool_pkg_src_methods_impl(package, generics)
+btw_pkg_src_methods <- function(
+  package,
+  generics,
+  source = FALSE,
+  json = FALSE
+) {
+  result <- btw:::btw_tool_pkg_src_methods_impl(
+    package,
+    generics,
+    source = source
+  )
   if (json) {
     data <- S7::prop(result, "extra")$data
     btw_json_output(if (!is.null(data)) data else list())
@@ -800,10 +809,13 @@ switch(
             #| description: Generic names.
             #| required: true
             `generics...` <- c()
+            #| description: Include rendered source for each method.
+            #| short: 's'
+            source <- FALSE
             #| description: Output as JSON.
             json <- FALSE
             tryCatch(
-              btw_pkg_src_methods(package, `generics...`, json),
+              btw_pkg_src_methods(package, `generics...`, source, json),
               error = btw_error
             )
           },

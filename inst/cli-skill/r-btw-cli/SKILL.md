@@ -35,21 +35,24 @@ btw pkg load [--path <dir>]                Load package with pkgload
 btw pkg coverage [--file <f>] [--json]     Compute test coverage
 ```
 
-Use `btw pkg src` to inspect the **source code** of installed packages (or the
-dev package via `.`), e.g. to understand behavior the docs don't cover.
+Use `btw pkg src` to inspect the **R namespace implementations** of installed
+packages (or the dev package via `.`), e.g. to understand behavior the docs
+don't cover. It returns exact source when available and deparsed functions
+otherwise. This is not a complete package source checkout: native source,
+tests, comments, and original file layout are generally unavailable.
 
 ```
 btw pkg src list <pkg> [-a|--all] [--json]      List namespace objects and their types
 btw pkg src get <pkg> <objects>... [--json]     Show source for objects (srcref or deparse)
-btw pkg src methods <pkg> <generics>... [--json]  List S3/S4 methods of generics
+btw pkg src methods <pkg> <generics>... [--source] [--json]  List or show S3/S4 methods
 btw pkg src path <pkg>... [--json]              Install paths and whether R source is present
 btw pkg src search <pkg> <terms>... [--json]    Code-search the package source
 ```
 
 When `get` on a generic shows only a `UseMethod`/`standardGeneric` stub, use
-`methods` to find its implementations, then `get` a method by name — e.g.
-`btw pkg src methods dplyr mutate` then `btw pkg src get dplyr mutate.data.frame`.
-(S3 methods are get-able by name; S4 methods are listed with their signature.)
+`methods --source` to discover and inspect its S3 and S4 implementations
+directly — e.g. `btw pkg src methods dplyr mutate --source`. Without
+`--source`, `methods` only lists the available implementations.
 
 Use these commands to inspect the current R installation and installed packages. Use `btw check-installed` to verify whether a specific package is installed before deciding whether to use `btw docs` or `btw cran`.
 

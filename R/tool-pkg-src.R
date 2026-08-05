@@ -342,9 +342,16 @@ btw_tool_pkg_src_get_impl <- function(package, objects) {
   btw_tool_result(value = value, data = data)
 }
 
-btw_pkg_src_method_row <- function(generic, method, class, type, fn) {
+btw_pkg_src_method_row <- function(
+  generic,
+  method,
+  class,
+  type,
+  fn,
+  source = FALSE
+) {
   loc <- btw_pkg_src_srcref_location(fn)
-  data.frame(
+  row <- data.frame(
     generic = generic,
     method = method,
     class = class,
@@ -353,34 +360,160 @@ btw_pkg_src_method_row <- function(generic, method, class, type, fn) {
     line = loc$line,
     stringsAsFactors = FALSE
   )
+  if (source) {
+    row$source <- btw_pkg_src_render_closure(fn)
+  }
+  row
 }
 
-# Enumerate the S3 and S4 methods of one generic within a namespace.
-# S3 methods come from the namespace's `.__S3MethodsTable__.` registry
-# (`generic.class` -> function); `method` is the get-able object name. S4
-# methods come from `methods::findMethods()`; they aren't reachable by a
-# simple name, so `method` is NA and the signature lives in `class`.
-btw_pkg_src_methods_for <- function(generic, ns) {
-  rows <- list()
+btw_pkg_src_is_namespace_function <- function(fn, ns) {
+  is.function(fn) && identical(environment(fn), ns)
+}
 
+btw_pkg_src_s3_registered_methods <- function(generic, ns, source = FALSE) {
+  registrations <- tryCatch(
+    getNamespaceInfo(ns, "S3methods"),
+    error = function(e) NULL
+  )
+  if (is.null(registrations) || length(registrations) == 0) {
+    return(NULL)
+  }
+
+  registrations <- as.data.frame(registrations, stringsAsFactors = FALSE)
+  if (ncol(registrations) < 3) {
+    return(NULL)
+  }
+
+  registrations <- registrations[
+    !is.na(registrations[[1]]) & registrations[[1]] == generic,
+    ,
+    drop = FALSE
+  ]
+  if (nrow(registrations) == 0) {
+    return(NULL)
+  }
+
+  rows <- lapply(seq_len(nrow(registrations)), function(i) {
+    class <- registrations[[2]][[i]]
+    method <- registrations[[3]][[i]]
+
+    if (is.character(method) && length(method) == 1 && !is.na(method)) {
+      if (!nzchar(method)) {
+        return(NULL)
+      }
+
+      fn <- tryCatch(
+        get(method, envir = ns, inherits = FALSE),
+        error = function(e) NULL
+      )
+      method_name <- method
+    } else if (btw_pkg_src_is_namespace_function(method, ns)) {
+      fn <- method
+      candidate <- paste(generic, class, sep = ".")
+      candidate_fn <- tryCatch(
+        get(candidate, envir = ns, inherits = FALSE),
+        error = function(e) NULL
+      )
+      method_name <- if (identical(fn, candidate_fn)) {
+        candidate
+      } else {
+        NA_character_
+      }
+    } else {
+      return(NULL)
+    }
+
+    if (!is.function(fn)) {
+      return(NULL)
+    }
+
+    btw_pkg_src_method_row(
+      generic,
+      method_name,
+      class,
+      "S3method",
+      fn,
+      source = source
+    )
+  })
+  rows <- rows[!vapply(rows, is.null, logical(1))]
+
+  if (length(rows) == 0) {
+    return(NULL)
+  }
+  data <- do.call(rbind, rows)
+  data[!duplicated(data$class), , drop = FALSE]
+}
+
+btw_pkg_src_s3_runtime_methods <- function(generic, ns, source = FALSE) {
   s3_table <- tryCatch(
     get(".__S3MethodsTable__.", envir = ns, inherits = FALSE),
     error = function(e) NULL
   )
-  if (!is.null(s3_table)) {
-    prefix <- paste0(generic, ".")
-    keys <- ls(s3_table, all.names = TRUE)
-    for (key in keys[startsWith(keys, prefix)]) {
-      fn <- tryCatch(get(key, envir = s3_table), error = function(e) NULL)
-      if (is.function(fn)) {
-        rows[[length(rows) + 1]] <- btw_pkg_src_method_row(
-          generic,
-          key,
-          substring(key, nchar(prefix) + 1),
-          "S3method",
-          fn
-        )
-      }
+  if (is.null(s3_table)) {
+    return(NULL)
+  }
+
+  prefix <- paste0(generic, ".")
+  keys <- ls(s3_table, all.names = TRUE)
+  keys <- keys[startsWith(keys, prefix)]
+  if (length(keys) == 0) {
+    return(NULL)
+  }
+
+  rows <- lapply(keys, function(key) {
+    fn <- tryCatch(get(key, envir = s3_table), error = function(e) NULL)
+    if (!btw_pkg_src_is_namespace_function(fn, ns)) {
+      return(NULL)
+    }
+
+    btw_pkg_src_method_row(
+      generic,
+      key,
+      substring(key, nchar(prefix) + 1),
+      "S3method",
+      fn,
+      source = source
+    )
+  })
+  rows <- rows[!vapply(rows, is.null, logical(1))]
+
+  if (length(rows) == 0) {
+    return(NULL)
+  }
+  do.call(rbind, rows)
+}
+
+# Enumerate the S3 and S4 methods of one generic within a namespace.
+# S3 methods declared by the package live in `S3methods` namespace metadata,
+# including registrations for generics owned by another package. The runtime
+# registry supplements declarations made dynamically during package loading.
+# S4 methods come from `methods::findMethods()`; they aren't reachable by a
+# simple name, so `method` is NA and the signature lives in `class`.
+btw_pkg_src_methods_for <- function(generic, ns, source = FALSE) {
+  rows <- list()
+
+  s3_registered <- btw_pkg_src_s3_registered_methods(
+    generic,
+    ns,
+    source = source
+  )
+  if (!is.null(s3_registered)) {
+    rows[[length(rows) + 1]] <- s3_registered
+  }
+
+  s3_runtime <- btw_pkg_src_s3_runtime_methods(
+    generic,
+    ns,
+    source = source
+  )
+  if (!is.null(s3_runtime)) {
+    if (!is.null(s3_registered)) {
+      registered_classes <- s3_registered$class
+      s3_runtime <- s3_runtime[!s3_runtime$class %in% registered_classes, ]
+    }
+    if (nrow(s3_runtime) > 0) {
+      rows[[length(rows) + 1]] <- s3_runtime
     }
   }
 
@@ -401,7 +534,8 @@ btw_pkg_src_methods_for <- function(generic, ns) {
           NA_character_,
           names(s4)[i],
           "S4method",
-          fn
+          fn,
+          source = source
         )
       }
     }
@@ -410,12 +544,43 @@ btw_pkg_src_methods_for <- function(generic, ns) {
   if (length(rows) == 0) {
     return(NULL)
   }
-  do.call(rbind, rows)
+  data <- do.call(rbind, rows)
+  rownames(data) <- NULL
+  data
 }
 
-btw_tool_pkg_src_methods_impl <- function(package, generics) {
+btw_pkg_src_methods_source_value <- function(data) {
+  blocks <- lapply(seq_len(nrow(data)), function(i) {
+    row <- data[i, ]
+    name <- if (identical(row$type, "S3method")) row$method else row$class
+    header <- paste0(
+      "### `",
+      row$generic,
+      "` method for `",
+      name,
+      "` (",
+      row$type,
+      ")"
+    )
+    loc <- if ("path" %in% names(row) && !is.na(row$path)) {
+      paste0("`", row$path, ":", row$line, "`")
+    } else {
+      character()
+    }
+
+    c(header, loc, "", md_code_block("r", row$source))
+  })
+
+  paste(
+    vapply(blocks, paste, character(1), collapse = "\n"),
+    collapse = "\n\n"
+  )
+}
+
+btw_tool_pkg_src_methods_impl <- function(package, generics, source = FALSE) {
   check_string(package)
   check_character(generics)
+  check_bool(source)
 
   if (length(generics) == 0) {
     cli::cli_abort("`generics` must contain at least one generic name.")
@@ -424,7 +589,7 @@ btw_tool_pkg_src_methods_impl <- function(package, generics) {
   resolved <- btw_pkg_src_resolve_ns(package)
   ns <- resolved$ns
 
-  rows <- lapply(generics, btw_pkg_src_methods_for, ns = ns)
+  rows <- lapply(generics, btw_pkg_src_methods_for, ns = ns, source = source)
   rows <- rows[!vapply(rows, is.null, logical(1))]
 
   data <- if (length(rows) > 0) {
@@ -437,13 +602,23 @@ btw_tool_pkg_src_methods_impl <- function(package, generics) {
       type = character(),
       path = character(),
       line = integer(),
+      source = character(),
       stringsAsFactors = FALSE
     )
+  }
+  if (!source) {
+    data$source <- NULL
   }
   rownames(data) <- NULL
   data <- btw_pkg_src_drop_na_columns(data)
 
-  value <- if (nrow(data) > 0) md_table(data) else "No methods found."
+  value <- if (nrow(data) == 0) {
+    "No methods found."
+  } else if (source) {
+    btw_pkg_src_methods_source_value(data)
+  } else {
+    md_table(data)
+  }
 
   btw_tool_result(value = value, data = data)
 }
@@ -451,11 +626,13 @@ btw_tool_pkg_src_methods_impl <- function(package, generics) {
 btw_pkg_src_materialize_dir <- function(ns) {
   dir <- withr::local_tempdir(.local_envir = parent.frame())
   names <- sort(btw_pkg_src_namespace_objects(ns, all = TRUE))
+  mapping <- list()
 
-  for (name in names) {
+  for (i in seq_along(names)) {
+    name <- names[[i]]
     # Deparsed source loses original comments/formatting and has no
     # original line numbers; each object is written to its own file so
-    # search results still carry the object name.
+    # search results can be mapped back to the exact object name.
     # Skip objects that error when forced (active bindings, erroring
     # promises) rather than aborting the whole materialization.
     tryCatch(
@@ -467,15 +644,27 @@ btw_pkg_src_materialize_dir <- function(ns) {
         # Objects with no renderable source (e.g. an S4 class whose def
         # can't be resolved) would otherwise write the literal "NA".
         if (!(length(source) == 1 && is.na(source))) {
-          file <- file.path(dir, paste0(fs::path_sanitize(name), ".R"))
+          filename <- sprintf("%06d.R", i)
+          file <- file.path(dir, filename)
           writeLines(source, file)
+          mapping[[length(mapping) + 1]] <- data.frame(
+            filename = filename,
+            name = name,
+            stringsAsFactors = FALSE
+          )
         }
       },
       error = function(e) NULL
     )
   }
 
-  dir
+  mapping <- if (length(mapping) > 0) {
+    do.call(rbind, mapping)
+  } else {
+    data.frame(filename = character(), name = character())
+  }
+
+  list(dir = dir, mapping = mapping)
 }
 
 btw_tool_pkg_src_search_impl <- function(
@@ -503,7 +692,8 @@ btw_tool_pkg_src_search_impl <- function(
   materialized <- !path_info$source_available
   if (materialized) {
     resolved <- btw_pkg_src_resolve_ns(package)
-    search_dir <- btw_pkg_src_materialize_dir(resolved$ns)
+    materialized_sources <- btw_pkg_src_materialize_dir(resolved$ns)
+    search_dir <- materialized_sources$dir
   } else {
     search_dir <- file.path(path_info$path, "R")
   }
@@ -536,9 +726,14 @@ btw_tool_pkg_src_search_impl <- function(
   if (materialized) {
     # Deparsed source lives in a temp dir that is removed when this call
     # returns, so the paths aren't readable. Surface the object name instead
-    # (search `filename` is `<object>.R`) so the agent uses `pkg src get`
-    # rather than trying to read a stale temp path.
-    data$filename <- fs::path_ext_remove(basename(data$filename))
+    # so the agent uses `pkg src get` rather than trying to read a stale temp
+    # path. Never reverse a filesystem-safe filename: an explicit mapping
+    # preserves names such as `[<-.vctrs_vctr` and prevents collisions.
+    data$filename <- unname(
+      materialized_sources$mapping$name[
+        match(basename(data$filename), materialized_sources$mapping$filename)
+      ]
+    )
   }
 
   max_display <- 20L

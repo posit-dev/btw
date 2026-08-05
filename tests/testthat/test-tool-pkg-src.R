@@ -198,6 +198,7 @@ test_that("btw_tool_pkg_src_methods_impl enumerates S3 methods of a generic", {
   expect_true(nrow(data) > 0)
   expect_true(all(data$generic == "predict"))
   expect_true(all(data$type == "S3method"))
+  expect_false("source" %in% names(data))
 
   # `method` is the get-able object name; `class` is the dispatch class.
   expect_true("predict.lm" %in% data$method)
@@ -218,6 +219,77 @@ test_that("btw_tool_pkg_src_methods_impl enumerates S4 methods with signatures",
   expect_true(all(is.na(data$method[data$type == "S4method"])))
 })
 
+test_that("btw_tool_pkg_src_methods_impl finds external-generic S3 registrations", {
+  skip_if_not_installed("tibble")
+  skip_if_not_installed("vctrs")
+
+  result <- btw_tool_pkg_src_methods_impl("tibble", "vec_ptype_abbr")
+  data <- S7::prop(result, "extra")$data
+
+  row <- data[data$method == "vec_ptype_abbr.tbl_df", , drop = FALSE]
+  expect_equal(nrow(row), 1)
+  expect_equal(row$class, "tbl_df")
+  expect_equal(row$type, "S3method")
+
+  got <- btw_tool_pkg_src_get_impl("tibble", row$method)
+  expect_equal(S7::prop(got, "extra")$data$type, "function")
+})
+
+test_that("btw_tool_pkg_src_methods_impl handles function-valued S3 registrations", {
+  skip_if_not_installed("vctrs")
+  skip_if_not_installed("fs")
+
+  loadNamespace("fs")
+
+  result <- btw_tool_pkg_src_methods_impl("vctrs", "vec_ptype2")
+  data <- S7::prop(result, "extra")$data
+
+  expect_true(nrow(data) > 0)
+  expect_false("fs_path.fs_path" %in% data$class)
+  expect_true("vec_ptype2.AsIs" %in% data$method)
+
+  with_source <- btw_tool_pkg_src_methods_impl(
+    "vctrs",
+    "vec_ptype2",
+    source = TRUE
+  )
+  source_data <- S7::prop(with_source, "extra")$data
+  source_row <- source_data[
+    !is.na(source_data$method) &
+      source_data$method == "vec_ptype2.AsIs",
+    ,
+    drop = FALSE
+  ]
+
+  expect_equal(nrow(source_row), 1)
+  expect_match(source_row$source, "function", fixed = TRUE)
+})
+
+test_that("btw_tool_pkg_src_methods_impl renders S3 and S4 method source", {
+  skip_if_not_installed("tibble")
+  skip_if_not_installed("vctrs")
+
+  s3 <- btw_tool_pkg_src_methods_impl(
+    "tibble",
+    "vec_ptype_abbr",
+    source = TRUE
+  )
+  s3_data <- S7::prop(s3, "extra")$data
+  s3_row <- s3_data[s3_data$method == "vec_ptype_abbr.tbl_df", , drop = FALSE]
+
+  expect_true("source" %in% names(s3_data))
+  expect_match(s3_row$source, "function", fixed = TRUE)
+  expect_match(S7::prop(s3, "value"), "```r", fixed = TRUE)
+
+  s4 <- btw_tool_pkg_src_methods_impl("stats4", "coef", source = TRUE)
+  s4_data <- S7::prop(s4, "extra")$data
+  s4_row <- s4_data[s4_data$class == "mle", , drop = FALSE]
+
+  expect_true("source" %in% names(s4_data))
+  expect_match(s4_row$source, "function", fixed = TRUE)
+  expect_match(S7::prop(s4, "value"), "```r", fixed = TRUE)
+})
+
 test_that("btw_tool_pkg_src_methods_impl handles multiple generics", {
   result <- btw_tool_pkg_src_methods_impl("stats", c("predict", "residuals"))
   data <- S7::prop(result, "extra")$data
@@ -226,30 +298,73 @@ test_that("btw_tool_pkg_src_methods_impl handles multiple generics", {
 })
 
 test_that("btw_tool_pkg_src_methods_impl reports nothing for a non-generic", {
-  result <- btw_tool_pkg_src_methods_impl("stats", "no_such_generic_xyz")
+  default <- btw_tool_pkg_src_methods_impl("stats", "no_such_generic_xyz")
 
-  expect_match(S7::prop(result, "value"), "No methods found", fixed = TRUE)
-  expect_equal(nrow(S7::prop(result, "extra")$data), 0)
+  expect_match(S7::prop(default, "value"), "No methods found", fixed = TRUE)
+  default_data <- S7::prop(default, "extra")$data
+  expect_equal(nrow(default_data), 0)
+  expect_false("source" %in% names(default_data))
+
+  with_source <- btw_tool_pkg_src_methods_impl(
+    "stats",
+    "no_such_generic_xyz",
+    source = TRUE
+  )
+
+  expect_match(
+    S7::prop(with_source, "value"),
+    "No methods found.",
+    fixed = TRUE
+  )
+  source_data <- S7::prop(with_source, "extra")$data
+  expect_equal(nrow(source_data), 0)
+  expect_named(
+    source_data,
+    c("generic", "method", "class", "type", "path", "line", "source")
+  )
 })
 
 test_that("btw_tool_pkg_src_methods_impl validates arguments", {
   expect_error(btw_tool_pkg_src_methods_impl(123, "predict"))
   expect_error(btw_tool_pkg_src_methods_impl("stats", character()))
+  expect_error(btw_tool_pkg_src_methods_impl("stats", "predict", source = 1))
 })
 
 # Test btw_pkg_src_materialize_dir -------------------------------------------
 
 test_that("btw_pkg_src_materialize_dir writes deparsed sources to a temp dir", {
   ns <- btw:::btw_pkg_src_resolve_ns("tools")$ns
-  dir <- btw:::btw_pkg_src_materialize_dir(ns)
+  materialized <- btw:::btw_pkg_src_materialize_dir(ns)
 
-  expect_true(dir.exists(dir))
-  files <- list.files(dir, pattern = "\\.R$")
+  expect_true(dir.exists(materialized$dir))
+  files <- list.files(materialized$dir, pattern = "\\.R$")
   expect_true(length(files) > 0)
-  expect_true("toRd.R" %in% files)
+  expect_true(all(files %in% materialized$mapping$filename))
 
-  content <- readLines(file.path(dir, "toRd.R"))
+  to_rd <- materialized$mapping[
+    materialized$mapping$name == "toRd",
+    "filename"
+  ]
+  expect_length(to_rd, 1)
+  content <- readLines(file.path(materialized$dir, to_rd))
   expect_true(any(grepl("function", content, fixed = TRUE)))
+})
+
+test_that("btw_pkg_src_materialize_dir preserves colliding object names", {
+  ns <- new.env(parent = emptyenv())
+  assign("[<-.vctrs_vctr", function(x, value) x, ns)
+  assign("*.vctrs_vctr", function(e1, e2) e1, ns)
+  assign("/.vctrs_vctr", function(e1, e2) e1, ns)
+
+  materialized <- btw:::btw_pkg_src_materialize_dir(ns)
+  mapping <- materialized$mapping
+
+  expect_setequal(
+    mapping$name,
+    c("[<-.vctrs_vctr", "*.vctrs_vctr", "/.vctrs_vctr")
+  )
+  expect_equal(length(unique(mapping$filename)), nrow(mapping))
+  expect_true(all(file.exists(file.path(materialized$dir, mapping$filename))))
 })
 
 # Test btw_tool_pkg_src_search_impl ------------------------------------------
@@ -282,6 +397,31 @@ test_that("btw_tool_pkg_src_search_impl searches materialized source for binary-
   # surface the bare object name, not a transient (and unreadable) temp path.
   expect_false(any(grepl(.Platform$file.sep, data$filename, fixed = TRUE)))
   expect_false(any(grepl("\\.R$", data$filename)))
+  ns <- btw:::btw_pkg_src_resolve_ns("tools")$ns
+  expect_true(all(vapply(
+    data$filename,
+    exists,
+    logical(1),
+    envir = ns,
+    inherits = FALSE
+  )))
+})
+
+test_that("btw_tool_pkg_src_search_impl preserves exact operator names", {
+  skip_if_not_installed("vctrs")
+  skip_if_not_installed("duckdb")
+  skip_if_not_installed("DBI")
+  withr::local_envvar(TESTTHAT = NA)
+
+  result <- btw_tool_pkg_src_search_impl("vctrs", "vec_cast(value, x)")
+  data <- S7::prop(result, "extra")$data
+
+  expect_true("[<-.vctrs_vctr" %in% data$filename)
+
+  got <- btw_tool_pkg_src_get_impl("vctrs", "[<-.vctrs_vctr")
+  got_data <- S7::prop(got, "extra")$data
+  expect_equal(got_data$name, "[<-.vctrs_vctr")
+  expect_equal(got_data$type, "function")
 })
 
 test_that("btw_tool_pkg_src_search_impl combines results across multiple terms", {
