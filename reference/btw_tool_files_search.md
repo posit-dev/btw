@@ -112,22 +112,22 @@ withr::with_tempdir({
     show_lines = TRUE
   )
 })
-#> ℹ Indexing files in /tmp/RtmptQkQ4k/file20ff5eaf9a05 for code search
+#> ℹ Indexing files in /tmp/RtmpiIXAtw/file21cf9bfc165 for code search
 #> duckdb keeps downloaded extensions and secrets in a temporary directory:
-#> ℹ /tmp/RtmptQkQ4k/duckdb
+#> ℹ /tmp/RtmpiIXAtw/duckdb
 #> This is removed when the R session ends.
 #> • Extensions are re-downloaded each session.
 #> • Secrets are lost.
 #> ℹ Run duckdb(shared_home = TRUE) (or create ~/.duckdb) to keep them (suitable for most users).
 #> ℹ Run duckdb(shared_home = FALSE) to accept the temporary directory (and silence this message).
 #> ℹ See ?duckdb_storage for details and alternatives.
-#> ✔ Indexing files in /tmp/RtmptQkQ4k/file20ff5eaf9a05 for code search [558ms]
+#> ✔ Indexing files in /tmp/RtmpiIXAtw/file21cf9bfc165 for code search [250ms]
 #> 
 #> <btw::BtwToolResult>
 #>  @ value  :'data.frame': 1 obs. of  5 variables:
 #>  .. $ filename     : chr "state_names_1.md"
 #>  .. $ size         : 'fs_bytes' num 219
-#>  .. $ last_modified: POSIXct, format: "2026-08-05 14:45:20"
+#>  .. $ last_modified: POSIXct, format: "2026-08-05 14:49:09"
 #>  .. $ content      : chr "Kentucky"
 #>  .. $ line         : num 17
 #>  @ error  : NULL
