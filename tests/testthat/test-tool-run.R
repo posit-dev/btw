@@ -74,8 +74,10 @@ test_that("R result cards expose copy-reprex in the footer when enabled", {
 
   expect_false(is.null(rendered$footer))
   footer <- as.character(htmltools::as.tags(rendered$footer))
-  expect_match(footer, "<button", fixed = TRUE)
+  expect_match(footer, "<a", fixed = TRUE)
+  expect_match(footer, "action-button action-link", fixed = TRUE)
   expect_match(footer, 'aria-label="Copy as reprex"', fixed = TRUE)
+  expect_match(footer, ">Copy as reprex</span>", fixed = TRUE)
 })
 
 test_that("R result cards omit copy-reprex when copying is disabled", {

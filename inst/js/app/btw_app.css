@@ -100,24 +100,6 @@ shiny-chat-message .message-icon {
   transform: scale(0);
 }
 
-.btw-in-ide .btw-open-file.btn {
-  --bs-btn-hover-color: var(--bs-emphasis-color);
-  --_icon-size: var(--shiny-tool-card-icon-size, 16px);
-  --_padding: 3px;
-  --_display: inline-flex;
-  width: calc(var(--_icon-size) + var(--_padding));
-  height: calc(var(--_icon-size) + var(--_padding));
-  align-items: center;
-  flex: none;
-  padding: var(--_padding);
-}
-
-.btw-in-ide .btw-open-file.btn svg {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
 pre:has(.code-action-wrapper) {
   position: relative;
 }

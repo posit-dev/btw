@@ -567,15 +567,16 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
   res$value_type <- "html"
 
   if (isTRUE(display$copy_code)) {
-    copy_button <- shiny::tags$button(
-      type = "button",
-      class = "btw-copy-reprex btn btn-sm btn-outline-secondary",
+    copy_link <- shiny::tags$a(
+      href = "#",
+      class = "btw-copy-reprex action-button action-link",
       `aria-label` = "Copy as reprex",
-      shiny::icon("clipboard")
+      shiny::span(class = "action-icon", shiny::icon("clipboard")),
+      shiny::span(class = "action-label", "Copy as reprex")
     )
     res$footer <- htmltools::tagList(
       display$footer,
-      bslib::tooltip(copy_button, "Copy as reprex", placement = "top")
+      copy_link
     )
   }
 

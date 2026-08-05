@@ -64,9 +64,20 @@ test_that("file result actions use footers and support fullscreen", {
   )
   footer <- file_result_footer("path/to/file.R")
   expect_match(as.character(footer), "btw-open-file", fixed = TRUE)
+  expect_match(as.character(footer), "action-button action-link", fixed = TRUE)
   expect_match(
     as.character(footer),
     "data-path=\"path/to/file.R\"",
+    fixed = TRUE
+  )
+  expect_match(
+    as.character(footer),
+    "<code>file.R</code>",
+    fixed = TRUE
+  )
+  expect_match(
+    as.character(footer),
+    "in the IDE",
     fixed = TRUE
   )
 

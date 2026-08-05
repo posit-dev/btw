@@ -204,15 +204,19 @@ file_result_footer <- function(path) {
   }
 
   path_file <- fs::path_file(path)
-  button <- shiny::tags$button(
-    type = "button",
-    class = "btw-open-file btn btn-sm btn-outline-secondary",
+  shiny::tags$a(
+    href = "#",
+    class = "btw-open-file action-button action-link",
     `data-path` = path,
-    `aria-label` = sprintf("Go to %s in your IDE", path_file),
-    tool_icon("codicons/go-to-file")
+    `aria-label` = sprintf("Open %s in the IDE", path_file),
+    shiny::span(class = "action-icon", tool_icon("codicons/go-to-file")),
+    shiny::span(
+      class = "action-label",
+      "Open ",
+      shiny::tags$code(path_file),
+      " in the IDE"
+    )
   )
-
-  bslib::tooltip(button, "Go to file", placement = "top")
 }
 
 is_text_file <- function(file_path) {
