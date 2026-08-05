@@ -66,7 +66,7 @@ file. (\code{btw.md} > \code{AGENTS.md} > \code{CLAUDE.md})
 
 As an intentional special case -- distinct from, and not derived from, the
 user (global) locations described above -- btw also discovers
-\href{https://docs.claude.com/en/docs/claude-code/sub-agents}{Claude Code sub-agent}
+\href{https://code.claude.com/docs/en/sub-agents}{Claude Code sub-agent}
 definitions from:
 \itemize{
 \item \verb{.claude/agents/} in the project

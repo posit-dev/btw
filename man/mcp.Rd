@@ -105,7 +105,7 @@ Alternatively, run the \strong{MCP: Add Server} command from the Command Palette
 choose \strong{stdio}, then choose \strong{Workspace} or \strong{Global} to add the server
 configuration interactively.
 
-For \href{https://www.continue.dev/}{Continue}, include the following in your
+For \href{https://continue.dev/}{Continue}, include the following in your
 \href{https://docs.continue.dev/customize/deep-dives/configuration}{config file}:
 
 \if{html}{\out{<div class="sourceCode json">}}\preformatted{"experimental": \{
