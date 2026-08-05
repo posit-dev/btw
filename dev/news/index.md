@@ -4,6 +4,14 @@
 
 ### New features
 
+- [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+  now keeps tool selection synchronized when switching models and
+  prevents model, prompt, chat, or tool changes while a response is
+  streaming. Long-form tool results can be expanded fullscreen, and file
+  actions now appear in tool result footers. Fullscreen R results
+  include keyboard focus trapping and focus restoration
+  ([\#208](https://github.com/posit-dev/btw/issues/208)).
+
 - Added `btw pkg desc <packages...>` to show useful DESCRIPTION metadata
   for installed packages. By default, the command includes package
   identity, authorship, licensing, URLs, dependencies, and system

@@ -148,9 +148,10 @@ btw_tool_docs_help_page("btw", "btw")
 #>  .. $ help_text: chr [1:82] "" "### Plain-text descriptions of R objects" "" "#### Description" ...
 #>  .. $ topic    : chr "btw"
 #>  .. $ package  : chr "btw"
-#>  .. $ display  :List of 2
-#>  ..  ..$ title   : 'html' chr "<code>?btw::btw</code>"
+#>  .. $ display  :List of 3
+#>  ..  ..$ title      : 'html' chr "<code>?btw::btw</code>"
 #>  ..  .. ..- attr(*, "html")= logi TRUE
-#>  ..  ..$ markdown: chr "\n### Plain-text descriptions of R objects\n\n#### Description\n\nThis function allows you to quickly describe "| __truncated__
+#>  ..  ..$ markdown   : chr "\n### Plain-text descriptions of R objects\n\n#### Description\n\nThis function allows you to quickly describe "| __truncated__
+#>  ..  ..$ full_screen: logi TRUE
 #>  @ request: NULL
 ```

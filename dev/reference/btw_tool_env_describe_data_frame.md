@@ -97,7 +97,8 @@ btw_tool_env_describe_data_frame(mtcars)
 #>  ..  ..$ am  : num [1:32] 1 1 1 0 0 0 0 0 0 0 ...
 #>  ..  ..$ gear: num [1:32] 4 4 4 3 3 3 3 4 4 4 ...
 #>  ..  ..$ carb: num [1:32] 4 4 1 1 2 1 4 2 2 4 ...
-#>  .. $ display:List of 1
-#>  ..  ..$ title: chr "View Data Frame"
+#>  .. $ display:List of 2
+#>  ..  ..$ title      : chr "View Data Frame"
+#>  ..  ..$ full_screen: logi TRUE
 #>  @ request: NULL
 ```

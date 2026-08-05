@@ -85,6 +85,6 @@ withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
 #> #
 #> function (prompt) 
 #> btw_task_create_readme_tool(prompt)
-#> <bytecode: 0x563765c45100>
-#> <environment: 0x563765c44ae0>
+#> <bytecode: 0x5577b5262e38>
+#> <environment: 0x5577b5268568>
 ```

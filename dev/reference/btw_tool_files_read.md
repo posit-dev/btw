@@ -90,9 +90,11 @@ withr::with_tempdir({
 #>  @ error  : NULL
 #>  @ extra  :List of 2
 #>  .. $ path   : 'fs_path' chr "mtcars.csv"
-#>  .. $ display:List of 2
-#>  ..  ..$ markdown: chr "```csv\n\"\",\"mpg\",\"cyl\",\"disp\",\"hp\",\"drat\",\"wt\",\"qsec\",\"vs\",\"am\",\"gear\",\"carb\"\n\"Mazda "| __truncated__
-#>  ..  ..$ title   : 'html' chr "Read <code>mtcars.csv</code>"
+#>  .. $ display:List of 4
+#>  ..  ..$ markdown   : chr "```csv\n\"\",\"mpg\",\"cyl\",\"disp\",\"hp\",\"drat\",\"wt\",\"qsec\",\"vs\",\"am\",\"gear\",\"carb\"\n\"Mazda "| __truncated__
+#>  ..  ..$ title      : 'html' chr "Read <code>mtcars.csv</code>"
 #>  ..  .. ..- attr(*, "html")= logi TRUE
+#>  ..  ..$ footer     : NULL
+#>  ..  ..$ full_screen: logi TRUE
 #>  @ request: NULL
 ```
