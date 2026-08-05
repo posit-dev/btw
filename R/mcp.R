@@ -91,7 +91,7 @@
 #' choose **stdio**, then choose **Workspace** or **Global** to add the server
 #' configuration interactively.
 #'
-#' For [Continue](https://www.continue.dev/), include the following in your
+#' For [Continue](https://continue.dev/), include the following in your
 #' [config file](https://docs.continue.dev/customize/deep-dives/configuration):
 #'
 #' ```json
