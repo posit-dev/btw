@@ -2,6 +2,10 @@
 
 ## btw (development version)
 
+## btw 1.4.0
+
+CRAN release: 2026-08-05
+
 ### New features
 
 - [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)

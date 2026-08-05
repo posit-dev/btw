@@ -63,8 +63,8 @@ identified by the presence of a `DESCRIPTION`, `.git`, `.vscode`,
 
 As an intentional special case – distinct from, and not derived from,
 the user (global) locations described above – btw also discovers [Claude
-Code sub-agent](https://docs.claude.com/en/docs/claude-code/sub-agents)
-definitions from:
+Code sub-agent](https://code.claude.com/docs/en/sub-agents) definitions
+from:
 
 - `.claude/agents/` in the project
 
