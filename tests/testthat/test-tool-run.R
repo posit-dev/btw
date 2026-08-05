@@ -1,3 +1,26 @@
+new_run_r_test_result <- function(code, copy_code = NULL) {
+  result <- btw_tool_run_r_impl(code)
+  result@request <- ellmer::ContentToolRequest(
+    id = "test-run-r",
+    name = "btw_tool_run_r",
+    arguments = list(code = code, `_intent` = ""),
+    tool = ellmer::tool(
+      function(code) NULL,
+      name = "btw_tool_run_r",
+      description = "Run R code",
+      arguments = list(code = ellmer::type_string("The R code to run"))
+    )
+  )
+
+  if (!is.null(copy_code)) {
+    display <- result@extra$display
+    display$copy_code <- copy_code
+    result@extra$display <- display
+  }
+
+  result
+}
+
 test_that("btw_tool_run_r() returns simple calculations", {
   skip_if_not_installed("evaluate")
 
@@ -17,6 +40,65 @@ test_that("btw_tool_run_r() returns simple calculations", {
   expect_length(output_contents, 1)
   expect_s7_class(output_contents[[1]], ContentOutput)
   expect_match(output_contents[[1]]@text, "4")
+  expect_true(res@extra$display$full_screen)
+
+  rendered <- shinychat::contents_shinychat(
+    new_run_r_test_result("2 + 2")
+  )
+  expect_s3_class(rendered, "shinychat_tool_result")
+  expect_s3_class(rendered, "shinychat_tool_card")
+  expect_identical(rendered$type, "result")
+  expect_identical(rendered$value_type, "html")
+  rendered_value <- as.character(rendered$value)
+  expect_match(rendered_value, 'class="btw-output-source"', fixed = TRUE)
+  expect_match(rendered_value, 'class="language-r"', fixed = TRUE)
+  expect_match(rendered_value, 'class="btw-output-output"', fixed = TRUE)
+  expect_match(rendered_value, ">[1] 4<", fixed = TRUE)
+  expect_true(is.na(rendered$full_screen))
+
+  rendered_tags <- as.character(htmltools::as.tags(rendered))
+  expect_match(
+    rendered_tags,
+    "<shiny-tool-result",
+    fixed = TRUE
+  )
+  expect_no_match(rendered_tags, "btw-run-r-result")
+})
+
+test_that("R result cards expose copy-reprex in the footer when enabled", {
+  skip_if_not_installed("evaluate")
+
+  rendered <- shinychat::contents_shinychat(
+    new_run_r_test_result("2 + 2")
+  )
+
+  expect_false(is.null(rendered$footer))
+  footer <- as.character(htmltools::as.tags(rendered$footer))
+  expect_match(footer, "<a", fixed = TRUE)
+  expect_match(footer, "action-button action-link", fixed = TRUE)
+  expect_match(footer, 'aria-label="Copy as reprex"', fixed = TRUE)
+  expect_match(footer, ">Copy as reprex</span>", fixed = TRUE)
+})
+
+test_that("R result cards omit copy-reprex when copying is disabled", {
+  skip_if_not_installed("evaluate")
+
+  rendered <- shinychat::contents_shinychat(
+    new_run_r_test_result("2 + 2", copy_code = FALSE)
+  )
+
+  expect_null(rendered$footer)
+})
+
+test_that("R result cards preserve failed evaluation status", {
+  skip_if_not_installed("evaluate")
+
+  result <- new_run_r_test_result('stop("boom")')
+  expect_null(result@error)
+  expect_identical(result@extra$status, "error")
+
+  rendered <- shinychat::contents_shinychat(result)
+  expect_identical(rendered$status, "error")
 })
 
 test_that("btw_tool_run_r() captures messages", {

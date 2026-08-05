@@ -100,7 +100,8 @@ btw_tool_files_patch_impl <- function(patch) {
         extra = list(
           display = list(
             markdown = paste(display_md, collapse = "\n"),
-            show_request = FALSE
+            show_request = FALSE,
+            full_screen = TRUE
           )
         )
       )
@@ -142,6 +143,7 @@ btw_tool_files_patch_impl <- function(patch) {
     display = list(
       markdown = paste(display_md, collapse = "\n"),
       show_request = FALSE,
+      full_screen = TRUE,
       icon = tool_icon("file-save")
     )
   )

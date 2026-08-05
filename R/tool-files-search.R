@@ -158,7 +158,8 @@ btw_tool_files_search_factory <- function(
             if (nrow(res) > max_display) {
               paste0("\n\n... and ", nrow(res) - max_display, " more matches.")
             }
-          )
+          ),
+          full_screen = TRUE
         )
       )
     )

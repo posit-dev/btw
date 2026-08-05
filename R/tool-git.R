@@ -178,7 +178,8 @@ btw_tool_git_diff_impl <- function(ref = NULL) {
       title = HTML(sprintf(
         "Git Diff%s",
         if (!is.null(ref)) sprintf(" (%s)", ref) else ""
-      ))
+      )),
+      full_screen = TRUE
     )
   )
 }
@@ -303,7 +304,8 @@ btw_tool_git_log_impl <- function(
     md_kv_table(log_display[fields]),
     data = log,
     display = list(
-      markdown = md_table(log_display[rev(fields)])
+      markdown = md_table(log_display[rev(fields)]),
+      full_screen = TRUE
     )
   )
 }

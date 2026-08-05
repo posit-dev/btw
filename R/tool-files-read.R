@@ -103,7 +103,9 @@ btw_tool_files_read_impl <- function(
       path = fs::path_rel(path),
       display = list(
         markdown = display_md,
-        title = HTML(title_with_open_file_button("Read", path))
+        title = file_result_title("Read", path),
+        footer = file_result_footer(path),
+        full_screen = TRUE
       )
     )
   )
@@ -187,30 +189,34 @@ format_hashlines <- function(lines, start_line = 1L) {
   paste0(line_nums, ":", hashes, "|", lines)
 }
 
-title_with_open_file_button <- function(verb, path) {
+file_result_title <- function(verb, path) {
   path_file <- fs::path_file(path)
+  HTML(sprintf(
+    "%s <code>%s</code>",
+    htmltools::htmlEscape(verb),
+    htmltools::htmlEscape(path_file)
+  ))
+}
 
-  icon <- tool_icon("codicons/go-to-file")
-
-  if (rstudioapi::hasFun("navigateToFile")) {
-    res <- glue_(
-      r"(
-      {{verb}}
-      <code>{{path_file}}</code>
-      <bslib-tooltip placement="top">
-        <template>Go to file</template>
-        <button class="btw-open-file btn btn-sm border-0"
-         data-path="{{path}}"
-         aria-label="Go to {{path_file}} in your IDE"
-         style="display: var(--_display, none);"
-        >{{ icon }}</button>
-      </bslib-tooltip>
-      )"
-    )
-  } else {
-    res <- glue_('{{verb}} <code>{{path_file}}</code>')
+file_result_footer <- function(path) {
+  if (!rstudioapi::hasFun("navigateToFile")) {
+    return(NULL)
   }
-  HTML(res)
+
+  path_file <- fs::path_file(path)
+  shiny::tags$a(
+    href = "#",
+    class = "btw-open-file action-button action-link",
+    `data-path` = path,
+    `aria-label` = sprintf("Open %s in the IDE", path_file),
+    shiny::span(class = "action-icon", tool_icon("codicons/go-to-file")),
+    shiny::span(
+      class = "action-label",
+      "Open ",
+      shiny::tags$code(path_file),
+      " in the IDE"
+    )
+  )
 }
 
 is_text_file <- function(file_path) {

@@ -50,7 +50,9 @@ btw_tool_files_write_impl <- function(path, content) {
       previous_content = previous_content,
       display = list(
         markdown = md_code_block(fs::path_ext(path), content),
-        title = HTML(title_with_open_file_button("Write", path)),
+        title = file_result_title("Write", path),
+        footer = file_result_footer(path),
+        full_screen = TRUE,
         show_request = FALSE,
         icon = tool_icon("file-save")
       )
@@ -135,5 +137,6 @@ S7::method(contents_shinychat, BtwFileDiffToolResult) <- function(content) {
   res$value <- diffviewer::visual_diff(path_old, path_new)
   res$value_type <- "html"
   res$class <- "btw-tool-result-file-diff"
+  res$full_screen <- NA
   res
 }

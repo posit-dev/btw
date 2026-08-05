@@ -94,6 +94,46 @@ if (typeof Shiny !== "undefined") {
       }
     })
   })
+
+  Shiny.addCustomMessageHandler("btw_set_disabled", function (message) {
+    message.ids.forEach((id) => {
+      const element = document.getElementById(id)
+      if (!element) return
+
+      const control = element.matches(".bslib-toolbar-input-select")
+        ? element.querySelector("select")
+        : element
+      if (!control) return
+
+      control.toggleAttribute("disabled", message.disabled)
+      if (message.disabled) {
+        control.setAttribute("aria-disabled", "true")
+      } else {
+        control.removeAttribute("aria-disabled")
+      }
+
+      if (control instanceof HTMLFieldSetElement) {
+        control.querySelectorAll("a").forEach((link) => {
+          link.classList.toggle("disabled", message.disabled)
+
+          if (message.disabled) {
+            link.dataset.btwTabindex = link.getAttribute("tabindex") || ""
+            link.setAttribute("tabindex", "-1")
+            link.setAttribute("aria-disabled", "true")
+          } else {
+            const tabindex = link.dataset.btwTabindex
+            if (tabindex) {
+              link.setAttribute("tabindex", tabindex)
+            } else {
+              link.removeAttribute("tabindex")
+            }
+            link.removeAttribute("aria-disabled")
+            delete link.dataset.btwTabindex
+          }
+        })
+      }
+    })
+  })
 }
 
 // Open File Buttons ----------------------------------------------------------
@@ -123,18 +163,6 @@ if (inIframe && inIDE) {
 
   const stopObserving = observeShinyMarkdownStream((streamEl) => {
     enhanceCodeActions(streamEl)
-  })
-
-  // New React shinychat: btw-run-r-result dispatches this event after rendering
-  // its per-block copy buttons. Add IDE action buttons to source code blocks only.
-  document.addEventListener("btw-run-r-rendered", (e) => {
-    enhanceBtwCodeActions(e.target)
-  })
-
-  // Backfill any btw-run-r-result elements that rendered before this listener
-  // was installed (e.g. initial page load when btw-run-r executes first).
-  document.querySelectorAll("btw-run-r-result").forEach((result) => {
-    enhanceBtwCodeActions(result)
   })
 
   function isMarkdownStream(el) {
@@ -187,9 +215,7 @@ if (inIframe && inIDE) {
             attachObserver(node)
           }
 
-          node
-            .querySelectorAll?.(STREAM_SELECTOR)
-            .forEach(attachObserver)
+          node.querySelectorAll?.(STREAM_SELECTOR).forEach(attachObserver)
         })
       })
     })
@@ -213,21 +239,6 @@ if (inIframe && inIDE) {
 
       const wrapper = ensureWrapper(pre)
       installActionButtons(wrapper, pre)
-      moveCopyButton(wrapper, copyButton)
-    })
-  }
-
-  function enhanceBtwCodeActions(result) {
-    result.querySelectorAll(".btw-block-copy-btn").forEach((copyButton) => {
-      const pre = copyButton.closest("pre")
-      if (!pre) return
-
-      const wrapper = ensureWrapper(pre)
-
-      // Install IDE action buttons first, then copy button so it appears last
-      if (pre.closest(".btw-output-source")) {
-        installActionButtons(wrapper, pre)
-      }
       moveCopyButton(wrapper, copyButton)
     })
   }

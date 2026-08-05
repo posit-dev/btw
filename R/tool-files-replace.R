@@ -110,7 +110,9 @@ btw_tool_files_replace_impl <- function(
       previous_content = previous_content,
       display = list(
         markdown = md_code_block(fs::path_ext(path), new_content),
-        title = HTML(title_with_open_file_button("Replace", path)),
+        title = file_result_title("Replace", path),
+        footer = file_result_footer(path),
+        full_screen = TRUE,
         show_request = FALSE,
         icon = tool_icon("file-save")
       )
