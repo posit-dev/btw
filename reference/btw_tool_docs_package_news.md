@@ -133,8 +133,9 @@ btw_tool_docs_package_news("dplyr")
 #>  @ value  : chr "### dplyr v1.2.1\n\n- dplyr is now fully compliant with the R C API (#7819)."
 #>  @ error  : NULL
 #>  @ extra  :List of 1
-#>  .. $ display:List of 1
-#>  ..  ..$ markdown: chr "### dplyr v1.2.1\n\n- dplyr is now fully compliant with the R C API (#7819)."
+#>  .. $ display:List of 2
+#>  ..  ..$ markdown   : chr "### dplyr v1.2.1\n\n- dplyr is now fully compliant with the R C API (#7819)."
+#>  ..  ..$ full_screen: logi TRUE
 #>  @ request: NULL
 
 btw_tool_docs_package_news("dplyr", "join_by")
@@ -142,7 +143,8 @@ btw_tool_docs_package_news("dplyr", "join_by")
 #>  @ value  : chr "### dplyr v1.1.4\n\n`join_by()` now allows its helper functions to be namespaced with\n`dplyr::`, like `join_by"| __truncated__
 #>  @ error  : NULL
 #>  @ extra  :List of 1
-#>  .. $ display:List of 1
-#>  ..  ..$ markdown: chr "### dplyr v1.1.4\n\n`join_by()` now allows its helper functions to be namespaced with\n`dplyr::`, like `join_by"| __truncated__
+#>  .. $ display:List of 2
+#>  ..  ..$ markdown   : chr "### dplyr v1.1.4\n\n`join_by()` now allows its helper functions to be namespaced with\n`dplyr::`, like `join_by"| __truncated__
+#>  ..  ..$ full_screen: logi TRUE
 #>  @ request: NULL
 ```

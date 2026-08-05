@@ -1,6 +1,73 @@
 # Changelog
 
+## btw 1.4.0
+
+CRAN release: 2026-08-05
+
+### New features
+
+- [`btw_app()`](https://posit-dev.github.io/btw/reference/btw_client.md)
+  now keeps tool selection synchronized when switching models and
+  prevents model, prompt, chat, or tool changes while a response is
+  streaming. Long-form tool results can be expanded fullscreen, and file
+  actions now appear in tool result footers. Fullscreen R results
+  include keyboard focus trapping and focus restoration
+  ([\#208](https://github.com/posit-dev/btw/issues/208)).
+
+- Added `btw pkg desc <packages...>` to show useful DESCRIPTION metadata
+  for installed packages. By default, the command includes package
+  identity, authorship, licensing, URLs, dependencies, and system
+  requirements; use `--fields` to select other fields or `--fields=all`
+  for the complete DESCRIPTION. Multiple terminal results are separated
+  by `---`, and `--json` returns an object keyed by package name
+  ([\#209](https://github.com/posit-dev/btw/issues/209)).
+
+- Added a `btw pkg src` CLI command family for inspecting R namespace
+  implementations in installed packages and the current development
+  package. Use `list` to discover objects, `get` to retrieve exact
+  source when available or deparsed functions otherwise, `methods` to
+  inspect package-owned S3 and S4 implementations, `path` to locate
+  package installations, and `search` to search real or reconstructed R
+  source. All commands support JSON output, and `methods --source`
+  returns method implementations directly
+  ([\#207](https://github.com/posit-dev/btw/issues/207)).
+
+- btw now discovers project- and user-level custom agents from an
+  `agents/` subdirectory (e.g. `.btw/agents/my_agent.md` or
+  `~/.btw/agents/my_agent.md`) in addition to the flat `agent-*.md`
+  files. Files in the `agents/` directory use plain `{name}.md`
+  filenames, with the agent name taken from the YAML frontmatter
+  ([\#202](https://github.com/posit-dev/btw/issues/202)).
+
+### Deprecations
+
+- The legacy user skills directory used by btw \<= 1.2.0 (`skills/`
+  under `tools::R_user_dir("btw", "config")`) is deprecated. btw still
+  reads skills from it but now warns once per session when it contains
+  skills, prompting you to move them to `~/.btw/skills`. Read support
+  for the legacy location will be removed in btw 1.5.0
+  ([\#203](https://github.com/posit-dev/btw/issues/203)).
+
+### Bug fixes
+
+- `use_btw_md("user")` now creates user-level configuration in
+  `~/.btw/btw.md` (btw’s recommended user directory) and offers to
+  migrate an existing `~/btw.md` there instead of creating a second
+  file. A `~/btw.md` in your home directory still takes precedence when
+  present; if more than one user-level `btw.md` exists, btw uses the
+  highest-priority one and warns once per session. See `?btw-config` for
+  the full set of configuration locations
+  ([\#203](https://github.com/posit-dev/btw/issues/203)).
+
+- On Windows, btw now discovers user-level agents and skills under R’s
+  home directory (`~`, typically `Documents`) in addition to the user
+  profile, matching how it already searched for user-level `btw.md`
+  config files. macOS and Linux behavior is unchanged
+  ([\#203](https://github.com/posit-dev/btw/issues/203)).
+
 ## btw 1.3.0
+
+CRAN release: 2026-07-02
 
 ### New features
 

@@ -90,10 +90,11 @@ Agent files are automatically discovered by
 [`btw_tools()`](https://posit-dev.github.io/btw/reference/btw_tools.md)
 when placed in the following locations (in order of priority):
 
-- **Project level (btw)**: `.btw/agent-*.md` in your project directory
+- **Project level (btw)**: `.btw/agents/*.md` or `.btw/agent-*.md` in
+  your project directory
 
-- **User level (btw)**: `~/.btw/agent-*.md` or
-  `~/.config/btw/agent-*.md`
+- **User level (btw)**: `~/.btw/agents/*.md` or `~/.btw/agent-*.md` (and
+  the same in `~/.config/btw/`)
 
 - **Project level (Claude Code)**: `.claude/agents/*.md` in your project
   directory
@@ -187,8 +188,8 @@ withr::with_tempdir({
 #>     btw_tool_agent_custom_impl(prompt = prompt, session_id = session_id, 
 #>         agent_config = agent_config)
 #> }
-#> <bytecode: 0x556a39a42220>
-#> <environment: 0x556a39a41e30>
+#> <bytecode: 0x55fe42d5b788>
+#> <environment: 0x55fe42d5bd38>
 
 # Create a Claude Code-style agent file (name with hyphens)
 withr::with_tempdir({
@@ -221,6 +222,6 @@ withr::with_tempdir({
 #>     btw_tool_agent_custom_impl(prompt = prompt, session_id = session_id, 
 #>         agent_config = agent_config)
 #> }
-#> <bytecode: 0x556a39a42220>
-#> <environment: 0x556a38e1a8f0>
+#> <bytecode: 0x55fe42d5b788>
+#> <environment: 0x55fe44369968>
 ```

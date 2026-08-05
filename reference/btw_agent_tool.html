@@ -96,8 +96,10 @@ Automatic Discovery
 
 Agent files are automatically discovered by btw_tools() when placed in
 the following locations (in order of priority):
-Project level (btw): .btw/agent-*.md in your project directory
-User level (btw): ~/.btw/agent-*.md or ~/.config/btw/agent-*.md
+Project level (btw): .btw/agents/*.md or .btw/agent-*.md in your
+project directory
+User level (btw): ~/.btw/agents/*.md or ~/.btw/agent-*.md (and
+the same in ~/.config/btw/)
 Project level (Claude Code): .claude/agents/*.md in your project directory
 User level (Claude Code): ~/.claude/agents/*.md
 
@@ -221,8 +223,10 @@ Automatic Discovery
 
 Agent files are automatically discovered by btw_tools() when placed in
 the following locations (in order of priority):
-Project level (btw): .btw/agent-*.md in your project directory
-User level (btw): ~/.btw/agent-*.md or ~/.config/btw/agent-*.md
+Project level (btw): .btw/agents/*.md or .btw/agent-*.md in your
+project directory
+User level (btw): ~/.btw/agents/*.md or ~/.btw/agent-*.md (and
+the same in ~/.config/btw/)
 Project level (Claude Code): .claude/agents/*.md in your project directory
 User level (Claude Code): ~/.claude/agents/*.md
 
@@ -257,7 +261,7 @@ the model for any agent file.
 
     <a class="navbar-brand me-2" href="../index.html">btw</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -284,7 +288,7 @@ the model for any agent file.
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Create a custom agent tool from a markdown file</h1>
-      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/v1.3.0/R/tool-agent-custom.R" class="external-link"><code>R/tool-agent-custom.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/main/R/tool-agent-custom.R" class="external-link"><code>R/tool-agent-custom.R</code></a></small>
       <div class="d-none name"><code>btw_agent_tool.Rd</code></div>
     </div>
 
@@ -363,8 +367,10 @@ used.</p></li>
 
 
 <p>Agent files are automatically discovered by <code><a href="btw_tools.html">btw_tools()</a></code> when placed in
-the following locations (in order of priority):</p><ul><li><p><strong>Project level (btw)</strong>: <code>.btw/agent-*.md</code> in your project directory</p></li>
-<li><p><strong>User level (btw)</strong>: <code>~/.btw/agent-*.md</code> or <code>~/.config/btw/agent-*.md</code></p></li>
+the following locations (in order of priority):</p><ul><li><p><strong>Project level (btw)</strong>: <code>.btw/agents/*.md</code> or <code>.btw/agent-*.md</code> in your
+project directory</p></li>
+<li><p><strong>User level (btw)</strong>: <code>~/.btw/agents/*.md</code> or <code>~/.btw/agent-*.md</code> (and
+the same in <code>~/.config/btw/</code>)</p></li>
 <li><p><strong>Project level (Claude Code)</strong>: <code>.claude/agents/*.md</code> in your project directory</p></li>
 <li><p><strong>User level (Claude Code)</strong>: <code>~/.claude/agents/*.md</code></p></li>
 </ul><p>btw-style agents take precedence over Claude Code agents with the same name.
@@ -453,8 +459,8 @@ creating chat clients with tools.</p></div>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     btw_tool_agent_custom_impl(prompt = prompt, session_id = session_id, </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         agent_config = agent_config)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x556a39a42220&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x556a39a41e30&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55fe42d5b788&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55fe42d5bd38&gt;</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Create a Claude Code-style agent file (name with hyphens)</span></span></span>
 <span class="r-in"><span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_tempfile.html" class="external-link">with_tempdir</a></span><span class="op">(</span><span class="op">{</span></span></span>
@@ -487,8 +493,8 @@ creating chat clients with tools.</p></div>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     btw_tool_agent_custom_impl(prompt = prompt, session_id = session_id, </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         agent_config = agent_config)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x556a39a42220&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x556a38e1a8f0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55fe42d5b788&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55fe44369968&gt;</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -501,7 +507,7 @@ creating chat clients with tools.</p></div>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

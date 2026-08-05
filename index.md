@@ -31,19 +31,7 @@ btw provides a flexible toolkit that works across different workflows:
 Use [`btw()`](https://posit-dev.github.io/btw/reference/btw.md) to
 gather context from your R session and copy it to your clipboard:
 
-``` r
-
-library(btw)
-
-# Describe a data frame
-btw(mtcars)
-
-# Include package or function documentation
-btw("{dplyr}", ?dplyr::across)
-
-# Combine multiple pieces of context
-btw(mtcars, "{dplyr}", "How do I calculate the mean mpg by cylinder?")
-```
+[`library`](https://rdrr.io/r/base/library.html)`(`[`btw`](https://github.com/posit-dev/btw)`)`` `` ``# Describe a data frame`` `[`btw`](https://posit-dev.github.io/btw/reference/btw.md)`(``mtcars``)`` `` ``# Include package or function documentation`` `[`btw`](https://posit-dev.github.io/btw/reference/btw.md)`(``"{dplyr}"``, ``?``dplyr``::`[`across`](https://dplyr.tidyverse.org/reference/across.html)`)`` `` ``# Combine multiple pieces of context`` `[`btw`](https://posit-dev.github.io/btw/reference/btw.md)`(``mtcars``, ``"{dplyr}"``, ``"How do I calculate the mean mpg by cylinder?"``)`
 
 The context is copied to your clipboard, ready to paste into ChatGPT,
 Claude, or any LLM chat interface.
@@ -53,10 +41,7 @@ Claude, or any LLM chat interface.
 Launch a chat interface with
 [`btw_app()`](https://posit-dev.github.io/btw/reference/btw_client.md):
 
-``` r
-
-btw_app()
-```
+[`btw_app`](https://posit-dev.github.io/btw/reference/btw_client.md)`(``)`
 
 ![Screenshot of btw_app() in action. In the sidebar, there is a list of
 tools that can be toggled on and off, and in the main panel a chat
@@ -76,44 +61,23 @@ btw supercharges [ellmer](https://ellmer.tidyverse.org/)! Use
 for a pre-configured chat client, the same client used by
 [`btw_app()`](https://posit-dev.github.io/btw/reference/btw_client.md).
 
-``` r
-
-# Uses provider, model, tools and instructions from btw.md
-chat <- btw_client()
-chat$chat("Help me write documentation for...")
-```
+`# Uses provider, model, tools and instructions from btw.md`` ``chat`` ``<-`` `[`btw_client`](https://posit-dev.github.io/btw/reference/btw_client.md)`(``)`` ``chat``$``chat``(``"Help me write documentation for..."``)`
 
 Or use
 [`btw_tools()`](https://posit-dev.github.io/btw/reference/btw_tools.md)
 to get a list of tools you can register with any ellmer chat client.
 
-``` r
-
-library(ellmer)
-
-chat <- chat_anthropic()  # or chat_openai(), chat_ollama(), etc.
-chat$register_tools(btw_tools())
-
-chat$chat("What data frames are in my environment?")
-```
+[`library`](https://rdrr.io/r/base/library.html)`(`[`ellmer`](https://ellmer.tidyverse.org)`)`` `` ``chat`` ``<-`` `[`chat_anthropic`](https://ellmer.tidyverse.org/reference/chat_anthropic.html)`(``)`` ``# or chat_openai(), chat_ollama(), etc.`` ``chat``$``register_tools``(`[`btw_tools`](https://posit-dev.github.io/btw/reference/btw_tools.md)`(``)``)`` `` ``chat``$``chat``(``"What data frames are in my environment?"``)`
 
 Pick and choose which tools you use with friendly group names
 
-``` r
-
-# Only provide documentation and file tools
-chat$register_tools(btw_tools(c("docs", "files")))
-```
+`# Only provide documentation and file tools`` ``chat``$``register_tools``(`[`btw_tools`](https://posit-dev.github.io/btw/reference/btw_tools.md)`(`[`c`](https://rdrr.io/r/base/c.html)`(``"docs"``, ``"files"``)``)``)`
 
 or expose btw tools to external coding agents via the [Model Context
 Protocol](https://modelcontextprotocol.io/) using
 [mcptools](https://posit-dev.github.io/mcptools/).
 
-``` r
-
-# Run as a background process or in a separate R session
-btw_mcp_server()
-```
+`# Run as a background process or in a separate R session`` `[`btw_mcp_server`](https://posit-dev.github.io/btw/reference/mcp.md)`(``)`
 
 You can [configure the MCP
 server](https://posit-dev.github.io/btw/reference/mcp.html) in Claude
@@ -124,30 +88,17 @@ your R environment.
 
 You can install btw from CRAN:
 
-``` r
-
-install.packages("btw")
-```
+[`install.packages`](https://rdrr.io/r/utils/install.packages.html)`(``"btw"``)`
 
 To install the latest development version, you can install from
 [posit-dev.r-universe.dev](https://posit-dev.r-universe.dev/):
 
-``` r
-
-# install.packages("pak")
-
-pak::repo_add("https://posit-dev.r-universe.dev")
-pak::pak("btw")
-```
+`# install.packages("pak")`` `` ``pak``::`[`repo_add`](https://pak.r-lib.org/reference/repo_add.html)`(``"https://posit-dev.r-universe.dev"``)`` ``pak``::`[`pak`](https://pak.r-lib.org/reference/pak.html)`(``"btw"``)`
 
 Or you can install the development version from
 [GitHub](https://github.com/posit-dev/btw):
 
-``` r
-
-# install.packages("pak")
-pak::pak("posit-dev/btw")
-```
+`# install.packages("pak")`` ``pak``::`[`pak`](https://pak.r-lib.org/reference/pak.html)`(``"posit-dev/btw"``)`
 
 ## Learn More
 

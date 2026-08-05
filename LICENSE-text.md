@@ -1,4 +1,3 @@
 # License
 
-    YEAR: 2025
-    COPYRIGHT HOLDER: Posit Software, PBC
+YEAR: 2025 COPYRIGHT HOLDER: Posit Software, PBC

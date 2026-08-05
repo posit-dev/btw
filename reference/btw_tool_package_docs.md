@@ -76,11 +76,12 @@ btw_tool_docs_package_help_topics("btw")
 #>  @ value  : chr [1:3] "```json" ...
 #>  @ error  : NULL
 #>  @ extra  :List of 2
-#>  .. $ data   : tibble [54 × 3] (S3: tbl_df/tbl/data.frame)
-#>  ..  ..$ topic_id: chr [1:54] "btw" "btw-package" "btw_agent_tool" "btw_client" ...
-#>  ..  ..$ title   : chr [1:54] "Plain-text descriptions of R objects" "btw: A Toolkit for Connecting R and Large Language Models" "Create a custom agent tool from a markdown file" "Create a btw-enhanced ellmer chat client" ...
-#>  ..  ..$ aliases :List of 54
+#>  .. $ data   : tibble [55 × 3] (S3: tbl_df/tbl/data.frame)
+#>  ..  ..$ topic_id: chr [1:55] "btw" "btw-config" "btw-package" "btw_agent_tool" ...
+#>  ..  ..$ title   : chr [1:55] "Plain-text descriptions of R objects" "Where btw looks for configuration" "btw: A Toolkit for Connecting R and Large Language Models" "Create a custom agent tool from a markdown file" ...
+#>  ..  ..$ aliases :List of 55
 #>  ..  .. ..$ : 'AsIs' chr "btw"
+#>  ..  .. ..$ : 'AsIs' chr "btw-config"
 #>  ..  .. ..$ : 'AsIs' chr "btw-package"
 #>  ..  .. ..$ : 'AsIs' chr "btw_agent_tool"
 #>  ..  .. ..$ : 'AsIs' chr [1:2] "btw_client" "btw_app"
@@ -141,15 +142,16 @@ btw_tool_docs_package_help_topics("btw")
 
 btw_tool_docs_help_page("btw", "btw")
 #> <btw::BtwHelpPageToolResult>
-#>  @ value  : chr [1:94] "## `help(package = \"btw\", \"btw\")`" "" ...
+#>  @ value  : chr [1:83] "## `help(package = \"btw\", \"btw\")`" "" ...
 #>  @ error  : NULL
 #>  @ extra  :List of 4
-#>  .. $ help_text: chr [1:93] "" "### Plain-text descriptions of R objects" "" "#### Description" ...
+#>  .. $ help_text: chr [1:82] "" "### Plain-text descriptions of R objects" "" "#### Description" ...
 #>  .. $ topic    : chr "btw"
 #>  .. $ package  : chr "btw"
-#>  .. $ display  :List of 2
-#>  ..  ..$ title   : 'html' chr "<code>?btw::btw</code>"
+#>  .. $ display  :List of 3
+#>  ..  ..$ title      : 'html' chr "<code>?btw::btw</code>"
 #>  ..  .. ..- attr(*, "html")= logi TRUE
-#>  ..  ..$ markdown: chr "\n### Plain-text descriptions of R objects\n\n#### Description\n\nThis function allows you to quickly describe "| __truncated__
+#>  ..  ..$ markdown   : chr "\n### Plain-text descriptions of R objects\n\n#### Description\n\nThis function allows you to quickly describe "| __truncated__
+#>  ..  ..$ full_screen: logi TRUE
 #>  @ request: NULL
 ```

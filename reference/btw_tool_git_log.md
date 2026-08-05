@@ -1,7 +1,7 @@
 # Tool: Git Log
 
 This tool allows an LLM to run
-[`gert::git_log()`](https://docs.ropensci.org/gert/reference/git_commit.html),
+[`gert::git_log()`](https://docs.ropensci.org/gert/reference/git_history.html),
 equivalent to `git log` in the terminal, and to see the commit history
 of a repository.
 
@@ -66,13 +66,13 @@ withr::with_tempdir({
 })
 #> message: Update hello.md
 #> author: R Example <ex@example.com>
-#> time: 2026-07-02 20:20:15
+#> time: 2026-08-05 14:45:22
 #> n_files: 1
-#> commit: 496bf5f
+#> commit: a355a0c
 #> 
 #> message: Initial commit
 #> author: R Example <ex@example.com>
-#> time: 2026-07-02 20:20:15
+#> time: 2026-08-05 14:45:22
 #> n_files: 1
-#> commit: 1d1254d
+#> commit: 60635e6
 ```
