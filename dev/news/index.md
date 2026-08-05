@@ -4,6 +4,14 @@
 
 ### New features
 
+- Added `btw pkg desc <packages...>` to show useful DESCRIPTION metadata
+  for installed packages. By default, the command includes package
+  identity, authorship, licensing, URLs, dependencies, and system
+  requirements; use `--fields` to select other fields or `--fields=all`
+  for the complete DESCRIPTION. Multiple terminal results are separated
+  by `---`, and `--json` returns an object keyed by package name
+  ([\#209](https://github.com/posit-dev/btw/issues/209)).
+
 - Added a `btw pkg src` CLI command family for inspecting R namespace
   implementations in installed packages and the current development
   package. Use `list` to discover objects, `get` to retrieve exact
