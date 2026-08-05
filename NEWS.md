@@ -2,6 +2,8 @@
 
 ## New features
 
+* Added `btw pkg desc <packages...>` to show useful DESCRIPTION metadata for installed packages. By default, the command includes package identity, authorship, licensing, URLs, dependencies, and system requirements; use `--fields` to select other fields or `--fields=all` for the complete DESCRIPTION. Multiple terminal results are separated by `---`, and `--json` returns an object keyed by package name (#209).
+
 * Added a `btw pkg src` CLI command family for inspecting R namespace implementations in installed packages and the current development package. Use `list` to discover objects, `get` to retrieve exact source when available or deparsed functions otherwise, `methods` to inspect package-owned S3 and S4 implementations, `path` to locate package installations, and `search` to search real or reconstructed R source. All commands support JSON output, and `methods --source` returns method implementations directly (#207).
 
 * btw now discovers project- and user-level custom agents from an `agents/` subdirectory (e.g. `.btw/agents/my_agent.md` or `~/.btw/agents/my_agent.md`) in addition to the flat `agent-*.md` files. Files in the `agents/` directory use plain `{name}.md` filenames, with the agent name taken from the YAML frontmatter (#202).
