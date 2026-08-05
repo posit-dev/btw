@@ -523,7 +523,27 @@ S7::method(contents_html, ContentError) <- function(content, ...) {
 }
 
 S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
-  code <- content@extra$code
+  display <- content@extra$display %||% list()
+
+  # Results created outside a chat do not have a tool request, but shinychat's
+  # built-in card requires one. Supply a minimal request for direct rendering.
+  if (is.null(content@request)) {
+    content@request <- ellmer::ContentToolRequest(
+      id = "btw_tool_run_r",
+      name = "btw_tool_run_r",
+      arguments = list(`_intent` = ""),
+      tool = NULL,
+      extra = list()
+    )
+    content@extra$display <- utils::modifyList(
+      display,
+      list(title = display$title %||% "Run R Code")
+    )
+  }
+
+  res <- shinychat::contents_shinychat(
+    S7::super(content, ellmer::ContentToolResult)
+  )
 
   # Render all content objects to HTML
   contents <- content@extra$contents
@@ -534,51 +554,41 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
   output_html <- map_chr(contents, ellmer::contents_html)
   output_html <- paste(output_html, collapse = "\n")
 
-  status <- content@extra$status
-  request_id <- NULL
-  tool_title <- NULL
+  res$status <- content@extra$status
+  res$value <- htmltools::attachDependencies(
+    htmltools::tagList(
+      htmltools::div(
+        class = "btw-run-output",
+        htmltools::HTML(output_html)
+      )
+    ),
+    btw_run_r_dep()
+  )
+  res$value_type <- "html"
 
-  display <- content@extra$display %||% list()
-  annotations <- list()
-  intent <- ""
-
-  if (!is.null(content@request)) {
-    request_id <- content@request@id
-
-    tool_title <- NULL
-    tool <- content@request@tool
-    annotations <- tool@annotations
-    if (!is.null(content@request@arguments$`_intent`)) {
-      intent <- content@request@arguments$`_intent`
-    }
+  if (isTRUE(display$copy_code)) {
+    copy_button <- shiny::tags$button(
+      type = "button",
+      class = "btw-copy-reprex btn btn-sm btn-outline-secondary",
+      `aria-label` = "Copy as reprex",
+      shiny::icon("clipboard")
+    )
+    res$footer <- htmltools::tagList(
+      display$footer,
+      bslib::tooltip(copy_button, "Copy as reprex", placement = "top")
+    )
   }
 
-  htmltools::tag(
-    "btw-run-r-result",
-    list(
-      `request-id` = request_id,
-      code = code,
-      status = status,
-      intent = intent,
-      `tool-title` = display$title %||% annotations$title %||% "Run R Code",
-      icon = display$icon %||% annotations$icon,
-      expanded = if (isTRUE(display$open)) NA,
-      `copy-code` = if (isTRUE(display$copy_code)) NA,
-      `full-screen` = if (isTRUE(display$full_screen)) NA,
-      htmltools::HTML(output_html),
-      btw_run_tool_card_dep()
-    )
-  )
+  res
 }
 
-btw_run_tool_card_dep <- function() {
+btw_run_r_dep <- function() {
   htmltools::htmlDependency(
     name = "btw-run-r",
     version = utils::packageVersion("btw"),
     package = "btw",
     src = "js/run-r",
     script = list(
-      list(src = "btw-icons.js", type = "module"),
       list(src = "btw-run-r.js", type = "module")
     ),
     stylesheet = "btw-run-r.css",
