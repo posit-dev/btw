@@ -2,6 +2,8 @@
 
 ## New features
 
+* `btw_app()` now keeps tool selection synchronized when switching models and prevents model, prompt, chat, or tool changes while a response is streaming. Long-form tool results can be expanded fullscreen, and file actions now appear in tool result footers. Fullscreen R results include keyboard focus trapping and focus restoration (#208).
+
 * btw now discovers project- and user-level custom agents from an `agents/` subdirectory (e.g. `.btw/agents/my_agent.md` or `~/.btw/agents/my_agent.md`) in addition to the flat `agent-*.md` files. Files in the `agents/` directory use plain `{name}.md` filenames, with the agent name taken from the YAML frontmatter (#202).
 
 ## Deprecations
