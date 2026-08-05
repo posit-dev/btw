@@ -23,6 +23,14 @@ aside#tools_sidebar {
   box-shadow: 2px 2px 5px rgba(var(--bs-emphasis-color-rgb), 10%);
 }
 
+.btw-tools-controls {
+  display: contents;
+}
+
+.btw-tools-controls[disabled] a {
+  pointer-events: none;
+}
+
 shiny-chat-message .message-icon {
   background-color: var(--bs-white);
   box-shadow: 2px 2px 5px rgba(var(--bs-emphasis-color-rgb), 10%);

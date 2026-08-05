@@ -14,6 +14,7 @@ test_that("btw_tool_docs_help_page() works", {
   expect_equal(res@extra$topic, "Normal")
   expect_equal(res@extra$package, "stats")
   expect_type(res@extra$help_text, "character")
+  expect_true(res@extra$display$full_screen)
 
   skip_if_not_snapshot_env()
   expect_snapshot(cli::cat_line(res@value))
@@ -32,6 +33,7 @@ test_that("btw_tool_docs_available_vignettes() works", {
   res <- btw_tool_docs_available_vignettes("dplyr")
 
   expect_btw_tool_result(res)
+  expect_true(res@extra$display$full_screen)
 
   expect_match(res@value, '"vignette":"dplyr"', fixed = TRUE, all = FALSE)
   expect_match(
@@ -58,6 +60,7 @@ test_that("btw_tool_docs_vignette() works", {
 
   res_dplyr <- btw_tool_docs_vignette("dplyr")
   expect_btw_tool_result(res_dplyr)
+  expect_true(res_dplyr@extra$display$full_screen)
   expect_match(
     res_dplyr@value,
     "Introduction to dplyr",

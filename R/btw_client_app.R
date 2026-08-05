@@ -147,30 +147,35 @@ btw_app_from_client <- function(
         height = "100%",
         style = bslib::css(max_height = "100%"),
         open = "closed",
-        shiny::div(
-          class = "btn-group",
-          shiny::actionButton(
-            "select_all",
-            "Select All",
-            icon = shiny::icon("check-square"),
-            class = "btn-sm"
+        shiny::tags$fieldset(
+          id = "tools_controls",
+          class = "btw-tools-controls",
+          shiny::div(
+            class = "btn-group",
+            shiny::actionButton(
+              "select_all",
+              "Select All",
+              icon = shiny::icon("check-square"),
+              class = "btn-sm"
+            ),
+            shiny::actionButton(
+              "deselect_all",
+              "Select none",
+              icon = shiny::icon("square"),
+              class = "btn-sm"
+            )
           ),
-          shiny::actionButton(
-            "deselect_all",
-            "Select none",
-            icon = shiny::icon("square"),
-            class = "btn-sm"
+          shiny::div(
+            class = "overflow-y-auto overflow-x-visible",
+            app_tool_group_inputs(
+              btw_tools_df(all_available_tools),
+              # names(list()) is NULL, but NULL means "select all" in
+              # app_tool_group_choice_input; use character(0) for "select none".
+              initial_tool_names = names(original_client_tools) %||%
+                character(0)
+            ),
+            shiny::uiOutput("ui_other_tools")
           )
-        ),
-        shiny::div(
-          class = "overflow-y-auto overflow-x-visible",
-          app_tool_group_inputs(
-            btw_tools_df(all_available_tools),
-            # names(list()) is NULL, but NULL means "select all" in
-            # app_tool_group_choice_input; use character(0) for "select none".
-            initial_tool_names = names(original_client_tools) %||% character(0)
-          ),
-          shiny::uiOutput("ui_other_tools")
         ),
         bslib::input_dark_mode(style = "display: none")
       ),
@@ -194,14 +199,12 @@ btw_app_from_client <- function(
         messages = messages,
         greeting = btw_app_greeting(path_logo),
         width = "min(750px, 100%)",
-        footer = if (utils::packageVersion("shinychat") >= "0.4.0") {
-          btw_status_bar_ui(
-            "status_bar",
-            client = client,
-            models = app_models,
-            selected = selected_client
-          )
-        }
+        footer = btw_status_bar_ui(
+          "status_bar",
+          client = client,
+          models = app_models,
+          selected = selected_client
+        )
       ),
       btw_app_html_dep(),
     )
@@ -210,13 +213,21 @@ btw_app_from_client <- function(
   server <- function(input, output, session) {
     chat <- shinychat::chat_mod_server("chat", client = client)
 
-    if (utils::packageVersion("shinychat") >= "0.4.0") {
-      res <- btw_status_bar_server("status_bar", chat, app_models)
+    res <- btw_status_bar_server("status_bar", chat, app_models)
 
-      shiny::observeEvent(res$clear_chat(), {
+    shiny::observeEvent(res$clear_chat(), {
+      if (identical(chat$status(), "idle")) {
         chat$clear(client_history = "clear")
-      })
-    }
+      }
+    })
+
+    shiny::observe({
+      app_set_disabled(
+        session,
+        "tools_controls",
+        identical(chat$status(), "streaming")
+      )
+    })
 
     shiny::observeEvent(input$show_sidebar, {
       bslib::toggle_sidebar("tools_sidebar")
@@ -261,6 +272,10 @@ btw_app_from_client <- function(
     })
 
     shiny::observeEvent(input$select_all, {
+      if (identical(chat$status(), "streaming")) {
+        return()
+      }
+
       tools <- btw_tools_df(all_available_tools)
       for (group in tool_groups) {
         shiny::updateCheckboxGroupInput(
@@ -272,6 +287,10 @@ btw_app_from_client <- function(
     })
 
     shiny::observeEvent(input$deselect_all, {
+      if (identical(chat$status(), "streaming")) {
+        return()
+      }
+
       tools <- btw_tools_df(all_available_tools)
       for (group in tool_groups) {
         shiny::updateCheckboxGroupInput(
@@ -287,31 +306,25 @@ btw_app_from_client <- function(
         current <- input[[paste0("tools_", group)]]
         all_tools <- btw_tools_df(all_available_tools)
         group_tools <- all_tools[all_tools$group == group, ][["name"]]
-        if (length(current) == length(group_tools)) {
-          # All selected, so deselect all
-          shiny::updateCheckboxGroupInput(
-            session = session,
-            inputId = paste0("tools_", group),
-            selected = ""
-          )
-        } else {
-          # Not all selected, so select all
-          shiny::updateCheckboxGroupInput(
-            session = session,
-            inputId = paste0("tools_", group),
-            selected = group_tools
-          )
+        selected <- app_toggle_tool_group(current, group_tools, chat$status())
+        if (is.null(selected)) {
+          return()
         }
+
+        shiny::updateCheckboxGroupInput(
+          session = session,
+          inputId = paste0("tools_", group),
+          selected = selected
+        )
       })
     })
 
     shiny::observe({
-      if (!length(selected_tools())) {
-        client$set_tools(list())
-      } else {
-        sel_tools <- all_available_tools[selected_tools()]
-        client$set_tools(sel_tools)
+      if (identical(chat$status(), "streaming")) {
+        return()
       }
+
+      app_set_client_tools(chat, selected_tools(), all_available_tools)
     })
 
     skills_read_file_mismatch <- shiny::reactive({
@@ -520,6 +533,29 @@ btw_app_greeting <- function(path_logo) {
   )
 }
 
+app_set_disabled <- function(session, id, disabled) {
+  session$sendCustomMessage(
+    "btw_set_disabled",
+    list(
+      ids = unname(vapply(id, session$ns, character(1))),
+      disabled = isTRUE(disabled)
+    )
+  )
+}
+
+app_set_client_tools <- function(chat, selected, available) {
+  tools <- if (length(selected)) available[selected] else list()
+  chat$client$set_tools(tools)
+}
+
+app_toggle_tool_group <- function(current, group_tools, status) {
+  if (identical(status, "streaming")) {
+    return(NULL)
+  }
+
+  if (length(current) == length(group_tools)) character() else group_tools
+}
+
 # Status Bar ----
 
 notifier <- function(icon, action, error = NULL, ...) {
@@ -692,6 +728,10 @@ btw_status_bar_server <- function(id, chat, models = "provider") {
       })
 
       shiny::observeEvent(input$model, ignoreInit = TRUE, {
+        if (identical(chat$status(), "streaming")) {
+          return()
+        }
+
         tryCatch(
           {
             old_provider <- chat$client$get_provider()@name
@@ -713,9 +753,9 @@ btw_status_bar_server <- function(id, chat, models = "provider") {
             }
 
             chat$set_client(new_client, sync = FALSE)
-            new_provider <- chat$client$get_provider()@name
+            new_provider <- new_client$get_provider()@name
             provider_name(new_provider)
-            model_name(chat$client$get_model())
+            model_name(new_client$get_model())
 
             notifier(
               shiny::icon("check"),
@@ -735,6 +775,14 @@ btw_status_bar_server <- function(id, chat, models = "provider") {
               error = err
             )
           }
+        )
+      })
+
+      shiny::observe({
+        app_set_disabled(
+          session,
+          c("model", "show_sys_prompt", "clear_chat"),
+          identical(chat$status(), "streaming")
         )
       })
 

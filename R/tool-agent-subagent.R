@@ -359,7 +359,11 @@ btw_tool_agent_subagent_impl <- function(
       provider = result$provider,
       model = result$model,
       tokens = result$tokens,
-      display = list(markdown = display_md, show_request = FALSE)
+      display = list(
+        markdown = display_md,
+        show_request = FALSE,
+        full_screen = TRUE
+      )
     )
   )
 }

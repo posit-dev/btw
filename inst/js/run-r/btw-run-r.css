@@ -20,6 +20,10 @@ btw-run-r-result .card-body {
   gap: 0;
 }
 
+body.btw-tool-fullscreen-active {
+  overflow: hidden;
+}
+
 /* Output container with visual treatment */
 
 /* Code output blocks */
@@ -266,7 +270,8 @@ btw-run-r-result .card-body {
 .btw-ansi-bg-bright-white { background-color: var(--btw-ansi-bg-bright-white); }
 
 /* Copy code button in header */
-.copy-code-btn {
+.copy-code-btn,
+.btw-run-fullscreen-toggle {
   width: 14px;
   background: none;
   border: none;
@@ -282,17 +287,20 @@ btw-run-r-result .card-body {
   flex-shrink: 0;
 }
 
-.copy-code-btn:hover {
+.copy-code-btn:hover,
+.btw-run-fullscreen-toggle:hover {
   opacity: 1;
 }
 
-.copy-code-btn:focus {
+.copy-code-btn:focus,
+.btw-run-fullscreen-toggle:focus {
   outline: 2px solid var(--bs-primary);
   outline-offset: 2px;
   opacity: 1;
 }
 
-.copy-code-btn svg {
+.copy-code-btn svg,
+.btw-run-fullscreen-toggle svg {
   display: block;
 }
 

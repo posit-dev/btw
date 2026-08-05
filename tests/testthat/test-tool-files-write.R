@@ -7,6 +7,14 @@ test_that("btw_tool_files_write() works", {
   expect_equal(res_write_data@extra$path, "test.txt")
   expect_equal(res_write_data@extra$content, "Hello\nWorld!")
   expect_null(res_write_data@extra$previous_content, NULL)
+  expect_true(res_write_data@extra$display$full_screen)
+  expect_false(
+    grepl(
+      "btw-open-file",
+      as.character(res_write_data@extra$display$title),
+      fixed = TRUE
+    )
+  )
 
   expect_equal(
     read_lines("test.txt"),

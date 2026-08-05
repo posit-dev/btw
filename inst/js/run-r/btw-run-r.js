@@ -49,6 +49,60 @@ class BtwRunRResult extends HTMLElement {
     this.intent = this.getAttribute("intent") || ""
     this.expanded = this.hasAttribute("expanded")
     this.copyCode = this.hasAttribute("copy-code")
+    this.fullScreen = this.hasAttribute("full-screen")
+    this.fullScreenActive = false
+    this.handleFullscreenKeydown = (e) => {
+      if (!this.fullScreenActive) return
+
+      if (e.key === "Escape") {
+        const target = e.target
+        if (
+          target instanceof Element &&
+          (target.matches("select[open]") ||
+            target.matches("input[aria-expanded='true']"))
+        ) {
+          return
+        }
+
+        this.exitFullscreen()
+        e.preventDefault()
+        return
+      }
+
+      if (e.key !== "Tab") return
+
+      const card = this.querySelector(":scope > .shiny-tool-card")
+      if (!card?.hasAttribute("fullscreen")) return
+
+      const cardFocusable = [
+        ...card.querySelectorAll(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ].filter((element) => element.offsetParent !== null)
+      const closeButton = this.fullScreenCloseButton
+      if (!closeButton) return
+
+      const firstInCard = cardFocusable[0]
+      const lastInCard = cardFocusable[cardFocusable.length - 1]
+      const active = document.activeElement
+
+      if (!e.shiftKey && (active === lastInCard || active === card)) {
+        e.preventDefault()
+        closeButton.focus()
+      } else if (!e.shiftKey && active === closeButton) {
+        e.preventDefault()
+        ;(firstInCard ?? card).focus()
+      } else if (e.shiftKey && (active === firstInCard || active === card)) {
+        e.preventDefault()
+        closeButton.focus()
+      } else if (e.shiftKey && active === closeButton) {
+        e.preventDefault()
+        ;(lastInCard ?? card).focus()
+      } else if (!card.contains(active) && active !== closeButton) {
+        e.preventDefault()
+        card.focus()
+      }
+    }
   }
 
   connectedCallback() {
@@ -70,6 +124,8 @@ class BtwRunRResult extends HTMLElement {
   }
 
   disconnectedCallback() {
+    this.exitFullscreen(false)
+
     // Clean up tooltip when component is removed from DOM
     const copyBtn = this.querySelector(".copy-code-btn")
     if (copyBtn) {
@@ -78,6 +134,90 @@ class BtwRunRResult extends HTMLElement {
         tooltip.dispose()
       }
     }
+  }
+
+  /**
+   * Toggle fullscreen display for the result card
+   * @param {Event} e
+   */
+  toggleFullscreen(e) {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (this.fullScreenActive) {
+      this.exitFullscreen()
+    } else {
+      this.enterFullscreen(e.currentTarget)
+    }
+  }
+
+  enterFullscreen(trigger) {
+    const card = this.querySelector(":scope > .shiny-tool-card")
+    if (!card || this.fullScreenActive) return
+
+    this.fullScreenActive = true
+    this.fullScreenTrigger = trigger
+    this.expanded = true
+    this.updateCollapseState()
+    card.setAttribute("fullscreen", "")
+    card.setAttribute("tabindex", "-1")
+
+    const backdrop = document.createElement("div")
+    backdrop.className = "shiny-tool-fullscreen-backdrop"
+    backdrop.addEventListener("click", () => this.exitFullscreen())
+
+    const closeButton = document.createElement("button")
+    closeButton.type = "button"
+    closeButton.className = "shiny-tool-fullscreen-exit"
+    closeButton.setAttribute("aria-label", "Exit fullscreen")
+    closeButton.innerHTML = `Close ${ICONS.fullscreenExit}`
+    closeButton.addEventListener("click", (e) => {
+      e.stopPropagation()
+      this.exitFullscreen()
+    })
+    backdrop.appendChild(closeButton)
+
+    document.body.appendChild(backdrop)
+    this.fullScreenBackdrop = backdrop
+    this.fullScreenCloseButton = closeButton
+    document.body.classList.add("btw-tool-fullscreen-active")
+    document.addEventListener("keydown", this.handleFullscreenKeydown, true)
+    this.updateFullscreenButton()
+    window.dispatchEvent(new Event("resize"))
+    card.focus()
+  }
+
+  exitFullscreen(restoreFocus = true) {
+    if (!this.fullScreenActive) return
+
+    this.fullScreenActive = false
+    const card = this.querySelector(":scope > .shiny-tool-card")
+    card?.removeAttribute("fullscreen")
+    card?.removeAttribute("tabindex")
+    this.fullScreenBackdrop?.remove()
+    this.fullScreenBackdrop = null
+    this.fullScreenCloseButton = null
+    document.body.classList.remove("btw-tool-fullscreen-active")
+    document.removeEventListener("keydown", this.handleFullscreenKeydown, true)
+    this.updateFullscreenButton()
+    window.dispatchEvent(new Event("resize"))
+
+    if (restoreFocus && this.fullScreenTrigger?.isConnected) {
+      this.fullScreenTrigger.focus()
+    }
+    this.fullScreenTrigger = null
+  }
+
+  updateFullscreenButton() {
+    const button = this.querySelector(".btw-run-fullscreen-toggle")
+    if (!button) return
+
+    const label = this.fullScreenActive ? "Exit fullscreen" : "View fullscreen"
+    button.setAttribute("aria-label", label)
+    button.setAttribute("title", label)
+    button.innerHTML = this.fullScreenActive
+      ? ICONS.fullscreenExit
+      : ICONS.fullscreenEnter
   }
 
   /**
@@ -275,6 +415,18 @@ class BtwRunRResult extends HTMLElement {
             </button>`
               : ""
           }
+          ${
+            this.fullScreen
+              ? `
+            <button
+              class="btw-run-fullscreen-toggle"
+              aria-label="View fullscreen"
+              title="View fullscreen"
+            >
+              ${ICONS.fullscreenEnter}
+            </button>`
+              : ""
+          }
           <button
             class="collapse-toggle-btn"
             aria-expanded="${this.expanded}"
@@ -313,6 +465,11 @@ class BtwRunRResult extends HTMLElement {
       }
     }
 
+    const fullscreenBtn = this.querySelector(".btw-run-fullscreen-toggle")
+    if (fullscreenBtn) {
+      fullscreenBtn.addEventListener("click", (e) => this.toggleFullscreen(e))
+    }
+
     this.addBlockCopyButtons()
 
     // Allow clicking anywhere on the header to toggle, except on action buttons
@@ -322,6 +479,7 @@ class BtwRunRResult extends HTMLElement {
         // Don't toggle if clicking on a button
         if (
           e.target.closest(".copy-code-btn") ||
+          e.target.closest(".btw-run-fullscreen-toggle") ||
           e.target.closest(".collapse-toggle-btn")
         ) {
           return

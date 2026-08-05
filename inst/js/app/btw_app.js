@@ -94,6 +94,41 @@ if (typeof Shiny !== "undefined") {
       }
     })
   })
+
+  Shiny.addCustomMessageHandler("btw_set_disabled", function (message) {
+    message.ids.forEach((id) => {
+      const element = document.getElementById(id)
+      if (!element) return
+
+      element.toggleAttribute("disabled", message.disabled)
+      if (message.disabled) {
+        element.setAttribute("aria-disabled", "true")
+      } else {
+        element.removeAttribute("aria-disabled")
+      }
+
+      if (element instanceof HTMLFieldSetElement) {
+        element.querySelectorAll("a").forEach((link) => {
+          link.classList.toggle("disabled", message.disabled)
+
+          if (message.disabled) {
+            link.dataset.btwTabindex = link.getAttribute("tabindex") || ""
+            link.setAttribute("tabindex", "-1")
+            link.setAttribute("aria-disabled", "true")
+          } else {
+            const tabindex = link.dataset.btwTabindex
+            if (tabindex) {
+              link.setAttribute("tabindex", tabindex)
+            } else {
+              link.removeAttribute("tabindex")
+            }
+            link.removeAttribute("aria-disabled")
+            delete link.dataset.btwTabindex
+          }
+        })
+      }
+    })
+  })
 }
 
 // Open File Buttons ----------------------------------------------------------

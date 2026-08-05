@@ -53,6 +53,29 @@ test_that("btw_tool_files_read() works", {
   )
 })
 
+test_that("file result actions use footers and support fullscreen", {
+  title <- file_result_title("Read", "path/to/file.R")
+  expect_match(as.character(title), "Read <code>file.R</code>", fixed = TRUE)
+  expect_false(grepl("btw-open-file", as.character(title), fixed = TRUE))
+
+  local_mocked_bindings(
+    hasFun = function(name) identical(name, "navigateToFile"),
+    .package = "rstudioapi"
+  )
+  footer <- file_result_footer("path/to/file.R")
+  expect_match(as.character(footer), "btw-open-file", fixed = TRUE)
+  expect_match(
+    as.character(footer),
+    "data-path=\"path/to/file.R\"",
+    fixed = TRUE
+  )
+
+  withr::local_dir(withr::local_tempdir())
+  writeLines("contents", "file.R")
+  result <- btw_tool_files_read("file.R")
+  expect_true(result@extra$display$full_screen)
+})
+
 # is_text_file() and CJK multi-byte UTF-8 boundary truncation
 # https://github.com/posit-dev/btw/issues/170
 describe("is_text_file()", {

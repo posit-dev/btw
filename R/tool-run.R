@@ -271,7 +271,11 @@ btw_tool_run_r_impl <- function(
       # We always return contents up to the error as `value` because `error`
       # cannot handle rich output. We'll show status separately in the UI.
       status = if (had_error) "error" else "success",
-      display = list(open = !had_error, copy_code = TRUE)
+      display = list(
+        open = !had_error,
+        copy_code = TRUE,
+        full_screen = TRUE
+      )
     )
   )
 }
@@ -560,6 +564,7 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
       icon = display$icon %||% annotations$icon,
       expanded = if (isTRUE(display$open)) NA,
       `copy-code` = if (isTRUE(display$copy_code)) NA,
+      `full-screen` = if (isTRUE(display$full_screen)) NA,
       htmltools::HTML(output_html),
       btw_run_tool_card_dep()
     )

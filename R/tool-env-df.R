@@ -136,7 +136,8 @@ btw_tool_env_describe_data_frame_impl <- function(
         data = data_frame,
         display = list(
           title = "View Data Frame",
-          markdown = data_frame_md
+          markdown = data_frame_md,
+          full_screen = TRUE
         )
       )
     )
@@ -160,7 +161,8 @@ btw_tool_env_describe_data_frame_impl <- function(
     value = res,
     data = data_frame,
     display = list(
-      title = "View Data Frame"
+      title = "View Data Frame",
+      full_screen = TRUE
     )
   )
 }

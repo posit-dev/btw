@@ -17,6 +17,14 @@ test_that("btw_tool_run_r() returns simple calculations", {
   expect_length(output_contents, 1)
   expect_s7_class(output_contents[[1]], ContentOutput)
   expect_match(output_contents[[1]]@text, "4")
+  expect_true(res@extra$display$full_screen)
+
+  rendered <- shinychat::contents_shinychat(res)
+  expect_match(
+    as.character(htmltools::as.tags(rendered)),
+    "full-screen",
+    fixed = TRUE
+  )
 })
 
 test_that("btw_tool_run_r() captures messages", {
