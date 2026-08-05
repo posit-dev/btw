@@ -1,4 +1,4 @@
-test_that("app_set_disabled() namespaces controls", {
+test_that("app_set_disabled() namespaces controls and preserves an array payload", {
   message <- NULL
   session <- list(
     ns = function(id) paste0("module-", id),
@@ -13,8 +13,18 @@ test_that("app_set_disabled() namespaces controls", {
   expect_equal(
     message$value,
     list(
-      ids = c("module-model", "module-clear_chat"),
+      ids = list("module-model", "module-clear_chat"),
       disabled = TRUE
+    )
+  )
+
+  app_set_disabled(session, "tools_controls", FALSE)
+
+  expect_equal(
+    message$value,
+    list(
+      ids = list("module-tools_controls"),
+      disabled = FALSE
     )
   )
 })

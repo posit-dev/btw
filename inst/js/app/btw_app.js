@@ -100,15 +100,20 @@ if (typeof Shiny !== "undefined") {
       const element = document.getElementById(id)
       if (!element) return
 
-      element.toggleAttribute("disabled", message.disabled)
+      const control = element.matches(".bslib-toolbar-input-select")
+        ? element.querySelector("select")
+        : element
+      if (!control) return
+
+      control.toggleAttribute("disabled", message.disabled)
       if (message.disabled) {
-        element.setAttribute("aria-disabled", "true")
+        control.setAttribute("aria-disabled", "true")
       } else {
-        element.removeAttribute("aria-disabled")
+        control.removeAttribute("aria-disabled")
       }
 
-      if (element instanceof HTMLFieldSetElement) {
-        element.querySelectorAll("a").forEach((link) => {
+      if (control instanceof HTMLFieldSetElement) {
+        control.querySelectorAll("a").forEach((link) => {
           link.classList.toggle("disabled", message.disabled)
 
           if (message.disabled) {

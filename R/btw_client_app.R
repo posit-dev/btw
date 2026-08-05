@@ -537,7 +537,7 @@ app_set_disabled <- function(session, id, disabled) {
   session$sendCustomMessage(
     "btw_set_disabled",
     list(
-      ids = unname(vapply(id, session$ns, character(1))),
+      ids = as.list(unname(vapply(id, session$ns, character(1)))),
       disabled = isTRUE(disabled)
     )
   )
