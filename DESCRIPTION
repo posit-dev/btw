@@ -58,6 +58,7 @@ Suggests:
     chromote,
     covr,
     DBI,
+    desc,
     devtools,
     diffviewer,
     duckdb,
