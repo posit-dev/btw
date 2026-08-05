@@ -233,6 +233,93 @@ test_that("btw pkg load calls load impl", {
   expect_equal(env$path, ".")
 })
 
+test_that("btw pkg desc prints the default DESCRIPTION fields", {
+  skip_if_not_installed("desc")
+  env <- run_btw_quietly("pkg", "desc", "stats", "utils")
+  output <- paste(env$.output, collapse = "\n")
+
+  expect_equal(env$`packages...`, c("stats", "utils"))
+  expect_equal(env$fields, "")
+  expect_false(env$json)
+  expect_match(output, "^Package: stats")
+  expect_match(output, "\n\n---\n\nPackage: utils")
+  expect_equal(length(gregexpr("\n---\n", output, fixed = TRUE)[[1]]), 1)
+  expect_match(output, "Description:")
+  expect_match(output, "License:")
+  expect_false(grepl("Priority:", output, fixed = TRUE))
+  expect_false(grepl("Built:", output, fixed = TRUE))
+})
+
+test_that("btw pkg desc --json parses DESCRIPTION files with desc", {
+  skip_if_not_installed("desc")
+  env <- run_btw_quietly("pkg", "desc", "stats", "utils", "--json")
+  parsed <- jsonlite::fromJSON(
+    paste(env$.output, collapse = "\n"),
+    simplifyVector = FALSE
+  )
+
+  expect_true(env$json)
+  expect_named(parsed, c("stats", "utils"))
+  expect_equal(parsed$stats$Package, "stats")
+  expect_equal(parsed$utils$Package, "utils")
+  expect_true(all(c("Version", "Title", "Description") %in%
+    names(parsed$stats)))
+  expect_false("Built" %in% names(parsed$stats))
+})
+
+test_that("btw pkg desc --fields selects fields plus package identity", {
+  skip_if_not_installed("desc")
+  env <- run_btw_quietly(
+    "pkg",
+    "desc",
+    "stats",
+    "--fields=priority,license",
+    "--json"
+  )
+  parsed <- jsonlite::fromJSON(
+    paste(env$.output, collapse = "\n"),
+    simplifyVector = FALSE
+  )$stats
+
+  expect_equal(env$fields, "priority,license")
+  expect_true(all(c("Package", "Version", "Title", "Priority", "License") %in%
+    names(parsed)))
+  expect_false("Imports" %in% names(parsed))
+  expect_false("Built" %in% names(parsed))
+})
+
+test_that("btw pkg desc --fields=all returns the raw DESCRIPTION", {
+  skip_if_not_installed("desc")
+  env <- run_btw_quietly("pkg", "desc", "stats", "--fields=all")
+  expected <- readLines(
+    system.file("DESCRIPTION", package = "stats"),
+    warn = FALSE
+  )
+
+  expect_equal(env$fields, "all")
+  expect_identical(env$.output, expected)
+})
+
+test_that("btw pkg desc --fields=all --json includes every field", {
+  skip_if_not_installed("desc")
+  env <- run_btw_quietly("pkg", "desc", "stats", "--fields=all", "--json")
+  parsed <- jsonlite::fromJSON(
+    paste(env$.output, collapse = "\n"),
+    simplifyVector = FALSE
+  )$stats
+
+  expect_true(all(desc::desc(package = "stats")$fields() %in% names(parsed)))
+})
+
+test_that("btw pkg desc reports packages that are not installed", {
+  skip_if_not_installed("desc")
+  result <- run_btw_subprocess("pkg", "desc", "completely_nonexistent_xyz_pkg")
+
+  expect_equal(result$status, 1)
+  expect_equal(result$stdout, "")
+  expect_match(result$stderr, "not installed", ignore.case = TRUE)
+})
+
 test_that("btw pkg coverage calls coverage impl", {
   local_mocked_bindings(
     btw_tool_pkg_coverage_impl = function(pkg, filename = NULL) "Coverage: 80%"
@@ -272,6 +359,68 @@ test_that("btw pkg coverage --file passes filename", {
   env <- run_btw_quietly("pkg", "coverage", "--file", "utils.R")
   expect_equal(env$file, "utils.R")
   expect_equal(mock_filename, "utils.R")
+})
+
+test_that("btw pkg src methods parses default and source output", {
+  env <- run_btw_quietly(
+    "pkg",
+    "src",
+    "methods",
+    "stats",
+    "predict"
+  )
+
+  expect_equal(env$package, "stats")
+  expect_equal(env$`generics...`, "predict")
+  expect_false(env$source)
+  expect_false(env$json)
+
+  output <- paste(env$.output, collapse = "\n")
+  expect_match(output, "| generic |", fixed = TRUE)
+  expect_false(grepl("```r", output, fixed = TRUE))
+
+  source_env <- run_btw_quietly(
+    "pkg",
+    "src",
+    "methods",
+    "stats",
+    "predict",
+    "--source"
+  )
+
+  expect_equal(source_env$package, "stats")
+  expect_equal(source_env$`generics...`, "predict")
+  expect_true(source_env$source)
+  expect_false(source_env$json)
+
+  source_output <- paste(source_env$.output, collapse = "\n")
+  expect_match(source_output, "### `predict` method", fixed = TRUE)
+  expect_match(source_output, "```r", fixed = TRUE)
+})
+
+test_that("btw pkg src methods --source --json returns source data", {
+  env <- run_btw_quietly(
+    "pkg",
+    "src",
+    "methods",
+    "stats",
+    "predict",
+    "--source",
+    "--json"
+  )
+
+  expect_true(env$source)
+  expect_true(env$json)
+
+  parsed <- jsonlite::fromJSON(paste(env$.output, collapse = "\n"))
+  expect_s3_class(parsed, "data.frame")
+  expect_true(all(c("generic", "method", "type", "source") %in% names(parsed)))
+
+  row <- parsed[parsed$method == "predict.lm", , drop = FALSE]
+  expect_equal(nrow(row), 1)
+  expect_equal(row$generic, "predict")
+  expect_equal(row$type, "S3method")
+  expect_true(nzchar(row$source))
 })
 
 # btw info deprecated ----------------------------------------------------

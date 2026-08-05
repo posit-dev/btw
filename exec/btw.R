@@ -233,11 +233,167 @@ btw_pkg_load <- function(path) {
   btw_output(btw:::btw_tool_pkg_load_all_impl(path))
 }
 
+btw_pkg_desc <- function(packages, fields = "", json = FALSE) {
+  rlang::check_installed("desc", reason = "to read package DESCRIPTION files.")
+
+  always_fields <- c(
+    "Package",
+    "Version",
+    "Title",
+    "Description",
+    "Date",
+    "Date/Publication"
+  )
+  default_fields <- c(
+    always_fields,
+    "Authors@R",
+    "Author",
+    "Maintainer",
+    "License",
+    "URL",
+    "BugReports",
+    desc::dep_types,
+    "Remotes",
+    "Additional_repositories",
+    "SystemRequirements",
+    "NeedsCompilation"
+  )
+  description_paths <- vapply(
+    packages,
+    function(package) system.file("DESCRIPTION", package = package),
+    character(1)
+  )
+  missing <- !nzchar(description_paths)
+  if (any(missing)) {
+    stop(
+      "Package '",
+      packages[[which(missing)[[1]]]],
+      "' is not installed.",
+      call. = FALSE
+    )
+  }
+  descriptions <- lapply(description_paths, function(path) {
+    desc::desc(file = path)
+  })
+
+  requested_fields <- trimws(strsplit(fields, ",", fixed = TRUE)[[1]])
+  requested_fields <- requested_fields[nzchar(requested_fields)]
+  include_all <- any(tolower(requested_fields) == "all")
+
+  if (include_all && length(requested_fields) > 1) {
+    stop("`all` cannot be combined with other --fields values.", call. = FALSE)
+  }
+
+  if (!include_all && length(requested_fields)) {
+    available_fields <- unique(unlist(lapply(descriptions, function(x) {
+      x$fields()
+    })))
+    matches <- match(tolower(requested_fields), tolower(available_fields))
+    if (anyNA(matches)) {
+      stop(
+        "Unknown DESCRIPTION field: ",
+        paste(requested_fields[is.na(matches)], collapse = ", "),
+        call. = FALSE
+      )
+    }
+    selected_fields <- unique(c(always_fields, available_fields[matches]))
+  } else {
+    selected_fields <- default_fields
+  }
+
+  select_fields <- function(description) {
+    available <- description$fields()
+    if (include_all) {
+      return(available)
+    }
+    matches <- match(tolower(selected_fields), tolower(available))
+    available[matches[!is.na(matches)]]
+  }
+
+  if (json) {
+    output <- lapply(descriptions, function(description) {
+      as.list(description$get(select_fields(description)))
+    })
+    names(output) <- vapply(output, `[[`, character(1), "Package")
+    btw_json_output(output)
+    return(invisible(NULL))
+  }
+
+  output <- Map(function(description, path) {
+    if (include_all) {
+      return(paste(readLines(path, warn = FALSE), collapse = "\n"))
+    }
+
+    description$del(setdiff(description$fields(), select_fields(description)))
+    description$str(normalize = FALSE, mode = "file")
+  }, descriptions, description_paths)
+  cat(paste(output, collapse = "\n\n---\n\n"), "\n", sep = "")
+}
+
 btw_pkg_coverage <- function(path, file, json = FALSE) {
   result <- btw:::btw_tool_pkg_coverage_impl(
     path,
     if (has_value(file)) file else NULL
   )
+  if (json) {
+    data <- S7::prop(result, "extra")$data
+    btw_json_output(if (!is.null(data)) data else list())
+  } else {
+    btw_output(result)
+  }
+}
+
+btw_pkg_src_list <- function(package, all = FALSE, json = FALSE) {
+  result <- btw:::btw_tool_pkg_src_list_impl(package, all = all)
+  if (json) {
+    data <- S7::prop(result, "extra")$data
+    btw_json_output(if (!is.null(data)) data else list())
+  } else {
+    btw_output(result)
+  }
+}
+
+btw_pkg_src_path <- function(packages, json = FALSE) {
+  result <- btw:::btw_tool_pkg_src_path_impl(packages)
+  if (json) {
+    data <- S7::prop(result, "extra")$data
+    btw_json_output(if (!is.null(data)) data else list())
+  } else {
+    btw_output(result)
+  }
+}
+
+btw_pkg_src_get <- function(package, objects, json = FALSE) {
+  result <- btw:::btw_tool_pkg_src_get_impl(package, objects)
+  if (json) {
+    data <- S7::prop(result, "extra")$data
+    btw_json_output(if (!is.null(data)) data else list())
+  } else {
+    btw_output(result)
+  }
+}
+
+btw_pkg_src_methods <- function(
+  package,
+  generics,
+  source = FALSE,
+  json = FALSE
+) {
+  result <- btw:::btw_tool_pkg_src_methods_impl(
+    package,
+    generics,
+    source = source
+  )
+  if (json) {
+    data <- S7::prop(result, "extra")$data
+    btw_json_output(if (!is.null(data)) data else list())
+  } else {
+    btw_output(result)
+  }
+}
+
+btw_pkg_src_search <- function(package, terms, json = FALSE) {
+  result <- btw:::btw_tool_pkg_src_search_impl(package, terms)
   if (json) {
     data <- S7::prop(result, "extra")$data
     btw_json_output(if (!is.null(data)) data else list())
@@ -345,7 +501,10 @@ btw_skills_get <- function(source, skills, all, json = FALSE) {
         call. = FALSE
       )
     }
-    btw_skills_get_content_output(skill_dirs[dir_names %in% skills], is_github = is_github)
+    btw_skills_get_content_output(
+      skill_dirs[dir_names %in% skills],
+      is_github = is_github
+    )
   } else {
     btw_skills_get_list_output(skill_dirs, json = json, is_github = is_github)
   }
@@ -410,7 +569,11 @@ btw_skills_get_dirs_from_github <- function(repo) {
   dirname(skill_files)
 }
 
-btw_skills_get_list_output <- function(skill_dirs, json = FALSE, is_github = FALSE) {
+btw_skills_get_list_output <- function(
+  skill_dirs,
+  json = FALSE,
+  is_github = FALSE
+) {
   skills <- lapply(skill_dirs, function(skill_dir) {
     skill_md_path <- file.path(skill_dir, "SKILL.md")
     metadata <- btw:::extract_skill_metadata(skill_md_path)
@@ -419,9 +582,15 @@ btw_skills_get_list_output <- function(skill_dirs, json = FALSE, is_github = FAL
     } else {
       basename(skill_dir)
     }
-    description <- if (!is.null(metadata$description)) metadata$description else ""
+    description <- if (!is.null(metadata$description)) {
+      metadata$description
+    } else {
+      ""
+    }
     entry <- list(name = name, description = description)
-    if (!is_github) entry$location <- skill_md_path
+    if (!is_github) {
+      entry$location <- skill_md_path
+    }
     entry
   })
 
@@ -462,7 +631,11 @@ btw_skills_get_content_output <- function(skill_dirs, is_github = FALSE) {
     resources_listing <- format_resources_listing_relative(resources)
     full_content <- paste0(skill_text, resources_listing)
     tag_open <- if (!is_github) {
-      sprintf('<skill name="%s" path="%s">', btw:::xml_escape(name), btw:::xml_escape(skill_dir))
+      sprintf(
+        '<skill name="%s" path="%s">',
+        btw:::xml_escape(name),
+        btw:::xml_escape(skill_dir)
+      )
     } else {
       sprintf('<skill name="%s">', btw:::xml_escape(name))
     }
@@ -669,6 +842,19 @@ switch(
         tryCatch(btw_pkg_load(path), error = btw_error)
       },
 
+      #| title: Show package DESCRIPTION files
+      desc = {
+        #| description: Installed package names.
+        #| required: true
+        `packages...` <- c()
+        #| description: Comma-separated fields to include, or "all". Package identity fields are always included.
+        #| short: 'f'
+        fields <- ""
+        #| description: Output parsed DESCRIPTION fields as a JSON object keyed by package name.
+        json <- FALSE
+        tryCatch(btw_pkg_desc(`packages...`, fields, json), error = btw_error)
+      },
+
       #| title: Measure package test coverage
       coverage = {
         #| description: Filename for line-level coverage details.
@@ -676,6 +862,91 @@ switch(
         #| description: Output as JSON.
         json <- FALSE
         tryCatch(btw_pkg_coverage(path, file, json), error = btw_error)
+      },
+
+      #| title: Inspect package source code
+      src = {
+        switch(
+          src_cmd <- "",
+
+          #| title: List objects in a package namespace
+          list = {
+            #| description: Package name.
+            #| required: true
+            package <- NULL
+            #| description: Include internal (non-exported) objects.
+            #| short: 'a'
+            all <- FALSE
+            #| description: Output as JSON.
+            json <- FALSE
+            tryCatch(btw_pkg_src_list(package, all, json), error = btw_error)
+          },
+
+          #| title: Show install paths for packages
+          path = {
+            #| description: Package names.
+            #| required: true
+            `packages...` <- c()
+            #| description: Output as JSON.
+            json <- FALSE
+            tryCatch(
+              btw_pkg_src_path(`packages...`, json),
+              error = btw_error
+            )
+          },
+
+          #| title: Get source for objects in a package
+          get = {
+            #| description: Package name.
+            #| required: true
+            package <- NULL
+            #| description: Object names to fetch.
+            #| required: true
+            `objects...` <- c()
+            #| description: Output as JSON.
+            json <- FALSE
+            tryCatch(
+              btw_pkg_src_get(package, `objects...`, json),
+              error = btw_error
+            )
+          },
+
+          #| title: List methods of generics in a package
+          methods = {
+            #| description: Package name.
+            #| required: true
+            package <- NULL
+            #| description: Generic names.
+            #| required: true
+            `generics...` <- c()
+            #| description: Include rendered source for each method.
+            #| short: 's'
+            source <- FALSE
+            #| description: Output as JSON.
+            json <- FALSE
+            tryCatch(
+              btw_pkg_src_methods(package, `generics...`, source, json),
+              error = btw_error
+            )
+          },
+
+          #| title: Search package source code
+          search = {
+            #| description: Package name.
+            #| required: true
+            package <- NULL
+            #| description: Search terms.
+            #| required: true
+            `terms...` <- c()
+            #| description: Output as JSON.
+            json <- FALSE
+            tryCatch(
+              btw_pkg_src_search(package, `terms...`, json),
+              error = btw_error
+            )
+          }
+        )
+        if (src_cmd == "") btw_self_help("pkg", "src")
       }
     )
     if (pkg_cmd == "") btw_self_help("pkg")
