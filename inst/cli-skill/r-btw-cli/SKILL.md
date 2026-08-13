@@ -22,7 +22,7 @@ btw docs topics <pkg> [--only help|vignettes] [--json]  List help topics and vig
 btw docs help <topic> [-p <pkg>]                        Read an R help page
 btw docs help <pkg>::<topic>                            Read a specific help page (scoped)
 btw docs vignette <pkg> [-n <name>]                     Read a vignette (--list to list available)
-btw docs news <pkg> [-s <term>]                         Read package NEWS/changelog
+btw docs news <pkg> [version] [-s <term>]               Read package NEWS/changelog
 ```
 
 Use `btw pkg` to run development tasks on an R package under active development.
@@ -67,6 +67,7 @@ Use `btw cran` to search CRAN for packages or retrieve basic metadata (version, 
 ```
 btw cran search <query> [-n <count>] [--json]  Search CRAN for packages
 btw cran info <pkg> [--json]                   CRAN package details
+btw cran versions <pkg> [--after <date>] [--before <date>] [--json]  List CRAN release versions and dates
 ```
 
 Use `btw skills` to discover and fetch skills from R packages or GitHub repositories.

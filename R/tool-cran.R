@@ -300,6 +300,245 @@ btw_this.cran_package <- function(x, ...) {
   return(md_text)
 }
 
+#' Tool: List CRAN package versions
+#'
+#' @description
+#' Lists the current CRAN version and archived package versions with their
+#' release dates. Archive dates are taken from CRAN's package archive index.
+#'
+#' @param package_name The name of a package on CRAN.
+#' @param after Only return releases on or after this ISO date (`YYYY-MM-DD`).
+#' @param before Only return releases on or before this ISO date
+#'   (`YYYY-MM-DD`).
+#' @inheritParams btw_tool_docs_package_news
+#'
+#' @returns A data frame with the version, release date and timestamp, current
+#'   release status, and source tarball URL for each package release.
+#' @seealso [btw_tools()]
+#' @family cran tools
+#' @export
+btw_tool_cran_versions <- function(package_name, after, before, `_intent`) {}
+
+btw_tool_cran_versions_impl <- function(
+  package_name,
+  after = NULL,
+  before = NULL
+) {
+  versions <- cran_versions(package_name, after = after, before = before)
+  value <- paste(
+    sprintf("### CRAN releases for %s", package_name),
+    md_table(versions[c("version", "released")]),
+    sep = "\n\n"
+  )
+
+  btw_tool_result(
+    value = value,
+    data = versions,
+    display = list(
+      title = sprintf("{%s} CRAN Releases", package_name),
+      markdown = value,
+      show_request = FALSE
+    )
+  )
+}
+
+cran_versions <- function(package_name, after = NULL, before = NULL) {
+  check_string(package_name)
+  after <- as_cran_release_date(after, "after")
+  before <- as_cran_release_date(before, "before")
+  if (!is.null(after) && !is.null(before) && after > before) {
+    cli::cli_abort("{.arg after} must be on or before {.arg before}.")
+  }
+
+  current <- cran_current_version(package_name)
+  archived <- cran_archive_versions(package_name)
+  versions <- rbind(current, archived)
+
+  if (!nrow(versions)) {
+    cli::cli_abort("Package {.pkg {package_name}} was not found on CRAN.")
+  }
+
+  versions <- versions[!duplicated(versions$version), ]
+  if (!is.null(after)) {
+    versions <- versions[versions$released >= after, ]
+  }
+  if (!is.null(before)) {
+    versions <- versions[versions$released <= before, ]
+  }
+  versions[order(base::package_version(versions$version), decreasing = TRUE), ]
+}
+
+as_cran_release_date <- function(x, arg) {
+  check_string(x, allow_null = TRUE)
+  if (is.null(x)) {
+    return(NULL)
+  }
+  if (!grepl("^\\d{4}-\\d{2}-\\d{2}$", x)) {
+    cli::cli_abort("{.arg {arg}} must be an ISO date like {.val 2023-01-01}.")
+  }
+
+  date <- as.Date(x)
+  if (is.na(date)) {
+    cli::cli_abort("{.arg {arg}} must be a valid ISO date.")
+  }
+  date
+}
+
+cran_archive_versions <- function(package_name) {
+  archive <- tryCatch(
+    cran_archive_page(package_name),
+    error = function(e) NULL
+  )
+  if (is.null(archive)) {
+    return(cran_versions_data())
+  }
+
+  rows <- xml2::xml_find_all(
+    archive,
+    "//tr[td/a[contains(@href, '.tar.gz')]]"
+  )
+  if (!length(rows)) {
+    return(cran_versions_data())
+  }
+
+  hrefs <- xml2::xml_attr(
+    xml2::xml_find_first(rows, ".//a[contains(@href, '.tar.gz')]"),
+    "href"
+  )
+  pattern <- paste0(
+    "^",
+    gsub(".", "\\.", package_name, fixed = TRUE),
+    "_(.+)\\.tar\\.gz$"
+  )
+  matches <- regexec(pattern, hrefs)
+  versions <- vapply(
+    regmatches(hrefs, matches),
+    function(x) if (length(x) == 2) x[2] else NA_character_,
+    character(1)
+  )
+
+  dates <- vapply(rows, function(row) {
+    cells <- xml2::xml_find_all(row, "./td")
+    trimws(xml2::xml_text(cells[[3]]))
+  }, character(1))
+
+  keep <- !is.na(versions)
+  released_at <- format_cran_timestamp(dates[keep])
+  cran_versions_data(
+    version = versions[keep],
+    released = as.Date(released_at),
+    released_at = released_at,
+    current = FALSE,
+    tarball_url = paste0(
+      "https://cran.r-project.org/src/contrib/Archive/",
+      package_name,
+      "/",
+      hrefs[keep]
+    )
+  )
+}
+
+cran_archive_page <- function(package_name) {
+  xml2::read_html(
+    sprintf(
+      "https://cran.r-project.org/src/contrib/Archive/%s/",
+      utils::URLencode(package_name, reserved = TRUE)
+    )
+  )
+}
+
+cran_current_version <- function(package_name) {
+  packages <- utils::available.packages(repos = "https://cran.r-project.org")
+  if (!package_name %in% rownames(packages)) {
+    return(cran_versions_data())
+  }
+
+  released_at <- format_cran_timestamp(packages[package_name, "Published"])
+  cran_versions_data(
+    version = packages[package_name, "Version"],
+    released = as.Date(released_at),
+    released_at = released_at,
+    current = TRUE,
+    tarball_url = sprintf(
+      "https://cran.r-project.org/src/contrib/%s_%s.tar.gz",
+      package_name,
+      packages[package_name, "Version"]
+    )
+  )
+}
+
+format_cran_timestamp <- function(x) {
+  format(
+    as.POSIXct(x, tz = "UTC"),
+    "%Y-%m-%dT%H:%M:%SZ",
+    tz = "UTC"
+  )
+}
+
+cran_versions_data <- function(
+  version = character(),
+  released = as.Date(character()),
+  released_at = format_cran_timestamp(released),
+  current = FALSE,
+  tarball_url = NA_character_
+) {
+  n <- length(version)
+  data.frame(
+    version = as.character(version),
+    released = rep_len(as.Date(released), n),
+    released_at = rep_len(as.character(released_at), n),
+    current = rep_len(as.logical(current), n),
+    tarball_url = rep_len(as.character(tarball_url), n),
+    stringsAsFactors = FALSE
+  )
+}
+
+btw_has_internet <- function() {
+  rlang::is_installed("curl") && isTRUE(curl::has_internet())
+}
+
+btw_can_register_cran_versions <- function() {
+  btw_has_internet()
+}
+
+.btw_add_to_tools(
+  name = "btw_tool_cran_versions",
+  group = "cran",
+  alias_group = "search",
+  can_register = function() btw_can_register_cran_versions(),
+  tool = function() {
+    ellmer::tool(
+      btw_tool_cran_versions_impl,
+      name = "btw_tool_cran_versions",
+      description = paste(
+        "List a CRAN package's release versions and dates.",
+        "Includes the current CRAN release and versions in the CRAN archive."
+      ),
+      annotations = ellmer::tool_annotations(
+        title = "CRAN Package Releases",
+        read_only_hint = TRUE,
+        open_world_hint = TRUE,
+        idempotent_hint = FALSE,
+        btw_can_register = function() btw_can_register_cran_versions()
+      ),
+      arguments = list(
+        package_name = ellmer::type_string(
+          "The name of a package on CRAN.",
+          required = TRUE
+        ),
+        after = ellmer::type_string(
+          "Only return releases on or after this ISO date (YYYY-MM-DD).",
+          required = FALSE
+        ),
+        before = ellmer::type_string(
+          "Only return releases on or before this ISO date (YYYY-MM-DD).",
+          required = FALSE
+        )
+      )
+    )
+  }
+)
+
 .btw_add_to_tools(
   name = "btw_tool_cran_package",
   group = "cran",

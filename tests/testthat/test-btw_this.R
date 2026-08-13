@@ -530,8 +530,14 @@ test_that("@ commands are case-sensitive", {
 
 test_that("@news command works", {
   local_mocked_bindings(
-    btw_tool_docs_package_news_impl = function(package_name, search_term) {
-      btw_tool_result(paste("News for", package_name, search_term))
+    btw_tool_docs_package_news_impl = function(
+      package_name,
+      search_term,
+      version = NULL
+    ) {
+      btw_tool_result(
+        paste(c("News for", package_name, version, search_term), collapse = " ")
+      )
     }
   )
 
@@ -540,6 +546,12 @@ test_that("@news command works", {
 
   result <- btw_this("@news dplyr join_by")
   expect_match(result, "News for dplyr join_by")
+
+  result <- btw_this("@news dplyr v1.1.4 join_by")
+  expect_match(result, "News for dplyr 1.1.4 join_by")
+
+  result <- btw_this("@news dplyr 1.1.4")
+  expect_match(result, "News for dplyr 1.1.4")
 })
 
 test_that("@news requires package name", {
@@ -551,6 +563,29 @@ test_that("@news requires package name", {
   expect_error(
     btw_this("@news "),
     "@news.*must be followed by a package name"
+  )
+})
+
+# Test @cran command ----------------------------------------------------------
+
+test_that("@cran versions command works", {
+  local_mocked_bindings(
+    btw_tool_cran_versions_impl = function(package_name) {
+      btw_tool_result(paste("CRAN versions for", package_name))
+    }
+  )
+
+  expect_match(btw_this("@cran versions dplyr"), "CRAN versions for dplyr")
+})
+
+test_that("@cran versions requires a package name", {
+  expect_error(
+    btw_this("@cran versions"),
+    "@cran.*versions.*package name"
+  )
+  expect_error(
+    btw_this("@cran dplyr"),
+    "@cran.*versions.*package name"
   )
 })
 

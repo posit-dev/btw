@@ -257,10 +257,32 @@ btw_docs_vignette <- function(package, name, list, no_dev = FALSE) {
   }
 }
 
-btw_docs_news <- function(package, search, no_dev = FALSE) {
+btw_docs_news <- function(package, version, search, no_dev = FALSE) {
   btw_maybe_load_dev_package(package, no_dev)
   search_term <- if (has_value(search)) search else ""
-  btw_output(btw:::btw_tool_docs_package_news_impl(package, search_term))
+  if (!is.null(version)) {
+    supplied_version <- version
+    version <- sub("^v", "", version)
+    if (!grepl("^\\d+(?:[.-]\\d+)*$", version, perl = TRUE)) {
+      command <- paste(
+        "btw docs news",
+        package,
+        "--search",
+        shQuote(supplied_version)
+      )
+      cli::cli_abort(c(
+        "The optional positional argument to {.code btw docs news} must be a package version.",
+        "i" = "To search NEWS, run {.run {command}}."
+      ))
+    }
+  }
+  btw_output(
+    btw:::btw_tool_docs_package_news_impl(
+      package,
+      search_term = search_term,
+      version = version
+    )
+  )
 }
 
 btw_pkg_document <- function(path) {
@@ -541,6 +563,24 @@ btw_cran_search <- function(query, format, n, json = FALSE) {
     btw_json_output(df)
   } else {
     btw_output(btw_this(result, for_tool_use = TRUE))
+  }
+}
+
+btw_cran_versions <- function(
+  package,
+  after = NULL,
+  before = NULL,
+  json = FALSE
+) {
+  result <- btw:::btw_tool_cran_versions_impl(
+    package,
+    after = if (has_value(after)) after else NULL,
+    before = if (has_value(before)) before else NULL
+  )
+  if (json) {
+    btw_json_output(S7::prop(result, "extra")$data)
+  } else {
+    btw_output(result)
   }
 }
 
@@ -875,11 +915,17 @@ switch(
       news = {
         #| description: Package name.
         package <- NULL
+        #| description: Package version whose NEWS entries to show. A leading "v" is accepted.
+        #| required: false
+        version <- NULL
         #| description: Search term to filter NEWS entries.
         #| short: 's'
         search <- ""
 
-        tryCatch(btw_docs_news(package, search, no_dev), error = btw_error)
+        tryCatch(
+          btw_docs_news(package, version, search, no_dev),
+          error = btw_error
+        )
       }
     )
     if (docs_cmd == "") btw_self_help("docs")
@@ -1116,6 +1162,23 @@ switch(
         #| description: Package name.
         package <- NULL
         tryCatch(btw_cran_info(package, json), error = btw_error)
+      },
+
+      #| title: List CRAN package releases
+      #| examples:
+      #|   - "# List v1.1.4 and every newer release"
+      #|   - "btw cran versions dplyr --json | jq --arg version '1.1.4' 'first(.[] | select(.version == $version)) as $release | map(select(.released_at >= $release.released_at))'"
+      versions = {
+        #| description: Package name.
+        package <- NULL
+        #| description: Only return releases on or after this ISO date (YYYY-MM-DD).
+        after <- ""
+        #| description: Only return releases on or before this ISO date (YYYY-MM-DD).
+        before <- ""
+        tryCatch(
+          btw_cran_versions(package, after, before, json),
+          error = btw_error
+        )
       }
     )
     if (cran_cmd == "") btw_self_help("cran")

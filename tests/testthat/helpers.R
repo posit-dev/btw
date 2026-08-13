@@ -104,6 +104,7 @@ local_enable_tools <- function(
   rstudioapi_has_source_editor_context = TRUE,
   btw_can_register_git_tool = TRUE,
   btw_can_register_gh_tool = TRUE,
+  btw_can_register_cran_versions = TRUE,
   btw_can_register_run_r_tool = TRUE,
   btw_can_register_subagent_tool = TRUE,
   .env = caller_env()
@@ -124,6 +125,9 @@ local_enable_tools <- function(
     ),
     btw_can_register_git_tool = maybe_set(btw_can_register_git_tool),
     btw_can_register_gh_tool = maybe_set(btw_can_register_gh_tool),
+    btw_can_register_cran_versions = maybe_set(
+      btw_can_register_cran_versions
+    ),
     btw_can_register_run_r_tool = maybe_set(btw_can_register_run_r_tool),
     btw_can_register_subagent_tool = maybe_set(btw_can_register_subagent_tool)
   ))

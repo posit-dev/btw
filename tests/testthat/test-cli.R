@@ -176,6 +176,40 @@ test_that("btw docs news <package> -s <term> searches news", {
   expect_equal(env$search, "filter")
 })
 
+test_that("btw docs news <package> <version> reads that version", {
+  local_skip_pandoc_convert_text()
+  seen_version <- NULL
+  local_mocked_bindings(
+    btw_tool_docs_package_news_impl = function(
+      package_name,
+      search_term,
+      version
+    ) {
+      seen_version <<- version
+      btw_tool_result("NEWS")
+    }
+  )
+  env <- run_btw_quietly("docs", "news", "dplyr", "v1.1.4")
+  expect_equal(env$package, "dplyr")
+  expect_equal(env$version, "v1.1.4")
+  expect_equal(seen_version, "1.1.4")
+
+  env <- run_btw_quietly("docs", "news", "dplyr", "1.1.4")
+  expect_equal(env$version, "1.1.4")
+  expect_equal(seen_version, "1.1.4")
+})
+
+test_that("btw docs news guides positional search terms to --search", {
+  result <- run_btw_subprocess("docs", "news", "dplyr", "a search term")
+  expect_equal(result$status, 1)
+  expect_match(result$stderr, "must be a package\\s+version")
+  expect_match(
+    result$stderr,
+    "btw docs news dplyr --search 'a search term'",
+    fixed = TRUE
+  )
+})
+
 test_that("btw docs news errors for non-existent package", {
   result <- run_btw_subprocess("docs", "news", "nonexistent_pkg_xyz")
   expect_equal(result$status, 1)
@@ -731,6 +765,61 @@ test_that("btw cran info --json outputs valid JSON", {
   parsed <- jsonlite::fromJSON(paste(env$.output, collapse = "\n"))
   expect_equal(parsed$Package, "anyflights")
   expect_equal(parsed$Version, "0.3.5")
+})
+
+test_that("btw cran versions supports text and JSON output", {
+  seen_dates <- NULL
+  local_mocked_bindings(
+    cran_versions = function(package_name, after = NULL, before = NULL) {
+      seen_dates <<- list(after = after, before = before)
+      cran_versions_data(
+        version = c("1.1.4", "1.1.3"),
+        released = as.Date(c("2023-11-17", "2023-10-15")),
+        released_at = c("2023-11-17T00:00:00Z", "2023-10-15T00:00:00Z"),
+        current = c(TRUE, FALSE),
+        tarball_url = c(
+          "https://cran.r-project.org/src/contrib/dplyr_1.1.4.tar.gz",
+          "https://cran.r-project.org/src/contrib/Archive/dplyr/dplyr_1.1.3.tar.gz"
+        )
+      )
+    }
+  )
+
+  env <- run_btw_quietly("cran", "versions", "dplyr")
+  expect_equal(env$package, "dplyr")
+  expect_null(seen_dates$after)
+  expect_null(seen_dates$before)
+
+  env <- run_btw_quietly(
+    "cran",
+    "versions",
+    "dplyr",
+    "--after",
+    "2023-01-01",
+    "--before",
+    "2023-12-31",
+    "--json"
+  )
+  expect_equal(seen_dates$after, "2023-01-01")
+  expect_equal(seen_dates$before, "2023-12-31")
+  parsed <- jsonlite::fromJSON(paste(env$.output, collapse = "\n"))
+  expect_equal(parsed$version, c("1.1.4", "1.1.3"))
+  expect_equal(parsed$released, c("2023-11-17", "2023-10-15"))
+  expect_equal(
+    parsed$released_at,
+    c("2023-11-17T00:00:00Z", "2023-10-15T00:00:00Z")
+  )
+  expect_equal(parsed$current, c(TRUE, FALSE))
+})
+
+test_that("btw cran versions help includes a jq release-selection example", {
+  output <- capture.output(run_btw("cran", "versions", "--help"))
+  output <- paste(output, collapse = "\n")
+
+  expect_match(output, "# List v1.1.4 and every newer release", fixed = TRUE)
+  expect_match(output, "jq --arg version")
+  expect_match(output, "released_at", fixed = TRUE)
+  expect_match(output, "$release.released_at", fixed = TRUE)
 })
 
 # error handling ---------------------------------------------------------

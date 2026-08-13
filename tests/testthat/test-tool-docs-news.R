@@ -28,6 +28,41 @@ test_that("btw_tool_docs_package_news() with search term", {
   )
 })
 
+test_that("btw_tool_docs_package_news() selects a requested version", {
+  local_skip_pandoc_convert_text()
+  local_mocked_bindings(
+    package_news = function(package_name) {
+      structure(
+        data.frame(
+          Version = c("1.1.4", "1.1.3"),
+          Category = "",
+          HTML = c("<p>Current release</p>", "<p>Previous release</p>"),
+          stringsAsFactors = FALSE
+        ),
+        package = package_name,
+        class = c("news_db", "data.frame")
+      )
+    }
+  )
+
+  result <- btw_tool_docs_package_news("dplyr", version = "1.1.3")@value
+  expect_match(result, "dplyr v1.1.3")
+  expect_match(result, "Previous release")
+  expect_no_match(result, "Current release")
+
+  result <- btw_tool_docs_package_news(
+    "dplyr",
+    search_term = "previous",
+    version = "1.1.3"
+  )@value
+  expect_match(result, "Previous release")
+
+  expect_equal(
+    I(btw_tool_docs_package_news("dplyr", version = "1.1.3")@value),
+    btw_this("@news dplyr v1.1.3")
+  )
+})
+
 test_that("btw_tool_docs_package_news() with non-existent package", {
   expect_error(
     btw_tool_docs_package_news("nonexistentpackage"),
@@ -140,6 +175,10 @@ test_that("btw_tool_docs_package_news() with unmatched search term or version", 
   )
   expect_error(
     btw("@news dplyr asdfsdfgdfghfghj"),
+    "No NEWS entries"
+  )
+  expect_error(
+    btw_tool_docs_package_news("dplyr", version = "0.0.0"),
     "No NEWS entries"
   )
 })
