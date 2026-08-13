@@ -27,6 +27,51 @@ if (version) {
 
 has_value <- function(x) !is.na(x) && nzchar(x)
 
+btw_dev_package_candidate_dirs <- c(".", "pkg-r", "R")
+
+btw_find_dev_package_dir <- function(package) {
+  for (dir in btw_dev_package_candidate_dirs) {
+    desc_path <- file.path(dir, "DESCRIPTION")
+    if (!file.exists(desc_path)) {
+      next
+    }
+    found <- tryCatch(
+      unname(read.dcf(desc_path, fields = "Package")[1, "Package"]),
+      error = function(e) NA_character_
+    )
+    if (!is.na(found) && identical(found, package)) {
+      return(dir)
+    }
+  }
+  NULL
+}
+
+btw_maybe_load_dev_package <- function(package, no_dev = FALSE) {
+  if (no_dev || !has_value(package)) {
+    return(invisible(NULL))
+  }
+  if (!requireNamespace("pkgload", quietly = TRUE)) {
+    return(invisible(NULL))
+  }
+
+  dev_dir <- btw_find_dev_package_dir(package)
+  if (is.null(dev_dir)) {
+    return(invisible(NULL))
+  }
+
+  dev_dir_display <- if (identical(dev_dir, ".")) {
+    ""
+  } else {
+    cli::format_inline(" from {.path {dev_dir}}")
+  }
+
+  cli::cli_progress_step(
+    "Loaded in-development package {.pkg {package}}{dev_dir_display} (pass {.field --no-dev} to disable)."
+  )
+  pkgload::load_all(dev_dir, quiet = TRUE)
+  invisible(NULL)
+}
+
 btw_json_output <- function(x) {
   cat(
     jsonlite::toJSON(
@@ -66,7 +111,7 @@ btw_self_help <- function(...) {
 
 # Command implementations -----------------------------------------------------
 
-btw_docs_help <- function(topic, package) {
+btw_docs_help <- function(topic, package, no_dev = FALSE) {
   if (grepl("::", topic, fixed = TRUE)) {
     parts <- strsplit(topic, "::", fixed = TRUE)[[1]]
     if (has_value(package)) {
@@ -77,8 +122,10 @@ btw_docs_help <- function(topic, package) {
         call. = FALSE
       )
     }
+    btw_maybe_load_dev_package(parts[1], no_dev)
     btw_output(btw_this(btw:::as_btw_docs_topic(parts[1], parts[2])))
   } else if (has_value(package)) {
+    btw_maybe_load_dev_package(package, no_dev)
     btw_output(btw_this(btw:::as_btw_docs_topic(package, topic)))
   } else {
     result <- tryCatch(
@@ -86,6 +133,7 @@ btw_docs_help <- function(topic, package) {
       error = function(e) NULL
     )
     if (is.null(result)) {
+      btw_maybe_load_dev_package(topic, no_dev)
       btw_output(btw_this(btw:::as_btw_docs_package(topic)))
     } else {
       btw_output(result)
@@ -93,7 +141,8 @@ btw_docs_help <- function(topic, package) {
   }
 }
 
-btw_docs_topics <- function(package, only, json = FALSE) {
+btw_docs_topics <- function(package, only, json = FALSE, no_dev = FALSE) {
+  btw_maybe_load_dev_package(package, no_dev)
   if (!only %in% c("", "help", "vignettes")) {
     stop("--only must be \"help\" or \"vignettes\"", call. = FALSE)
   }
@@ -182,7 +231,8 @@ btw_docs_topics <- function(package, only, json = FALSE) {
   }
 }
 
-btw_docs_vignette <- function(package, name, list) {
+btw_docs_vignette <- function(package, name, list, no_dev = FALSE) {
+  btw_maybe_load_dev_package(package, no_dev)
   if (list) {
     btw_output(btw_this(utils::vignette(package = package)))
   } else if (has_value(name)) {
@@ -207,7 +257,8 @@ btw_docs_vignette <- function(package, name, list) {
   }
 }
 
-btw_docs_news <- function(package, search) {
+btw_docs_news <- function(package, search, no_dev = FALSE) {
+  btw_maybe_load_dev_package(package, no_dev)
   search_term <- if (has_value(search)) search else ""
   btw_output(btw:::btw_tool_docs_package_news_impl(package, search_term))
 }
@@ -319,14 +370,18 @@ btw_pkg_desc <- function(packages, fields = "", json = FALSE) {
     return(invisible(NULL))
   }
 
-  output <- Map(function(description, path) {
-    if (include_all) {
-      return(paste(readLines(path, warn = FALSE), collapse = "\n"))
-    }
+  output <- Map(
+    function(description, path) {
+      if (include_all) {
+        return(paste(readLines(path, warn = FALSE), collapse = "\n"))
+      }
 
-    description$del(setdiff(description$fields(), select_fields(description)))
-    description$str(normalize = FALSE, mode = "file")
-  }, descriptions, description_paths)
+      description$del(setdiff(description$fields(), select_fields(description)))
+      description$str(normalize = FALSE, mode = "file")
+    },
+    descriptions,
+    description_paths
+  )
   cat(paste(output, collapse = "\n\n---\n\n"), "\n", sep = "")
 }
 
@@ -343,7 +398,13 @@ btw_pkg_coverage <- function(path, file, json = FALSE) {
   }
 }
 
-btw_pkg_src_list <- function(package, all = FALSE, json = FALSE) {
+btw_pkg_src_list <- function(
+  package,
+  all = FALSE,
+  json = FALSE,
+  no_dev = FALSE
+) {
+  btw_maybe_load_dev_package(package, no_dev)
   result <- btw:::btw_tool_pkg_src_list_impl(package, all = all)
   if (json) {
     data <- S7::prop(result, "extra")$data
@@ -363,7 +424,8 @@ btw_pkg_src_path <- function(packages, json = FALSE) {
   }
 }
 
-btw_pkg_src_get <- function(package, objects, json = FALSE) {
+btw_pkg_src_get <- function(package, objects, json = FALSE, no_dev = FALSE) {
+  btw_maybe_load_dev_package(package, no_dev)
   result <- btw:::btw_tool_pkg_src_get_impl(package, objects)
   if (json) {
     data <- S7::prop(result, "extra")$data
@@ -377,8 +439,10 @@ btw_pkg_src_methods <- function(
   package,
   generics,
   source = FALSE,
-  json = FALSE
+  json = FALSE,
+  no_dev = FALSE
 ) {
+  btw_maybe_load_dev_package(package, no_dev)
   result <- btw:::btw_tool_pkg_src_methods_impl(
     package,
     generics,
@@ -392,7 +456,8 @@ btw_pkg_src_methods <- function(
   }
 }
 
-btw_pkg_src_search <- function(package, terms, json = FALSE) {
+btw_pkg_src_search <- function(package, terms, json = FALSE, no_dev = FALSE) {
+  btw_maybe_load_dev_package(package, no_dev)
   result <- btw:::btw_tool_pkg_src_search_impl(package, terms)
   if (json) {
     data <- S7::prop(result, "extra")$data
@@ -756,6 +821,9 @@ switch(
 
   #| title: Access R documentation
   docs = {
+    #| description: Don't automatically load an in-development package found in the current directory (or its pkg-r/, r/, R/ subfolder).
+    no_dev <- FALSE
+
     switch(
       docs_cmd <- "",
 
@@ -769,7 +837,10 @@ switch(
         #| description: Output as JSON with top-level keys "help" (array of {topic_id, title, aliases[]}) and "vignettes" (array of {vignette, title}).
         json <- FALSE
 
-        tryCatch(btw_docs_topics(package, only, json), error = btw_error)
+        tryCatch(
+          btw_docs_topics(package, only, json, no_dev),
+          error = btw_error
+        )
       },
 
       #| title: Show help for a topic or package
@@ -780,7 +851,7 @@ switch(
         #| short: 'p'
         package <- ""
 
-        tryCatch(btw_docs_help(topic, package), error = btw_error)
+        tryCatch(btw_docs_help(topic, package, no_dev), error = btw_error)
       },
 
       #| title: Read a package vignette
@@ -794,7 +865,10 @@ switch(
         #| short: 'l'
         list <- FALSE
 
-        tryCatch(btw_docs_vignette(package, name, list), error = btw_error)
+        tryCatch(
+          btw_docs_vignette(package, name, list, no_dev),
+          error = btw_error
+        )
       },
 
       #| title: Show package NEWS
@@ -805,7 +879,7 @@ switch(
         #| short: 's'
         search <- ""
 
-        tryCatch(btw_docs_news(package, search), error = btw_error)
+        tryCatch(btw_docs_news(package, search, no_dev), error = btw_error)
       }
     )
     if (docs_cmd == "") btw_self_help("docs")
@@ -866,6 +940,9 @@ switch(
 
       #| title: Inspect package source code
       src = {
+        #| description: Don't automatically load an in-development package found in the current directory (or its pkg-r/, r/, R/ subfolder).
+        no_dev <- FALSE
+
         switch(
           src_cmd <- "",
 
@@ -879,7 +956,10 @@ switch(
             all <- FALSE
             #| description: Output as JSON.
             json <- FALSE
-            tryCatch(btw_pkg_src_list(package, all, json), error = btw_error)
+            tryCatch(
+              btw_pkg_src_list(package, all, json, no_dev),
+              error = btw_error
+            )
           },
 
           #| title: Show install paths for packages
@@ -906,7 +986,7 @@ switch(
             #| description: Output as JSON.
             json <- FALSE
             tryCatch(
-              btw_pkg_src_get(package, `objects...`, json),
+              btw_pkg_src_get(package, `objects...`, json, no_dev),
               error = btw_error
             )
           },
@@ -925,7 +1005,7 @@ switch(
             #| description: Output as JSON.
             json <- FALSE
             tryCatch(
-              btw_pkg_src_methods(package, `generics...`, source, json),
+              btw_pkg_src_methods(package, `generics...`, source, json, no_dev),
               error = btw_error
             )
           },
@@ -941,7 +1021,7 @@ switch(
             #| description: Output as JSON.
             json <- FALSE
             tryCatch(
-              btw_pkg_src_search(package, `terms...`, json),
+              btw_pkg_src_search(package, `terms...`, json, no_dev),
               error = btw_error
             )
           }
