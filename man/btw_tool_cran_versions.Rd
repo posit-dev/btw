@@ -14,6 +14,11 @@ btw_tool_cran_versions(
 \arguments{
 \item{package_name}{The name of a package on CRAN.}
 
+\item{after}{Only return releases on or after this ISO date (\code{YYYY-MM-DD}).}
+
+\item{before}{Only return releases on or before this ISO date
+(\code{YYYY-MM-DD}).}
+
 \item{_intent}{An optional string describing the intent of the tool use.
 When the tool is used by an LLM, the model will use this argument to
 explain why it called the tool.}

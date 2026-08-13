@@ -39,6 +39,7 @@ test_that("btw_tool_cran_search() snapshots", {
 })
 
 test_that("btw_tool_cran_search() warns for too many results", {
+  skip_on_cran()
   skip_if_offline()
 
   expect_warning(
@@ -52,6 +53,7 @@ test_that("btw_tool_cran_search() warns for too many results", {
 })
 
 test_that("btw_tool_cran_package()", {
+  skip_on_cran()
   skip_if_offline()
 
   search_result <- pkgsearch::cran_package("anyflights")
@@ -84,6 +86,20 @@ test_that("btw_tool_cran_package() snapshots", {
   expect_snapshot(
     cli::cat_line(btw_this(mock_cran_package("anyflights")))
   )
+})
+
+test_that("btw_can_register_cran_versions() requires an internet connection", {
+  local_mocked_bindings(btw_has_internet = function() FALSE)
+  expect_false(btw_can_register_cran_versions())
+})
+
+test_that("btw_tool_cran_versions registration requires internet", {
+  local_mocked_bindings(btw_can_register_cran_versions = function() FALSE)
+  expect_false("btw_tool_cran_versions" %in% names(btw_tools()))
+  expect_false("btw_tool_cran_versions" %in% names(btw_tools("cran")))
+
+  local_mocked_bindings(btw_can_register_cran_versions = function() TRUE)
+  expect_true("btw_tool_cran_versions" %in% names(btw_tools("cran")))
 })
 
 test_that("btw_tool_cran_versions() combines archive and current releases", {

@@ -194,9 +194,6 @@ Bad: Search for `"statistical analysis tools for permutation test"`
 #'
 #'
 #' @param package_name The name of a package on CRAN.
-#' @param after Only return releases on or after this ISO date (`YYYY-MM-DD`).
-#' @param before Only return releases on or before this ISO date
-#'   (`YYYY-MM-DD`).
 #' @inheritParams btw_tool_docs_package_news
 #'
 #' @returns An info sheet about the package.
@@ -310,6 +307,9 @@ btw_this.cran_package <- function(x, ...) {
 #' release dates. Archive dates are taken from CRAN's package archive index.
 #'
 #' @param package_name The name of a package on CRAN.
+#' @param after Only return releases on or after this ISO date (`YYYY-MM-DD`).
+#' @param before Only return releases on or before this ISO date
+#'   (`YYYY-MM-DD`).
 #' @inheritParams btw_tool_docs_package_news
 #'
 #' @returns A data frame with the version, release date and timestamp, current
@@ -493,10 +493,19 @@ cran_versions_data <- function(
   )
 }
 
+btw_has_internet <- function() {
+  rlang::is_installed("curl") && isTRUE(curl::has_internet())
+}
+
+btw_can_register_cran_versions <- function() {
+  btw_has_internet()
+}
+
 .btw_add_to_tools(
   name = "btw_tool_cran_versions",
   group = "cran",
   alias_group = "search",
+  can_register = function() btw_can_register_cran_versions(),
   tool = function() {
     ellmer::tool(
       btw_tool_cran_versions_impl,
@@ -510,7 +519,7 @@ cran_versions_data <- function(
         read_only_hint = TRUE,
         open_world_hint = TRUE,
         idempotent_hint = FALSE,
-        btw_can_register = function() TRUE
+        btw_can_register = function() btw_can_register_cran_versions()
       ),
       arguments = list(
         package_name = ellmer::type_string(
