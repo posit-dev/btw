@@ -4,7 +4,12 @@
 \alias{btw_tool_docs_package_news}
 \title{Tool: Package Release Notes}
 \usage{
-btw_tool_docs_package_news(package_name, search_term = "", `_intent` = "")
+btw_tool_docs_package_news(
+  package_name,
+  search_term = "",
+  version = NULL,
+  `_intent` = ""
+)
 }
 \arguments{
 \item{package_name}{The name of the package as a string, e.g. \code{"shiny"}.}
@@ -12,13 +17,17 @@ btw_tool_docs_package_news(package_name, search_term = "", `_intent` = "")
 \item{search_term}{A regular expression to search for in the NEWS entries.
 If empty, the release notes of the current installed version is included.}
 
+\item{version}{An installed package version whose NEWS entries should be
+included. If \code{NULL} (the default), the current installed version is used.}
+
 \item{_intent}{An optional string describing the intent of the tool use.
 When the tool is used by an LLM, the model will use this argument to
 explain why it called the tool.}
 }
 \value{
-Returns the release notes for the currently installed version of the
-package, or the release notes matching the search term.
+Returns the release notes for the requested version (or the
+currently installed version by default), or matching entries from the NEWS
+file.
 }
 \description{
 Include release notes for a package, either the release notes for the most
@@ -43,6 +52,9 @@ if (interactive()) { # can be slow
 btw_tool_docs_package_news("dplyr")
 
 btw_tool_docs_package_news("dplyr", "join_by")
+
+# Read the NEWS entries for a specific installed package version
+btw_tool_docs_package_news("dplyr", version = "1.1.4")
 \dontshow{\}) # examplesIf}
 }
 \seealso{

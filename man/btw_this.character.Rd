@@ -50,9 +50,13 @@ topics using \code{\link[=btw_tool_docs_help_page]{btw_tool_docs_help_page()}}. 
 \item \code{btw_this("@help dplyr across")} - space-separated format
 \item \code{btw_this("@help across")} - searches all packages
 }
-\item \code{"@news {{package_name}} {{search_term}}"} \cr
-Include the release notes (NEWS) from the latest package release, e.g.
-\code{"@news dplyr"}, or that match a search term, e.g. \code{"@news dplyr join_by"}.
+\item \code{"@news {{package_name}} [{{version}}] [{{search_term}}]"} \cr
+Include the release notes (NEWS) from the latest package release, a
+specific version, or entries that match a search term, e.g. \code{"@news dplyr"},
+\code{"@news dplyr v1.1.4"}, or \code{"@news dplyr join_by"}.
+\item \code{"@cran versions {{package_name}}"} \cr
+Include CRAN release versions and dates for a package, e.g.
+\code{"@cran versions dplyr"}.
 \item \code{"@url {{url}}"} \cr
 Include the contents of a web page at the specified URL as markdown, e.g.
 \code{"@url https://cran.r-project.org/doc/FAQ/R-FAQ.html"}. Requires the
