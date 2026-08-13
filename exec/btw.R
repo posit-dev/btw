@@ -1165,6 +1165,9 @@ switch(
       },
 
       #| title: List CRAN package releases
+      #| examples:
+      #|   - "# List v1.1.4 and every newer release"
+      #|   - "btw cran versions dplyr --json | jq --arg version '1.1.4' 'first(.[] | select(.version == $version)) as $release | map(select(.released_at >= $release.released_at))'"
       versions = {
         #| description: Package name.
         package <- NULL

@@ -812,6 +812,16 @@ test_that("btw cran versions supports text and JSON output", {
   expect_equal(parsed$current, c(TRUE, FALSE))
 })
 
+test_that("btw cran versions help includes a jq release-selection example", {
+  output <- capture.output(run_btw("cran", "versions", "--help"))
+  output <- paste(output, collapse = "\n")
+
+  expect_match(output, "# List v1.1.4 and every newer release", fixed = TRUE)
+  expect_match(output, "jq --arg version")
+  expect_match(output, "released_at", fixed = TRUE)
+  expect_match(output, "$release.released_at", fixed = TRUE)
+})
+
 # error handling ---------------------------------------------------------
 
 test_that("btw pkg error exits with code 1 and message on stderr", {
