@@ -2,6 +2,16 @@
 
 ## btw (development version)
 
+### New features
+
+- `btw docs` and `btw pkg src` commands now auto-load an in-development
+  package found in the current directory (or its `pkg-r/`, `R/`
+  subfolder) with
+  [`pkgload::load_all()`](https://pkgload.r-lib.org/reference/load_all.html)
+  before running, so results reflect uncommitted local changes. Pass
+  `--no-dev` to disable this and use the installed package instead
+  ([\#212](https://github.com/posit-dev/btw/issues/212)).
+
 ## btw 1.4.0
 
 CRAN release: 2026-08-05

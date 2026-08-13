@@ -39,6 +39,11 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="btw-development-version">btw (development version)<a class="anchor" aria-label="anchor" href="#btw-development-version"></a></h2>
+<div class="section level3">
+<h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
+<ul><li>
+<code>btw docs</code> and <code>btw pkg src</code> commands now auto-load an in-development package found in the current directory (or its <code>pkg-r/</code>, <code>R/</code> subfolder) with <code><a href="https://pkgload.r-lib.org/reference/load_all.html" class="external-link">pkgload::load_all()</a></code> before running, so results reflect uncommitted local changes. Pass <code>--no-dev</code> to disable this and use the installed package instead (<a href="https://github.com/posit-dev/btw/issues/212" class="external-link">#212</a>).</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.0" id="btw-140">btw 1.4.0<a class="anchor" aria-label="anchor" href="#btw-140"></a></h2><p class="text-muted">CRAN release: 2026-08-05</p>
