@@ -16,6 +16,7 @@ suppressPackageStartupMessages({
 # Global options --------------------------------------------------------------
 
 #| description: Print btw version and exit.
+#| negative_alias: false
 version <- FALSE
 
 if (version) {
@@ -816,6 +817,7 @@ btw_cran_info <- function(package, json = FALSE) {
 
 # Subcommand dispatch ---------------------------------------------------------
 
+#| required: false
 switch(
   group <- "",
 
