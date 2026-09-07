@@ -9,6 +9,15 @@
 #'   `path_btw` configuration), `"provider"` (models from the provider API),
 #'   `"auto"` (uses `path_btw` if `client` comes from `path_btw`, otherwise
 #'   falling back to provider), or `"none"` (don't show model choices).
+#' @section Conversation History:
+#'   With shinychat >= 0.5.0, conversations in `btw_app()` are kept in a chat
+#'   history that you can revisit from the app's history drawer. When the
+#'   [duckdb](https://duckdb.r-dbi.org/) package is installed, conversations
+#'   are stored in a single database in btw's user cache directory
+#'   (`tools::R_user_dir("btw", "cache")`), keyed by project directory: the
+#'   directory containing the closest `DESCRIPTION` or `.git` marker, or the
+#'   working directory otherwise. If duckdb is not installed, shinychat's
+#'   default history storage is used instead.
 #' @export
 btw_app <- function(
   ...,
@@ -28,6 +37,12 @@ btw_app <- function(
     "page_chat"
   } else {
     "sidebar"
+  }
+
+  history <- if (identical(page_style, "page_chat")) {
+    btw_app_history_options(path_btw)
+  } else {
+    TRUE
   }
 
   model_choices <- rlang::arg_match(model_choices)
@@ -83,6 +98,7 @@ btw_app <- function(
     app_models = app_models,
     selected_client = selected_client,
     page_style = page_style,
+    history = history,
     ...
   )
 }
@@ -94,6 +110,7 @@ btw_app_from_client <- function(
   app_models = "provider",
   selected_client = NULL,
   page_style = c("page_chat", "sidebar"),
+  history = TRUE,
   ...
 ) {
   page_style <- rlang::arg_match(page_style)
@@ -125,7 +142,8 @@ btw_app_from_client <- function(
     app_models = app_models,
     selected_client = selected_client,
     path_logo = path_logo,
-    close_button = rlang::is_interactive()
+    close_button = rlang::is_interactive(),
+    history = history
   )
 
   shell <- switch(

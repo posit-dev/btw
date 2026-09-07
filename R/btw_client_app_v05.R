@@ -53,7 +53,11 @@ btw_app_shell_page_chat <- function(state) {
   }
 
   make_chat <- function() {
-    chat <- shinychat::chat_server("chat", client = client)
+    chat <- shinychat::chat_server(
+      "chat",
+      client = client,
+      history = state$history
+    )
     if (length(state$messages)) {
       app_replay_messages(chat, state$messages)
     }
