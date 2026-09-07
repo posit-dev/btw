@@ -148,6 +148,25 @@ test_that("btw_tool_cran_versions() combines archive and current releases", {
   expect_match(result@value, "CRAN releases for dplyr")
 })
 
+test_that("btw_tool_cran_versions() finds dates regardless of column order", {
+  archive <- xml2::read_html(
+    paste(
+      "<table>",
+      "<tr><td>2020-05-29 17:00</td><td>2020-05-29 17:00</td><td><a href='dplyr_1.0.0.tar.gz'>dplyr_1.0.0.tar.gz</a></td></tr>",
+      "</table>"
+    )
+  )
+  local_mocked_bindings(
+    btw_has_internet = function() TRUE,
+    cran_archive_page = function(package_name) archive,
+    cran_current_version = function(package_name) cran_versions_data()
+  )
+
+  result <- cran_versions("dplyr")
+  expect_equal(result$version, "1.0.0")
+  expect_equal(as.character(result$released), "2020-05-29")
+})
+
 test_that("cran_versions() supports archived packages", {
   local_mocked_bindings(
     btw_has_internet = function() TRUE,

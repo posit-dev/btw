@@ -426,13 +426,14 @@ cran_archive_versions <- function(package_name) {
   dates <- vapply(
     rows,
     function(row) {
-      cells <- xml2::xml_find_all(row, "./td")
-      trimws(xml2::xml_text(cells[[3]]))
+      cells <- trimws(xml2::xml_text(xml2::xml_find_all(row, "./td")))
+      cells <- grep("^\\d{4}-\\d{2}-\\d{2}", cells, value = TRUE)
+      if (length(cells)) cells[[1]] else NA_character_
     },
     character(1)
   )
 
-  keep <- !is.na(versions)
+  keep <- !is.na(versions) & !is.na(dates)
   released_at <- format_cran_timestamp(dates[keep])
   cran_versions_data(
     version = versions[keep],
