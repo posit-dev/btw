@@ -88,7 +88,7 @@ btw_tool_ide_read_current_editor_impl <- function(
     }
   }
 
-  BtwEditorContextToolResult(res, extra = cf)
+  BtwEditorContextToolResult(as_tool_result_value(res), extra = cf)
 }
 
 BtwEditorContextToolResult <- S7::new_class(

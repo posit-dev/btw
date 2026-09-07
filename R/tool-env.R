@@ -134,7 +134,7 @@ btw_tool_env_describe_environment_impl <- function(
     return(BtwToolResult(""))
   }
 
-  BtwToolResult(res)
+  BtwToolResult(as_tool_result_value(res))
 }
 
 .btw_add_to_tools(

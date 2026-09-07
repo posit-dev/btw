@@ -189,7 +189,7 @@ btw_tool_docs_help_page_impl <- function(topic, package_name = "") {
   help_call <- format(call2("::", sym(resolved$package), sym(topic)))
 
   BtwHelpPageToolResult(
-    value = c(heading, md),
+    value = as_tool_result_value(c(heading, md)),
     extra = list(
       help_text = md,
       topic = basename(resolved$topic),
@@ -441,7 +441,7 @@ btw_tool_docs_available_vignettes_impl <- function(package_name) {
   names(df) <- c("vignette", "title") # Named to match vignette tool
 
   btw_tool_result(
-    value = strsplit(as_json_rowwise(df), "\n")[[1]],
+    value = as_json_rowwise(df),
     data = df,
     display = list(
       title = sprintf("{%s} Vignettes", package_name),

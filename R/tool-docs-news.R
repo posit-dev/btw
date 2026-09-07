@@ -46,7 +46,12 @@ NULL
 #' @family docs tools
 #' @export
 #' @rdname btw_tool_docs_package_news
-btw_tool_docs_package_news <- function(package_name, search_term, version, `_intent`) {}
+btw_tool_docs_package_news <- function(
+  package_name,
+  search_term,
+  version,
+  `_intent`
+) {}
 
 btw_tool_docs_package_news_impl <- function(
   package_name,
@@ -71,7 +76,7 @@ btw_tool_docs_package_news_impl <- function(
     }
   }
 
-  result <- unclass(btw_this(news))
+  result <- paste(unclass(btw_this(news)), collapse = "\n")
 
   BtwPackageNewsToolResult(
     result,

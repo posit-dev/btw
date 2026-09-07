@@ -208,7 +208,7 @@ btw_tool_cran_package_impl <- function(package_name) {
   value <- btw_this(pkg)
 
   BtwSearchPackageInfoToolResult(
-    value = value,
+    value = as_tool_result_value(value),
     extra = list(
       info = pkg,
       display = list(
