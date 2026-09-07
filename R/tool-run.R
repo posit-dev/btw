@@ -277,6 +277,7 @@ btw_tool_run_r_impl <- function(
       copy_code = TRUE,
       display = list(
         open = !had_error,
+        show_request = FALSE,
         full_screen = TRUE
       )
     )
