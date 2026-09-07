@@ -371,7 +371,7 @@ cran_versions <- function(package_name, after = NULL, before = NULL) {
   if (!is.null(before)) {
     versions <- versions[versions$released <= before, ]
   }
-  versions[order(base::package_version(versions$version), decreasing = TRUE), ]
+  versions[order(versions$released_at, decreasing = TRUE), ]
 }
 
 as_cran_release_date <- function(x, arg) {
