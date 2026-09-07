@@ -47,6 +47,15 @@ expect_btw_tool_result <- function(
   if (has_data) {
     expect_s3_class(x@extra$data, "data.frame")
   }
+
+  # shinychat saves chats by recording turns with ellmer::contents_record()
+  # and then serializing them with jsonlite::serializeJSON(), which passes
+  # `extra` through as-is. Tool results that can't survive this round trip
+  # silently break chat history and bookmark saving.
+  recorded <- ellmer::contents_record(
+    ellmer::Turn(role = "assistant", contents = list(x))
+  )
+  expect_error(jsonlite::serializeJSON(recorded), NA)
 }
 
 scrub_system_info <- function(x) {
