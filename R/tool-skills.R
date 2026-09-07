@@ -1387,11 +1387,9 @@ install_skill_from_dir <- function(
 #'
 #' @return `chat`, invisibly.
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf rlang::is_installed("shinychat", version = "0.5.0")
 #' server <- shinychat::chat_server("chat", client = ellmer::chat_openai())
 #' btw_skills_register_slash_commands(server)
-#' }
 #'
 #' @family skills
 #' @seealso [btw_skill_prompt()] for a skill's text and [btw-config] for the
