@@ -252,7 +252,7 @@ subagent_display_result <- function(result, session_id, agent_name, prompt) {
   full_results <- paste(compact(full_results), collapse = "\n\n")
   conversation_html <- if (nzchar(full_results)) {
     glue_(
-      r"(<details class="mb-2"><summary>Full Conversation</summary>
+      r"(<details class="mb-2 btw-subagent-conversation"><summary>Full Conversation</summary>
 
 {{ full_results }}
 
@@ -335,7 +335,7 @@ subagent_render_tool_call_html <- function(result) {
   paste(
     compact(c(
       sprintf(
-        '<details class="btw-subagent-tool"><summary>Tool Call: %s</summary>',
+        '<details class="btw-subagent-tool"><summary>Tool Call: <code>%s</code></summary>',
         htmltools::htmlEscape(request@name %||% "unknown tool")
       ),
       call_html,
@@ -360,6 +360,16 @@ subagent_render_content_html <- function(x) {
   }
   if (S7::S7_inherits(x, ellmer::ContentToolResult)) {
     return(subagent_render_tool_result_html(x))
+  }
+  if (S7::S7_inherits(x, ellmer::ContentThinking)) {
+    # ellmer's contents_html() emits unclassed <details>; use the same
+    # markup with a class so the subagent report can style it
+    return(sprintf(
+      '<details class="btw-subagent-thinking"><summary>Thinking</summary>
+%s
+</details>',
+      commonmark::markdown_html(x@thinking)
+    ))
   }
   html <- ellmer::contents_html(x)
   if (is.null(html) || length(html) == 0) {

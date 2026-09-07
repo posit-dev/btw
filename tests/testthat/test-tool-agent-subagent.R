@@ -648,7 +648,7 @@ test_that("subagent_render_turn_html() pairs tool calls and drops empty thinking
   )
   html <- unlist(subagent_render_turn_html(turn))
   expect_length(html, 1)
-  expect_match(html, "Tool Call: btw_tool_run_r", fixed = TRUE)
+  expect_match(html, "Tool Call: <code>btw_tool_run_r</code>", fixed = TRUE)
   expect_match(html, "btw_tool_run_r(code = ", fixed = TRUE)
   expect_match(html, "btw-run-output", fixed = TRUE)
   expect_no_match(html, "Thinking", fixed = TRUE)
@@ -661,7 +661,7 @@ test_that("subagent_render_turn_html() pairs tool calls and drops empty thinking
   )
   expect_match(
     unlist(subagent_render_turn_html(thinking_turn)),
-    "Thinking",
+    '<details class="btw-subagent-thinking"><summary>Thinking</summary>',
     fixed = TRUE
   )
 })
