@@ -41,8 +41,8 @@ Imports:
     fs,
     jsonlite,
     lifecycle,
-    mcptools,
     methods,
+    mcptools,
     pkgsearch,
     rlang (>= 1.1.0),
     rmarkdown,
@@ -77,12 +77,10 @@ Suggests:
     renv,
     roxygen2,
     shiny,
-    shinychat (>= 0.4.0.9000),
+    shinychat (>= 0.4.0),
     testthat (>= 3.0.0),
     tibble,
     usethis
-Remotes: 
-    posit-dev/shinychat
 Config/Needs/website: brand.yml, tidyverse/tidytemplate
 Config/roxygen2/version: 8.1.0
 Config/testthat/edition: 3
