@@ -26,33 +26,47 @@ NULL
 #'
 #' btw_tool_docs_package_news("dplyr", "join_by")
 #'
+#' # Read the NEWS entries for a specific installed package version
+#' btw_tool_docs_package_news("dplyr", version = "1.1.4")
+#'
 #' @param package_name The name of the package as a string, e.g. `"shiny"`.
 #' @param search_term A regular expression to search for in the NEWS entries.
 #'   If empty, the release notes of the current installed version is included.
+#' @param version An installed package version whose NEWS entries should be
+#'   included. If `NULL` (the default), the current installed version is used.
 #' @param _intent An optional string describing the intent of the tool use.
 #'   When the tool is used by an LLM, the model will use this argument to
 #'   explain why it called the tool.
 #'
-#' @returns Returns the release notes for the currently installed version of the
-#'   package, or the release notes matching the search term.
+#' @returns Returns the release notes for the requested version (or the
+#'   currently installed version by default), or matching entries from the NEWS
+#'   file.
 #'
 #' @seealso [btw_tools()]
 #' @family docs tools
 #' @export
 #' @rdname btw_tool_docs_package_news
-btw_tool_docs_package_news <- function(package_name, search_term, `_intent`) {}
+btw_tool_docs_package_news <- function(package_name, search_term, version, `_intent`) {}
 
-btw_tool_docs_package_news_impl <- function(package_name, search_term = "") {
-  news <- package_news_search(package_name, search_term %||% "")
+btw_tool_docs_package_news_impl <- function(
+  package_name,
+  search_term = "",
+  version = NULL
+) {
+  news <- package_news_search(
+    package_name,
+    search_term = search_term %||% "",
+    version = version
+  )
 
   if (nrow(news) == 0) {
     if (nzchar(search_term)) {
       cli::cli_abort(
-        "No NEWS entries found for package '{package_name}' matching '{search_term}'."
+        "No NEWS entries found for package '{package_name}'{if (!is.null(version)) paste0(' v', version)} matching '{search_term}'."
       )
     } else {
       cli::cli_abort(
-        "No NEWS entries found for package '{package_name}' v{package_version(package_name)}."
+        "No NEWS entries found for package '{package_name}' v{version %||% package_version(package_name)}."
       )
     }
   }
@@ -100,6 +114,13 @@ btw_tool_docs_package_news_impl <- function(package_name, search_term = "") {
             "Use simple regular expressions (perl style is supported).",
             "The search term is case-insensitive.",
             "If empty, the tool returns the release notes for the current installed version."
+          ),
+          required = FALSE
+        ),
+        version = ellmer::type_string(
+          paste(
+            "A specific installed package version whose NEWS entries to return.",
+            "When omitted, the current installed version is used."
           ),
           required = FALSE
         )
@@ -175,7 +196,14 @@ r_docs_versions <- function() {
   c("R", sprintf("R-%d", seq_len(R.version$major)))
 }
 
-package_news_search <- function(package_name, search_term = "") {
+package_news_search <- function(
+  package_name,
+  search_term = "",
+  version = NULL
+) {
+  check_string(search_term)
+  check_string(version, allow_null = TRUE)
+
   r_docs <- r_docs_versions()
   if (!package_name %in% r_docs) {
     check_installed(package_name)
@@ -191,14 +219,18 @@ package_news_search <- function(package_name, search_term = "") {
   }
   news$Version <- base::package_version(news$Version)
 
+  if (!is.null(version)) {
+    news <- news[news$Version == base::package_version(version), ]
+  }
+
   if (!nzchar(search_term)) {
-    version <-
+    selected_version <- version %||%
       if (!package_name %in% setdiff(r_docs, "R")) {
         package_version(package_name)
       } else {
         max(news$Version)
       }
-    news <- news[news$Version == version, ]
+    news <- news[news$Version == selected_version, ]
     news$match <- news$HTML
   } else {
     news$match <- map_chr(
@@ -208,12 +240,14 @@ package_news_search <- function(package_name, search_term = "") {
     )
     news <- news[!is.na(news$match), ]
 
-    # Take at most the results from the 5 most recent versions
-    versions <- unique(news$Version)
-    if (length(versions) > 5) {
-      versions <- sort(versions, decreasing = TRUE)[1:5]
+    if (is.null(version)) {
+      # Take at most the results from the 5 most recent versions
+      versions <- unique(news$Version)
+      if (length(versions) > 5) {
+        versions <- sort(versions, decreasing = TRUE)[1:5]
+      }
+      news <- news[news$Version %in% versions, ]
     }
-    news <- news[news$Version %in% versions, ]
   }
 
   class(news) <- c("btw_filtered_news_db", class(news))

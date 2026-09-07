@@ -57,6 +57,7 @@ Suggests:
     callr,
     chromote,
     covr,
+    curl,
     DBI,
     desc,
     devtools,

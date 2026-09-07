@@ -42,6 +42,7 @@ this function have access to the tools:
    Name \tab Description \cr
    \code{\link[=btw_tool_cran_package]{btw_tool_cran_package()}} \tab Describe a CRAN package. \cr
    \code{\link[=btw_tool_cran_search]{btw_tool_cran_search()}} \tab Search for an R package on CRAN. \cr
+   \code{\link[=btw_tool_cran_versions]{btw_tool_cran_versions()}} \tab List a CRAN package's release versions and dates. \cr
 }
 
 }

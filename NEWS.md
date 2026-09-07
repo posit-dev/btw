@@ -2,6 +2,8 @@
 
 ## New features
 
+* Added `btw cran versions <packages...>` to look up CRAN release dates and versions, and versioned NEWS through `btw()`, `btw_this()`, the btw docs tools, and `btw docs news`. Use `btw("@news dplyr v1.1.4")` to paste a specific release's NEWS into a chat, or `btw("@news dplyr")` for the full file (#213).
+
 * `btw docs` and `btw pkg src` commands now auto-load an in-development package found in the current directory (or its `pkg-r/`, `R/` subfolder) with `pkgload::load_all()` before running, so results reflect uncommitted local changes. Pass `--no-dev` to disable this and use the installed package instead (#212).
 
 ## Bug fixes

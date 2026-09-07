@@ -55,6 +55,7 @@ btw(
 \code{\link[=btw_tools]{btw_tools()}}
 
 Other cran tools:
-\code{\link[=btw_tool_cran_package]{btw_tool_cran_package()}}
+\code{\link[=btw_tool_cran_package]{btw_tool_cran_package()}},
+\code{\link[=btw_tool_cran_versions]{btw_tool_cran_versions()}}
 }
 \concept{cran tools}

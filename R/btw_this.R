@@ -80,9 +80,14 @@ as_btw_capture <- function(x) {
 #'   * `btw_this("@help dplyr across")` - space-separated format
 #'   * `btw_this("@help across")` - searches all packages
 #'
-#' * `"@news {{package_name}} {{search_term}}"` \cr
-#'   Include the release notes (NEWS) from the latest package release, e.g.
-#'   `"@news dplyr"`, or that match a search term, e.g. `"@news dplyr join_by"`.
+#' * `"@news {{package_name}} [{{version}}] [{{search_term}}]"` \cr
+#'   Include the release notes (NEWS) from the latest package release, a
+#'   specific version, or entries that match a search term, e.g. `"@news dplyr"`,
+#'   `"@news dplyr v1.1.4"`, or `"@news dplyr join_by"`.
+#'
+#' * `"@cran versions {{package_name}}"` \cr
+#'   Include CRAN release versions and dates for a package, e.g.
+#'   `"@cran versions dplyr"`.
 #'
 #' * `"@url {{url}}"` \cr
 #'   Include the contents of a web page at the specified URL as markdown, e.g.
@@ -257,6 +262,7 @@ dispatch_at_command <- function(cmd, caller_env) {
   btw_this_cmd <- switch(
     cmd$command,
     news = btw_this_news,
+    cran = btw_this_cran,
     url = btw_this_url,
     pkg = btw_this_pkg,
     help = btw_this_help,
@@ -276,8 +282,8 @@ btw_this_news <- function(args) {
   if (!nzchar(args)) {
     cli::cli_abort(
       c(
-        "{.code @news} must be followed by a package name and an optional search term.",
-        "i" = 'e.g. {.code "@news dplyr"} or {.code "@news dplyr join_by"}'
+        "{.code @news} must be followed by a package name and optional version or search term.",
+        "i" = 'e.g. {.code "@news dplyr"}, {.code "@news dplyr v1.1.4"}, or {.code "@news dplyr join_by"}'
       ),
       call = caller_env(n = 2)
     )
@@ -285,13 +291,41 @@ btw_this_news <- function(args) {
 
   parts <- strsplit(args, " ", fixed = TRUE)[[1]]
   package_name <- parts[1]
-  search_term <- if (length(parts) > 1) {
-    paste(parts[-1], collapse = " ")
+  has_version <- length(parts) > 1 &&
+    grepl("^v\\d+(?:[.-]\\d+)*$", parts[2], perl = TRUE)
+  version <- if (has_version) sub("^v", "", parts[2]) else NULL
+  search_start <- if (has_version) 3 else 2
+  search_term <- if (length(parts) >= search_start) {
+    paste(parts[search_start:length(parts)], collapse = " ")
   } else {
     ""
   }
 
-  I(btw_tool_docs_package_news_impl(package_name, search_term)@value)
+  I(
+    btw_tool_docs_package_news_impl(
+      package_name,
+      search_term = search_term,
+      version = version
+    )@value
+  )
+}
+
+btw_this_cran <- function(args) {
+  parts <- strsplit(args, " ", fixed = TRUE)[[1]]
+  command <- parts[1]
+  package_name <- if (length(parts) > 1) parts[2] else ""
+
+  if (!identical(command, "versions") || !nzchar(package_name) || length(parts) > 2) {
+    cli::cli_abort(
+      c(
+        "{.code @cran} must be followed by {.code versions} and a package name.",
+        "i" = 'e.g. {.code "@cran versions dplyr"}'
+      ),
+      call = caller_env(n = 2)
+    )
+  }
+
+  I(btw_tool_cran_versions_impl(package_name)@value)
 }
 
 btw_this_url <- function(args) {

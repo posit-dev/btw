@@ -29,6 +29,7 @@ cli::cat_line(
 }
 \seealso{
 Other cran tools:
-\code{\link[=btw_tool_cran_search]{btw_tool_cran_search()}}
+\code{\link[=btw_tool_cran_search]{btw_tool_cran_search()}},
+\code{\link[=btw_tool_cran_versions]{btw_tool_cran_versions()}}
 }
 \concept{cran tools}

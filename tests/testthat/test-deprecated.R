@@ -16,6 +16,7 @@ test_that("deprecated session tools emit deprecation warnings", {
 })
 
 test_that("deprecated search tools emit deprecation warnings", {
+  skip_on_cran()
   skip_if_offline()
 
   expect_warning(
@@ -108,6 +109,7 @@ test_that("new sessioninfo tools work without warnings", {
 })
 
 test_that("new cran tools work without warnings", {
+  skip_on_cran()
   skip_if_offline()
 
   expect_no_warning(btw_tool_cran_search(query = "shiny"))
