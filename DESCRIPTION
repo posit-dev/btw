@@ -34,6 +34,7 @@ Imports:
     brio,
     cli,
     clipr,
+    commonmark,
     dplyr,
     ellmer (>= 0.4.2),
     frontmatter,

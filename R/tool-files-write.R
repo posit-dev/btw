@@ -108,17 +108,15 @@ BtwFileDiffToolResult <- S7::new_class(
 )
 
 S7::method(contents_shinychat, BtwFileDiffToolResult) <- function(content) {
-  res <- shinychat::contents_shinychat(
-    S7::super(content, ellmer::ContentToolResult)
-  )
-
   if (!is_installed("diffviewer")) {
     cli::cli_warn(
       "Install the {.pkg diffviewer} package for rich file diffs in {.fn btw::btw_app}: {.run install.packages('diffviewer')}",
       .frequency = "once",
       .frequency_id = "btw-tool-files-diffviewer"
     )
-    return(res)
+    return(shinychat::contents_shinychat(
+      S7::super(content, ellmer::ContentToolResult)
+    ))
   }
 
   new <- content@extra$content
@@ -134,9 +132,15 @@ S7::method(contents_shinychat, BtwFileDiffToolResult) <- function(content) {
   write_file(old %||% "", path_old)
   write_file(new %||% "", path_new)
 
-  res$value <- diffviewer::visual_diff(path_old, path_new)
-  res$value_type <- "html"
+  # The diff widget replaces the card body; shinychat renders `display$html`
+  # on our behalf, including the htmlwidget's dependencies.
+  display <- content@extra$display %||% list()
+  display$html <- diffviewer::visual_diff(path_old, path_new)
+  content@extra$display <- display
+
+  res <- shinychat::contents_shinychat(
+    S7::super(content, ellmer::ContentToolResult)
+  )
   res$class <- "btw-tool-result-file-diff"
-  res$full_screen <- NA
   res
 }

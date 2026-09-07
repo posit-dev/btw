@@ -561,3 +561,32 @@ test_that("subagent recursion is prevented in default tools", {
   # But other tools should be present
   expect_true(length(tool_names) > 0)
 })
+
+test_that("subagent_render_content_html() handles shinychat cards on both protocols", {
+  skip_if_not_installed("evaluate")
+
+  expect_identical(subagent_render_content_html("plain text"), "plain text")
+  expect_match(
+    subagent_render_content_html(htmltools::tags$b("bold")),
+    "<b>bold</b>",
+    fixed = TRUE
+  )
+
+  result <- btw:::btw_tool_run_r_impl("2 + 2")
+  result@request <- ellmer::ContentToolRequest(
+    id = "test-run-r",
+    name = "btw_tool_run_r",
+    arguments = list(code = "2 + 2", `_intent` = ""),
+    tool = ellmer::tool(
+      function(code) NULL,
+      name = "btw_tool_run_r",
+      description = "Run R code",
+      arguments = list(code = ellmer::type_string("The R code to run"))
+    )
+  )
+  rendered <- shinychat::contents_shinychat(result)
+  card_html <- subagent_render_content_html(rendered)
+  expect_type(card_html, "character")
+  expect_match(card_html, "<shiny-tool-result", fixed = TRUE)
+  expect_match(card_html, "btw-run-output", fixed = TRUE)
+})

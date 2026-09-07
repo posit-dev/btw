@@ -3,13 +3,7 @@ test_that("md_table()", {
 })
 
 test_that("md_code_block()", {
-  expect_equal(
-    md_code_block("markdown", c("```r", "runif(1)", "```")),
-    c("````markdown", "```r", "runif(1)", "```", "````")
-  )
+  expect_snapshot(md_code_block("markdown", c("```r", "runif(1)", "```")))
 
-  expect_equal(
-    md_code_block("markdown", c("````r", "runif(1)", "````")),
-    c("`````markdown", "````r", "runif(1)", "````", "`````")
-  )
+  expect_snapshot(md_code_block("markdown", c("````r", "runif(1)", "````")))
 })

@@ -231,7 +231,7 @@ subagent_process_result <- function(chat, prompt, agent_name, session_id) {
 #' @param session_id Session ID
 #' @param agent_name Agent name (NULL or "subagent" for subagent, otherwise custom agent name)
 #' @param prompt The prompt text
-#' @return Markdown string for display
+#' @return HTML string for display (via `display$html`)
 #' @noRd
 subagent_display_result <- function(result, session_id, agent_name, prompt) {
   # Only show agent line for custom agents, not for subagent
@@ -247,7 +247,7 @@ subagent_display_result <- function(result, session_id, agent_name, prompt) {
 
   full_results <- map(chat$get_turns(), function(turn) {
     turn <- shinychat::contents_shinychat(turn)
-    map(turn, function(c) as.character(htmltools::as.tags(c)))
+    map(turn, subagent_render_content_html)
   })
   full_results <- paste(unlist(full_results), collapse = "\n\n")
 
@@ -280,7 +280,25 @@ subagent_display_result <- function(result, session_id, agent_name, prompt) {
 
   {{ result$message_text }}
   )"
-  )
+  ) |>
+    # `display$html` is trusted, server-rendered HTML; `display$markdown`
+    # would be sanitized on the client and the embedded report markup
+    # (session info table, nested tool cards) would render as plain text.
+    # GFM extensions cover the pipe tables produced by `md_table()`.
+    commonmark::markdown_html(extensions = TRUE)
+}
+
+# Render a shinychat content object to a self-contained HTML string.
+# Tool cards have no `as.tags()` method on shinychat >= 0.5.0; `format()`
+# emits the same static `<shiny-tool-*>` markup on every version.
+subagent_render_content_html <- function(x) {
+  if (is.character(x)) {
+    return(x)
+  }
+  if (inherits(x, "shinychat_tool_card")) {
+    return(as.character(format(x)))
+  }
+  as.character(htmltools::as.tags(x))
 }
 
 
@@ -360,7 +378,7 @@ btw_tool_agent_subagent_impl <- function(
       model = result$model,
       tokens = result$tokens,
       display = list(
-        markdown = display_md,
+        html = shiny::HTML(display_md),
         show_request = FALSE,
         full_screen = TRUE
       )

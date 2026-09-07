@@ -23,7 +23,7 @@ md_code_block <- function(type = "", ...) {
     }
     break
   }
-  c(paste0(ticks, type), ..., ticks)
+  paste(c(paste0(ticks, type), ..., ticks), collapse = "\n")
 }
 
 md_kv_table <- function(df, drop_na = FALSE) {

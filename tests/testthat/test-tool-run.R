@@ -13,9 +13,7 @@ new_run_r_test_result <- function(code, copy_code = NULL) {
   )
 
   if (!is.null(copy_code)) {
-    display <- result@extra$display
-    display$copy_code <- copy_code
-    result@extra$display <- display
+    result@extra$copy_code <- copy_code
   }
 
   result
@@ -47,16 +45,23 @@ test_that("btw_tool_run_r() returns simple calculations", {
   )
   expect_s3_class(rendered, "shinychat_tool_result")
   expect_s3_class(rendered, "shinychat_tool_card")
-  expect_identical(rendered$type, "result")
+  expect_identical(
+    rendered$type,
+    if (shinychat_wire_blocks()) "tool_result" else "result"
+  )
   expect_identical(rendered$value_type, "html")
   rendered_value <- as.character(rendered$value)
   expect_match(rendered_value, 'class="btw-output-source"', fixed = TRUE)
   expect_match(rendered_value, 'class="language-r"', fixed = TRUE)
   expect_match(rendered_value, 'class="btw-output-output"', fixed = TRUE)
   expect_match(rendered_value, ">[1] 4<", fixed = TRUE)
-  expect_true(is.na(rendered$full_screen))
+  if (shinychat_wire_blocks()) {
+    expect_true(rendered$full_screen)
+  } else {
+    expect_true(is.na(rendered$full_screen))
+  }
 
-  rendered_tags <- as.character(htmltools::as.tags(rendered))
+  rendered_tags <- format(rendered)
   expect_match(
     rendered_tags,
     "<shiny-tool-result",
@@ -73,7 +78,7 @@ test_that("R result cards expose copy-reprex in the footer when enabled", {
   )
 
   expect_false(is.null(rendered$footer))
-  footer <- as.character(htmltools::as.tags(rendered$footer))
+  footer <- as.character(rendered$footer)
   expect_match(footer, "<a", fixed = TRUE)
   expect_match(footer, "action-button action-link", fixed = TRUE)
   expect_match(footer, 'aria-label="Copy as reprex"', fixed = TRUE)

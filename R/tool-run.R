@@ -271,9 +271,9 @@ btw_tool_run_r_impl <- function(
       # We always return contents up to the error as `value` because `error`
       # cannot handle rich output. We'll show status separately in the UI.
       status = if (had_error) "error" else "success",
+      copy_code = TRUE,
       display = list(
         open = !had_error,
-        copy_code = TRUE,
         full_screen = TRUE
       )
     )
@@ -535,15 +535,8 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
       tool = NULL,
       extra = list()
     )
-    content@extra$display <- utils::modifyList(
-      display,
-      list(title = display$title %||% "Run R Code")
-    )
+    display$title <- display$title %||% "Run R Code"
   }
-
-  res <- shinychat::contents_shinychat(
-    S7::super(content, ellmer::ContentToolResult)
-  )
 
   # Render all content objects to HTML
   contents <- content@extra$contents
@@ -554,8 +547,7 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
   output_html <- map_chr(contents, ellmer::contents_html)
   output_html <- paste(output_html, collapse = "\n")
 
-  res$status <- content@extra$status
-  res$value <- htmltools::attachDependencies(
+  display$html <- htmltools::attachDependencies(
     htmltools::tagList(
       htmltools::div(
         class = "btw-run-output",
@@ -564,9 +556,8 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
     ),
     btw_run_r_dep()
   )
-  res$value_type <- "html"
 
-  if (isTRUE(display$copy_code)) {
+  if (isTRUE(content@extra$copy_code)) {
     copy_link <- shiny::tags$a(
       href = "#",
       class = "btw-copy-reprex action-button action-link",
@@ -574,11 +565,19 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
       shiny::span(class = "action-icon", shiny::icon("clipboard")),
       shiny::span(class = "action-label", "Copy as reprex")
     )
-    res$footer <- htmltools::tagList(
-      display$footer,
-      copy_link
-    )
+    display$footer <- htmltools::tagList(display$footer, copy_link)
   }
+
+  # shinychat only knows about `@error`, but failed runs keep their rich
+  # output in `value` and report errors via `extra$status` instead.
+  # Everything else about the card is expressed through `display`, which
+  # shinychat renders on our behalf.
+  content@extra$display <- display
+
+  res <- shinychat::contents_shinychat(
+    S7::super(content, ellmer::ContentToolResult)
+  )
+  res$status <- content@extra$status
 
   res
 }
