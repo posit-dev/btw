@@ -265,9 +265,12 @@ btw_tool_run_r_impl <- function(
   BtwRunToolResult(
     value = value,
     extra = list(
-      data = last_value,
+      data = run_r_extra_data(last_value),
       code = code,
-      contents = contents,
+      # `extra` is serialized as-is by shinychat's history and bookmark
+      # `jsonlite::serializeJSON()` paths, so contents must be stored in
+      # recorded (plain list) form, not as S7 objects.
+      contents = lapply(contents, ellmer::contents_record),
       # We always return contents up to the error as `value` because `error`
       # cannot handle rich output. We'll show status separately in the UI.
       status = if (had_error) "error" else "success",
@@ -565,8 +568,33 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
   res
 }
 
+run_r_extra_data <- function(x) {
+  serializable <- tryCatch(
+    {
+      jsonlite::serializeJSON(x)
+      TRUE
+    },
+    error = function(e) FALSE
+  )
+
+  if (serializable) {
+    x
+  }
+}
+
+is_recorded_content <- function(x) {
+  is.list(x) && all(c("version", "class", "props") %in% names(x))
+}
+
+run_r_extra_contents <- function(contents) {
+  if (length(contents) && every(contents, is_recorded_content)) {
+    contents <- map(contents, ellmer::contents_replay)
+  }
+  contents
+}
+
 btw_run_r_output_html <- function(content) {
-  contents <- map(content@extra$contents, function(x) {
+  contents <- map(run_r_extra_contents(content@extra$contents), function(x) {
     run_r_content_handle_ansi(x, plain = !is_installed("fansi"))
   })
   output_html <- map_chr(contents, ellmer::contents_html)

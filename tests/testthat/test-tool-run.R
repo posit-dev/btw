@@ -33,7 +33,7 @@ test_that("btw_tool_run_r() returns simple calculations", {
   expect_equal(res@value, "[1] 4")
 
   # The full contents in extra should have the structured output
-  contents <- res@extra$contents
+  contents <- btw:::run_r_extra_contents(res@extra$contents)
   output_contents <- keep(contents, Negate(S7::S7_inherits), ContentSource)
   expect_length(output_contents, 1)
   expect_s7_class(output_contents[[1]], ContentOutput)
@@ -117,7 +117,7 @@ test_that("btw_tool_run_r() captures messages", {
   expect_equal(res@value, "hello")
 
   # Check the structured content in extra$contents
-  contents <- res@extra$contents
+  contents <- btw:::run_r_extra_contents(res@extra$contents)
   output_contents <- keep(contents, Negate(S7::S7_inherits), ContentSource)
   expect_length(output_contents, 1)
   expect_s7_class(output_contents[[1]], ContentMessage)
@@ -135,7 +135,7 @@ test_that("btw_tool_run_r() captures warnings", {
   expect_match(res@value, "beware")
 
   # Check the structured content in extra$contents
-  contents <- res@extra$contents
+  contents <- btw:::run_r_extra_contents(res@extra$contents)
   output_contents <- keep(contents, Negate(S7::S7_inherits), ContentSource)
   expect_length(output_contents, 1)
   expect_s7_class(output_contents[[1]], ContentWarning)
@@ -153,7 +153,7 @@ test_that("btw_tool_run_r() captures errors and stops", {
   expect_match(res@value, "error")
 
   # Check the structured content in extra$contents
-  contents <- res@extra$contents
+  contents <- btw:::run_r_extra_contents(res@extra$contents)
   output_contents <- keep(contents, Negate(S7::S7_inherits), ContentSource)
   has_error <- any(vapply(
     output_contents,
@@ -185,7 +185,7 @@ test_that("btw_tool_run_r() captures plots", {
 
   # Also check in extra$contents
   has_plot_contents <- any(vapply(
-    res@extra$contents,
+    btw:::run_r_extra_contents(res@extra$contents),
     function(x) S7::S7_inherits(x, ellmer::ContentImage),
     logical(1)
   ))
@@ -209,7 +209,7 @@ test_that("btw_tool_run_r() handles multiple outputs", {
   expect_snapshot(cat(res@value))
 
   # Check the structured content in extra$contents for specific types
-  contents <- res@extra$contents
+  contents <- btw:::run_r_extra_contents(res@extra$contents)
   output_contents <- keep(contents, Negate(S7::S7_inherits), ContentSource)
   expect_gte(length(output_contents), 3)
 
@@ -288,7 +288,7 @@ test_that("adjacent content of same type is merged", {
   expect_equal(res@value, "a\nb")
 
   # Check the structured content in extra$contents
-  contents <- res@extra$contents
+  contents <- btw:::run_r_extra_contents(res@extra$contents)
   output_contents <- keep(contents, Negate(S7::S7_inherits), ContentSource)
   expect_length(output_contents, 1)
   expect_s7_class(output_contents[[1]], ContentMessage)
@@ -301,7 +301,7 @@ test_that("adjacent content of same type is merged", {
   expect_type(res@value, "character")
 
   # Check the structured content in extra$contents
-  contents <- res@extra$contents
+  contents <- btw:::run_r_extra_contents(res@extra$contents)
   output_contents <- keep(contents, Negate(S7::S7_inherits), ContentSource)
   expect_length(output_contents, 1)
   expect_s7_class(output_contents[[1]], ContentOutput)
@@ -313,7 +313,7 @@ test_that("adjacent content of same type is merged", {
   expect_type(res@value, "character")
 
   # Check the structured content in extra$contents
-  contents <- res@extra$contents
+  contents <- btw:::run_r_extra_contents(res@extra$contents)
   output_contents <- keep(contents, Negate(S7::S7_inherits), ContentSource)
   expect_length(output_contents, 3)
   expect_s7_class(output_contents[[1]], ContentMessage)
@@ -340,7 +340,7 @@ text(1, 1, 'y')"
   # extra$contents should also have exactly one plot
   expect_type(res@extra$contents, "list")
   plot_contents_all <- keep(
-    res@extra$contents,
+    btw:::run_r_extra_contents(res@extra$contents),
     S7::S7_inherits,
     ellmer::ContentImage
   )
@@ -380,7 +380,9 @@ test_that("btw_tool_run_r() runs code without a dynamic tty", {
 
   expect_true(cli::is_dynamic_tty())
   expect_equal(
-    btw_tool_run_r_impl("cli::is_dynamic_tty()")@extra$contents[[2]]@text,
+    btw:::run_r_extra_contents(
+      btw_tool_run_r_impl("cli::is_dynamic_tty()")@extra$contents
+    )[[2]]@text,
     "[1] FALSE"
   )
 })
@@ -566,4 +568,38 @@ test_that("btw_tool_run_r() restores working directory, options, and envvars", {
   expect_equal(fs::path_real(getwd()), fs::path_real(orig_wd))
   expect_equal(getOption(".test_option"), orig_opt)
   expect_equal(Sys.getenv("_TEST_ENV_VAR"), orig_env)
+})
+
+test_that("btw_tool_run_r() extras survive shinychat history serialization", {
+  skip_if_not_installed("evaluate")
+
+  res <- btw_tool_run_r_impl('x <- sample(1:100, 10); x')
+
+  # shinychat (>= 0.4.0) serializes recorded turns with jsonlite::serializeJSON()
+  # when saving history and bookmarks; `extra` is passed through as-is, so it
+  # must not contain raw S7 objects or other non-JSON-safe values.
+  recorded <- ellmer::contents_record(ellmer::Turn(
+    role = "assistant",
+    contents = list(res)
+  ))
+  expect_error(jsonlite::serializeJSON(recorded), NA)
+
+  replayed <- ellmer::contents_replay(recorded$props$contents[[1]])
+  contents <- run_r_extra_contents(replayed@extra$contents)
+  expect_s7_class(contents[[1]], ContentSource)
+  expect_s7_class(contents[[2]], ContentOutput)
+  expect_equal(contents[[1]]@text, "x <- sample(1:100, 10); x")
+})
+
+test_that("btw_tool_run_r() drops non-serializable extra$data", {
+  skip_if_not_installed("evaluate")
+
+  res <- btw_tool_run_r_impl('ellmer::ContentText("hi")')
+  expect_null(res@extra$data)
+
+  recorded <- ellmer::contents_record(ellmer::Turn(
+    role = "assistant",
+    contents = list(res)
+  ))
+  expect_error(jsonlite::serializeJSON(recorded), NA)
 })
