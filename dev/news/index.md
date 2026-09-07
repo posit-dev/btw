@@ -12,6 +12,19 @@
   `--no-dev` to disable this and use the installed package instead
   ([\#212](https://github.com/posit-dev/btw/issues/212)).
 
+### Bug fixes
+
+- `btw --version` now works without a subcommand. Previously, Rapp’s
+  required top-level switch caused the CLI to print usage and exit
+  before the version flag was ever checked.
+
+### Other changes
+
+- btw now requires ellmer (\>= 0.4.2). The `set_model()` compatibility
+  shim was removed, and `client_get_models()` now delegates to ellmer’s
+  `models_list()` generic, replacing a bespoke per-provider dispatch
+  table ([\#214](https://github.com/posit-dev/btw/issues/214)).
+
 ## btw 1.4.0
 
 CRAN release: 2026-08-05

@@ -44,6 +44,15 @@
 <ul><li>
 <code>btw docs</code> and <code>btw pkg src</code> commands now auto-load an in-development package found in the current directory (or its <code>pkg-r/</code>, <code>R/</code> subfolder) with <code><a href="https://pkgload.r-lib.org/reference/load_all.html" class="external-link">pkgload::load_all()</a></code> before running, so results reflect uncommitted local changes. Pass <code>--no-dev</code> to disable this and use the installed package instead (<a href="https://github.com/posit-dev/btw/issues/212" class="external-link">#212</a>).</li>
 </ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-development-version">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
+<ul><li>
+<code>btw --version</code> now works without a subcommand. Previously, Rapp’s required top-level switch caused the CLI to print usage and exit before the version flag was ever checked.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="other-changes-development-version">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-development-version"></a></h3>
+<ul><li>btw now requires ellmer (&gt;= 0.4.2). The <code>set_model()</code> compatibility shim was removed, and <code>client_get_models()</code> now delegates to ellmer’s <code>models_list()</code> generic, replacing a bespoke per-provider dispatch table (<a href="https://github.com/posit-dev/btw/issues/214" class="external-link">#214</a>).</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.0" id="btw-140">btw 1.4.0<a class="anchor" aria-label="anchor" href="#btw-140"></a></h2><p class="text-muted">CRAN release: 2026-08-05</p>

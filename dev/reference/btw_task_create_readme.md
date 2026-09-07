@@ -77,7 +77,7 @@ Other task and agent functions:
 withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
   btw_task_create_readme(mode = "tool", client = "anthropic")
 })
-#> Using model = "claude-sonnet-4-6".
+#> Using model = "claude-sonnet-5".
 #> # <ellmer::ToolDef> btw_task_create_readme(prompt)
 #> # @name: btw_task_create_readme
 #> # @description: Create a polished, user-focused README file for your project.
@@ -85,6 +85,6 @@ withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
 #> #
 #> function (prompt) 
 #> btw_task_create_readme_tool(prompt)
-#> <bytecode: 0x560307503638>
-#> <environment: 0x560307503018>
+#> <bytecode: 0x55bf766489d0>
+#> <environment: 0x55bf766483b0>
 ```

@@ -144,7 +144,8 @@ btw_agent_tool(path, client = NULL)
 
 ## Value
 
-An [`ellmer::ToolDef`](https://ellmer.tidyverse.org/reference/tool.html)
+An
+[`ellmer::ToolDef`](https://ellmer.tidyverse.org/reference/ToolDef.html)
 object that can be registered with a chat client, or `NULL` if the file
 is invalid (with a warning).
 
@@ -188,8 +189,8 @@ withr::with_tempdir({
 #>     btw_tool_agent_custom_impl(prompt = prompt, session_id = session_id, 
 #>         agent_config = agent_config)
 #> }
-#> <bytecode: 0x560300c84358>
-#> <environment: 0x560300c83f68>
+#> <bytecode: 0x55bf73f51c40>
+#> <environment: 0x55bf73f51850>
 
 # Create a Claude Code-style agent file (name with hyphens)
 withr::with_tempdir({
@@ -222,6 +223,6 @@ withr::with_tempdir({
 #>     btw_tool_agent_custom_impl(prompt = prompt, session_id = session_id, 
 #>         agent_config = agent_config)
 #> }
-#> <bytecode: 0x560300c84358>
-#> <environment: 0x560303f46268>
+#> <bytecode: 0x55bf73f51c40>
+#> <environment: 0x55bf71083550>
 ```
