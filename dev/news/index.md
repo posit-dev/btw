@@ -4,6 +4,15 @@
 
 ### New features
 
+- Added `btw cran versions <packages...>` to look up CRAN release dates
+  and versions, and versioned NEWS through
+  [`btw()`](https://posit-dev.github.io/btw/dev/reference/btw.md),
+  [`btw_this()`](https://posit-dev.github.io/btw/dev/reference/btw_this.md),
+  the btw docs tools, and `btw docs news`. Use
+  `btw("@news dplyr v1.1.4")` to paste a specific release’s NEWS into a
+  chat, or `btw("@news dplyr")` for the full file
+  ([\#213](https://github.com/posit-dev/btw/issues/213)).
+
 - `btw docs` and `btw pkg src` commands now auto-load an in-development
   package found in the current directory (or its `pkg-r/`, `R/`
   subfolder) with

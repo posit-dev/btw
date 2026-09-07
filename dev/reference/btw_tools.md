@@ -20,6 +20,7 @@ returned by this function have access to the tools:
 | Name | Description |
 | [`btw_tool_cran_package()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_cran_package.md) | Describe a CRAN package. |
 | [`btw_tool_cran_search()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_cran_search.md) | Search for an R package on CRAN. |
+| [`btw_tool_cran_versions()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_cran_versions.md) | List a CRAN package's release versions and dates. |
 
 ### Group: docs
 

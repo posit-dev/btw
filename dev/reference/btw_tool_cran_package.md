@@ -28,7 +28,8 @@ An info sheet about the package.
 ## See also
 
 Other cran tools:
-[`btw_tool_cran_search()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_cran_search.md)
+[`btw_tool_cran_search()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_cran_search.md),
+[`btw_tool_cran_versions()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_cran_versions.md)
 
 ## Examples
 

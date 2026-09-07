@@ -76,10 +76,10 @@ btw_tool_docs_package_help_topics("btw")
 #>  @ value  : chr [1:3] "```json" ...
 #>  @ error  : NULL
 #>  @ extra  :List of 2
-#>  .. $ data   : tibble [55 × 3] (S3: tbl_df/tbl/data.frame)
-#>  ..  ..$ topic_id: chr [1:55] "btw" "btw-config" "btw-package" "btw_agent_tool" ...
-#>  ..  ..$ title   : chr [1:55] "Plain-text descriptions of R objects" "Where btw looks for configuration" "btw: A Toolkit for Connecting R and Large Language Models" "Create a custom agent tool from a markdown file" ...
-#>  ..  ..$ aliases :List of 55
+#>  .. $ data   : tibble [56 × 3] (S3: tbl_df/tbl/data.frame)
+#>  ..  ..$ topic_id: chr [1:56] "btw" "btw-config" "btw-package" "btw_agent_tool" ...
+#>  ..  ..$ title   : chr [1:56] "Plain-text descriptions of R objects" "Where btw looks for configuration" "btw: A Toolkit for Connecting R and Large Language Models" "Create a custom agent tool from a markdown file" ...
+#>  ..  ..$ aliases :List of 56
 #>  ..  .. ..$ : 'AsIs' chr "btw"
 #>  ..  .. ..$ : 'AsIs' chr "btw-config"
 #>  ..  .. ..$ : 'AsIs' chr "btw-package"
@@ -99,6 +99,7 @@ btw_tool_docs_package_help_topics("btw")
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_agent_subagent"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_cran_package"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_cran_search"
+#>  ..  .. ..$ : 'AsIs' chr "btw_tool_cran_versions"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_docs_package_news"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_env_describe_data_frame"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_env_describe_environment"

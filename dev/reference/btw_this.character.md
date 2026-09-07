@@ -49,10 +49,14 @@ knows about the following special character string formats:
 
   - `btw_this("@help across")` - searches all packages
 
-- `"@news {{package_name}} {{search_term}}"`\
-  Include the release notes (NEWS) from the latest package release, e.g.
-  `"@news dplyr"`, or that match a search term, e.g.
-  `"@news dplyr join_by"`.
+- `"@news {{package_name}} [{{version}}] [{{search_term}}]"`\
+  Include the release notes (NEWS) from the latest package release, a
+  specific version, or entries that match a search term, e.g.
+  `"@news dplyr"`, `"@news dplyr v1.1.4"`, or `"@news dplyr join_by"`.
+
+- `"@cran versions {{package_name}}"`\
+  Include CRAN release versions and dates for a package, e.g.
+  `"@cran versions dplyr"`.
 
 - `"@url {{url}}"`\
   Include the contents of a web page at the specified URL as markdown,

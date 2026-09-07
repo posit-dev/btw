@@ -89,6 +89,8 @@ and to avoid name clashes with other tools.
   : Tool: Describe a CRAN package
 - [`btw_tool_cran_search()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_cran_search.md)
   : Tool: Search for an R package on CRAN
+- [`btw_tool_cran_versions()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_cran_versions.md)
+  : Tool: List CRAN package versions
 - [`btw_tool_docs_package_news()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_docs_package_news.md)
   : Tool: Package Release Notes
 - [`btw_tool_env_describe_data_frame()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_env_describe_data_frame.md)

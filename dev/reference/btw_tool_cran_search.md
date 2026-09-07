@@ -52,7 +52,8 @@ A listing of packages matching the search term.
 [`btw_tools()`](https://posit-dev.github.io/btw/dev/reference/btw_tools.md)
 
 Other cran tools:
-[`btw_tool_cran_package()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_cran_package.md)
+[`btw_tool_cran_package()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_cran_package.md),
+[`btw_tool_cran_versions()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_cran_versions.md)
 
 ## Examples
 
