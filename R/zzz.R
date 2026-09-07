@@ -7,10 +7,13 @@
     assign(tool_def@name, tool_def, envir = pkg_env)
   }
 
-  # Patch ellmer:::Chat to add set_model() if it doesn't exist
+  # Patch ellmer:::Chat to add set_model() for ellmer < 0.4.2
   ellmer_chat <- utils::getFromNamespace("Chat", "ellmer")
   if (!is.null(ellmer_chat)) {
-    if (!"set_model" %in% names(ellmer_chat$public_methods)) {
+    if (
+      utils::packageVersion("ellmer") < "0.4.2" &&
+        !"set_model" %in% names(ellmer_chat$public_methods)
+    ) {
       ellmer_chat$set("public", "set_model", function(model) {
         old <- private$provider@model
         private$provider@model <- model
