@@ -4,6 +4,14 @@
 
 * `btw docs` and `btw pkg src` commands now auto-load an in-development package found in the current directory (or its `pkg-r/`, `R/` subfolder) with `pkgload::load_all()` before running, so results reflect uncommitted local changes. Pass `--no-dev` to disable this and use the installed package instead (#212).
 
+## Bug fixes
+
+* `btw --version` now works without a subcommand. Previously, Rapp's required top-level switch caused the CLI to print usage and exit before the version flag was ever checked.
+
+## Other changes
+
+* btw now requires ellmer (>= 0.4.2). The `set_model()` compatibility shim was removed, and `client_get_models()` now delegates to ellmer's `models_list()` generic, replacing a bespoke per-provider dispatch table (#214).
+
 # btw 1.4.0
 
 ## New features

@@ -47,6 +47,15 @@ expect_btw_tool_result <- function(
 }
 
 scrub_system_info <- function(x) {
+  x <- sub(
+    sprintf(
+      "Anthropic/%s",
+      ellmer::chat_anthropic(credentials = \() "not-a-real-key")$get_model()
+    ),
+    "Anthropic/DEFAULT_MODEL",
+    x,
+    fixed = TRUE
+  )
   x <- sub(R.version.string, "R VERSION", x, fixed = TRUE)
   x <- sub(sessioninfo::os_name(), "OPERATING SYSTEM", x, fixed = TRUE)
   x <- sub(version$system, "SYSTEM VERSION", x, fixed = TRUE)

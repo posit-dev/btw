@@ -35,7 +35,7 @@ Imports:
     cli,
     clipr,
     dplyr,
-    ellmer (>= 0.3.0),
+    ellmer (>= 0.4.2),
     frontmatter,
     fs,
     jsonlite,

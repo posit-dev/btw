@@ -1,3 +1,6 @@
+duckdb_extensions <- withr::local_tempdir()
+local_options(duckdb.home = duckdb_extensions)
+
 # Test btw_tool_pkg_src_list_impl ----------------------------------------------
 
 test_that("btw_tool_pkg_src_list_impl returns exported objects by default", {

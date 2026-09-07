@@ -1,78 +1,16 @@
 client_get_models <- function(client) {
-  provider <- client$get_provider()
+  models_list <- asNamespace("ellmer")[["models_list"]]
 
-  models_fns <- list(
-    ProviderAnthropic = function(p) {
-      ellmer::models_anthropic(
-        base_url = p@base_url,
-        credentials = p@credentials
-      )
-    },
-    ProviderGoogleGemini = function(p) {
-      ellmer::models_google_gemini(
-        base_url = p@base_url,
-        credentials = p@credentials
-      )
-    },
-    ProviderAWSBedrock = function(p) {
-      base_url <- sub("bedrock-runtime", "bedrock", p@base_url)
-      ellmer::models_aws_bedrock(profile = p@profile, base_url = base_url)
-    },
-    ProviderOpenAI = function(p) {
-      ellmer::models_openai(base_url = p@base_url, credentials = p@credentials)
-    },
-    ProviderMistral = function(p) {
-      ellmer::models_mistral()
-    },
-    ProviderLMStudio = function(p) {
-      base_url <- sub("/v1$", "", p@base_url)
-      ellmer::models_lmstudio(base_url = base_url, credentials = p@credentials)
-    },
-    ProviderVllm = function(p) {
-      ellmer::models_vllm(base_url = p@base_url, credentials = p@credentials)
-    },
-    ProviderOllama = function(p) {
-      base_url <- sub("/v1$", "", p@base_url)
-      ellmer::models_ollama(base_url = base_url, credentials = p@credentials)
-    },
-    ProviderPortkeyAI = function(p) {
-      ellmer::models_portkey(base_url = p@base_url)
-    },
-    ProviderOpenAICompatible = function(p) {
-      base_url <- sub("/v1$", "", p@base_url)
-      ellmer::models_openai(base_url = p@base_url, credentials = p@credentials)
-    }
-  )
-
-  try_get_models <- function(fn, provider) {
-    tryCatch(fn(provider), error = function(e) {
+  tryCatch(
+    models_list(client),
+    error = function(e) {
       cli::cli_warn(
-        "Failed to fetch models for provider {provider@name}",
+        "Failed to fetch models for provider {client$get_provider()@name}",
         parent = e
       )
       NULL
-    })
-  }
-
-  if (provider@name == "LM Studio") {
-    return(try_get_models(models_fns$ProviderLMStudio, provider))
-  }
-
-  for (cls in names(models_fns)) {
-    if (inherits(provider, sprintf("ellmer::%s", cls))) {
-      return(
-        tryCatch(models_fns[[cls]](provider), error = function(e) {
-          cli::cli_warn(
-            "Failed to fetch models for provider {provider@name}",
-            parent = e
-          )
-          NULL
-        })
-      )
     }
-  }
-
-  NULL
+  )
 }
 
 btw_client_config_name <- function(cfg) {
@@ -88,7 +26,9 @@ btw_client_config_name <- function(cfg) {
   if (inherits(cfg, "Chat")) {
     provider <- tryCatch(cfg$get_provider()@name, error = function(e) NULL)
     model <- tryCatch(cfg$get_model(), error = function(e) NULL)
-    if (!is.null(provider) && !is.null(model)) return(paste0(provider, "/", model))
+    if (!is.null(provider) && !is.null(model)) {
+      return(paste0(provider, "/", model))
+    }
     return(model %||% provider %||% "unknown")
   }
   "unknown"
@@ -234,30 +174,19 @@ chat_get_tokens <- function(client) {
   cached_tokens <- 0
 
   if (!is.null(tokens) && nrow(tokens) > 0) {
-    if (utils::packageVersion("ellmer") <= "0.3.0") {
-      last_user <- tokens[tokens$role == "user", ]
-      if (nrow(last_user) > 0) {
-        input_tokens <- as.integer(utils::tail(last_user$tokens_total, 1))
-      }
-      tokens_assistant <- tokens[tokens$role == "assistant", ]
-      if (nrow(tokens_assistant) > 0) {
-        output_tokens <- as.integer(sum(tokens_assistant$tokens))
-      }
-    } else {
-      # output tokens are by turn, so we sum them all
-      if ("output" %in% colnames(tokens)) {
-        output_tokens <- sum(tokens$output)
-      }
-      # input and cached tokens are accumulated in the last API call
-      if ("input" %in% colnames(tokens)) {
-        input_tokens <-
-          tokens$input[[length(tokens$input)]]
-      }
-      if ("cached_input" %in% colnames(tokens)) {
-        cached_tokens <- tokens$cached_input[[
-          length(tokens$cached_input)
-        ]]
-      }
+    # output tokens are by turn, so we sum them all
+    if ("output" %in% colnames(tokens)) {
+      output_tokens <- sum(tokens$output)
+    }
+    # input and cached tokens are accumulated in the last API call
+    if ("input" %in% colnames(tokens)) {
+      input_tokens <-
+        tokens$input[[length(tokens$input)]]
+    }
+    if ("cached_input" %in% colnames(tokens)) {
+      cached_tokens <- tokens$cached_input[[
+        length(tokens$cached_input)
+      ]]
     }
   }
 
