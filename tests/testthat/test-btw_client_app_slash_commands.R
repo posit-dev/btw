@@ -201,8 +201,17 @@ test_that("btw_slash_skill_handler() combines skill text and user input", {
   ))
 
   local_mocked_bindings(
-    find_skill = function(name) list(path = file.path(dir, "SKILL.md"))
+    find_skill = function(name) {
+      list(
+        path = file.path(dir, "SKILL.md"),
+        base_dir = dir,
+        validation = list(valid = TRUE)
+      )
+    }
   )
+
+  # the handler sends the skill body (no frontmatter) plus any user text
+  expected <- frontmatter::read_front_matter(file.path(dir, "SKILL.md"))$body
 
   handler <- btw_slash_skill_handler(chat, "test-skill")
   content <- shinychat::ContentSlashCommand(
@@ -215,17 +224,7 @@ test_that("btw_slash_skill_handler() combines skill text and user input", {
   expect_true(S7::S7_inherits(submitted, shinychat::ContentSlashCommand))
   expect_match(submitted@text, "Do the thing.")
   expect_match(submitted@text, "do it now")
-  expect_identical(
-    submitted@text,
-    paste(
-      paste(
-        readLines(file.path(dir, "SKILL.md"), warn = FALSE),
-        collapse = "\n"
-      ),
-      "do it now",
-      sep = "\n\n"
-    )
-  )
+  expect_identical(submitted@text, paste(expected, "do it now", sep = "\n\n"))
 
   # empty user text: skill text alone
   handler(shinychat::ContentSlashCommand(
@@ -233,10 +232,7 @@ test_that("btw_slash_skill_handler() combines skill text and user input", {
     command = "test-skill",
     user_text = ""
   ))
-  expect_identical(
-    submitted@text,
-    paste(readLines(file.path(dir, "SKILL.md"), warn = FALSE), collapse = "\n")
-  )
+  expect_identical(submitted@text, expected)
 
   # failure path: input restored and error surfaced via toast
   restored <- NULL

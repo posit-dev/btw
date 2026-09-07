@@ -308,7 +308,10 @@ test_that("btw_skills_directories() discovers .agents/skills", {
 test_that("skill_dirs_from_option_or_envvar() returns NULL when neither option nor envvar is set", {
   withr::local_options("btw.test.option" = NULL)
   withr::local_envvar("BTW_TEST_ENVVAR" = NA)
-  result <- skill_dirs_from_option_or_envvar("btw.test.option", "BTW_TEST_ENVVAR")
+  result <- skill_dirs_from_option_or_envvar(
+    "btw.test.option",
+    "BTW_TEST_ENVVAR"
+  )
   expect_null(result)
 })
 
@@ -318,7 +321,10 @@ test_that("skill_dirs_from_option_or_envvar() reads from envvar when option is n
   raw <- paste(dir1, dir2, sep = .Platform$path.sep)
   withr::local_options("btw.test.option" = NULL)
   withr::local_envvar("BTW_TEST_ENVVAR" = raw)
-  result <- skill_dirs_from_option_or_envvar("btw.test.option", "BTW_TEST_ENVVAR")
+  result <- skill_dirs_from_option_or_envvar(
+    "btw.test.option",
+    "BTW_TEST_ENVVAR"
+  )
   expect_equal(result, normalizePath(c(dir1, dir2), mustWork = FALSE))
 })
 
@@ -327,7 +333,10 @@ test_that("skill_dirs_from_option_or_envvar() option takes precedence over envva
   dir_env <- withr::local_tempdir()
   withr::local_options("btw.test.option" = dir_opt)
   withr::local_envvar("BTW_TEST_ENVVAR" = dir_env)
-  result <- skill_dirs_from_option_or_envvar("btw.test.option", "BTW_TEST_ENVVAR")
+  result <- skill_dirs_from_option_or_envvar(
+    "btw.test.option",
+    "BTW_TEST_ENVVAR"
+  )
   expect_equal(result, normalizePath(dir_opt, mustWork = FALSE))
   expect_false(normalizePath(dir_env, mustWork = FALSE) %in% result)
 })
@@ -337,7 +346,10 @@ test_that("skill_dirs_from_option_or_envvar() splits on OS path separator and no
   dir2 <- withr::local_tempdir()
   raw <- paste(dir1, dir2, sep = .Platform$path.sep)
   withr::local_options("btw.test.option" = raw)
-  result <- skill_dirs_from_option_or_envvar("btw.test.option", "BTW_TEST_ENVVAR")
+  result <- skill_dirs_from_option_or_envvar(
+    "btw.test.option",
+    "BTW_TEST_ENVVAR"
+  )
   expect_length(result, 2)
   expect_equal(result, normalizePath(c(dir1, dir2), mustWork = FALSE))
 })
@@ -345,7 +357,10 @@ test_that("skill_dirs_from_option_or_envvar() splits on OS path separator and no
 test_that("skill_dirs_from_option_or_envvar() handles single path (no separator)", {
   dir1 <- withr::local_tempdir()
   withr::local_options("btw.test.option" = dir1)
-  result <- skill_dirs_from_option_or_envvar("btw.test.option", "BTW_TEST_ENVVAR")
+  result <- skill_dirs_from_option_or_envvar(
+    "btw.test.option",
+    "BTW_TEST_ENVVAR"
+  )
   expect_length(result, 1)
   expect_equal(result, normalizePath(dir1, mustWork = FALSE))
 })
@@ -353,7 +368,10 @@ test_that("skill_dirs_from_option_or_envvar() handles single path (no separator)
 test_that("skill_dirs_from_option_or_envvar() ignores NA entries in character-vector options", {
   dir1 <- withr::local_tempdir()
   withr::local_options("btw.test.option" = c(dir1, NA_character_))
-  result <- skill_dirs_from_option_or_envvar("btw.test.option", "BTW_TEST_ENVVAR")
+  result <- skill_dirs_from_option_or_envvar(
+    "btw.test.option",
+    "BTW_TEST_ENVVAR"
+  )
   expect_length(result, 1)
   expect_equal(result, normalizePath(dir1, mustWork = FALSE))
 })
@@ -444,7 +462,10 @@ test_that("skill_dirs_from_option_or_envvar() accepts a character vector option"
   dir1 <- withr::local_tempdir()
   dir2 <- withr::local_tempdir()
   withr::local_options("btw.test.option" = c(dir1, dir2))
-  result <- skill_dirs_from_option_or_envvar("btw.test.option", "BTW_TEST_ENVVAR")
+  result <- skill_dirs_from_option_or_envvar(
+    "btw.test.option",
+    "BTW_TEST_ENVVAR"
+  )
   expect_length(result, 2)
   expect_equal(result, normalizePath(c(dir1, dir2), mustWork = FALSE))
 })
@@ -462,15 +483,19 @@ test_that("btw_skills_directories() package-bundled skills are present even when
   if (nzchar(bundled) && dir.exists(bundled)) {
     expect_true(bundled %in% dirs)
   } else {
-    skip("btw bundled skills directory not found (dev environment without installed skills)")
+    skip(
+      "btw bundled skills directory not found (dev environment without installed skills)"
+    )
   }
 })
 
 test_that("btw_skills_directories() no duplicate when the same dir is listed twice in BTW_SKILLS_PATHS", {
   shared_dir <- withr::local_tempdir()
   dir.create(file.path(shared_dir, "a-skill"), recursive = TRUE)
-  writeLines("---\nname: a-skill\ndescription: A skill.\n---\n",
-             file.path(shared_dir, "a-skill", "SKILL.md"))
+  writeLines(
+    "---\nname: a-skill\ndescription: A skill.\n---\n",
+    file.path(shared_dir, "a-skill", "SKILL.md")
+  )
 
   withr::local_options(
     "btw.skills.paths" = c(shared_dir, shared_dir)
@@ -574,8 +599,16 @@ test_that("find_skill() finds a valid skill", {
 test_that("find_skill() returns the highest-priority version when skill exists in multiple dirs", {
   low_dir <- withr::local_tempdir()
   high_dir <- withr::local_tempdir()
-  create_temp_skill(name = "my-skill", description = "Low priority version", dir = low_dir)
-  create_temp_skill(name = "my-skill", description = "High priority version", dir = high_dir)
+  create_temp_skill(
+    name = "my-skill",
+    description = "Low priority version",
+    dir = low_dir
+  )
+  create_temp_skill(
+    name = "my-skill",
+    description = "High priority version",
+    dir = high_dir
+  )
   # high_dir last = higher priority (consistent with btw_skills_directories() semantics)
   local_skill_dirs(c(low_dir, high_dir))
 
@@ -1585,4 +1618,123 @@ test_that("skills prompt is included in btw_client() system prompt", {
 
   expect_match(system_prompt, "## Skills", fixed = TRUE)
   expect_match(system_prompt, "<name>skill-creator</name>", fixed = TRUE)
+})
+test_that("btw_skill_prompt() renders the <skill> block for one skill", {
+  dir <- withr::local_tempdir()
+  create_temp_skill(
+    "demo-skill",
+    dir = dir,
+    body = "\nDo the thing.\n",
+    extra_frontmatter = list(
+      compatibility = "Requires Python 3",
+      `allowed-tools` = "Read Bash"
+    )
+  )
+  local_skill_dirs(dir)
+
+  text <- btw_skill_prompt("demo-skill")
+  expect_type(text, "character")
+  expect_length(text, 1)
+
+  # the block carries the same fields as the btw_client() system prompt
+  expect_match(text, "<name>demo-skill</name>", fixed = TRUE)
+  expect_match(
+    text,
+    "<description>A test skill for unit testing.</description>",
+    fixed = TRUE
+  )
+  expect_match(text, "<location>.*SKILL\\.md</location>")
+  expect_match(
+    text,
+    "<compatibility>Requires Python 3</compatibility>",
+    fixed = TRUE
+  )
+  expect_match(text, "<allowed-tools>Read Bash</allowed-tools>", fixed = TRUE)
+
+  # the skill body is not part of the block
+  expect_false(grepl("Do the thing.", text, fixed = TRUE))
+})
+
+test_that("btw_skill_prompt() omits optional fields when absent", {
+  dir <- withr::local_tempdir()
+  create_temp_skill("demo-skill", dir = dir)
+  local_skill_dirs(dir)
+
+  text <- btw_skill_prompt("demo-skill")
+  expect_false(grepl("<compatibility>", text, fixed = TRUE))
+  expect_false(grepl("<allowed-tools>", text, fixed = TRUE))
+})
+
+test_that("btw_skill_prompt() errors for unknown or invalid skills", {
+  dir <- withr::local_tempdir()
+  create_temp_skill("demo-skill", dir = dir)
+  local_skill_dirs(dir)
+
+  expect_snapshot(error = TRUE, btw_skill_prompt("nope"))
+
+  broken_dir <- fs::dir_create(file.path(dir, "broken-skill"))
+  writeLines("No frontmatter here.", file.path(broken_dir, "SKILL.md"))
+  expect_snapshot(error = TRUE, btw_skill_prompt("broken-skill"))
+})
+
+test_that("btw_skills_register_slash_commands() registers discovered skills", {
+  skip_if_not_installed("shinychat")
+
+  dir <- withr::local_tempdir()
+  create_temp_skill("demo-skill", dir = dir)
+  local_skill_dirs(dir)
+
+  registered <- list()
+  chat <- list2env(list(
+    slash_command = function(
+      name,
+      description,
+      handler,
+      ...,
+      echo = NULL,
+      force = FALSE
+    ) {
+      stopifnot(grepl("^[a-zA-Z0-9_-]+$", name))
+      registered[[name]] <<- list(description = description, handler = handler)
+    },
+    update_user_input = function(...) NULL
+  ))
+
+  res <- expect_no_warning(btw_skills_register_slash_commands(chat))
+  expect_identical(res, chat)
+  expect_identical(names(registered), "demo-skill")
+  expect_length(formals(registered[["demo-skill"]]$handler), 1)
+})
+
+test_that("btw_skills_register_slash_commands() skips unusable names", {
+  skip_if_not_installed("shinychat")
+
+  dir <- withr::local_tempdir()
+  create_temp_skill("demo skill", dir = dir)
+  create_temp_skill("btw-news", dir = dir)
+  local_skill_dirs(dir)
+
+  registered <- list()
+  chat <- list2env(list(
+    slash_command = function(
+      name,
+      description,
+      handler,
+      ...,
+      echo = NULL,
+      force = FALSE
+    ) {
+      registered[[name]] <<- list(description = description, handler = handler)
+    },
+    update_user_input = function(...) NULL
+  ))
+
+  warns <- testthat::capture_warnings(btw_skills_register_slash_commands(chat))
+  expect_true(any(grepl("demo skill", warns, fixed = TRUE)))
+  expect_true(any(grepl("btw-news", warns, fixed = TRUE)))
+  expect_length(registered, 0)
+})
+
+test_that("btw_skills_register_slash_commands() requires a chat handle", {
+  expect_snapshot(error = TRUE, btw_skills_register_slash_commands(list()))
 })

@@ -135,7 +135,7 @@ btw_slash_commands_register <- function(chat, skills = TRUE) {
   }
 
   if (isTRUE(skills)) {
-    btw_slash_register_skills(chat)
+    btw_skills_register_slash_commands(chat)
   }
 
   invisible(chat)
@@ -291,67 +291,6 @@ btw_slash_command_failed <- function(chat, restore_text, err) {
   err <- simpleError(message, call = conditionCall(err))
 
   notifier(shiny::icon("triangle-exclamation"), restore_text, error = err)
-}
-
-btw_slash_register_skills <- function(chat) {
-  skills <- tryCatch(btw_skills_list(), error = function(e) NULL)
-
-  registered <- names(btw_slash_command_specs())
-
-  for (skill in skills) {
-    if (!grepl("^[a-zA-Z0-9_-]+$", skill$name)) {
-      cli::cli_warn(c(
-        "Cannot register skill {.val {skill$name}} as a slash command.",
-        "i" = "Slash command names may only contain letters, numbers, underscores, and hyphens."
-      ))
-      next
-    }
-    if (skill$name %in% registered) {
-      cli::cli_warn(c(
-        "Skill {.val {skill$name}} was not registered as a slash command",
-        "i" = "A {.val /{skill$name}} command already exists."
-      ))
-      next
-    }
-
-    chat$slash_command(
-      name = skill$name,
-      description = skill$description,
-      handler = btw_slash_skill_handler(chat, skill$name)
-    )
-  }
-
-  invisible(chat)
-}
-
-btw_slash_skill_handler <- function(chat, name) {
-  function(content) {
-    tryCatch(
-      {
-        skill <- find_skill(name)
-        skill_text <- paste(
-          readLines(skill$path, warn = FALSE),
-          collapse = "\n"
-        )
-
-        content@text <- if (nzchar(content@user_text)) {
-          paste(skill_text, content@user_text, sep = "\n\n")
-        } else {
-          skill_text
-        }
-
-        stream <- chat$client$stream(content)
-        chat$append(stream)
-      },
-      error = function(e) {
-        btw_slash_command_failed(
-          chat,
-          btw_slash_join_command(name, content@user_text %||% ""),
-          e
-        )
-      }
-    )
-  }
 }
 
 # nocov end

@@ -99,6 +99,7 @@ Collate:
     'btw_client_app.R'
     'btw_client_app_core.R'
     'btw_client_app_legacy.R'
+    'btw_client_app_slash_commands.R'
     'btw_client_app_v05.R'
     'btw_task.R'
     'btw_this.R'
