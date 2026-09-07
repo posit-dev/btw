@@ -711,16 +711,16 @@ btw_tool_pkg_src_search_impl <- function(
       use_regex = use_regex,
       show_lines = TRUE
     )
-    data <- S7::prop(res, "value")
-    if (nrow(data) > 0) {
-      data$term <- term
-    } else {
-      data$term <- character()
+    data <- jsonlite::fromJSON(S7::prop(res, "value"))
+    if (!is.data.frame(data) || nrow(data) == 0) {
+      return(NULL)
     }
+
+    data$term <- term
     data
   })
 
-  data <- do.call(rbind, results)
+  data <- do.call(rbind, results) %||% data.frame()
   rownames(data) <- NULL
 
   if (materialized) {

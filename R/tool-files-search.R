@@ -102,7 +102,12 @@ btw_tool_files_search_factory <- function(
     cli::cli_progress_step(
       "Indexing files in {.path {fs::path_real(path)}} for code search"
     )
-    db_create_local_files(path, extensions, exclusions, restrict_to_wd = restrict_to_wd)
+    db_create_local_files(
+      path,
+      extensions,
+      exclusions,
+      restrict_to_wd = restrict_to_wd
+    )
   }
 
   function(
@@ -150,7 +155,7 @@ btw_tool_files_search_factory <- function(
     res$size <- fs::as_fs_bytes(res$size)
 
     BtwToolResult(
-      res,
+      as_json_rowwise(res),
       extra = list(
         display = list(
           markdown = paste0(

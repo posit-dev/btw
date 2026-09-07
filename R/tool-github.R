@@ -248,6 +248,8 @@ btw_tool_github_impl <- function(code, fields = "default") {
   if (inherits(lv, "gh_response")) {
     lv <- jsonlite::toJSON(lv, auto_unbox = TRUE, pretty = TRUE)
     lv <- sprintf("<github_api_result>\n%s\n</github_api_result>", lv)
+  } else if (is.data.frame(lv)) {
+    lv <- as_json_rowwise(lv)
   }
   if (is_string(res@value)) {
     if (inherits(res@value, "btw_run_r_no_output")) {
