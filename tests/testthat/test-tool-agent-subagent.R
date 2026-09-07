@@ -82,7 +82,7 @@ test_that("subagent_client() consults btw.md if options are unset", {
 
   agent_client <- subagent_client()
   expect_equal(agent_client$get_provider()@name, "OpenRouter")
-  expect_equal(agent_client$get_provider()@model, "super-cool-model")
+  expect_equal(agent_client$get_model(), "super-cool-model")
 
   expect_equal(
     names(agent_client$get_tools()),
