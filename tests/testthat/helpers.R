@@ -41,6 +41,9 @@ expect_btw_tool_result <- function(
 ) {
   expect_s3_class(x, "ellmer::ContentToolResult")
   expect_type(x@value, expect_value_type)
+  if (identical(expect_value_type, "character")) {
+    expect_length(x@value, 1)
+  }
   if (has_data) {
     expect_s3_class(x@extra$data, "data.frame")
   }
