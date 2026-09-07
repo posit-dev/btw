@@ -7,7 +7,7 @@
 btw_skills_register_slash_commands(chat, reserved = character())
 }
 \arguments{
-\item{chat}{The chat handle returned by \code{\link[shinychat:chat_server]{shinychat::chat_server()}}.}
+\item{chat}{The chat handle returned by \code{shinychat::chat_server()}.}
 
 \item{reserved}{Skill names to skip, as a character vector. Pass the names
 of slash commands you registered yourself so a skill can't take their
@@ -19,7 +19,7 @@ commands.}
 }
 \description{
 Registers a slash command for every skill discovered by the skill tool,
-using the chat handle returned by \code{\link[shinychat:chat_server]{shinychat::chat_server()}}. Requires
+using the chat handle returned by \code{shinychat::chat_server()}. Requires
 shinychat 0.4.0.9000 or later.
 
 Each skill is registered under its own name, e.g. \verb{/skill-creator}. When the
@@ -37,7 +37,7 @@ whose names match btw's own \verb{/btw-*} slash commands and any names passed to
 \code{reserved}.
 }
 \examples{
-\donttest{
+\dontrun{
 server <- shinychat::chat_server("chat", client = ellmer::chat_openai())
 btw_skills_register_slash_commands(server)
 }

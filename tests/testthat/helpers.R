@@ -217,3 +217,16 @@ local_btw_md <- function(project = NULL, user = NULL, .env = caller_env()) {
 shinychat_wire_blocks <- function() {
   "tool_result_display" %in% getNamespaceExports("shinychat")
 }
+
+# shinychat 0.5.0 features (slash commands, page_chat, the history API) are
+# available in the dev version 0.4.0.9000 but not in the CRAN release.
+has_shinychat_v05 <- function() {
+  tryCatch(
+    utils::packageVersion("shinychat") >= "0.4.0.9000",
+    error = function(e) FALSE
+  )
+}
+
+skip_if_no_shinychat_v05 <- function() {
+  skip_if_not_installed("shinychat", "0.4.0.9000")
+}

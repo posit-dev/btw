@@ -28,7 +28,7 @@ cat(btw_skill_prompt("skill-creator"))
 }
 \seealso{
 \code{\link[=btw_skills_register_slash_commands]{btw_skills_register_slash_commands()}} to expose skills as slash
-commands in a \code{\link[shinychat:chat_server]{shinychat::chat_server()}} session.
+commands in a \code{shinychat::chat_server()} session.
 
 Other skills:
 \code{\link[=btw_skill_install_github]{btw_skill_install_github()}},

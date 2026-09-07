@@ -75,14 +75,16 @@ test_that("btw_app shells render both the page_chat and sidebar layouts", {
     "test-model"
   })
 
-  app <- btw_app_from_client(client = fake, page_style = "page_chat")
-  html <- as.character(app$ui(list()))
-  expect_match(html, "shiny-chat-page", fixed = TRUE)
-  expect_match(html, "show_tools", fixed = TRUE)
-  expect_match(html, "show_sys_prompt", fixed = TRUE)
-  expect_match(html, "status_bar", fixed = TRUE)
-  expect_match(html, "tools_offcanvas", fixed = TRUE)
-  expect_no_match(html, "clear_chat", fixed = TRUE)
+  if (has_shinychat_v05()) {
+    app <- btw_app_from_client(client = fake, page_style = "page_chat")
+    html <- as.character(app$ui(list()))
+    expect_match(html, "shiny-chat-page", fixed = TRUE)
+    expect_match(html, "show_tools", fixed = TRUE)
+    expect_match(html, "show_sys_prompt", fixed = TRUE)
+    expect_match(html, "status_bar", fixed = TRUE)
+    expect_match(html, "tools_offcanvas", fixed = TRUE)
+    expect_no_match(html, "clear_chat", fixed = TRUE)
+  }
 
   app_legacy <- btw_app_from_client(client = fake, page_style = "sidebar")
   html_legacy <- suppressWarnings(as.character(app_legacy$ui(list())))
@@ -94,9 +96,13 @@ test_that("status bar counters reset on new chat and restore on history load", {
   client <- list2env(list(
     get_model = function() "fake-model",
     get_provider = function() {
-      S7::new_class("P", properties = list(name = S7::class_character))(name = "claude")
+      S7::new_class("P", properties = list(name = S7::class_character))(
+        name = "claude"
+      )
     },
-    get_tokens = function() data.frame(input = 100, output = 50, cached_input = 0),
+    get_tokens = function() {
+      data.frame(input = 100, output = 50, cached_input = 0)
+    },
     get_cost = function() 0.42
   ))
   conv_id <- shiny::reactiveVal(NULL)

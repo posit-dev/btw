@@ -170,7 +170,7 @@ btw_skill_resolve <- function(skill_name) {
 #'
 #' @family skills
 #' @seealso [btw_skills_register_slash_commands()] to expose skills as slash
-#'   commands in a [shinychat::chat_server()] session.
+#'   commands in a \code{shinychat::chat_server()} session.
 #' @export
 btw_skill_prompt <- function(skill_name) {
   skill <- btw_skill_resolve(skill_name)
@@ -1362,7 +1362,7 @@ install_skill_from_dir <- function(
 #'
 #' @description
 #' Registers a slash command for every skill discovered by the skill tool,
-#' using the chat handle returned by [shinychat::chat_server()]. Requires
+#' using the chat handle returned by \code{shinychat::chat_server()}. Requires
 #' shinychat 0.4.0.9000 or later.
 #'
 #' Each skill is registered under its own name, e.g. `/skill-creator`. When the
@@ -1379,7 +1379,7 @@ install_skill_from_dir <- function(
 #' whose names match btw's own `/btw-*` slash commands and any names passed to
 #' `reserved`.
 #'
-#' @param chat The chat handle returned by [shinychat::chat_server()].
+#' @param chat The chat handle returned by \code{shinychat::chat_server()}.
 #' @param reserved Skill names to skip, as a character vector. Pass the names
 #'   of slash commands you registered yourself so a skill can't take their
 #'   place. btw_app(), for example, passes its own `/new` and `/clear`
@@ -1388,7 +1388,7 @@ install_skill_from_dir <- function(
 #' @return `chat`, invisibly.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' server <- shinychat::chat_server("chat", client = ellmer::chat_openai())
 #' btw_skills_register_slash_commands(server)
 #' }

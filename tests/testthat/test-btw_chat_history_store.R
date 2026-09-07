@@ -1,4 +1,5 @@
 skip_if_not_installed("duckdb")
+skip_if_no_shinychat_v05()
 
 history_record <- function(
   id,

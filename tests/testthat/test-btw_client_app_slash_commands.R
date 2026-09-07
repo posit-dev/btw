@@ -104,6 +104,8 @@ test_that("btw_slash_eval_at() evaluates context and errors cleanly", {
 })
 
 test_that("btw_slash_append_context() shows and clears the running toast", {
+  skip_if_no_shinychat_v05()
+
   specs <- btw_slash_command_specs()
 
   state <- list2env(list(attachments = list(), restored = NULL))
@@ -173,10 +175,7 @@ test_that("running toast helpers no-op outside a session", {
 })
 
 test_that("btw_slash_skill_handler() combines skill text and user input", {
-  skip_if(
-    !"ContentSlashCommand" %in% getNamespaceExports("shinychat"),
-    "shinychat slash commands not available"
-  )
+  skip_if_no_shinychat_v05()
 
   dir <- fs::dir_create(withr::local_tempfile(fileext = "skill"))
   writeLines(

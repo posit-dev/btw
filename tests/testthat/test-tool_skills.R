@@ -1678,7 +1678,7 @@ test_that("btw_skill_prompt() errors for unknown or invalid skills", {
 })
 
 test_that("btw_skills_register_slash_commands() registers discovered skills", {
-  skip_if_not_installed("shinychat")
+  skip_if_no_shinychat_v05()
 
   dir <- withr::local_tempdir()
   create_temp_skill("demo-skill", dir = dir)
@@ -1707,7 +1707,7 @@ test_that("btw_skills_register_slash_commands() registers discovered skills", {
 })
 
 test_that("btw_skills_register_slash_commands() skips unusable names", {
-  skip_if_not_installed("shinychat")
+  skip_if_no_shinychat_v05()
 
   dir <- withr::local_tempdir()
   create_temp_skill("demo skill", dir = dir)
@@ -1736,11 +1736,13 @@ test_that("btw_skills_register_slash_commands() skips unusable names", {
 })
 
 test_that("btw_skills_register_slash_commands() requires a chat handle", {
+  skip_if_no_shinychat_v05()
+
   expect_snapshot(error = TRUE, btw_skills_register_slash_commands(list()))
 })
 
 test_that("btw_skills_register_slash_commands() skips reserved names", {
-  skip_if_not_installed("shinychat")
+  skip_if_no_shinychat_v05()
 
   dir <- withr::local_tempdir()
   create_temp_skill("new", dir = dir)
@@ -1748,7 +1750,14 @@ test_that("btw_skills_register_slash_commands() skips reserved names", {
 
   registered <- list()
   chat <- list2env(list(
-    slash_command = function(name, description, handler, ..., echo = NULL, force = FALSE) {
+    slash_command = function(
+      name,
+      description,
+      handler,
+      ...,
+      echo = NULL,
+      force = FALSE
+    ) {
       registered[[name]] <<- list(description = description, handler = handler)
     },
     update_user_input = function(...) NULL
