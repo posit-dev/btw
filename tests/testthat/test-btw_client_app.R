@@ -89,3 +89,55 @@ test_that("btw_app shells render both the page_chat and sidebar layouts", {
   expect_match(html_legacy, "tools_sidebar", fixed = TRUE)
   expect_match(html_legacy, "chat-chat", fixed = TRUE)
 })
+
+test_that("status bar counters reset on new chat and restore on history load", {
+  client <- list2env(list(
+    get_model = function() "fake-model",
+    get_provider = function() {
+      S7::new_class("P", properties = list(name = S7::class_character))(name = "claude")
+    },
+    get_tokens = function() data.frame(input = 100, output = 50, cached_input = 0),
+    get_cost = function() 0.42
+  ))
+  conv_id <- shiny::reactiveVal(NULL)
+  chat <- list2env(list(
+    client = client,
+    status = function() "idle",
+    last_turn = shiny::reactive(NULL),
+    last_input = shiny::reactive(NULL),
+    history = list(conversation_id = conv_id),
+    conv_id = conv_id
+  ))
+
+  shiny::testServer(
+    btw_status_bar_server,
+    args = list(id = "status_bar", models = NULL, buttons = NULL, chat = chat),
+    {
+      session$flushReact()
+      # a fresh chat starts with zeroed counters
+      expect_identical(
+        unname(unlist(session$returned$tokens())),
+        c(0, 0, 0)
+      )
+      expect_identical(session$returned$cost(), 0)
+
+      # loading an old conversation restores its counters
+      conv_id("abc")
+      session$flushReact()
+      expect_identical(
+        unname(unlist(session$returned$tokens())),
+        c(100, 50, 0)
+      )
+      expect_identical(session$returned$cost(), 0.42)
+
+      # starting a new chat zeroes them again
+      conv_id(NULL)
+      session$flushReact()
+      expect_identical(
+        unname(unlist(session$returned$tokens())),
+        c(0, 0, 0)
+      )
+      expect_identical(session$returned$cost(), 0)
+    }
+  )
+})

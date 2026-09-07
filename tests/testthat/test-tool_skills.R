@@ -1738,3 +1738,25 @@ test_that("btw_skills_register_slash_commands() skips unusable names", {
 test_that("btw_skills_register_slash_commands() requires a chat handle", {
   expect_snapshot(error = TRUE, btw_skills_register_slash_commands(list()))
 })
+
+test_that("btw_skills_register_slash_commands() skips reserved names", {
+  skip_if_not_installed("shinychat")
+
+  dir <- withr::local_tempdir()
+  create_temp_skill("new", dir = dir)
+  local_skill_dirs(dir)
+
+  registered <- list()
+  chat <- list2env(list(
+    slash_command = function(name, description, handler, ..., echo = NULL, force = FALSE) {
+      registered[[name]] <<- list(description = description, handler = handler)
+    },
+    update_user_input = function(...) NULL
+  ))
+
+  warns <- testthat::capture_warnings(
+    btw_skills_register_slash_commands(chat, reserved = c("new", "clear"))
+  )
+  expect_true(any(grepl('"new"', warns, fixed = TRUE)))
+  expect_length(registered, 0)
+})

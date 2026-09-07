@@ -4,10 +4,15 @@
 \alias{btw_skills_register_slash_commands}
 \title{Register skill slash commands in a chat}
 \usage{
-btw_skills_register_slash_commands(chat)
+btw_skills_register_slash_commands(chat, reserved = character())
 }
 \arguments{
 \item{chat}{The chat handle returned by \code{\link[shinychat:chat_server]{shinychat::chat_server()}}.}
+
+\item{reserved}{Skill names to skip, as a character vector. Pass the names
+of slash commands you registered yourself so a skill can't take their
+place. btw_app(), for example, passes its own \verb{/new} and \verb{/clear}
+commands.}
 }
 \value{
 \code{chat}, invisibly.
@@ -28,7 +33,8 @@ input and shows a toast with the error.
 
 Slash command names may only contain letters, numbers, underscores, and
 hyphens. Skills with other names are skipped with a warning, as are skills
-whose names match btw's own \verb{/btw-*} slash commands.
+whose names match btw's own \verb{/btw-*} slash commands and any names passed to
+\code{reserved}.
 }
 \examples{
 \donttest{

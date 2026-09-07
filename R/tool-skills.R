@@ -1376,9 +1376,14 @@ install_skill_from_dir <- function(
 #'
 #' Slash command names may only contain letters, numbers, underscores, and
 #' hyphens. Skills with other names are skipped with a warning, as are skills
-#' whose names match btw's own `/btw-*` slash commands.
+#' whose names match btw's own `/btw-*` slash commands and any names passed to
+#' `reserved`.
 #'
 #' @param chat The chat handle returned by [shinychat::chat_server()].
+#' @param reserved Skill names to skip, as a character vector. Pass the names
+#'   of slash commands you registered yourself so a skill can't take their
+#'   place. btw_app(), for example, passes its own `/new` and `/clear`
+#'   commands.
 #'
 #' @return `chat`, invisibly.
 #'
@@ -1392,7 +1397,7 @@ install_skill_from_dir <- function(
 #' @seealso [btw_skill_prompt()] for a skill's text and [btw-config] for the
 #'   skill discovery locations.
 #' @export
-btw_skills_register_slash_commands <- function(chat) {
+btw_skills_register_slash_commands <- function(chat, reserved = character()) {
   rlang::check_installed("shinychat", version = "0.4.0.9000")
 
   if (is.null(chat$slash_command)) {
@@ -1404,7 +1409,7 @@ btw_skills_register_slash_commands <- function(chat) {
 
   skills <- tryCatch(btw_skills_list(), error = function(e) NULL)
 
-  reserved <- names(btw_slash_command_specs())
+  reserved <- c(names(btw_slash_command_specs()), reserved)
 
   for (skill in skills) {
     if (!grepl("^[a-zA-Z0-9_-]+$", skill$name)) {

@@ -256,3 +256,77 @@ test_that("btw_slash_skill_handler() combines skill text and user input", {
   expect_identical(restored, "/test-skill oh no")
   expect_identical(toasts, "/test-skill oh no")
 })
+
+test_that("btw_slash_new_chat_handler() starts a new chat via the history controller", {
+  state <- list2env(list(cleared = 0, new_chats = 0))
+  chat <- list2env(list(
+    status = function() "idle",
+    clear = function(...) state$cleared <- state$cleared + 1,
+    update_user_input = function(...) NULL
+  ))
+
+  controller <- list2env(list(new_chat = function() {
+    state$new_chats <- state$new_chats + 1
+  }))
+  local_mocked_bindings(
+    btw_app_history_controller = function(...) controller
+  )
+
+  btw_slash_new_chat_handler(chat, "new")()
+  expect_identical(state$new_chats, 1)
+  expect_identical(state$cleared, 0)
+
+  # without a history controller, clear the conversation instead
+  local_mocked_bindings(
+    btw_app_history_controller = function(...) NULL
+  )
+
+  btw_slash_new_chat_handler(chat, "clear")()
+  expect_identical(state$cleared, 1)
+  expect_identical(state$new_chats, 1)
+
+  # streaming: refuse and surface the error like other commands
+  restored <- character()
+  toasts <- character()
+  chat$update_user_input <- function(value = NULL, focus = FALSE, ...) {
+    restored <<- c(restored, value)
+  }
+  local_mocked_bindings(
+    notifier = function(icon, action, error = NULL, ...) {
+      toasts <<- c(toasts, action)
+    }
+  )
+  chat$status <- function() "streaming"
+
+  btw_slash_new_chat_handler(chat, "new")()
+  expect_identical(restored, "/new")
+  expect_identical(toasts, "/new")
+})
+
+test_that("btw_slash_register_new_chat_commands() registers /new and /clear", {
+  registered <- list()
+  chat <- list2env(list(
+    slash_command = function(
+      name,
+      description,
+      handler,
+      ...,
+      echo = NULL,
+      force = FALSE
+    ) {
+      registered[[name]] <<- list(description = description, handler = handler)
+    }
+  ))
+
+  btw_slash_register_new_chat_commands(chat)
+  expect_identical(names(registered), c("new", "clear"))
+  expect_identical(
+    lapply(registered, function(cmd) length(formals(cmd$handler))),
+    list(new = 0L, clear = 0L)
+  )
+  expect_false(isTRUE(registered[["new"]]$echo))
+})
+
+test_that("btw_app_history_controller() returns NULL without a session", {
+  expect_null(btw_app_history_controller())
+})

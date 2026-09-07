@@ -602,6 +602,28 @@ btw_status_bar_server <- function(
         chat_cost(chat_get_cost(chat$client))
       })
 
+      # When the active conversation changes (a new chat, or an old chat loaded
+      # from the history), the counters follow: restored from the client's
+      # turns for a loaded conversation, zeroed for a new chat.
+      if (!is.null(chat$history)) {
+        shiny::observeEvent(
+          chat$history$conversation_id(),
+          ignoreNULL = FALSE,
+          {
+            if (is.null(chat$history$conversation_id())) {
+              chat_tokens(list(input = 0, output = 0, cached = 0))
+              chat_cost(0)
+            } else {
+              chat_tokens(
+                chat_get_tokens(chat$client) %||%
+                  list(input = 0, output = 0, cached = 0)
+              )
+              chat_cost(chat_get_cost(chat$client))
+            }
+          }
+        )
+      }
+
       send_status_message <- function(id, status, ...) {
         session$sendCustomMessage(
           "btw_update_status",
@@ -719,7 +741,12 @@ btw_status_bar_server <- function(
 
       return(
         list(
-          clear_chat = shiny::reactive(input$clear_chat)
+          clear_chat = shiny::reactive(input$clear_chat),
+          tokens = shiny::reactive(
+            chat_tokens(),
+            label = "btw_app_tokens_reactive"
+          ),
+          cost = shiny::reactive(chat_cost(), label = "btw_app_cost_reactive")
         )
       )
     }

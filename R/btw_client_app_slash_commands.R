@@ -134,11 +134,80 @@ btw_slash_commands_register <- function(chat, skills = TRUE) {
     )
   }
 
+  btw_slash_register_new_chat_commands(chat)
+
   if (isTRUE(skills)) {
-    btw_skills_register_slash_commands(chat)
+    btw_skills_register_slash_commands(chat, reserved = c("new", "clear"))
   }
 
   invisible(chat)
+}
+
+# /new and /clear both start a new chat: the current conversation is saved to
+# the chat history (when enabled), the chat UI and the client's turns are
+# cleared, and the status counters reset. With history disabled they clear the
+# conversation without saving.
+btw_slash_register_new_chat_commands <- function(chat) {
+  for (name in c("new", "clear")) {
+    chat$slash_command(
+      name = name,
+      description = paste(
+        "Start a new chat, saving the current conversation to the chat history.",
+        "Chat history must be enabled for the conversation to be saved."
+      ),
+      handler = btw_slash_new_chat_handler(chat, name),
+      echo = FALSE
+    )
+  }
+
+  invisible(chat)
+}
+
+btw_slash_new_chat_handler <- function(chat, name) {
+  function() {
+    tryCatch(
+      {
+        if (identical(chat$status(), "streaming")) {
+          cli::cli_abort(
+            "Wait for the current response to finish before starting a new chat."
+          )
+        }
+
+        controller <- btw_app_history_controller()
+        if (is.null(controller)) {
+          chat$clear(client_history = "clear")
+        } else {
+          controller$new_chat()
+        }
+
+        session <- shiny::getDefaultReactiveDomain()
+        if (!is.null(session)) {
+          # reset the token and cost counters in the status bar, the same
+          # message the Clear chat button sends from the status_bar module
+          session$sendCustomMessage(
+            "btw_reset_status",
+            list(ns = "status_bar-")
+          )
+        }
+      },
+      error = function(e) {
+        btw_slash_command_failed(chat, paste0("/", name), e)
+      }
+    )
+  }
+}
+
+# The HistoryController for the app's chat, stored by shinychat in the session.
+btw_app_history_controller <- function(
+  session = shiny::getDefaultReactiveDomain(),
+  id = "chat"
+) {
+  if (is.null(session)) {
+    return(NULL)
+  }
+
+  info <- session$userData$shinychat
+  info[[session$ns(paste0(id, ".history-controller"))]]
 }
 
 btw_slash_at_string <- function(spec, user_text = "") {
