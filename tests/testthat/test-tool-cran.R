@@ -112,6 +112,7 @@ test_that("btw_tool_cran_versions() combines archive and current releases", {
     )
   )
   local_mocked_bindings(
+    btw_has_internet = function() TRUE,
     cran_archive_page = function(package_name) archive,
     cran_current_version = function(package_name) {
       cran_versions_data(
@@ -149,6 +150,7 @@ test_that("btw_tool_cran_versions() combines archive and current releases", {
 
 test_that("cran_versions() supports archived packages", {
   local_mocked_bindings(
+    btw_has_internet = function() TRUE,
     cran_archive_versions = function(package_name) {
       cran_versions_data("0.1.0", as.Date("2020-01-01"))
     },
@@ -156,6 +158,11 @@ test_that("cran_versions() supports archived packages", {
   )
 
   expect_equal(cran_versions("archivedpkg")$version, "0.1.0")
+})
+
+test_that("cran_versions() requires an internet connection", {
+  local_mocked_bindings(btw_has_internet = function() FALSE)
+  expect_error(cran_versions("dplyr"), "internet connection")
 })
 
 test_that("cran_versions_data() returns an empty, typed result", {
@@ -171,6 +178,7 @@ test_that("cran_versions_data() returns an empty, typed result", {
 
 test_that("cran_versions() filters releases by inclusive date range", {
   local_mocked_bindings(
+    btw_has_internet = function() TRUE,
     cran_current_version = function(package_name) {
       cran_versions_data("1.2.0", as.Date("2024-01-15"))
     },

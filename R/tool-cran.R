@@ -350,6 +350,12 @@ cran_versions <- function(package_name, after = NULL, before = NULL) {
     cli::cli_abort("{.arg after} must be on or before {.arg before}.")
   }
 
+  if (!btw_has_internet()) {
+    cli::cli_abort(
+      "An internet connection is required to look up CRAN releases."
+    )
+  }
+
   current <- cran_current_version(package_name)
   archived <- cran_archive_versions(package_name)
   versions <- rbind(current, archived)
@@ -417,10 +423,14 @@ cran_archive_versions <- function(package_name) {
     character(1)
   )
 
-  dates <- vapply(rows, function(row) {
-    cells <- xml2::xml_find_all(row, "./td")
-    trimws(xml2::xml_text(cells[[3]]))
-  }, character(1))
+  dates <- vapply(
+    rows,
+    function(row) {
+      cells <- xml2::xml_find_all(row, "./td")
+      trimws(xml2::xml_text(cells[[3]]))
+    },
+    character(1)
+  )
 
   keep <- !is.na(versions)
   released_at <- format_cran_timestamp(dates[keep])
