@@ -61,7 +61,8 @@ the current project. By default, btw will look for an \code{llms.txt} file in
 the your current working directory or its parents. Set \code{path_llms_txt = FALSE} to skip looking for an \code{llms.txt} file.}
 
 \item{messages}{A list of initial messages to show in the chat, passed to
-\code{\link[shinychat:chat_mod_ui]{shinychat::chat_mod_ui()}}.}
+\code{\link[shinychat:chat_mod_ui]{shinychat::chat_mod_ui()}}. With shinychat >= 0.5.0 the messages are
+replayed into the chat when the app session starts.}
 
 \item{model_choices}{Can be one of \code{"btw_md"} (model choices from your
 \code{path_btw} configuration), \code{"provider"} (models from the provider API),

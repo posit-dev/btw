@@ -30,20 +30,11 @@ function initializeStatusCountups() {
   return elements.length > 0
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  if (initializeStatusCountups()) return
+document.addEventListener("DOMContentLoaded", initializeStatusCountups)
 
-  let attempt = 0
-  const maxAttempts = 5
-  const baseDelay = 100
-
-  function retry() {
-    attempt++
-    if (initializeStatusCountups() || attempt >= maxAttempts) return
-    setTimeout(retry, baseDelay * Math.pow(2, attempt))
-  }
-
-  setTimeout(retry, baseDelay)
+new MutationObserver(() => initializeStatusCountups()).observe(document.body, {
+  childList: true,
+  subtree: true,
 })
 
 if (typeof Shiny !== "undefined") {
@@ -352,7 +343,7 @@ function toggleShortcutsModal(e) {
     const modifierKeyLabel = isMac ? "⌘" : "Ctrl"
 
     const shortcuts = [
-      { action: "Toggle btw tools sidebar", keys: modifierKeyLabel + "+B" },
+      { action: "Toggle btw tools panel", keys: modifierKeyLabel + "+B" },
       { action: "Focus chat input", keys: modifierKeyLabel + "+." },
       { action: "Show keyboard shortcuts", keys: "?" },
     ]
@@ -414,6 +405,14 @@ document.addEventListener("keydown", function (e) {
   if (!platformCmdOrCtrl(e)) return
   if (e.key.toLowerCase() !== "b") return
 
+  if (document.querySelector("shiny-chat-page")) {
+    e.preventDefault()
+    e.stopPropagation()
+    Shiny.setInputValue("show_tools", Math.random(), { priority: "event" })
+    return
+  }
+
+  // Legacy shinychat 0.4 sidebar; delete when btw requires shinychat >= 0.5.0
   const el = document.getElementById("tools_sidebar")
   if (el) {
     const sidebarHadFocus = el.contains(document.activeElement)
@@ -435,6 +434,18 @@ document.addEventListener("keydown", function (e) {
         { once: true },
       )
     }
+  }
+})
+
+document.addEventListener("shown.bs.offcanvas", function (e) {
+  if (e.target.id === "tools_offcanvas") {
+    e.target.querySelector("button")?.focus()
+  }
+})
+
+document.addEventListener("hidden.bs.offcanvas", function (e) {
+  if (e.target.id === "tools_offcanvas") {
+    focusChatInput()
   }
 })
 

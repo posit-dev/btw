@@ -1,5 +1,6 @@
 :root {
   --bslib-sidebar-width: max(30vw, 275px);
+  --shiny-chat-page-title-font-weight: 400;
 }
 
 .opacity-100-hover:hover {
@@ -23,8 +24,12 @@ aside#tools_sidebar {
   box-shadow: 2px 2px 5px rgba(var(--bs-emphasis-color-rgb), 10%);
 }
 
-.btw-tools-controls {
-  display: contents;
+.btw-tools-controls > .overflow-y-auto {
+  min-height: 0;
+}
+
+#tools_offcanvas .offcanvas-body {
+  padding-inline: 0.5rem 1rem;
 }
 
 .btw-tools-controls[disabled] a {
@@ -64,19 +69,19 @@ shiny-chat-message .message-icon {
   text-decoration: line-through;
 }
 
-.status-footer a {
+.btw-status-bar a {
   color: inherit;
 }
-.status-footer svg {
+.btw-status-bar svg {
   height: 1em;
   width: 1em;
 }
-.status-footer .status-tokens,
-.status-footer .status-cost {
+.btw-status-bar .status-tokens,
+.btw-status-bar .status-cost {
   display: inline-flex;
   gap: 0.75rem;
 }
-.status-footer .status-cost {
+.btw-status-bar .status-cost {
   margin-left: 0.5rem;
 }
 .modal {

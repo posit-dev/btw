@@ -82,7 +82,7 @@ Suggests:
     tibble,
     usethis
 Config/Needs/website: brand.yml, tidyverse/tidytemplate
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.0
 Config/testthat/edition: 3
 Config/testthat/parallel: true
 Config/testthat/start-first: web, news, covr, search
@@ -96,6 +96,9 @@ Collate:
     'btw.R'
     'btw_client.R'
     'btw_client_app.R'
+    'btw_client_app_core.R'
+    'btw_client_app_legacy.R'
+    'btw_client_app_v05.R'
     'btw_task.R'
     'btw_this.R'
     'cli.R'
