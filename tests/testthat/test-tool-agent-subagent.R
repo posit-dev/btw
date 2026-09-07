@@ -562,31 +562,106 @@ test_that("subagent recursion is prevented in default tools", {
   expect_true(length(tool_names) > 0)
 })
 
-test_that("subagent_render_content_html() handles shinychat cards on both protocols", {
+test_that("subagent_render_content_html() renders tool calls and results", {
   skip_if_not_installed("evaluate")
 
-  expect_identical(subagent_render_content_html("plain text"), "plain text")
+  expect_identical(
+    subagent_render_content_html(ellmer::ContentText("**hi**")),
+    "<p><strong>hi</strong></p>\n"
+  )
+
+  req <- ellmer::ContentToolRequest(
+    id = "test",
+    name = "btw_tool_run_r",
+    arguments = list(code = "2 + 2", `_intent` = ""),
+    tool = NULL
+  )
   expect_match(
-    subagent_render_content_html(htmltools::tags$b("bold")),
-    "<b>bold</b>",
+    subagent_render_content_html(req),
+    'class="language-r"',
+    fixed = TRUE
+  )
+  expect_match(
+    subagent_render_content_html(req),
+    "btw_tool_run_r(code = ",
     fixed = TRUE
   )
 
-  result <- btw:::btw_tool_run_r_impl("2 + 2")
-  result@request <- ellmer::ContentToolRequest(
-    id = "test-run-r",
+  run_result <- btw:::btw_tool_run_r_impl("2 + 2")
+  run_html <- subagent_render_content_html(run_result)
+  expect_match(run_html, "btw-run-output", fixed = TRUE)
+  expect_match(run_html, ">[1] 4<", fixed = TRUE)
+
+  plain <- ellmer::ContentToolResult(value = "done")
+  expect_match(
+    subagent_render_content_html(plain),
+    ">done<",
+    fixed = TRUE
+  )
+
+  json_result <- ellmer::ContentToolResult(value = list(a = 1))
+  expect_match(
+    subagent_render_content_html(json_result),
+    "a",
+    fixed = TRUE
+  )
+})
+
+test_that("subagent_render_content_html() collapses wrapped tool calls", {
+  withr::local_options(width = 30)
+  req <- ellmer::ContentToolRequest(
+    id = "test",
+    name = "btw_tool_run_r",
+    arguments = list(
+      code = paste(rep("some long code here", 20), collapse = " "),
+      `_intent` = ""
+    ),
+    tool = NULL
+  )
+  expect_gt(length(format(req, show = "call")), 1)
+
+  html <- subagent_render_content_html(req)
+  expect_type(html, "character")
+  expect_length(html, 1)
+  expect_match(html, "btw_tool_run_r(code = ", fixed = TRUE)
+})
+
+test_that("subagent_render_turn_html() pairs tool calls and drops empty thinking", {
+  skip_if_not_installed("evaluate")
+
+  req <- ellmer::ContentToolRequest(
+    id = "call-1",
     name = "btw_tool_run_r",
     arguments = list(code = "2 + 2", `_intent` = ""),
-    tool = ellmer::tool(
-      function(code) NULL,
-      name = "btw_tool_run_r",
-      description = "Run R code",
-      arguments = list(code = ellmer::type_string("The R code to run"))
+    tool = NULL
+  )
+  run <- btw:::btw_tool_run_r_impl("2 + 2")
+  run@request <- req
+
+  turn <- ellmer::Turn(
+    "assistant",
+    list(
+      ellmer::ContentThinking("   "),
+      req,
+      run
     )
   )
-  rendered <- shinychat::contents_shinychat(result)
-  card_html <- subagent_render_content_html(rendered)
-  expect_type(card_html, "character")
-  expect_match(card_html, "<shiny-tool-result", fixed = TRUE)
-  expect_match(card_html, "btw-run-output", fixed = TRUE)
+  html <- unlist(subagent_render_turn_html(turn))
+  expect_length(html, 1)
+  expect_match(html, "Tool Call: btw_tool_run_r", fixed = TRUE)
+  expect_match(html, "btw_tool_run_r(code = ", fixed = TRUE)
+  expect_match(html, "btw-run-output", fixed = TRUE)
+  expect_no_match(html, "Thinking", fixed = TRUE)
+
+  thinking_turn <- ellmer::Turn(
+    "assistant",
+    list(
+      ellmer::ContentThinking("let me think")
+    )
+  )
+  expect_match(
+    unlist(subagent_render_turn_html(thinking_turn)),
+    "Thinking",
+    fixed = TRUE
+  )
 })

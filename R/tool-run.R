@@ -538,24 +538,7 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
     display$title <- display$title %||% "Run R Code"
   }
 
-  # Render all content objects to HTML
-  contents <- content@extra$contents
-  # ---- Deal with ANSI codes in content objects
-  contents <- map(contents, function(x) {
-    run_r_content_handle_ansi(x, plain = !is_installed("fansi"))
-  })
-  output_html <- map_chr(contents, ellmer::contents_html)
-  output_html <- paste(output_html, collapse = "\n")
-
-  display$html <- htmltools::attachDependencies(
-    htmltools::tagList(
-      htmltools::div(
-        class = "btw-run-output",
-        htmltools::HTML(output_html)
-      )
-    ),
-    btw_run_r_dep()
-  )
+  display$html <- btw_run_r_output_html(content)
 
   if (isTRUE(content@extra$copy_code)) {
     copy_link <- shiny::tags$a(
@@ -580,6 +563,24 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
   res$status <- content@extra$status
 
   res
+}
+
+btw_run_r_output_html <- function(content) {
+  contents <- map(content@extra$contents, function(x) {
+    run_r_content_handle_ansi(x, plain = !is_installed("fansi"))
+  })
+  output_html <- map_chr(contents, ellmer::contents_html)
+  output_html <- paste(output_html, collapse = "\n")
+
+  htmltools::attachDependencies(
+    htmltools::tagList(
+      htmltools::div(
+        class = "btw-run-output",
+        htmltools::HTML(output_html)
+      )
+    ),
+    btw_run_r_dep()
+  )
 }
 
 btw_run_r_dep <- function() {

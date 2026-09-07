@@ -246,10 +246,25 @@ subagent_display_result <- function(result, session_id, agent_name, prompt) {
   chat$set_turns(chat$get_turns()[-length(chat$get_turns())]) # and final response
 
   full_results <- map(chat$get_turns(), function(turn) {
-    turn <- shinychat::contents_shinychat(turn)
-    map(turn, subagent_render_content_html)
+    html <- compact(subagent_render_turn_html(turn))
+    if (length(html) == 0) NULL else paste(html, collapse = "\n")
   })
-  full_results <- paste(unlist(full_results), collapse = "\n\n")
+  full_results <- paste(compact(full_results), collapse = "\n\n")
+  conversation_html <- if (nzchar(full_results)) {
+    glue_(
+      r"(<details class="mb-2"><summary>Full Conversation</summary>
+
+{{ full_results }}
+
+---
+
+</details>
+
+)"
+    )
+  } else {
+    ""
+  }
 
   glue_(
     r"(
@@ -270,13 +285,7 @@ subagent_display_result <- function(result, session_id, agent_name, prompt) {
 
   #### Response
 
-  <details class="mb-2"><summary>Full Conversation</summary>
-
-  {{ full_results }}
-
-  ---
-
-  </details>
+  {{ conversation_html }}
 
   {{ result$message_text }}
   )"
@@ -288,17 +297,99 @@ subagent_display_result <- function(result, session_id, agent_name, prompt) {
     commonmark::markdown_html(extensions = TRUE)
 }
 
-# Render a shinychat content object to a self-contained HTML string.
-# Tool cards have no `as.tags()` method on shinychat >= 0.5.0; `format()`
-# emits the same static `<shiny-tool-*>` markup on every version.
+# Render a subagent turn to a list of HTML strings. Tool results carry their
+# `@request`, so each is rendered as a collapsible call/result block; tool
+# requests render separately only through that pairing, and empty thinking
+# content is dropped.
+subagent_render_turn_html <- function(turn) {
+  contents <- keep(turn@contents, function(x) {
+    if (S7::S7_inherits(x, ellmer::ContentThinking)) {
+      nzchar(trimws(x@thinking))
+    } else {
+      !S7::S7_inherits(x, ellmer::ContentToolRequest)
+    }
+  })
+
+  compact(map(contents, function(x) {
+    if (S7::S7_inherits(x, ellmer::ContentToolResult)) {
+      subagent_render_tool_call_html(x)
+    } else {
+      subagent_render_content_html(x)
+    }
+  }))
+}
+
+subagent_render_tool_call_html <- function(result) {
+  request <- result@request
+
+  call_html <- if (is.null(request)) {
+    NULL
+  } else {
+    btw_pre_output(
+      paste(format(request, show = "call"), collapse = "\n"),
+      pre_class = "source",
+      code_class = "language-r"
+    )
+  }
+
+  paste(
+    compact(c(
+      sprintf(
+        '<details class="btw-subagent-tool"><summary>Tool Call: %s</summary>',
+        htmltools::htmlEscape(request@name %||% "unknown tool")
+      ),
+      call_html,
+      subagent_render_tool_result_html(result),
+      "</details>"
+    )),
+    collapse = "\n"
+  )
+}
+
+# Render an ellmer content object to a self-contained HTML string for the
+# subagent report. ellmer's `contents_html()` returns NULL for tool requests
+# and results, so tool calls are rendered directly here.
 subagent_render_content_html <- function(x) {
-  if (is.character(x)) {
-    return(x)
+  if (S7::S7_inherits(x, ellmer::ContentToolRequest)) {
+    # format() line-wraps long calls into multiple elements
+    return(btw_pre_output(
+      paste(format(x, show = "call"), collapse = "\n"),
+      pre_class = "source",
+      code_class = "language-r"
+    ))
   }
-  if (inherits(x, "shinychat_tool_card")) {
-    return(as.character(format(x)))
+  if (S7::S7_inherits(x, ellmer::ContentToolResult)) {
+    return(subagent_render_tool_result_html(x))
   }
-  as.character(htmltools::as.tags(x))
+  html <- ellmer::contents_html(x)
+  if (is.null(html) || length(html) == 0) {
+    return(NULL)
+  }
+  as.character(html)
+}
+
+subagent_render_tool_result_html <- function(x) {
+  if (S7::S7_inherits(x, BtwRunToolResult)) {
+    return(as.character(btw_run_r_output_html(x)))
+  }
+
+  display <- x@extra$display
+  if (!is.null(display$markdown)) {
+    return(commonmark::markdown_html(display$markdown, extensions = TRUE))
+  }
+
+  btw_pre_output(
+    htmltools::htmlEscape(subagent_tool_value_text(x@value)),
+    pre_class = "output"
+  )
+}
+
+subagent_tool_value_text <- function(value) {
+  if (is.character(value)) {
+    paste(value, collapse = "\n")
+  } else {
+    jsonlite::toJSON(value, auto_unbox = TRUE, pretty = 2, force = TRUE)
+  }
 }
 
 
