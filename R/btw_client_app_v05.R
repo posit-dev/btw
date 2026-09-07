@@ -58,6 +58,7 @@ btw_app_shell_page_chat <- function(state) {
       client = client,
       history = state$history
     )
+    btw_slash_commands_register(chat)
     if (length(state$messages)) {
       app_replay_messages(chat, state$messages)
     }
