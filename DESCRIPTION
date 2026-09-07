@@ -148,5 +148,6 @@ Collate:
     'utils-ide.R'
     'utils-md.R'
     'utils-r.R'
+    'utils-shinychat.R'
     'utils.R'
     'zzz.R'

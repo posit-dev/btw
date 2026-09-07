@@ -10,7 +10,7 @@ btw_app_shell_page_chat <- function(state) {
 
   ui <- function(req) {
     htmltools::tagList(
-      shinychat::page_chat(
+      shinychat_page_chat(
         title = btw_app_title(state$path_logo),
         window_title = "Chat with {btw} tools",
         id = "chat",
@@ -53,7 +53,7 @@ btw_app_shell_page_chat <- function(state) {
   }
 
   make_chat <- function() {
-    chat <- shinychat::chat_server(
+    chat <- shinychat_chat_server(
       "chat",
       client = client,
       history = state$history

@@ -85,7 +85,7 @@ btw_duckdb_init <- function(con) {
 
 btw_conversation_store_duckdb <- R6::R6Class(
   "btw_conversation_store_duckdb",
-  inherit = shinychat::ConversationStore,
+  inherit = shinychat_conversation_store(),
   private = list(
     db_path = NULL,
 
@@ -247,7 +247,7 @@ btw_app_history_options <- function(path_btw = NULL) {
     return(TRUE)
   }
 
-  shinychat::history_options(
+  shinychat_history_options(
     store = btw_conversation_store_duckdb$new(),
     scope = btw_app_history_project_dir(path_btw)
   )

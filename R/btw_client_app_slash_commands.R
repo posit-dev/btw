@@ -267,7 +267,7 @@ btw_slash_append_context <- function(chat, spec, at_string, restore_text) {
   path <- tempfile(spec$name, fileext = ".md")
   writeLines(result, path, useBytes = TRUE)
 
-  attachment <- shinychat::chat_attachment(
+  attachment <- shinychat_chat_attachment(
     path,
     name = btw_slash_attachment_name(spec, restore_text)
   )
