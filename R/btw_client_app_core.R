@@ -337,7 +337,10 @@ btw_app_server <- function(
 
 notifier <- function(icon, action, error = NULL, ...) {
   error_body <- if (!is.null(error)) {
-    shiny::p(shiny::HTML(sprintf("<code>%s</code>", error$message)))
+    shiny::p(shiny::HTML(sprintf(
+      "<code>%s</code>",
+      htmltools::htmlEscape(error$message)
+    )))
   }
 
   bslib_toast <- asNamespace("bslib")[["toast"]]
@@ -346,16 +349,12 @@ notifier <- function(icon, action, error = NULL, ...) {
 
   if (is.null(bslib_toast) || is.null(bslib_show_toast)) {
     if (!is.null(error)) {
-      body <- shiny::span(icon, action)
-    } else {
       body <- shiny::tagList(
-        shiny::p(
-          shiny::icon("warning"),
-          "Failed to update system prompt",
-          class = "fw-bold"
-        ),
+        shiny::p(shiny::icon("warning"), action, class = "fw-bold"),
         error_body
       )
+    } else {
+      body <- shiny::span(icon, action)
     }
     shiny::showNotification(
       body,
