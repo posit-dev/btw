@@ -32,7 +32,13 @@ function initializeStatusCountups() {
 
 document.addEventListener("DOMContentLoaded", initializeStatusCountups)
 
-new MutationObserver(() => initializeStatusCountups()).observe(document.body, {
+const statusCountupObserver = new MutationObserver(() => {
+  if (initializeStatusCountups()) {
+    statusCountupObserver.disconnect()
+  }
+})
+
+statusCountupObserver.observe(document.body, {
   childList: true,
   subtree: true,
 })
