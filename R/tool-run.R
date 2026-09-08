@@ -569,7 +569,24 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
   res
 }
 
-run_r_extra_data <- function(x) {
+run_r_extra_data <- function(x, max_size = 1024^2) {
+  if (is.null(x)) {
+    return(x)
+  }
+
+  # Environments, functions, and formulas never serialize to JSON, and a
+  # value larger than `max_size` isn't worth embedding in every chat
+  # history save; drop both up front rather than paying for a full
+  # jsonlite::serializeJSON() just to discover it.
+  if (
+    is_environment(x) ||
+      is_function(x) ||
+      is_formula(x) ||
+      object.size(x) > max_size
+  ) {
+    return(NULL)
+  }
+
   serializable <- tryCatch(
     {
       jsonlite::serializeJSON(x)

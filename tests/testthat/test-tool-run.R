@@ -603,3 +603,20 @@ test_that("btw_tool_run_r() drops non-serializable extra$data", {
   ))
   expect_error(jsonlite::serializeJSON(recorded), NA)
 })
+
+test_that("run_r_extra_data() drops values that can't be saved to history", {
+  expect_identical(btw:::run_r_extra_data(NULL), NULL)
+  expect_identical(btw:::run_r_extra_data(4), 4)
+  expect_identical(btw:::run_r_extra_data("done"), "done")
+  expect_identical(
+    btw:::run_r_extra_data(data.frame(x = 1)),
+    data.frame(x = 1)
+  )
+
+  expect_null(btw:::run_r_extra_data(new.env()))
+  expect_null(btw:::run_r_extra_data(function() NULL))
+  expect_null(btw:::run_r_extra_data(~x))
+
+  # values too large to embed in every history save are dropped
+  expect_null(btw:::run_r_extra_data(strrep("a", 2 * 1024^2)))
+})
