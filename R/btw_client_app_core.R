@@ -83,7 +83,7 @@ btw_app_server <- function(
 
     shiny::observeEvent(res$clear_chat(), {
       if (identical(chat$status(), "idle")) {
-        chat$clear(client_history = "clear")
+        chat$clear()
       }
     })
 

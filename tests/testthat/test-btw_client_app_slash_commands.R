@@ -257,33 +257,19 @@ test_that("btw_slash_skill_handler() combines skill text and user input", {
   expect_identical(toasts, "/test-skill oh no")
 })
 
-test_that("btw_slash_new_chat_handler() starts a new chat via the history controller", {
-  state <- list2env(list(cleared = 0, new_chats = 0))
+test_that("btw_slash_new_chat_handler() starts a new chat via chat$clear()", {
+  state <- list2env(list(cleared = 0))
   chat <- list2env(list(
     status = function() "idle",
     clear = function(...) state$cleared <- state$cleared + 1,
     update_user_input = function(...) NULL
   ))
 
-  controller <- list2env(list(new_chat = function() {
-    state$new_chats <- state$new_chats + 1
-  }))
-  local_mocked_bindings(
-    btw_app_history_controller = function(...) controller
-  )
-
   btw_slash_new_chat_handler(chat, "new")()
-  expect_identical(state$new_chats, 1)
-  expect_identical(state$cleared, 0)
-
-  # without a history controller, clear the conversation instead
-  local_mocked_bindings(
-    btw_app_history_controller = function(...) NULL
-  )
+  expect_identical(state$cleared, 1)
 
   btw_slash_new_chat_handler(chat, "clear")()
-  expect_identical(state$cleared, 1)
-  expect_identical(state$new_chats, 1)
+  expect_identical(state$cleared, 2)
 
   # streaming: refuse and surface the error like other commands
   restored <- character()
@@ -325,10 +311,6 @@ test_that("btw_slash_register_new_chat_commands() registers /new and /clear", {
     list(new = 0L, clear = 0L)
   )
   expect_false(isTRUE(registered[["new"]]$echo))
-})
-
-test_that("btw_app_history_controller() returns NULL without a session", {
-  expect_null(btw_app_history_controller())
 })
 
 test_that("btw_slash_skill_handler() waits for a streaming response", {

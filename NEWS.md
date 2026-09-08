@@ -8,6 +8,8 @@
 
 ## Bug fixes
 
+* The "Clear chat" button and the `/new` and `/clear` slash commands in `btw_app()` now delegate to shinychat's history-aware `chat$clear()` (posit-dev/shinychat#399), so the current conversation is saved before the chat is reset instead of being silently dropped from the conversation history.
+
 * `btw --version` now works without a subcommand. Previously, Rapp's required top-level switch caused the CLI to print usage and exit before the version flag was ever checked.
 
 ## Other changes
