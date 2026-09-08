@@ -1374,6 +1374,9 @@ install_skill_from_dir <- function(
 #' If the command fails, btw restores the original slash text to the chat
 #' input and shows a toast with the error.
 #'
+#' Skill commands can't run while a response is streaming; in that case the
+#' command fails the same way, restoring the input and showing an error toast.
+#'
 #' Slash command names may only contain letters, numbers, underscores, and
 #' hyphens. Skills with other names are skipped with a warning, as are skills
 #' whose names match btw's own `/btw-*` slash commands and any names passed to
@@ -1392,8 +1395,8 @@ install_skill_from_dir <- function(
 #' btw_skills_register_slash_commands(server)
 #'
 #' @family skills
-#' @seealso [btw_skill_prompt()] for a skill's text and [btw-config] for the
-#'   skill discovery locations.
+#' @seealso [btw_tool_skill()] for a skill's full instructions and
+#'   [btw-config] for the skill discovery locations.
 #' @export
 btw_skills_register_slash_commands <- function(chat, reserved = character()) {
   rlang::check_installed("shinychat", version = "0.4.0.9000")
@@ -1439,6 +1442,13 @@ btw_slash_skill_handler <- function(chat, name) {
   function(content) {
     tryCatch(
       {
+        if (identical(chat$status(), "streaming")) {
+          slash_name <- paste0("/", name)
+          cli::cli_abort(
+            "Wait for the current response to finish before running {.val {slash_name}}."
+          )
+        }
+
         skill_text <- btw_skill_resolve(name)$text
 
         content@text <- if (nzchar(content@user_text)) {

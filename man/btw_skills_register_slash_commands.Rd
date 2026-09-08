@@ -31,6 +31,9 @@ instructions and the user text separated by a blank line.
 If the command fails, btw restores the original slash text to the chat
 input and shows a toast with the error.
 
+Skill commands can't run while a response is streaming; in that case the
+command fails the same way, restoring the input and showing an error toast.
+
 Slash command names may only contain letters, numbers, underscores, and
 hyphens. Skills with other names are skipped with a warning, as are skills
 whose names match btw's own \verb{/btw-*} slash commands and any names passed to
@@ -43,8 +46,8 @@ btw_skills_register_slash_commands(server)
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-\code{\link[=btw_skill_prompt]{btw_skill_prompt()}} for a skill's text and \link{btw-config} for the
-skill discovery locations.
+\code{\link[=btw_tool_skill]{btw_tool_skill()}} for a skill's full instructions and
+\link{btw-config} for the skill discovery locations.
 
 Other skills:
 \code{\link[=btw_skill_install_github]{btw_skill_install_github()}},

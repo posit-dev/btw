@@ -191,6 +191,7 @@ test_that("btw_slash_skill_handler() combines skill text and user input", {
 
   submitted <- NULL
   chat <- list2env(list(
+    status = function() "idle",
     update_user_input = function(...) NULL,
     client = list(stream = function(content) {
       submitted <<- content
@@ -328,4 +329,40 @@ test_that("btw_slash_register_new_chat_commands() registers /new and /clear", {
 
 test_that("btw_app_history_controller() returns NULL without a session", {
   expect_null(btw_app_history_controller())
+})
+
+test_that("btw_slash_skill_handler() waits for a streaming response", {
+  skip_if_no_shinychat_v05()
+
+  streamed <- FALSE
+  restored <- NULL
+  error_messages <- character()
+  chat <- list2env(list(
+    status = function() "streaming",
+    update_user_input = function(value = NULL, focus = FALSE, ...) {
+      restored <<- value
+    },
+    client = list(stream = function(content) {
+      streamed <<- TRUE
+      content
+    }),
+    append = function(stream) NULL
+  ))
+
+  local_mocked_bindings(
+    notifier = function(icon, action, error = NULL, ...) {
+      error_messages <<- c(error_messages, conditionMessage(error))
+    }
+  )
+
+  handler <- btw_slash_skill_handler(chat, "test-skill")
+  handler(shinychat::ContentSlashCommand(
+    text = "placeholder",
+    command = "test-skill",
+    user_text = "do it"
+  ))
+
+  expect_false(streamed)
+  expect_identical(restored, "/test-skill do it")
+  expect_match(error_messages[[1]], "Wait for the current response")
 })
