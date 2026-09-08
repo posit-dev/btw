@@ -665,3 +665,36 @@ test_that("subagent_render_turn_html() pairs tool calls and drops empty thinking
     fixed = TRUE
   )
 })
+
+test_that("subagent report escapes untrusted markdown", {
+  html <- subagent_render_content_html(ellmer::ContentText("hi <script>alert(1)</script>"))
+  expect_no_match(html, "<script>", fixed = TRUE)
+  expect_match(html, "&lt;script&gt;", fixed = TRUE)
+
+  thinking <- subagent_render_content_html(
+    ellmer::ContentThinking("hmm <img src=x onerror=alert(1)>")
+  )
+  expect_no_match(thinking, "<img", fixed = TRUE)
+
+  req <- ellmer::ContentToolRequest(
+    id = "test",
+    name = "btw_tool_files_write",
+    arguments = list(path = "x", content = "<script>alert(1)</script>"),
+    tool = NULL
+  )
+  expect_no_match(subagent_render_content_html(req), "<script>", fixed = TRUE)
+
+  res <- ellmer::ContentToolResult(value = "x")
+  res@extra <- list(display = list(markdown = "**bold** <script>alert(1)</script>"))
+  html <- subagent_render_content_html(res)
+  expect_no_match(html, "<script>", fixed = TRUE)
+  expect_match(html, "<strong>bold</strong>", fixed = TRUE)
+})
+
+test_that("subagent_render_turn_html() renders orphan tool results", {
+  orphan <- ellmer::ContentToolResult(value = "done")
+  turn <- ellmer::Turn("assistant", list(orphan))
+  html <- unlist(subagent_render_turn_html(turn))
+  expect_match(html, "unknown tool", fixed = TRUE)
+  expect_match(html, ">done<", fixed = TRUE)
+})
