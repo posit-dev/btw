@@ -248,6 +248,8 @@ btw_tool_github_impl <- function(code, fields = "default") {
   if (inherits(lv, "gh_response")) {
     lv <- jsonlite::toJSON(lv, auto_unbox = TRUE, pretty = TRUE)
     lv <- sprintf("<github_api_result>\n%s\n</github_api_result>", lv)
+  } else if (is.data.frame(lv)) {
+    lv <- as_json_rowwise(lv)
   }
   if (is_string(res@value)) {
     if (inherits(res@value, "btw_run_r_no_output")) {
@@ -338,7 +340,7 @@ gh("/repos/tidyverse/dplyr/issues/123")
 RETURNS: The result from the GitHub API call, formatted as JSON.
       )---",
       annotations = ellmer::tool_annotations(
-        title = "GitHub API",
+        title = "Calling GitHub API",
         read_only_hint = FALSE, # Can perform writes
         open_world_hint = TRUE,
         idempotent_hint = FALSE

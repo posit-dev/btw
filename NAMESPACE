@@ -29,6 +29,8 @@ export(btw_mcp_session)
 export(btw_skill_install_github)
 export(btw_skill_install_package)
 export(btw_skill_install_project)
+export(btw_skill_prompt)
+export(btw_skills_register_slash_commands)
 export(btw_task)
 export(btw_task_create_btw_md)
 export(btw_task_create_readme)
@@ -87,8 +89,10 @@ export(install_btw_cli)
 export(use_btw_md)
 if (getRversion() < "4.3.0") importFrom("S7", "@")
 import(rlang)
-importFrom(brio,read_file)
-importFrom(brio,read_lines)
-importFrom(brio,write_file)
-importFrom(brio,write_lines)
+importFrom(brio,
+  read_file,
+  read_lines,
+  write_file,
+  write_lines
+)
 importFrom(lifecycle,deprecated)

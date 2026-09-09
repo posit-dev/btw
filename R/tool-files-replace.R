@@ -110,11 +110,11 @@ btw_tool_files_replace_impl <- function(
       previous_content = previous_content,
       display = list(
         markdown = md_code_block(fs::path_ext(path), new_content),
-        title = file_result_title("Replace", path),
+        title = "Replaced in file",
+        label = fs::path_file(path),
         footer = file_result_footer(path),
         full_screen = TRUE,
-        show_request = FALSE,
-        icon = tool_icon("file-save")
+        show_request = FALSE
       )
     )
   )
@@ -146,7 +146,8 @@ TIPS FOR SUCCESS:
 - If the match is ambiguous, add more context rather than using replace_all.
     )---",
       annotations = ellmer::tool_annotations(
-        title = "Replace in File",
+        title = "Replacing in file",
+        icon = tool_icon("find-replace"),
         read_only_hint = FALSE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE,

@@ -58,6 +58,8 @@ configuration locations.
 Other skills:
 \code{\link[=btw_skill_install_github]{btw_skill_install_github()}},
 \code{\link[=btw_skill_install_project]{btw_skill_install_project()}},
+\code{\link[=btw_skill_prompt]{btw_skill_prompt()}},
+\code{\link[=btw_skills_register_slash_commands]{btw_skills_register_slash_commands()}},
 \code{\link[=btw_tool_skill]{btw_tool_skill()}}
 }
 \concept{skills}

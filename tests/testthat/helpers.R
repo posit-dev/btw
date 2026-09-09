@@ -41,9 +41,21 @@ expect_btw_tool_result <- function(
 ) {
   expect_s3_class(x, "ellmer::ContentToolResult")
   expect_type(x@value, expect_value_type)
+  if (identical(expect_value_type, "character")) {
+    expect_length(x@value, 1)
+  }
   if (has_data) {
     expect_s3_class(x@extra$data, "data.frame")
   }
+
+  # shinychat saves chats by recording turns with ellmer::contents_record()
+  # and then serializing them with jsonlite::serializeJSON(), which passes
+  # `extra` through as-is. Tool results that can't survive this round trip
+  # silently break chat history and bookmark saving.
+  recorded <- ellmer::contents_record(
+    ellmer::Turn(role = "assistant", contents = list(x))
+  )
+  expect_error(jsonlite::serializeJSON(recorded), NA)
 }
 
 scrub_system_info <- function(x) {
@@ -198,4 +210,23 @@ local_btw_md <- function(project = NULL, user = NULL, .env = caller_env()) {
     },
     .env = .env
   )
+}
+
+# shinychat >= 0.5.0 (a.k.a. the dev version leading up to it) serializes tool
+# cards as wire blocks; earlier versions return a static `<shiny-tool-*>` tag.
+shinychat_wire_blocks <- function() {
+  "tool_result_display" %in% getNamespaceExports("shinychat")
+}
+
+# shinychat 0.5.0 features (slash commands, page_chat, the history API) are
+# available in the dev version 0.4.0.9000 but not in the CRAN release.
+has_shinychat_v05 <- function() {
+  tryCatch(
+    utils::packageVersion("shinychat") >= "0.4.0.9000",
+    error = function(e) FALSE
+  )
+}
+
+skip_if_no_shinychat_v05 <- function() {
+  skip_if_not_installed("shinychat", "0.4.0.9000")
 }

@@ -50,11 +50,11 @@ btw_tool_files_write_impl <- function(path, content) {
       previous_content = previous_content,
       display = list(
         markdown = md_code_block(fs::path_ext(path), content),
-        title = file_result_title("Write", path),
+        title = "Wrote file",
+        label = fs::path_file(path),
         footer = file_result_footer(path),
         full_screen = TRUE,
-        show_request = FALSE,
-        icon = tool_icon("file-save")
+        show_request = FALSE
       )
     )
   )
@@ -82,7 +82,8 @@ This completely overwrites any existing file content.
 To modify an existing file, first read its content using `btw_tool_files_read`, make your changes to the text, then write back the complete modified content.
 ',
       annotations = ellmer::tool_annotations(
-        title = "Write File",
+        title = "Writing file",
+        icon = tool_icon("post-add"),
         read_only_hint = FALSE,
         open_world_hint = FALSE,
         idempotent_hint = TRUE,
@@ -108,17 +109,15 @@ BtwFileDiffToolResult <- S7::new_class(
 )
 
 S7::method(contents_shinychat, BtwFileDiffToolResult) <- function(content) {
-  res <- shinychat::contents_shinychat(
-    S7::super(content, ellmer::ContentToolResult)
-  )
-
   if (!is_installed("diffviewer")) {
     cli::cli_warn(
       "Install the {.pkg diffviewer} package for rich file diffs in {.fn btw::btw_app}: {.run install.packages('diffviewer')}",
       .frequency = "once",
       .frequency_id = "btw-tool-files-diffviewer"
     )
-    return(res)
+    return(shinychat::contents_shinychat(
+      S7::super(content, ellmer::ContentToolResult)
+    ))
   }
 
   new <- content@extra$content
@@ -134,9 +133,15 @@ S7::method(contents_shinychat, BtwFileDiffToolResult) <- function(content) {
   write_file(old %||% "", path_old)
   write_file(new %||% "", path_new)
 
-  res$value <- diffviewer::visual_diff(path_old, path_new)
-  res$value_type <- "html"
+  # The diff widget replaces the card body; shinychat renders `display$html`
+  # on our behalf, including the htmlwidget's dependencies.
+  display <- content@extra$display %||% list()
+  display$html <- diffviewer::visual_diff(path_old, path_new)
+  content@extra$display <- display
+
+  res <- shinychat::contents_shinychat(
+    S7::super(content, ellmer::ContentToolResult)
+  )
   res$class <- "btw-tool-result-file-diff"
-  res$full_screen <- NA
   res
 }

@@ -63,7 +63,7 @@ Runs `devtools::document()` which processes roxygen2 tags to:
 
 Use this after adding or modifying roxygen2 comments in your R code. The tool modifies files but changes are safe and can be committed to version control. Returns a summary of files created or updated.",
       annotations = ellmer::tool_annotations(
-        title = "Package Document",
+        title = "Documenting package",
         read_only_hint = FALSE,
         idempotent_hint = TRUE,
         btw_can_register = function() has_devtools() && has_roxygen2()
@@ -133,7 +133,7 @@ This tool runs with CRAN-like settings and can take one or more minutes to compl
 
 For iterative development, use the `btw_tool_pkg_test` if available or `devtools::test()` to run only the test suite for faster feedback.",
       annotations = ellmer::tool_annotations(
-        title = "Package Check",
+        title = "Checking package",
         read_only_hint = FALSE,
         idempotent_hint = TRUE,
         btw_can_register = function() has_devtools()
@@ -214,7 +214,7 @@ The filter parameter accepts a regular expression matched against test file name
 
 Use `filter` when working on specific functionality to get faster feedback. The tool always runs all matching tests to completion regardless of failures.",
       annotations = ellmer::tool_annotations(
-        title = "Package Test",
+        title = "Testing package",
         read_only_hint = FALSE,
         idempotent_hint = TRUE,
         btw_can_register = function() has_devtools()
@@ -306,7 +306,7 @@ This is lighter and faster than running tests or checks when you only need to ve
 
 **IMPORTANT:** This tool does NOT load the package into your current R session. The code runs in an isolated subprocess that exits after completion. If you need the package loaded in your current session for interactive use, use the run R code tool instead and call `pkgload::load_all()` directly.",
       annotations = ellmer::tool_annotations(
-        title = "Package Load All",
+        title = "Loading package",
         read_only_hint = FALSE,
         idempotent_hint = TRUE,
         btw_can_register = function() has_pkgload_and_callr()

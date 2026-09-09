@@ -265,15 +265,20 @@ btw_tool_run_r_impl <- function(
   BtwRunToolResult(
     value = value,
     extra = list(
-      data = last_value,
+      data = run_r_extra_data(last_value),
       code = code,
-      contents = contents,
+      # `extra` is serialized as-is by shinychat's history and bookmark
+      # `jsonlite::serializeJSON()` paths, so contents must be stored in
+      # recorded (plain list) form, not as S7 objects.
+      contents = lapply(contents, ellmer::contents_record),
       # We always return contents up to the error as `value` because `error`
       # cannot handle rich output. We'll show status separately in the UI.
       status = if (had_error) "error" else "success",
+      copy_code = TRUE,
       display = list(
+        title = "Ran R code",
         open = !had_error,
-        copy_code = TRUE,
+        show_request = FALSE,
         full_screen = TRUE
       )
     )
@@ -429,7 +434,7 @@ Executes R code and captures printed values, text output, plots, messages, warni
 - AVOID extremely large outputs; show summaries and return key results
       )---",
       annotations = ellmer::tool_annotations(
-        title = "Run R Code",
+        title = "Running R code",
         read_only_hint = FALSE,
         open_world_hint = FALSE
       ),
@@ -535,27 +540,86 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
       tool = NULL,
       extra = list()
     )
-    content@extra$display <- utils::modifyList(
-      display,
-      list(title = display$title %||% "Run R Code")
-    )
+    display$title <- display$title %||% "Run R Code"
   }
+
+  display$html <- btw_run_r_output_html(content)
+
+  if (isTRUE(content@extra$copy_code)) {
+    copy_link <- shiny::tags$a(
+      href = "#",
+      class = "btw-copy-reprex action-button action-link",
+      `aria-label` = "Copy as reprex",
+      shiny::span(class = "action-icon", shiny::icon("clipboard")),
+      shiny::span(class = "action-label", "Copy as reprex")
+    )
+    display$footer <- htmltools::tagList(display$footer, copy_link)
+  }
+
+  # shinychat only knows about `@error`, but failed runs keep their rich
+  # output in `value` and report errors via `extra$status` instead.
+  # Everything else about the card is expressed through `display`, which
+  # shinychat renders on our behalf.
+  content@extra$display <- display
 
   res <- shinychat::contents_shinychat(
     S7::super(content, ellmer::ContentToolResult)
   )
+  res$status <- content@extra$status
 
-  # Render all content objects to HTML
-  contents <- content@extra$contents
-  # ---- Deal with ANSI codes in content objects
-  contents <- map(contents, function(x) {
+  res
+}
+
+run_r_extra_data <- function(x, max_size = 1024^2) {
+  if (is.null(x)) {
+    return(x)
+  }
+
+  # Environments, functions, and formulas never serialize to JSON, and a
+  # value larger than `max_size` isn't worth embedding in every chat
+  # history save; drop both up front rather than paying for a full
+  # jsonlite::serializeJSON() just to discover it.
+  if (
+    is_environment(x) ||
+      is_function(x) ||
+      is_formula(x) ||
+      utils::object.size(x) > max_size
+  ) {
+    return(NULL)
+  }
+
+  serializable <- tryCatch(
+    {
+      jsonlite::serializeJSON(x)
+      TRUE
+    },
+    error = function(e) FALSE
+  )
+
+  if (serializable) {
+    x
+  }
+}
+
+is_recorded_content <- function(x) {
+  is.list(x) && all(c("version", "class", "props") %in% names(x))
+}
+
+run_r_extra_contents <- function(contents) {
+  if (length(contents) && every(contents, is_recorded_content)) {
+    contents <- map(contents, ellmer::contents_replay)
+  }
+  contents
+}
+
+btw_run_r_output_html <- function(content) {
+  contents <- map(run_r_extra_contents(content@extra$contents), function(x) {
     run_r_content_handle_ansi(x, plain = !is_installed("fansi"))
   })
   output_html <- map_chr(contents, ellmer::contents_html)
   output_html <- paste(output_html, collapse = "\n")
 
-  res$status <- content@extra$status
-  res$value <- htmltools::attachDependencies(
+  htmltools::attachDependencies(
     htmltools::tagList(
       htmltools::div(
         class = "btw-run-output",
@@ -564,23 +628,6 @@ S7::method(contents_shinychat, BtwRunToolResult) <- function(content) {
     ),
     btw_run_r_dep()
   )
-  res$value_type <- "html"
-
-  if (isTRUE(display$copy_code)) {
-    copy_link <- shiny::tags$a(
-      href = "#",
-      class = "btw-copy-reprex action-button action-link",
-      `aria-label` = "Copy as reprex",
-      shiny::span(class = "action-icon", shiny::icon("clipboard")),
-      shiny::span(class = "action-label", "Copy as reprex")
-    )
-    res$footer <- htmltools::tagList(
-      display$footer,
-      copy_link
-    )
-  }
-
-  res
 }
 
 btw_run_r_dep <- function() {

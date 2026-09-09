@@ -71,7 +71,7 @@ btw_tool_files_list_impl <- function(
   btw_tool_result(
     md_res,
     data = info[fields],
-    display = list(markdown = md_res)
+    display = list(title = "Listed project files", markdown = md_res)
   )
 }
 
@@ -101,7 +101,7 @@ WHEN TO USE:
 CAUTION: Do not list all files in a project, instead prefer listing files in a specific directory with a `regexp` to filter to files of interest.
       )---",
       annotations = ellmer::tool_annotations(
-        title = "Project Files",
+        title = "Listing project files",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE,

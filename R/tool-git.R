@@ -78,7 +78,10 @@ btw_tool_git_status_impl <- function(
   btw_tool_result(
     paste(md_res, collapse = "\n"),
     data = status,
-    display = list(markdown = paste("*", md_res, collapse = "\n"))
+    display = list(
+      title = "Checked git status",
+      markdown = paste("*", md_res, collapse = "\n")
+    )
   )
 }
 
@@ -100,7 +103,7 @@ WHEN TO USE:
 RETURNS: A list of file paths, their status (new, modified, deleted, etc.), and whether they are staged or unstaged.
       )---",
       annotations = ellmer::tool_annotations(
-        title = "Git Status",
+        title = "Checking git status",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE
@@ -175,10 +178,8 @@ btw_tool_git_diff_impl <- function(ref = NULL) {
     value,
     display = list(
       markdown = value,
-      title = HTML(sprintf(
-        "Git Diff%s",
-        if (!is.null(ref)) sprintf(" (%s)", ref) else ""
-      )),
+      title = "Read git diff",
+      label = ref,
       full_screen = TRUE
     )
   )
@@ -204,7 +205,7 @@ RETURNS: A unified diff patch showing the changes for a single commit.
 LIMITATION: This tool does not support diffing between two arbitrary commits.
       )---",
       annotations = ellmer::tool_annotations(
-        title = "Git Diff",
+        title = "Reading git diff",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         idempotent_hint = TRUE
@@ -304,6 +305,7 @@ btw_tool_git_log_impl <- function(
     md_kv_table(log_display[fields]),
     data = log,
     display = list(
+      title = "Read git log",
       markdown = md_table(log_display[rev(fields)]),
       full_screen = TRUE
     )
@@ -328,7 +330,7 @@ WHEN TO USE:
 RETURNS: A list of commits with SHA (short), author, timestamp, number of files, and message.
       )---",
       annotations = ellmer::tool_annotations(
-        title = "Git Log",
+        title = "Reading git log",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE
@@ -412,7 +414,7 @@ btw_tool_git_commit_impl <- function(
     data = list(sha = commit_sha, message = message),
     display = list(
       markdown = md_code_block("", result),
-      title = "Git Commit"
+      title = "Created git commit"
     )
   )
 }
@@ -440,7 +442,7 @@ IMPORTANT:
 RETURNS: The commit SHA and confirmation message.
       )---",
       annotations = ellmer::tool_annotations(
-        title = "Git Commit",
+        title = "Creating git commit",
         read_only_hint = FALSE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE
@@ -522,7 +524,10 @@ btw_tool_git_branch_list_impl <- function(
   btw_tool_result(
     paste(branches_llm, collapse = "\n"),
     data = branches,
-    display = list(markdown = md_table(branches[fields]))
+    display = list(
+      title = "Listed git branches",
+      markdown = md_table(branches[fields])
+    )
   )
 }
 
@@ -543,7 +548,7 @@ WHEN TO USE:
 RETURNS: A table of branch names, upstream tracking, and last update time.
       )---",
       annotations = ellmer::tool_annotations(
-        title = "Git Branches",
+        title = "Listing git branches",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         idempotent_hint = TRUE
@@ -623,10 +628,8 @@ btw_tool_git_branch_create_impl <- function(
     result,
     display = list(
       markdown = result,
-      title = HTML(sprintf(
-        "Git Create Branch <code>%s</code>",
-        branch
-      ))
+      title = "Created git branch",
+      label = branch
     )
   )
 }
@@ -653,7 +656,7 @@ IMPORTANT:
 RETURNS: Confirmation message with branch name and ref.
       )---",
       annotations = ellmer::tool_annotations(
-        title = "Git Branch Create",
+        title = "Creating git branch",
         read_only_hint = FALSE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE
@@ -734,7 +737,8 @@ btw_tool_git_branch_checkout_impl <- function(
     result,
     display = list(
       markdown = md_code_block("", result),
-      title = HTML("Git Checkout")
+      title = "Checked out branch",
+      label = branch
     )
   )
 }
@@ -762,7 +766,7 @@ IMPORTANT:
 RETURNS: Confirmation message with branch name.
       )---",
       annotations = ellmer::tool_annotations(
-        title = "Git Checkout",
+        title = "Checking out git branch",
         read_only_hint = FALSE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE

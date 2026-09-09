@@ -141,10 +141,10 @@ btw_tool_files_patch_impl <- function(patch) {
   btw_tool_result(
     value,
     display = list(
+      title = "Patched files",
       markdown = paste(display_md, collapse = "\n"),
       show_request = FALSE,
-      full_screen = TRUE,
-      icon = tool_icon("file-save")
+      full_screen = TRUE
     )
   )
 }
@@ -206,7 +206,8 @@ NOTES:
 - Paths must be relative to the current working directory.
     )---",
       annotations = ellmer::tool_annotations(
-        title = "Patch Files",
+        title = "Patching files",
+        icon = tool_icon("difference"),
         read_only_hint = FALSE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE,

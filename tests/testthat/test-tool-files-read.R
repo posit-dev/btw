@@ -54,10 +54,6 @@ test_that("btw_tool_files_read() works", {
 })
 
 test_that("file result actions use footers and support fullscreen", {
-  title <- file_result_title("Read", "path/to/file.R")
-  expect_match(as.character(title), "Read <code>file.R</code>", fixed = TRUE)
-  expect_false(grepl("btw-open-file", as.character(title), fixed = TRUE))
-
   local_mocked_bindings(
     hasFun = function(name) identical(name, "navigateToFile"),
     .package = "rstudioapi"

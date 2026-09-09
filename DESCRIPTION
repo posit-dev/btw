@@ -34,6 +34,7 @@ Imports:
     brio,
     cli,
     clipr,
+    commonmark,
     dplyr,
     ellmer (>= 0.4.2),
     frontmatter,
@@ -76,12 +77,12 @@ Suggests:
     renv,
     roxygen2,
     shiny,
-    shinychat (>= 0.4.0),
+    shinychat (>= 0.5.0),
     testthat (>= 3.0.0),
     tibble,
     usethis
 Config/Needs/website: brand.yml, tidyverse/tidytemplate
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.0
 Config/testthat/edition: 3
 Config/testthat/parallel: true
 Config/testthat/start-first: web, news, covr, search
@@ -93,8 +94,13 @@ Collate:
     'btw-config.R'
     'btw-package.R'
     'btw.R'
+    'btw_chat_history_store.R'
     'btw_client.R'
     'btw_client_app.R'
+    'btw_client_app_core.R'
+    'btw_client_app_legacy.R'
+    'btw_client_app_slash_commands.R'
+    'btw_client_app_v05.R'
     'btw_task.R'
     'btw_this.R'
     'cli.R'
@@ -140,5 +146,8 @@ Collate:
     'utils-ide.R'
     'utils-md.R'
     'utils-r.R'
+    'utils-shinychat.R'
     'utils.R'
     'zzz.R'
+Remotes:
+    posit-dev/shinychat@rc-v0.5.0

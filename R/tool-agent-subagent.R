@@ -231,12 +231,12 @@ subagent_process_result <- function(chat, prompt, agent_name, session_id) {
 #' @param session_id Session ID
 #' @param agent_name Agent name (NULL or "subagent" for subagent, otherwise custom agent name)
 #' @param prompt The prompt text
-#' @return Markdown string for display
+#' @return HTML string for display (via `display$html`)
 #' @noRd
 subagent_display_result <- function(result, session_id, agent_name, prompt) {
   # Only show agent line for custom agents, not for subagent
   agent_line <- if (!is.null(agent_name) && agent_name != "subagent") {
-    sprintf("**Agent:** %s<br>\n  ", agent_name)
+    sprintf("**Agent:** %s<br>\n  ", htmltools::htmlEscape(agent_name))
   } else {
     ""
   }
@@ -246,21 +246,36 @@ subagent_display_result <- function(result, session_id, agent_name, prompt) {
   chat$set_turns(chat$get_turns()[-length(chat$get_turns())]) # and final response
 
   full_results <- map(chat$get_turns(), function(turn) {
-    turn <- shinychat::contents_shinychat(turn)
-    map(turn, function(c) as.character(htmltools::as.tags(c)))
+    html <- compact(subagent_render_turn_html(turn))
+    if (length(html) == 0) NULL else paste(html, collapse = "\n")
   })
-  full_results <- paste(unlist(full_results), collapse = "\n\n")
+  full_results <- paste(compact(full_results), collapse = "\n\n")
+  conversation_html <- if (nzchar(full_results)) {
+    glue_(
+      r"(<details class="mb-2 btw-subagent-conversation"><summary>Full Conversation</summary>
+
+{{ full_results }}
+
+---
+
+</details>
+
+)"
+    )
+  } else {
+    ""
+  }
 
   glue_(
     r"(
   {{ agent_line }}**Session ID:** {{ session_id }}<br>
-  **Provider:** {{ result$provider }}<br>
-  **Model:** `{{ result$model }}`<br>
-  **Tools:** {{ result$tool_names }}
+  **Provider:** {{ htmltools::htmlEscape(result$provider) }}<br>
+  **Model:** `{{ htmltools::htmlEscape(result$model) }}`<br>
+  **Tools:** {{ htmltools::htmlEscape(result$tool_names) }}
 
   #### Prompt
 
-  {{ prompt }}
+  {{ escape_markdown_html(prompt) }}
 
   #### Tokens
 
@@ -270,17 +285,139 @@ subagent_display_result <- function(result, session_id, agent_name, prompt) {
 
   #### Response
 
-  <details class="mb-2"><summary>Full Conversation</summary>
+  {{ conversation_html }}
 
-  {{ full_results }}
-
-  ---
-
-  </details>
-
-  {{ result$message_text }}
+  {{ escape_markdown_html(result$message_text) }}
   )"
+  ) |>
+    # `display$html` is trusted, server-rendered HTML; `display$markdown`
+    # would be sanitized on the client and the embedded report markup
+    # (session info table, nested tool cards) would render as plain text.
+    # GFM extensions cover the pipe tables produced by `md_table()`.
+    commonmark::markdown_html(extensions = TRUE)
+}
+
+# Render a subagent turn to a list of HTML strings. Tool results carry their
+# `@request`, so each is rendered as a collapsible call/result block; tool
+# requests render separately only through that pairing, and empty thinking
+# content is dropped.
+subagent_render_turn_html <- function(turn) {
+  contents <- keep(turn@contents, function(x) {
+    if (S7::S7_inherits(x, ellmer::ContentThinking)) {
+      nzchar(trimws(x@thinking))
+    } else {
+      !S7::S7_inherits(x, ellmer::ContentToolRequest)
+    }
+  })
+
+  compact(map(contents, function(x) {
+    if (S7::S7_inherits(x, ellmer::ContentToolResult)) {
+      subagent_render_tool_call_html(x)
+    } else {
+      subagent_render_content_html(x)
+    }
+  }))
+}
+
+subagent_render_tool_call_html <- function(result) {
+  request <- result@request
+
+  call_html <- if (is.null(request)) {
+    NULL
+  } else {
+    btw_pre_output(
+      htmltools::htmlEscape(paste(
+        format(request, show = "call"),
+        collapse = "\n"
+      )),
+      pre_class = "source",
+      code_class = "language-r"
+    )
+  }
+
+  tool_name <- if (is.null(request)) {
+    "unknown tool"
+  } else {
+    request@name %||% "unknown tool"
+  }
+
+  paste(
+    compact(c(
+      sprintf(
+        '<details class="btw-subagent-tool"><summary>Tool Call: <code>%s</code></summary>',
+        htmltools::htmlEscape(tool_name)
+      ),
+      call_html,
+      subagent_render_tool_result_html(result),
+      "</details>"
+    )),
+    collapse = "\n"
   )
+}
+
+# Render an ellmer content object to a self-contained HTML string for the
+# subagent report. ellmer's `contents_html()` returns NULL for tool requests
+# and results, so tool calls are rendered directly here.
+subagent_render_content_html <- function(x) {
+  if (S7::S7_inherits(x, ellmer::ContentToolRequest)) {
+    # format() line-wraps long calls into multiple elements
+    return(btw_pre_output(
+      htmltools::htmlEscape(paste(format(x, show = "call"), collapse = "\n")),
+      pre_class = "source",
+      code_class = "language-r"
+    ))
+  }
+  if (S7::S7_inherits(x, ellmer::ContentToolResult)) {
+    return(subagent_render_tool_result_html(x))
+  }
+  if (S7::S7_inherits(x, ellmer::ContentThinking)) {
+    # ellmer's contents_html() emits unclassed <details>; use the same
+    # markup with a class so the subagent report can style it
+    return(sprintf(
+      '<details class="btw-subagent-thinking"><summary>Thinking</summary>
+%s
+</details>',
+      commonmark::markdown_html(escape_markdown_html(x@thinking))
+    ))
+  }
+  if (S7::S7_inherits(x, ellmer::ContentText)) {
+    # Model- or user-controlled text: escape raw HTML before rendering.
+    # ellmer's contents_html() passes raw HTML in markdown through to the
+    # page.
+    return(commonmark::markdown_html(escape_markdown_html(x@text)))
+  }
+  html <- ellmer::contents_html(x)
+  if (is.null(html) || length(html) == 0) {
+    return(NULL)
+  }
+  as.character(html)
+}
+
+subagent_render_tool_result_html <- function(x) {
+  if (S7::S7_inherits(x, BtwRunToolResult)) {
+    return(as.character(btw_run_r_output_html(x)))
+  }
+
+  display <- x@extra$display
+  if (!is.null(display$markdown)) {
+    return(commonmark::markdown_html(
+      escape_markdown_html(display$markdown),
+      extensions = TRUE
+    ))
+  }
+
+  btw_pre_output(
+    htmltools::htmlEscape(subagent_tool_value_text(x@value)),
+    pre_class = "output"
+  )
+}
+
+subagent_tool_value_text <- function(value) {
+  if (is.character(value)) {
+    paste(value, collapse = "\n")
+  } else {
+    jsonlite::toJSON(value, auto_unbox = TRUE, pretty = 2, force = TRUE)
+  }
 }
 
 
@@ -360,7 +497,8 @@ btw_tool_agent_subagent_impl <- function(
       model = result$model,
       tokens = result$tokens,
       display = list(
-        markdown = display_md,
+        title = "Ran subagent",
+        html = shiny::HTML(display_md),
         show_request = FALSE,
         full_screen = TRUE
       )
@@ -640,7 +778,7 @@ btw_can_register_subagent_tool <- function() {
       name = "btw_tool_agent_subagent",
       description = subagent_build_description(tools_allowed),
       annotations = ellmer::tool_annotations(
-        title = "Subagent",
+        title = "Running subagent",
         read_only_hint = FALSE,
         open_world_hint = TRUE
         # btw_can_register is propagated from can_register by as_ellmer_tools()

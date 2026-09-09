@@ -61,7 +61,8 @@ the current project. By default, btw will look for an \code{llms.txt} file in
 the your current working directory or its parents. Set \code{path_llms_txt = FALSE} to skip looking for an \code{llms.txt} file.}
 
 \item{messages}{A list of initial messages to show in the chat, passed to
-\code{\link[shinychat:chat_mod_ui]{shinychat::chat_mod_ui()}}.}
+\code{\link[shinychat:chat_mod_ui]{shinychat::chat_mod_ui()}}. With shinychat >= 0.5.0 the messages are
+replayed into the chat when the app session starts.}
 
 \item{model_choices}{Can be one of \code{"btw_md"} (model choices from your
 \code{path_btw} configuration), \code{"provider"} (models from the provider API),
@@ -158,6 +159,18 @@ the alias directly: \code{btw_client(client = "sonnet")}.
 chat
 
 }}
+\section{Conversation History}{
+
+With shinychat >= 0.5.0, conversations in \code{btw_app()} are kept in a chat
+history that you can revisit from the app's history drawer. When the
+\href{https://duckdb.r-dbi.org/}{duckdb} package is installed, conversations
+are stored in a single database in btw's user cache directory
+(\code{tools::R_user_dir("btw", "cache")}), keyed by project directory: the
+directory containing the closest \code{DESCRIPTION} or \code{.git} marker, or the
+working directory otherwise. If duckdb is not installed, shinychat's
+default history storage is used instead.
+}
+
 \section{User (global) locations}{
 
 

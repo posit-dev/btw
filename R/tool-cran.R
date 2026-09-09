@@ -47,7 +47,7 @@ btw_tool_cran_search_impl <- function(
   btw_tool_result(
     value = btw_this(res, for_tool_use = TRUE),
     data = res,
-    display = list(markdown = md_table(res)),
+    display = list(title = "Searched CRAN packages", markdown = md_table(res)),
     cls = BtwSearchPackageToolResult
   )
 }
@@ -147,7 +147,7 @@ Good: Search for `"permutation test"` or just `"permutation"`
 Bad: Search for `"statistical analysis tools for permutation test"`
 ',
       annotations = ellmer::tool_annotations(
-        title = "CRAN Package Search",
+        title = "Searching CRAN packages",
         read_only_hint = TRUE,
         open_world_hint = TRUE,
         idempotent_hint = FALSE,
@@ -208,11 +208,12 @@ btw_tool_cran_package_impl <- function(package_name) {
   value <- btw_this(pkg)
 
   BtwSearchPackageInfoToolResult(
-    value = value,
+    value = as_tool_result_value(value),
     extra = list(
       info = pkg,
       display = list(
-        title = sprintf("{%s} Package Info", pkg$Package),
+        title = "Fetched package info",
+        label = pkg$Package,
         markdown = value,
         show_request = FALSE
       )
@@ -335,7 +336,8 @@ btw_tool_cran_versions_impl <- function(
     value = value,
     data = versions,
     display = list(
-      title = sprintf("{%s} CRAN Releases", package_name),
+      title = "Fetched CRAN releases",
+      label = package_name,
       markdown = value,
       show_request = FALSE
     )
@@ -526,7 +528,7 @@ btw_can_register_cran_versions <- function() {
         "Includes the current CRAN release and versions in the CRAN archive."
       ),
       annotations = ellmer::tool_annotations(
-        title = "CRAN Package Releases",
+        title = "Fetching CRAN releases",
         read_only_hint = TRUE,
         open_world_hint = TRUE,
         idempotent_hint = FALSE,
@@ -564,7 +566,7 @@ btw_can_register_cran_versions <- function() {
         "Shows the title, description, dependencies and author information for a package on CRAN, regardless of whether the package is installed or not."
       ),
       annotations = ellmer::tool_annotations(
-        title = "CRAN Package Info",
+        title = "Fetching package info",
         read_only_hint = TRUE,
         open_world_hint = TRUE,
         idempotent_hint = FALSE,

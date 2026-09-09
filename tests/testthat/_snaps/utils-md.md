@@ -10,3 +10,17 @@
       | 22.8 | 4 | 108 | 93 |
       | 21.4 | 6 | 258 | 110 |
 
+# md_code_block()
+
+    Code
+      md_code_block("markdown", c("```r", "runif(1)", "```"))
+    Output
+      [1] "````markdown\n```r\nrunif(1)\n```\n````"
+
+---
+
+    Code
+      md_code_block("markdown", c("````r", "runif(1)", "````"))
+    Output
+      [1] "`````markdown\n````r\nrunif(1)\n````\n`````"
+

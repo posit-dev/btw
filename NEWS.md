@@ -6,6 +6,24 @@
 
 * `btw docs` and `btw pkg src` commands now auto-load an in-development package found in the current directory (or its `pkg-r/`, `R/` subfolder) with `pkgload::load_all()` before running, so results reflect uncommitted local changes. Pass `--no-dev` to disable this and use the installed package instead (#212).
 
+* btw now supports shinychat >= 0.5.0 (#215):
+
+  - `btw_app()` uses shinychat's new `page_chat()` layout, with the tool selection menu and the system prompt editor in offcanvas panels. When shinychat 0.4.x is installed, `btw_app()` falls back to the legacy sidebar layout and warns, suggesting you upgrade to shinychat 0.5.0.
+
+  - Conversations are kept in a chat history. Past chats appear in the app's history drawer, so you can revisit a previous conversation at any time. When duckdb is installed, btw stores this history in a shared database in btw's user cache directory, with one history per project, so your chats are still there the next time you open the app in the same project. Without duckdb, conversations are not saved between sessions. btw prints a note that suggests installing duckdb.
+
+  - btw's `@` commands are also available as `/btw-*` slash commands, e.g. `/btw-help dplyr::across`, `/btw-news dplyr v1.1.4`, or `/btw-url https://example.com`. A slash command stages its context as an attachment on the chat input and shows a toast while it runs. Nothing is sent to the model until you submit your next message. If a command fails, `btw_app()` restores your input text and shows an error toast.
+
+  - Skills are registered as slash commands under their own names, e.g. `/skill-creator`. Running a skill submits its instructions with your message to the model.
+
+  - `/new` and `/clear` start a new chat. If chat history is enabled, `btw_app()` first saves the current conversation with shinychat's history-aware `chat$new_chat()` (posit-dev/shinychat#399), so the conversation isn't dropped from the history. The token and cost counters follow the active conversation and restore their totals when you load an old chat from the history.
+
+  - Subagent reports use shinychat 0.5.0's HTML display protocol (`contents_html()`), with the full subagent conversation in a styled disclosure. `btw_app()` escapes untrusted markdown in subagent reports and in error toasts.
+
+  - Tool results survive shinychat's conversation history serialization, so chats with tool results can be saved and restored. btw collapses multi-element character values to a single string, returns data frame results as JSON, and drops unserializable objects from run-R results.
+
+  - Two new functions make the skill features reusable outside `btw_app()`. `btw_skill_prompt()` renders a skill's `<skill>` block, including its name, description, location, and optional compatibility and allowed-tools metadata. `btw_skills_register_slash_commands()` registers skills as slash commands on any shinychat `chat_server()`.
+
 ## Bug fixes
 
 * `btw --version` now works without a subcommand. Previously, Rapp's required top-level switch caused the CLI to print usage and exit before the version flag was ever checked.

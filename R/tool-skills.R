@@ -70,7 +70,7 @@ btw_tool_skill_impl <- function(name) {
       return(btw_tool_result(
         value = "No skills are currently available.",
         display = list(
-          title = "Available Skills",
+          title = "Listed skills",
           markdown = "No skills are currently available."
         )
       ))
@@ -79,18 +79,43 @@ btw_tool_skill_impl <- function(name) {
     return(btw_tool_result(
       value = prompt,
       data = list(skills = skills),
-      display = list(title = "Available Skills", markdown = prompt)
+      display = list(title = "Listed skills", markdown = prompt)
     ))
   }
 
-  skill_info <- find_skill(name)
+  skill <- btw_skill_resolve(name)
+
+  btw_tool_result(
+    value = skill$text,
+    data = list(
+      name = name,
+      path = skill$path,
+      base_dir = skill$base_dir,
+      metadata = skill$metadata,
+      resources = skill$resources
+    ),
+    display = list(
+      title = "Loaded skill",
+      label = name,
+      markdown = skill$text
+    )
+  )
+}
+
+# Resolve a skill by name: locate it, validate it, and read its frontmatter,
+# body text, and bundled resources. Used by the skill tool and by
+# btw_skill_prompt().
+btw_skill_resolve <- function(skill_name) {
+  check_string(skill_name)
+
+  skill_info <- find_skill(skill_name)
 
   if (is.null(skill_info)) {
     available <- btw_skills_list()
     skill_names <- vapply(available, function(x) x$name, character(1))
     cli::cli_abort(
       c(
-        "Skill {.val {name}} not found.",
+        "Skill {.val {skill_name}} not found.",
         "i" = "Available skills: {.val {skill_names}}",
         "i" = "Call {.code btw_tool_skill(\"\")} to get the full, up-to-date skill listing."
       )
@@ -100,7 +125,7 @@ btw_tool_skill_impl <- function(name) {
   if (!skill_info$validation$valid) {
     cli::cli_abort(
       c(
-        "Skill {.val {name}} exists but has validation errors:",
+        "Skill {.val {skill_name}} exists but has validation errors:",
         set_names(
           skill_info$validation$errors,
           rep("!", length(skill_info$validation$errors))
@@ -110,27 +135,54 @@ btw_tool_skill_impl <- function(name) {
   }
 
   fm <- frontmatter::read_front_matter(skill_info$path)
-  skill_text <- fm$body %||% ""
 
   resources <- list_skill_resources(skill_info$base_dir)
-  resources_listing <- format_resources_listing(resources, skill_info$base_dir)
 
-  full_content <- paste0(skill_text, resources_listing)
-
-  btw_tool_result(
-    value = full_content,
-    data = list(
-      name = name,
-      path = skill_info$path,
-      base_dir = skill_info$base_dir,
-      metadata = fm$data,
-      resources = resources
-    ),
-    display = list(
-      title = sprintf("Skill: %s", name),
-      markdown = full_content
+  list(
+    path = skill_info$path,
+    base_dir = skill_info$base_dir,
+    metadata = fm$data,
+    resources = resources,
+    text = paste0(
+      fm$body %||% "",
+      format_resources_listing(resources, skill_info$base_dir)
     )
   )
+}
+
+#' Render a skill's entry for a system prompt
+#'
+#' @description
+#' Returns the `<skill>` block for one skill: its name, description, and
+#' location, plus its compatibility notes and allowed tools when present. This
+#' is the same block that [btw_client()] writes into its system prompt.
+#'
+#' Compose the listing yourself. For example, wrap the blocks for all skills
+#' in an `<available_skills>` element, the way btw does it.
+#'
+#' If the skill doesn't exist, the error lists the available skill names.
+#'
+#' @param skill_name The name of the skill, e.g. `"skill-creator"`.
+#'
+#' @return A single string with the skill's `<skill>` block.
+#'
+#' @examples
+#' cat(btw_skill_prompt("skill-creator"))
+#'
+#' @family skills
+#' @seealso [btw_skills_register_slash_commands()] to expose skills as slash
+#'   commands in a \code{shinychat::chat_server()} session.
+#' @export
+btw_skill_prompt <- function(skill_name) {
+  skill <- btw_skill_resolve(skill_name)
+
+  format_skill_prompt(list(
+    name = skill_name,
+    description = skill$metadata$description,
+    path = skill$path,
+    compatibility = skill$metadata$compatibility,
+    allowed_tools = skill$metadata[["allowed-tools"]]
+  ))
 }
 
 .btw_add_to_tools(
@@ -141,14 +193,19 @@ btw_tool_skill_impl <- function(name) {
     # Capture the resolved skill dir overrides at registration time so the
     # tool closes over the correct paths even after options set transiently by
     # btw_client() / btw_app() have been restored to their prior values.
-    captured_paths <- skill_dirs_from_option_or_envvar("btw.skills.paths", "BTW_SKILLS_PATHS")
+    captured_paths <- skill_dirs_from_option_or_envvar(
+      "btw.skills.paths",
+      "BTW_SKILLS_PATHS"
+    )
 
     # Only replay the options that were actually captured. When a captured
     # value is NULL (nothing was set at registration time), leave the live
     # option untouched so btw_skills_directories() sees the real environment.
     impl <- function(name) {
       opts <- list()
-      if (!is.null(captured_paths)) opts[["btw.skills.paths"]] <- captured_paths
+      if (!is.null(captured_paths)) {
+        opts[["btw.skills.paths"]] <- captured_paths
+      }
       withr::with_options(opts, btw_tool_skill_impl(name))
     }
 
@@ -166,7 +223,7 @@ btw_tool_skill_impl <- function(name) {
         "scripts into R code."
       ),
       annotations = ellmer::tool_annotations(
-        title = "Load Skill",
+        title = "Loading skill",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         btw_can_register = function() any_skills_exist()
@@ -196,12 +253,16 @@ btw_skills_directories <- function(project_dir = getwd()) {
 
   # Custom paths entirely replace all user-level and project-level defaults.
   # When not set, fall back to the standard user-level + project-level dirs.
-  custom_paths <- skill_dirs_from_option_or_envvar("btw.skills.paths", "BTW_SKILLS_PATHS")
-
-  search_dirs <- custom_paths %||% c(
-    default_user_skill_dirs(),
-    default_project_skill_dirs(project_dir)
+  custom_paths <- skill_dirs_from_option_or_envvar(
+    "btw.skills.paths",
+    "BTW_SKILLS_PATHS"
   )
+
+  search_dirs <- custom_paths %||%
+    c(
+      default_user_skill_dirs(),
+      default_project_skill_dirs(project_dir)
+    )
 
   for (search_dir in search_dirs) {
     if (dir.exists(search_dir) && !search_dir %in% dirs) {
@@ -267,7 +328,8 @@ warn_legacy_skill_dir <- function(dir) {
     recurse = 1,
     regexp = "/SKILL\\.md$",
     fail = FALSE
-  )) > 0
+  )) >
+    0
   if (!has_skill) {
     return(invisible())
   }
@@ -818,6 +880,39 @@ escape_for_rbuildignore <- function(path) {
 
 # System Prompt ------------------------------------------------------------
 
+# Renders one skill as a <skill> block: name, description, location, plus
+# compatibility notes and allowed tools when present. Callers compose the
+# blocks into their own system prompt; btw_skills_system_prompt() wraps them
+# in <available_skills>, btw_skill_prompt() returns a single block.
+format_skill_prompt <- function(skill) {
+  parts <- sprintf(
+    "<skill>\n<name>%s</name>\n<description>%s</description>\n<location>%s</location>",
+    xml_escape(skill$name),
+    xml_escape(skill$description),
+    xml_escape(skill$path)
+  )
+  if (!is.null(skill$compatibility)) {
+    parts <- paste0(
+      parts,
+      sprintf(
+        "\n<compatibility>%s</compatibility>",
+        xml_escape(skill$compatibility)
+      )
+    )
+  }
+  if (!is.null(skill$allowed_tools)) {
+    allowed_tools <- paste(skill$allowed_tools, collapse = ", ")
+    parts <- paste0(
+      parts,
+      sprintf(
+        "\n<allowed-tools>%s</allowed-tools>",
+        xml_escape(allowed_tools)
+      )
+    )
+  }
+  paste0(parts, "\n</skill>")
+}
+
 btw_skills_system_prompt <- function() {
   skills <- btw_skills_list()
 
@@ -832,34 +927,7 @@ btw_skills_system_prompt <- function() {
     "## Skills\n\nYou have access to specialized skills that provide detailed guidance for specific tasks."
   }
 
-  skill_items <- map_chr(skills, function(skill) {
-    parts <- sprintf(
-      "<skill>\n<name>%s</name>\n<description>%s</description>\n<location>%s</location>",
-      xml_escape(skill$name),
-      xml_escape(skill$description),
-      xml_escape(skill$path)
-    )
-    if (!is.null(skill$compatibility)) {
-      parts <- paste0(
-        parts,
-        sprintf(
-          "\n<compatibility>%s</compatibility>",
-          xml_escape(skill$compatibility)
-        )
-      )
-    }
-    if (!is.null(skill$allowed_tools)) {
-      allowed_tools <- paste(skill$allowed_tools, collapse = ", ")
-      parts <- paste0(
-        parts,
-        sprintf(
-          "\n<allowed-tools>%s</allowed-tools>",
-          xml_escape(allowed_tools)
-        )
-      )
-    }
-    paste0(parts, "\n</skill>")
-  })
+  skill_items <- map_chr(skills, format_skill_prompt)
 
   paste0(
     explanation,
@@ -1164,7 +1232,11 @@ description_packages <- function(path) {
 #'
 #' @family skills
 #' @export
-btw_skill_install_project <- function(path = ".", scope = "project", overwrite = NULL) {
+btw_skill_install_project <- function(
+  path = ".",
+  scope = "project",
+  overwrite = NULL
+) {
   check_string(path)
   check_string(scope)
   if (!is.null(overwrite)) {
@@ -1283,4 +1355,124 @@ install_skill_from_dir <- function(
   maybe_use_build_ignore(target_parent)
 
   invisible(target_dir)
+}
+
+# Skill slash commands (shinychat >= 0.4.0.9000) --------------------------------
+
+#' Register skill slash commands in a chat
+#'
+#' @description
+#' Registers a slash command for every skill discovered by the skill tool,
+#' using the chat handle returned by \code{shinychat::chat_server()}. Requires
+#' shinychat 0.4.0.9000 or later.
+#'
+#' Each skill is registered under its own name, e.g. `/skill-creator`. When the
+#' user submits the command, btw sends the skill's full instructions to the
+#' model, followed by the text the user typed after the command. The chat UI
+#' shows `/skill-creator <user text>`; the model receives the skill's
+#' instructions and the user text separated by a blank line.
+#'
+#' If the command fails, btw restores the original slash text to the chat
+#' input and shows a toast with the error.
+#'
+#' Skill commands can't run while a response is streaming; in that case the
+#' command fails the same way, restoring the input and showing an error toast.
+#'
+#' Slash command names may only contain letters, numbers, underscores, and
+#' hyphens. Skills with other names are skipped with a warning, as are skills
+#' whose names match btw's own `/btw-*` slash commands and any names passed to
+#' `reserved`.
+#'
+#' Because `shinychat::chat_server()` must be called from within a Shiny app,
+#' this function can't be demonstrated with a runnable example. Inside your
+#' app's server function:
+#'
+#' ```r
+#' server <- shinychat::chat_server("chat", client = ellmer::chat_openai())
+#' btw_skills_register_slash_commands(server)
+#' ```
+#'
+#' @param chat The chat handle returned by \code{shinychat::chat_server()}.
+#' @param reserved Skill names to skip, as a character vector. Pass the names
+#'   of slash commands you registered yourself so a skill can't take their
+#'   place. btw_app(), for example, passes its own `/new` and `/clear`
+#'   commands.
+#'
+#' @return `chat`, invisibly.
+#'
+#' @family skills
+#' @seealso [btw_tool_skill()] for a skill's full instructions and
+#'   [btw-config] for the skill discovery locations.
+#' @export
+btw_skills_register_slash_commands <- function(chat, reserved = character()) {
+  rlang::check_installed("shinychat", version = "0.4.0.9000")
+
+  if (is.null(chat$slash_command)) {
+    cli::cli_abort(c(
+      "{.arg chat} must be the chat handle returned by {.fn shinychat::chat_server}.",
+      "i" = "Skill slash commands need shinychat 0.4.0.9000 or later."
+    ))
+  }
+
+  skills <- tryCatch(btw_skills_list(), error = function(e) NULL)
+
+  reserved <- c(names(btw_slash_command_specs()), reserved)
+
+  for (skill in skills) {
+    if (!grepl("^[a-zA-Z0-9_-]+$", skill$name)) {
+      cli::cli_warn(c(
+        "Cannot register skill {.val {skill$name}} as a slash command.",
+        "i" = "Slash command names may only contain letters, numbers, underscores, and hyphens."
+      ))
+      next
+    }
+    if (skill$name %in% reserved) {
+      cli::cli_warn(c(
+        "Skill {.val {skill$name}} was not registered as a slash command.",
+        "i" = "A {.val /{skill$name}} command already exists."
+      ))
+      next
+    }
+
+    chat$slash_command(
+      name = skill$name,
+      description = skill$description,
+      handler = btw_slash_skill_handler(chat, skill$name)
+    )
+  }
+
+  invisible(chat)
+}
+
+btw_slash_skill_handler <- function(chat, name) {
+  function(content) {
+    tryCatch(
+      {
+        if (identical(chat$status(), "streaming")) {
+          slash_name <- paste0("/", name)
+          cli::cli_abort(
+            "Wait for the current response to finish before running {.val {slash_name}}."
+          )
+        }
+
+        skill_text <- btw_skill_resolve(name)$text
+
+        content@text <- if (nzchar(content@user_text)) {
+          paste(skill_text, content@user_text, sep = "\n\n")
+        } else {
+          skill_text
+        }
+
+        stream <- chat$client$stream(content)
+        chat$append(stream)
+      },
+      error = function(e) {
+        btw_slash_command_failed(
+          chat,
+          btw_slash_join_command(name, content@user_text %||% ""),
+          e
+        )
+      }
+    )
+  }
 }
