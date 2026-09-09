@@ -91,7 +91,9 @@ test_that("file search optimizes only after many indexed-file deletions", {
   expect_equal(optimized, 0L)
 
   paths <- fs::path(sprintf("code-%03d.R", seq_len(101L)))
-  purrr::walk(paths, writeLines, text = "many_search_terms <- TRUE")
+  for (path in paths) {
+    writeLines("many_search_terms <- TRUE", path)
+  }
   search("many_search_terms")
   fs::file_delete(paths)
   search("many_search_terms")

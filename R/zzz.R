@@ -22,8 +22,11 @@ if (getRversion() < "4.3.0") {
       "description",
       "extra",
       "name",
+      "private",
       "properties",
       "value"
     )
   )
 }
+
+utils::globalVariables("private")

@@ -212,7 +212,8 @@ btw_tool_files_search_factory <- function(
 }
 
 btw_tool_files_search_impl <- local({
-  project_code_search <- NULL
+  state <- new.env(parent = emptyenv())
+  state$project_code_search <- NULL
 
   function(
     term,
@@ -221,11 +222,12 @@ btw_tool_files_search_impl <- local({
     use_regex = FALSE,
     show_lines = FALSE
   ) {
-    if (is.null(project_code_search)) {
-      project_code_search <<- btw_tool_files_search_factory()
+    if (is.null(state$project_code_search)) {
+      state$project_code_search <- btw_tool_files_search_factory()
     }
 
-    project_code_search(
+    rlang::exec(
+      state$project_code_search,
       term,
       limit = limit,
       case_sensitive = case_sensitive,
