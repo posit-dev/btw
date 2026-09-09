@@ -1,102 +1,67 @@
 # nocov start
 
-# Persistent conversation history for btw_app(). When duckdb is installed,
-# shinychat's chat history is stored in a single database in the btw user
-# cache directory, keyed by project directory
-# (btw_app_history_project_dir()).
+# Persistent conversation history for btw_app(). When RSQLite is installed,
+# shinychat's chat history is stored in the shared btw database, keyed by
+# project directory (btw_app_history_project_dir()).
 
-btw_chat_history_db_path <- function() {
-  path_btw_cache("chat_history.duckdb")
-}
-
-# Connect to a duckdb database, retrying while the file is locked by another
-# process (duckdb allows only one writer process at a time). The connection
-# and its driver are closed when the calling frame exits, even on error.
-btw_duckdb_connect <- function(
-  path,
-  timeout = 10,
-  wait = 0.5,
-  max_delay = 2,
-  .envir = parent.frame()
-) {
-  fs::dir_create(fs::path_dir(path))
-
-  deadline <- Sys.time() + timeout
-  delay <- wait
-
-  repeat {
-    drv <- NULL
-    connected <- tryCatch(
-      {
-        drv <- duckdb::duckdb(dbdir = path)
-        list(con = DBI::dbConnect(drv), drv = drv)
-      },
-      error = function(err) {
-        if (!is.null(drv)) {
-          duckdb::duckdb_shutdown(drv)
-        }
-        err
-      }
-    )
-
-    if (!inherits(connected, "error")) {
-      break
-    }
-
-    if (Sys.time() >= deadline) {
-      cli::cli_abort(c(
-        "Could not connect to {.path {path}} within {timeout} seconds.",
-        "i" = "The database may be locked by another process."
-      ))
-    }
-
-    Sys.sleep(delay)
-    delay <- min(delay * 2, max_delay)
+btw_history_retention_days <- function() {
+  value <- Sys.getenv("BTW_HISTORY_RETENTION_DAYS", unset = "")
+  if (!nzchar(value)) {
+    return(365L)
   }
 
-  withr::defer(
-    {
-      DBI::dbDisconnect(connected$con)
-      duckdb::duckdb_shutdown(connected$drv)
-    },
-    envir = .envir
-  )
+  if (!grepl("^-?[0-9]+$", value)) {
+    return(365L)
+  }
 
-  connected$con
+  value <- suppressWarnings(as.integer(value))
+  if (is.na(value) || value < -1L) {
+    return(365L)
+  }
+
+  value
 }
 
-btw_duckdb_init <- function(con) {
-  DBI::dbExecute(
-    con,
-    "CREATE TABLE IF NOT EXISTS conversations (
-      scope VARCHAR NOT NULL,
-      chat_id VARCHAR NOT NULL,
-      id VARCHAR NOT NULL,
-      title VARCHAR,
-      created_at VARCHAR,
-      updated_at VARCHAR,
-      size_bytes DOUBLE,
-      data VARCHAR,
-      PRIMARY KEY (scope, chat_id, id)
-    )"
-  )
-  invisible(NULL)
-}
-
-btw_conversation_store_duckdb <- R6::R6Class(
-  "btw_conversation_store_duckdb",
+btw_conversation_store_sqlite <- R6::R6Class(
+  "btw_conversation_store_sqlite",
   inherit = shinychat_conversation_store(),
   private = list(
     db_path = NULL,
+    retention_days = NULL,
 
     # Run `fn(con)` on a fresh connection to the store database, degrading
     # gracefully (warn + `fallback`) if the database can't be reached.
-    with_db = function(op, fallback, fn) {
+    with_db = function(op, fallback, fn, retry_busy = FALSE) {
       tryCatch(
         {
-          con <- btw_duckdb_connect(private$db_path)
-          btw_duckdb_init(con)
-          fn(con)
+          retries <- if (retry_busy) 3L else 0L
+          attempt <- 0L
+
+          repeat {
+            run <- function() {
+              con <- btw_db_open(private$db_path, .envir = environment())
+              fn(con)
+            }
+            result <- tryCatch(
+              run(),
+              error = identity
+            )
+
+            if (!inherits(result, "error")) {
+              return(result)
+            }
+
+            attempt <- attempt + 1L
+            if (
+              !retry_busy ||
+                !private$is_sqlite_busy(result) ||
+                attempt > retries
+            ) {
+              stop(result)
+            }
+
+            Sys.sleep(0.2 * 2 ^ (attempt - 1L))
+          }
         },
         error = function(err) {
           cli::cli_warn(c(
@@ -106,11 +71,41 @@ btw_conversation_store_duckdb <- R6::R6Class(
           fallback
         }
       )
+    },
+
+    is_sqlite_busy = function(err) {
+      message <- conditionMessage(err)
+      grepl("SQLITE_BUSY", message, fixed = TRUE, ignore.case = TRUE) ||
+        grepl(
+          "\\b(database|database table|database schema) (is )?locked\\b",
+          message,
+          ignore.case = TRUE,
+          perl = TRUE
+        )
+    },
+
+    prune = function(con) {
+      if (private$retention_days < 0L) {
+        return(invisible(NULL))
+      }
+
+      cutoff <- format(
+        Sys.time() - private$retention_days * 24 * 60 * 60,
+        "%Y-%m-%dT%H:%M:%SZ",
+        tz = "UTC"
+      )
+      DBI::dbExecute(
+        con,
+        "DELETE FROM conversations WHERE updated_at < ?",
+        params = list(cutoff)
+      )
+      invisible(NULL)
     }
   ),
   public = list(
     initialize = function(db_path = NULL) {
-      private$db_path <- db_path %||% btw_chat_history_db_path()
+      private$db_path <- db_path %||% btw_db_path()
+      private$retention_days <- btw_history_retention_days()
     },
 
     list = function(partition) {
@@ -162,10 +157,14 @@ btw_conversation_store_duckdb <- R6::R6Class(
     },
 
     put = function(partition, record) {
+      if (private$retention_days == 0L) {
+        return(invisible(NULL))
+      }
+
       data <- jsonlite::serializeJSON(record, digits = 17)
       size_bytes <- as.double(nchar(data, type = "bytes"))
 
-      private$with_db(
+      invisible(private$with_db(
         "save",
         invisible(NULL),
         function(con) {
@@ -191,13 +190,15 @@ btw_conversation_store_duckdb <- R6::R6Class(
               data
             )
           )
+          private$prune(con)
           invisible(NULL)
-        }
-      )
+        },
+        retry_busy = TRUE
+      ))
     },
 
     delete = function(partition, id) {
-      private$with_db(
+      invisible(private$with_db(
         "delete",
         invisible(NULL),
         function(con) {
@@ -208,8 +209,9 @@ btw_conversation_store_duckdb <- R6::R6Class(
             params = list(partition$scope, partition$chat_id, id)
           )
           invisible(NULL)
-        }
-      )
+        },
+        retry_busy = TRUE
+      ))
     }
   )
 )
@@ -235,20 +237,28 @@ btw_app_history_project_dir <- function(path_btw = NULL) {
 }
 
 btw_app_history_options <- function(path_btw = NULL) {
-  if (!rlang::is_installed("duckdb")) {
+  retention_days <- btw_history_retention_days()
+  if (
+    retention_days == 0L ||
+      !rlang::is_installed("RSQLite")
+  ) {
+    if (retention_days == 0L) {
+      return(TRUE)
+    }
+
     cli::cli_inform(
       c(
         "Chat history: conversations aren't saved between {.fn btw_app} sessions.",
-        "i" = "Install the {.pkg duckdb} R package to keep your conversation history in a local database: {.code install.packages(\"duckdb\")}."
+        "i" = "Install the {.pkg RSQLite} R package to keep your conversation history in a local database: {.code install.packages(\"RSQLite\")}."
       ),
       .frequency = "once",
-      .frequency_id = "btw_app_history_duckdb"
+      .frequency_id = "btw_app_history_sqlite"
     )
     return(TRUE)
   }
 
   shinychat_history_options(
-    store = btw_conversation_store_duckdb$new(),
+    store = btw_conversation_store_sqlite$new(),
     scope = btw_app_history_project_dir(path_btw)
   )
 }
