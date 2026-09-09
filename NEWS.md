@@ -8,7 +8,7 @@
 
 * btw now supports shinychat >= 0.5.0 (#215):
 
-  - `btw_app()` uses shinychat's new `page_chat()` layout, with the tool selection menu and the system prompt editor in offcanvas panels. When shinychat 0.4.x is installed, `btw_app()` falls back to the legacy sidebar layout.
+  - `btw_app()` uses shinychat's new `page_chat()` layout, with the tool selection menu and the system prompt editor in offcanvas panels. When shinychat 0.4.x is installed, `btw_app()` falls back to the legacy sidebar layout and warns, suggesting you upgrade to shinychat 0.5.0.
 
   - Conversations are kept in a chat history. Past chats appear in the app's history drawer, so you can revisit a previous conversation at any time. When duckdb is installed, btw stores this history in a shared database in btw's user cache directory, with one history per project, so your chats are still there the next time you open the app in the same project. Without duckdb, conversations are not saved between sessions. btw prints a note that suggests installing duckdb.
 

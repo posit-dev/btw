@@ -36,6 +36,15 @@ btw_app <- function(
     rlang::check_installed("bslib", version = "0.12.0")
     "page_chat"
   } else {
+    if (utils::packageVersion("shinychat") < "0.4.0.9000") {
+      cli::cli_warn(
+        c(
+          "shinychat {.strong 0.5.0} introduces an upgraded chat layout and",
+          "conversation history for {.fn btw::btw_app}.",
+          "i" = "Upgrade with {.code install.packages(\"shinychat\")} to use them."
+        )
+      )
+    }
     "sidebar"
   }
 
