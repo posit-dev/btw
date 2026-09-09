@@ -113,7 +113,7 @@ withr::with_tempdir({
   )
 })
 #> <btw::BtwToolResult>
-#>  @ value  : 'json' chr "[\n  {\"filename\":\"state_names_1.md\",\"size\":219,\"last_modified\":1788972977.155,\"content\":\"Kentucky\",\"line\":17}\n]"
+#>  @ value  : 'json' chr "[\n  {\"filename\":\"state_names_1.md\",\"size\":219,\"last_modified\":1788973536.4456,\"content\":\"Kentucky\""| __truncated__
 #>  @ error  : NULL
 #>  @ extra  :List of 1
 #>  .. $ display:List of 3

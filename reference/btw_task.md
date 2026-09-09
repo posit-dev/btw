@@ -122,8 +122,8 @@ Analyze the {{ package_name }} package and create a summary.
 
 # Task with template interpolation
 btw_task(tmp_task_file, package_name = "dplyr", mode = "tool")
-#> # <ellmer::ToolDef> btw_task_file20b85d9aff98(prompt)
-#> # @name: btw_task_file20b85d9aff98
+#> # <ellmer::ToolDef> btw_task_file20be4ad59e53(prompt)
+#> # @name: btw_task_file20be4ad59e53
 #> # @description: Analyze the dplyr package and create a summary.
 #> # @convert: TRUE
 #> #
@@ -144,8 +144,8 @@ btw_task(tmp_task_file, package_name = "dplyr", mode = "tool")
 #>         this_client$chat("Please complete the task as instructed.")
 #>     }
 #> }
-#> <bytecode: 0x557a26bae480>
-#> <environment: 0x557a26bb02f8>
+#> <bytecode: 0x55828f08fb50>
+#> <environment: 0x55828efea1c0>
 
 # Include additional context
 btw_task(
@@ -154,8 +154,8 @@ btw_task(
   mtcars,  # Additional context
   mode = "tool"
 )
-#> # <ellmer::ToolDef> btw_task_file20b85d9aff98(prompt)
-#> # @name: btw_task_file20b85d9aff98
+#> # <ellmer::ToolDef> btw_task_file20be4ad59e53(prompt)
+#> # @name: btw_task_file20be4ad59e53
 #> # @description: Analyze the ggplot2 package and create a summary.
 #> # @convert: TRUE
 #> #
@@ -176,6 +176,6 @@ btw_task(
 #>         this_client$chat("Please complete the task as instructed.")
 #>     }
 #> }
-#> <bytecode: 0x557a26bae480>
-#> <environment: 0x557a2d4d4670>
+#> <bytecode: 0x55828f08fb50>
+#> <environment: 0x558297ed47d0>
 ```
