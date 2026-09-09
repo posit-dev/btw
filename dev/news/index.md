@@ -21,6 +21,66 @@
   `--no-dev` to disable this and use the installed package instead
   ([\#212](https://github.com/posit-dev/btw/issues/212)).
 
+- btw now supports shinychat \>= 0.5.0
+  ([\#215](https://github.com/posit-dev/btw/issues/215)):
+
+  - [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+    uses shinychat’s new `page_chat()` layout, with the tool selection
+    menu and the system prompt editor in offcanvas panels. When
+    shinychat 0.4.x is installed,
+    [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+    falls back to the legacy sidebar layout and warns, suggesting you
+    upgrade to shinychat 0.5.0.
+
+  - Conversations are kept in a chat history. Past chats appear in the
+    app’s history drawer, so you can revisit a previous conversation at
+    any time. When duckdb is installed, btw stores this history in a
+    shared database in btw’s user cache directory, with one history per
+    project, so your chats are still there the next time you open the
+    app in the same project. Without duckdb, conversations are not saved
+    between sessions. btw prints a note that suggests installing duckdb.
+
+  - btw’s `@` commands are also available as `/btw-*` slash commands,
+    e.g. `/btw-help dplyr::across`, `/btw-news dplyr v1.1.4`, or
+    `/btw-url https://example.com`. A slash command stages its context
+    as an attachment on the chat input and shows a toast while it runs.
+    Nothing is sent to the model until you submit your next message. If
+    a command fails,
+    [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+    restores your input text and shows an error toast.
+
+  - Skills are registered as slash commands under their own names,
+    e.g. `/skill-creator`. Running a skill submits its instructions with
+    your message to the model.
+
+  - `/new` and `/clear` start a new chat. If chat history is enabled,
+    [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+    first saves the current conversation with shinychat’s history-aware
+    `chat$new_chat()` (posit-dev/shinychat#399), so the conversation
+    isn’t dropped from the history. The token and cost counters follow
+    the active conversation and restore their totals when you load an
+    old chat from the history.
+
+  - Subagent reports use shinychat 0.5.0’s HTML display protocol
+    ([`contents_html()`](https://ellmer.tidyverse.org/reference/contents_text.html)),
+    with the full subagent conversation in a styled disclosure.
+    [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+    escapes untrusted markdown in subagent reports and in error toasts.
+
+  - Tool results survive shinychat’s conversation history serialization,
+    so chats with tool results can be saved and restored. btw collapses
+    multi-element character values to a single string, returns data
+    frame results as JSON, and drops unserializable objects from run-R
+    results.
+
+  - Two new functions make the skill features reusable outside
+    [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md).
+    [`btw_skill_prompt()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_prompt.md)
+    renders a skill’s `<skill>` block, including its name, description,
+    location, and optional compatibility and allowed-tools metadata.
+    [`btw_skills_register_slash_commands()`](https://posit-dev.github.io/btw/dev/reference/btw_skills_register_slash_commands.md)
+    registers skills as slash commands on any shinychat `chat_server()`.
+
 ### Bug fixes
 
 - `btw --version` now works without a subcommand. Previously, Rapp’s
@@ -28,6 +88,11 @@
   before the version flag was ever checked.
 
 ### Other changes
+
+- Local conversation history and project code-search indexes now use
+  RSQLite, replacing DuckDB. Persistent data is stored in btw’s user
+  cache and separated by project; install RSQLite to enable this
+  storage.
 
 - btw now requires ellmer (\>= 0.4.2). The `set_model()` compatibility
   shim was removed, and `client_get_models()` now delegates to ellmer’s

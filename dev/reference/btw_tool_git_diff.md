@@ -55,12 +55,14 @@ withr::with_tempdir({
   # What the LLM sees
   cat(btw_tool_git_diff()@value)
 })
-#> ```diff diff --git a/hello.md b/hello.md
+#> ```diff
+#> diff --git a/hello.md b/hello.md
 #> index 4b5fa63..d972925 100644
 #> --- a/hello.md
 #> +++ b/hello.md
 #> @@ -1 +1 @@
 #> -hello, world
 #> +hello, universe
-#>  ```
+#> 
+#> ```
 ```

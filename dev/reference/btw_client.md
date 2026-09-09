@@ -162,7 +162,9 @@ btw_app(
 - messages:
 
   A list of initial messages to show in the chat, passed to
-  [`shinychat::chat_mod_ui()`](https://posit-dev.github.io/shinychat/r/reference/chat_app.html).
+  [`shinychat::chat_mod_ui()`](https://posit-dev.github.io/shinychat/r/reference/chat_mod_ui.html).
+  With shinychat \>= 0.5.0 the messages are replayed into the chat when
+  the app session starts.
 
 - model_choices:
 
@@ -188,6 +190,17 @@ the messages added during the chat session.
 
 - `btw_app()`: Create a btw-enhanced client and launch a Shiny app to
   chat
+
+## Conversation History
+
+With shinychat \>= 0.5.0, conversations in `btw_app()` are kept in a
+chat history that you can revisit from the app's history drawer. When
+the [RSQLite](https://rsqlite.r-dbi.org/) package is installed,
+conversations are stored locally in a SQLite database in btw's user
+cache directory (`tools::R_user_dir("btw", "cache")`), keyed by project
+directory: the directory containing the closest `DESCRIPTION` or `.git`
+marker, or the working directory otherwise. If RSQLite is not installed,
+shinychat's default history storage is used instead.
 
 ## User (global) locations
 

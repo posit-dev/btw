@@ -335,7 +335,8 @@ the your current working directory or its parents. Set <code>path_llms_txt = FAL
 
 <dt id="arg-messages">messages<a class="anchor" aria-label="anchor" href="#arg-messages"></a></dt>
 <dd><p>A list of initial messages to show in the chat, passed to
-<code><a href="https://posit-dev.github.io/shinychat/r/reference/chat_app.html" class="external-link">shinychat::chat_mod_ui()</a></code>.</p></dd>
+<code><a href="https://posit-dev.github.io/shinychat/r/reference/chat_mod_ui.html" class="external-link">shinychat::chat_mod_ui()</a></code>. With shinychat &gt;= 0.5.0 the messages are
+replayed into the chat when the app session starts.</p></dd>
 
 
 <dt id="arg-model-choices">model_choices<a class="anchor" aria-label="anchor" href="#arg-model-choices"></a></dt>
@@ -358,6 +359,19 @@ the chat object with the messages added during the chat session.</p>
 <li><p><code>btw_app()</code>: Create a btw-enhanced client and launch a Shiny app to
 chat</p></li>
 </ul></div>
+    <div class="section level2">
+    <h2 id="conversation-history">Conversation History<a class="anchor" aria-label="anchor" href="#conversation-history"></a></h2>
+
+
+<p>With shinychat &gt;= 0.5.0, conversations in <code>btw_app()</code> are kept in a chat
+history that you can revisit from the app's history drawer. When the
+<a href="https://rsqlite.r-dbi.org/" class="external-link">RSQLite</a> package is installed, conversations
+are stored locally in a SQLite database in btw's user cache directory
+(<code>tools::R_user_dir("btw", "cache")</code>), keyed by project directory: the
+directory containing the closest <code>DESCRIPTION</code> or <code>.git</code> marker, or the
+working directory otherwise. If RSQLite is not installed, shinychat's
+default history storage is used instead.</p>
+    </div>
     <div class="section level2">
     <h2 id="user-global-locations">User (global) locations<a class="anchor" aria-label="anchor" href="#user-global-locations"></a></h2>
 

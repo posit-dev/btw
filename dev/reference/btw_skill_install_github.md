@@ -67,4 +67,6 @@ for the complete list of project and user configuration locations.
 Other skills:
 [`btw_skill_install_package()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_install_package.md),
 [`btw_skill_install_project()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_install_project.md),
+[`btw_skill_prompt()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_prompt.md),
+[`btw_skills_register_slash_commands()`](https://posit-dev.github.io/btw/dev/reference/btw_skills_register_slash_commands.md),
 [`btw_tool_skill()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_skill.md)

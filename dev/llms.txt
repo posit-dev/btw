@@ -191,6 +191,10 @@ GitHub](https://github.com/posit-dev/btw/issues).
   : Install a skill from an R package
 - [`btw_skill_install_project()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_install_project.md)
   : Install skills from all project dependencies
+- [`btw_skill_prompt()`](https://posit-dev.github.io/btw/dev/reference/btw_skill_prompt.md)
+  : Render a skill's entry for a system prompt
+- [`btw_skills_register_slash_commands()`](https://posit-dev.github.io/btw/dev/reference/btw_skills_register_slash_commands.md)
+  : Register skill slash commands in a chat
 - [`btw_task_create_skill()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_skill.md)
   : Task: Create a Skill
 
