@@ -1382,6 +1382,15 @@ install_skill_from_dir <- function(
 #' whose names match btw's own `/btw-*` slash commands and any names passed to
 #' `reserved`.
 #'
+#' Because `shinychat::chat_server()` must be called from within a Shiny app,
+#' this function can't be demonstrated with a runnable example. Inside your
+#' app's server function:
+#'
+#' ```r
+#' server <- shinychat::chat_server("chat", client = ellmer::chat_openai())
+#' btw_skills_register_slash_commands(server)
+#' ```
+#'
 #' @param chat The chat handle returned by \code{shinychat::chat_server()}.
 #' @param reserved Skill names to skip, as a character vector. Pass the names
 #'   of slash commands you registered yourself so a skill can't take their
@@ -1389,10 +1398,6 @@ install_skill_from_dir <- function(
 #'   commands.
 #'
 #' @return `chat`, invisibly.
-#'
-#' @examplesIf rlang::is_installed("shiny") && shiny::isRunning()
-#' server <- shinychat::chat_server("chat", client = ellmer::chat_openai())
-#' btw_skills_register_slash_commands(server)
 #'
 #' @family skills
 #' @seealso [btw_tool_skill()] for a skill's full instructions and

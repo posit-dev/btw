@@ -38,12 +38,14 @@ Slash command names may only contain letters, numbers, underscores, and
 hyphens. Skills with other names are skipped with a warning, as are skills
 whose names match btw's own \verb{/btw-*} slash commands and any names passed to
 \code{reserved}.
-}
-\examples{
-\dontshow{if (rlang::is_installed("shiny") && shiny::isRunning()) withAutoprint(\{ # examplesIf}
-server <- shinychat::chat_server("chat", client = ellmer::chat_openai())
+
+Because \code{shinychat::chat_server()} must be called from within a Shiny app,
+this function can't be demonstrated with a runnable example. Inside your
+app's server function:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{server <- shinychat::chat_server("chat", client = ellmer::chat_openai())
 btw_skills_register_slash_commands(server)
-\dontshow{\}) # examplesIf}
+}\if{html}{\out{</div>}}
 }
 \seealso{
 \code{\link[=btw_tool_skill]{btw_tool_skill()}} for a skill's full instructions and
