@@ -14,6 +14,15 @@ local_file_search <- function(..., .env = caller_env()) {
   search
 }
 
+test_that("file search is not registered without RSQLite", {
+  local_mocked_bindings(
+    is_installed = function(package, version = NULL) package != "RSQLite",
+    .package = "btw"
+  )
+
+  expect_false("btw_tool_files_search" %in% names(btw_tools("files")))
+})
+
 test_that("file search persists its index and refreshes changed files", {
   local_btw_db()
   search_dir <- fs::path_temp("search-persistence")

@@ -215,6 +215,9 @@ btw_tool_files_search_factory <- function(
   name = "btw_tool_files_search",
   group = "files",
   alias_name = "btw_tool_files_code_search",
+  can_register = function() {
+    is_installed("RSQLite", version = "2.2.2") && is_installed("DBI")
+  },
   tool = function() {
     project_code_search <- btw_tool_files_search_factory()
     ellmer::tool(
