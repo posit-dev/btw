@@ -1,4 +1,4 @@
-# btw (development version)
+# btw 1.5.0
 
 ## New features
 
