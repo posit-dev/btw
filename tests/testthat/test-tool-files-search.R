@@ -23,6 +23,18 @@ test_that("file search is not registered without RSQLite", {
   expect_false("btw_tool_files_search" %in% names(btw_tools("files")))
 })
 
+test_that("file search definition materializes without RSQLite", {
+  local_mocked_bindings(
+    is_installed = function(package, version = NULL) package != "RSQLite",
+    .package = "btw"
+  )
+
+  expect_silent(as_ellmer_tools(
+    .btw_tools["btw_tool_files_search"],
+    force = TRUE
+  ))
+})
+
 test_that("file search persists its index and refreshes changed files", {
   local_btw_db()
   search_dir <- fs::path_temp("search-persistence")

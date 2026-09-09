@@ -211,6 +211,30 @@ btw_tool_files_search_factory <- function(
   }
 }
 
+btw_tool_files_search_impl <- local({
+  project_code_search <- NULL
+
+  function(
+    term,
+    limit = 100,
+    case_sensitive = TRUE,
+    use_regex = FALSE,
+    show_lines = FALSE
+  ) {
+    if (is.null(project_code_search)) {
+      project_code_search <<- btw_tool_files_search_factory()
+    }
+
+    project_code_search(
+      term,
+      limit = limit,
+      case_sensitive = case_sensitive,
+      use_regex = use_regex,
+      show_lines = show_lines
+    )
+  }
+})
+
 .btw_add_to_tools(
   name = "btw_tool_files_search",
   group = "files",
@@ -219,7 +243,6 @@ btw_tool_files_search_factory <- function(
     is_installed("RSQLite", version = "2.2.2") && is_installed("DBI")
   },
   tool = function() {
-    project_code_search <- btw_tool_files_search_factory()
     ellmer::tool(
       function(
         term,
@@ -228,7 +251,7 @@ btw_tool_files_search_factory <- function(
         use_regex = FALSE,
         show_lines = FALSE
       ) {
-        project_code_search(
+        btw_tool_files_search_impl(
           term,
           limit = limit,
           case_sensitive = case_sensitive,
