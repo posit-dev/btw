@@ -582,7 +582,7 @@ run_r_extra_data <- function(x, max_size = 1024^2) {
     is_environment(x) ||
       is_function(x) ||
       is_formula(x) ||
-      object.size(x) > max_size
+      utils::object.size(x) > max_size
   ) {
     return(NULL)
   }

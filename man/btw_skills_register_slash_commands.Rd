@@ -40,7 +40,7 @@ whose names match btw's own \verb{/btw-*} slash commands and any names passed to
 \code{reserved}.
 }
 \examples{
-\dontshow{if (rlang::is_installed("shinychat", version = "0.5.0")) withAutoprint(\{ # examplesIf}
+\dontshow{if (rlang::is_installed("shiny") && shiny::isRunning()) withAutoprint(\{ # examplesIf}
 server <- shinychat::chat_server("chat", client = ellmer::chat_openai())
 btw_skills_register_slash_commands(server)
 \dontshow{\}) # examplesIf}
