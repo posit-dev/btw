@@ -1,3 +1,19 @@
+local_file_search <- function(..., .env = caller_env()) {
+  search <- btw_tool_files_search_factory(...)
+  state <- environment(search)$state
+
+  withr::defer(
+    {
+      if (!is.null(state$con) && DBI::dbIsValid(state$con)) {
+        DBI::dbDisconnect(state$con)
+      }
+    },
+    envir = .env
+  )
+
+  search
+}
+
 test_that("file search persists its index and refreshes changed files", {
   local_btw_db()
   search_dir <- fs::path_temp("search-persistence")
@@ -5,7 +21,7 @@ test_that("file search persists its index and refreshes changed files", {
   withr::local_dir(search_dir)
   writeLines("first_search_term <- TRUE", "code.R")
 
-  first <- btw_tool_files_search_factory()
+  first <- local_file_search()
   first_data <- jsonlite::fromJSON(S7::prop(
     first("first_search_term", show_lines = TRUE),
     "value"
@@ -38,7 +54,7 @@ test_that("file search optimizes only after many indexed-file deletions", {
   fs::dir_create(search_dir)
   withr::local_dir(search_dir)
   writeLines("first_search_term <- TRUE", "code.R")
-  search <- btw_tool_files_search_factory()
+  search <- local_file_search()
 
   optimized <- 0L
   local_mocked_bindings(
@@ -67,7 +83,7 @@ test_that("file search treats literal FTS syntax as literal text", {
   fs::dir_create(search_dir)
   withr::local_dir(search_dir)
   writeLines(c("on.exit(foo)", "call <- c(1,2)", "quote <- 'a\"b'"), "code.R")
-  search <- btw_tool_files_search_factory()
+  search <- local_file_search()
 
   expect_equal(
     nrow(jsonlite::fromJSON(S7::prop(search("on.exit", show_lines = TRUE), "value"))),
@@ -89,7 +105,7 @@ test_that("file search falls back for short terms and preserves case semantics",
   fs::dir_create(search_dir)
   withr::local_dir(search_dir)
   writeLines(c("ab <- 1", "snake_case <- 2", "snakeCase <- 3"), "code.R")
-  search <- btw_tool_files_search_factory()
+  search <- local_file_search()
 
   expect_equal(
     nrow(jsonlite::fromJSON(S7::prop(search("ab", show_lines = TRUE), "value"))),
@@ -115,7 +131,7 @@ test_that("file search applies regular expressions in R", {
   fs::dir_create(search_dir)
   withr::local_dir(search_dir)
   writeLines(c("alpha_12 <- TRUE", "alpha_x <- FALSE"), "code.R")
-  search <- btw_tool_files_search_factory()
+  search <- local_file_search()
 
   data <- jsonlite::fromJSON(S7::prop(
     search("^alpha_[0-9]+", use_regex = TRUE, show_lines = TRUE),
@@ -131,7 +147,7 @@ test_that("package-source factories use a temporary database", {
   fs::dir_create(source_dir)
   writeLines("temporary_source_term <- TRUE", fs::path(source_dir, "source.R"))
 
-  search <- btw_tool_files_search_factory(source_dir, restrict_to_wd = FALSE)
+  search <- local_file_search(source_dir, restrict_to_wd = FALSE)
   data <- jsonlite::fromJSON(S7::prop(
     search("temporary_source_term", show_lines = TRUE),
     "value"
