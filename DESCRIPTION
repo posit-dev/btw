@@ -78,7 +78,7 @@ Suggests:
     roxygen2,
     RSQLite (>= 2.2.2),
     shiny,
-    shinychat (>= 0.5.0),
+    shinychat (>= 0.4.0),
     testthat (>= 3.0.0),
     tibble,
     usethis
@@ -151,5 +151,3 @@ Collate:
     'utils-shinychat.R'
     'utils.R'
     'zzz.R'
-Remotes:
-    posit-dev/shinychat@rc-v0.5.0
