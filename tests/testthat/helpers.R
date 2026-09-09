@@ -212,6 +212,23 @@ local_btw_md <- function(project = NULL, user = NULL, .env = caller_env()) {
   )
 }
 
+local_btw_db <- function(.env = caller_env()) {
+  path <- fs::file_temp(ext = "sqlite3")
+  paths <- c(paste0(path, c("-wal", "-shm")), path)
+
+  withr::defer(
+    fs::file_delete(paths[fs::file_exists(paths)]),
+    envir = .env
+  )
+
+  local_mocked_bindings(
+    btw_db_path = function() path,
+    .env = .env
+  )
+
+  path
+}
+
 # shinychat >= 0.5.0 (a.k.a. the dev version leading up to it) serializes tool
 # cards as wire blocks; earlier versions return a static `<shiny-tool-*>` tag.
 shinychat_wire_blocks <- function() {
