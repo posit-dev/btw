@@ -147,8 +147,8 @@ btw_slash_commands_register <- function(chat, skills = TRUE) {
 # the chat history (when enabled), the chat UI and the client's turns are
 # cleared, and the status counters reset. With history disabled they clear the
 # conversation without saving. The history coordination is handled by
-# shinychat's managed clear (shinychat#399); the slash handler only resets the
-# app-level status counters.
+# shinychat's chat$new_chat() (shinychat#399); the slash handler only resets
+# the app-level status counters.
 btw_slash_register_new_chat_commands <- function(chat) {
   for (name in c("new", "clear")) {
     chat$slash_command(
@@ -175,7 +175,7 @@ btw_slash_new_chat_handler <- function(chat, name) {
           )
         }
 
-        chat$clear()
+        btw_chat_new_chat(chat)
 
         session <- shiny::getDefaultReactiveDomain()
         if (!is.null(session)) {

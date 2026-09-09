@@ -52,6 +52,17 @@ app_replay_messages <- function(chat, messages) {
   }
 }
 
+# With conversation history enabled, shinychat's `chat$clear()` errors and
+# `chat$new_chat()` saves the conversation before resetting (shinychat#399).
+# Handles without `new_chat()` (shinychat 0.4.x, no history) only have `clear()`.
+btw_chat_new_chat <- function(chat) {
+  if (!is.null(chat$new_chat)) {
+    chat$new_chat()
+  } else {
+    chat$clear(client_history = "clear")
+  }
+}
+
 # Shared btw_app server. `make_chat` returns the chat handle (the object
 # returned by shinychat::chat_mod_server() or shinychat::chat_server(),
 # which share the same surface). `handlers` may include:
@@ -83,7 +94,7 @@ btw_app_server <- function(
 
     shiny::observeEvent(res$clear_chat(), {
       if (identical(chat$status(), "idle")) {
-        chat$clear()
+        btw_chat_new_chat(chat)
       }
     })
 

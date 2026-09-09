@@ -257,7 +257,25 @@ test_that("btw_slash_skill_handler() combines skill text and user input", {
   expect_identical(toasts, "/test-skill oh no")
 })
 
-test_that("btw_slash_new_chat_handler() starts a new chat via chat$clear()", {
+test_that("btw_slash_new_chat_handler() starts a new chat via chat$new_chat()", {
+  state <- list2env(list(new_chats = 0, cleared = 0))
+  chat <- list2env(list(
+    status = function() "idle",
+    new_chat = function(...) state$new_chats <- state$new_chats + 1,
+    clear = function(...) state$cleared <- state$cleared + 1,
+    update_user_input = function(...) NULL
+  ))
+
+  btw_slash_new_chat_handler(chat, "new")()
+  expect_identical(state$new_chats, 1)
+  expect_identical(state$cleared, 0)
+
+  btw_slash_new_chat_handler(chat, "clear")()
+  expect_identical(state$new_chats, 2)
+  expect_identical(state$cleared, 0)
+})
+
+test_that("btw_slash_new_chat_handler() falls back to chat$clear() without new_chat()", {
   state <- list2env(list(cleared = 0))
   chat <- list2env(list(
     status = function() "idle",
@@ -267,22 +285,24 @@ test_that("btw_slash_new_chat_handler() starts a new chat via chat$clear()", {
 
   btw_slash_new_chat_handler(chat, "new")()
   expect_identical(state$cleared, 1)
+})
 
-  btw_slash_new_chat_handler(chat, "clear")()
-  expect_identical(state$cleared, 2)
-
-  # streaming: refuse and surface the error like other commands
+test_that("btw_slash_new_chat_handler() refuses to start a new chat while streaming", {
   restored <- character()
   toasts <- character()
-  chat$update_user_input <- function(value = NULL, focus = FALSE, ...) {
-    restored <<- c(restored, value)
-  }
+  chat <- list2env(list(
+    status = function() "streaming",
+    new_chat = function(...) NULL,
+    clear = function(...) NULL,
+    update_user_input = function(value = NULL, focus = FALSE, ...) {
+      restored <<- c(restored, value)
+    }
+  ))
   local_mocked_bindings(
     notifier = function(icon, action, error = NULL, ...) {
       toasts <<- c(toasts, action)
     }
   )
-  chat$status <- function() "streaming"
 
   btw_slash_new_chat_handler(chat, "new")()
   expect_identical(restored, "/new")
