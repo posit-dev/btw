@@ -22,10 +22,13 @@ btw_history_retention_days <- function() {
   value
 }
 
-btw_conversation_store_sqlite <- R6::R6Class(
-  "btw_conversation_store_sqlite",
-  inherit = shinychat_conversation_store(),
-  private = list(
+btw_conversation_store_sqlite <- function() {
+  rlang::check_installed("R6")
+
+  R6::R6Class(
+    "btw_conversation_store_sqlite",
+    inherit = shinychat_conversation_store(),
+    private = list(
     db_path = NULL,
     retention_days = NULL,
 
@@ -101,8 +104,8 @@ btw_conversation_store_sqlite <- R6::R6Class(
       )
       invisible(NULL)
     }
-  ),
-  public = list(
+    ),
+    public = list(
     initialize = function(db_path = NULL) {
       private$db_path <- db_path %||% btw_db_path()
       private$retention_days <- btw_history_retention_days()
@@ -213,11 +216,12 @@ btw_conversation_store_sqlite <- R6::R6Class(
         retry_busy = TRUE
       ))
     }
+    )
   )
-)
+}
 
 btw_app_history_project_dir <- function(path_btw = NULL) {
-  if (!is.null(path_btw)) {
+  if (!is.null(path_btw) && !identical(path_btw, FALSE)) {
     path <- fs::path_abs(fs::path_expand(path_btw))
     if (fs::dir_exists(path)) {
       return(as.character(fs::path_norm(path)))
@@ -258,7 +262,7 @@ btw_app_history_options <- function(path_btw = NULL) {
   }
 
   shinychat_history_options(
-    store = btw_conversation_store_sqlite$new(),
+    store = btw_conversation_store_sqlite()$new(),
     scope = btw_app_history_project_dir(path_btw),
     restore_mode = "none"
   )

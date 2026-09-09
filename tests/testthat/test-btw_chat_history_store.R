@@ -27,7 +27,7 @@ history_record <- function(
 
 new_history_store <- function(.env = caller_env()) {
   db <- local_btw_db(.env)
-  btw:::btw_conversation_store_sqlite$new(db)
+  btw:::btw_conversation_store_sqlite()$new(db)
 }
 
 test_that("btw_conversation_store_sqlite round-trips a record", {
@@ -174,6 +174,11 @@ test_that("btw_app_history_project_dir() resolves from path_btw", {
   expect_identical(
     btw:::btw_app_history_project_dir(dir),
     as.character(fs::path_norm(fs::path_abs(dir)))
+  )
+
+  expect_identical(
+    btw:::btw_app_history_project_dir(FALSE),
+    btw:::btw_app_history_project_dir()
   )
 })
 
