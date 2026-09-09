@@ -52,8 +52,7 @@ Imports:
     skimr,
     utils,
     withr,
-    xml2,
-    shinychat (>= 0.5.0)
+    xml2
 Suggests:
     bslib (>= 0.11.0),
     callr,
@@ -78,6 +77,7 @@ Suggests:
     renv,
     roxygen2,
     shiny,
+    shinychat (>= 0.5.0),
     testthat (>= 3.0.0),
     tibble,
     usethis
