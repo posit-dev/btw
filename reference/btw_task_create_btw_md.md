@@ -83,7 +83,7 @@ Other task and agent functions:
 withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
   btw_task_create_btw_md(mode = "tool", client = "anthropic")
 })
-#> Using model = "claude-sonnet-4-6".
+#> Using model = "claude-sonnet-5".
 #> # <ellmer::ToolDef> btw_task_create_btw_md(prompt, path)
 #> # @name: btw_task_create_btw_md
 #> # @description: Create a comprehensive context file for your project.
@@ -91,6 +91,6 @@ withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
 #> #
 #> function (prompt, path = NULL) 
 #> task_create_btw_md_tool(prompt, path)
-#> <bytecode: 0x5581c2a6e448>
-#> <environment: 0x5581c2a71830>
+#> <bytecode: 0x557a27145c48>
+#> <environment: 0x557a271425f8>
 ```

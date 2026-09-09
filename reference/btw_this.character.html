@@ -27,9 +27,13 @@ btw_this(&quot;?dplyr::across&quot;) or btw_this(&quot;@help dplyr::across&quot;
 btw_this(&quot;@help dplyr across&quot;) - space-separated format
 btw_this(&quot;@help across&quot;) - searches all packages
 
-&quot;@news {{package_name}} {{search_term}}&quot;
-Include the release notes (NEWS) from the latest package release, e.g.
-&quot;@news dplyr&quot;, or that match a search term, e.g. &quot;@news dplyr join_by&quot;.
+&quot;@news {{package_name}} [{{version}}] [{{search_term}}]&quot;
+Include the release notes (NEWS) from the latest package release, a
+specific version, or entries that match a search term, e.g. &quot;@news dplyr&quot;,
+&quot;@news dplyr v1.1.4&quot;, or &quot;@news dplyr join_by&quot;.
+&quot;@cran versions {{package_name}}&quot;
+Include CRAN release versions and dates for a package, e.g.
+&quot;@cran versions dplyr&quot;.
 &quot;@url {{url}}&quot;
 Include the contents of a web page at the specified URL as markdown, e.g.
 &quot;@url https://cran.r-project.org/doc/FAQ/R-FAQ.html&quot;. Requires the
@@ -102,9 +106,13 @@ btw_this(&quot;?dplyr::across&quot;) or btw_this(&quot;@help dplyr::across&quot;
 btw_this(&quot;@help dplyr across&quot;) - space-separated format
 btw_this(&quot;@help across&quot;) - searches all packages
 
-&quot;@news {{package_name}} {{search_term}}&quot;
-Include the release notes (NEWS) from the latest package release, e.g.
-&quot;@news dplyr&quot;, or that match a search term, e.g. &quot;@news dplyr join_by&quot;.
+&quot;@news {{package_name}} [{{version}}] [{{search_term}}]&quot;
+Include the release notes (NEWS) from the latest package release, a
+specific version, or entries that match a search term, e.g. &quot;@news dplyr&quot;,
+&quot;@news dplyr v1.1.4&quot;, or &quot;@news dplyr join_by&quot;.
+&quot;@cran versions {{package_name}}&quot;
+Include CRAN release versions and dates for a package, e.g.
+&quot;@cran versions dplyr&quot;.
 &quot;@url {{url}}&quot;
 Include the contents of a web page at the specified URL as markdown, e.g.
 &quot;@url https://cran.r-project.org/doc/FAQ/R-FAQ.html&quot;. Requires the
@@ -157,7 +165,7 @@ evaluated in your R console.
 
     <a class="navbar-brand me-2" href="../index.html">btw</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -184,7 +192,7 @@ evaluated in your R console.
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Describe objects</h1>
-      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/v1.4.0/R/btw_this.R" class="external-link"><code>R/btw_this.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/main/R/btw_this.R" class="external-link"><code>R/btw_this.R</code></a></small>
       <div class="d-none name"><code>btw_this.character.Rd</code></div>
     </div>
 
@@ -213,9 +221,13 @@ topics using <code><a href="btw_tool_package_docs.html">btw_tool_docs_help_page(
 <li><p><code>btw_this("@help dplyr across")</code> - space-separated format</p></li>
 <li><p><code>btw_this("@help across")</code> - searches all packages</p></li>
 </ul></li>
-<li><p><code>"@news {{package_name}} {{search_term}}"</code> <br>
-Include the release notes (NEWS) from the latest package release, e.g.
-<code>"@news dplyr"</code>, or that match a search term, e.g. <code>"@news dplyr join_by"</code>.</p></li>
+<li><p><code>"@news {{package_name}} [{{version}}] [{{search_term}}]"</code> <br>
+Include the release notes (NEWS) from the latest package release, a
+specific version, or entries that match a search term, e.g. <code>"@news dplyr"</code>,
+<code>"@news dplyr v1.1.4"</code>, or <code>"@news dplyr join_by"</code>.</p></li>
+<li><p><code>"@cran versions {{package_name}}"</code> <br>
+Include CRAN release versions and dates for a package, e.g.
+<code>"@cran versions dplyr"</code>.</p></li>
 <li><p><code>"@url {{url}}"</code> <br>
 Include the contents of a web page at the specified URL as markdown, e.g.
 <code>"@url https://cran.r-project.org/doc/FAQ/R-FAQ.html"</code>. Requires the
@@ -301,7 +313,7 @@ evaluated in your R console.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Mazda RX4 Wag 21.0   6  160 110</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Datsun 710    22.8   4  108  93</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="btw_this.html">btw_this</a></span><span class="op">(</span><span class="st">"@last_value"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $repos NULL  $Ncpus NULL  $HTTPUserAgent [1] "R/4.6.1 (ubuntu-24.04) R (4.6.1 x86_64-pc-linux-gnu x86_64 linux-gnu)" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $Ncpus NULL  $HTTPUserAgent [1] "R/4.6.1 (ubuntu-24.04) R (4.6.1 x86_64-pc-linux-gnu x86_64 linux-gnu)" </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

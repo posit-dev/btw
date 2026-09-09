@@ -20,6 +20,7 @@ Group: cran
 NameDescription
 btw_tool_cran_package()Describe a CRAN package.
 btw_tool_cran_search()Search for an R package on CRAN.
+btw_tool_cran_versions()List a CRAN package's release versions and dates.
 
 
 
@@ -190,6 +191,7 @@ Group: cran
 NameDescription
 btw_tool_cran_package()Describe a CRAN package.
 btw_tool_cran_search()Search for an R package on CRAN.
+btw_tool_cran_versions()List a CRAN package's release versions and dates.
 
 
 
@@ -347,7 +349,7 @@ btw_tool_web_read_url()Read a web page and convert it to Markdown format.
 
     <a class="navbar-brand me-2" href="../index.html">btw</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -374,7 +376,7 @@ btw_tool_web_read_url()Read a web page and convert it to Markdown format.
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Tools: Register tools from btw</h1>
-      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/v1.4.0/R/tools.R" class="external-link"><code>R/tools.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/main/R/tools.R" class="external-link"><code>R/tools.R</code></a></small>
       <div class="d-none name"><code>btw_tools.Rd</code></div>
     </div>
 
@@ -388,7 +390,7 @@ this function have access to the tools:</p><div class="section">
 
 <div class="section">
 <h3 id="group-cran">Group: cran<a class="anchor" aria-label="anchor" href="#group-cran"></a></h3>
-<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_cran_package.html">btw_tool_cran_package()</a></code></td><td>Describe a CRAN package.</td></tr><tr><td><code><a href="btw_tool_cran_search.html">btw_tool_cran_search()</a></code></td><td>Search for an R package on CRAN.</td></tr></table></div>
+<table class="table table"><tr><td>Name</td><td>Description</td></tr><tr><td><code><a href="btw_tool_cran_package.html">btw_tool_cran_package()</a></code></td><td>Describe a CRAN package.</td></tr><tr><td><code><a href="btw_tool_cran_search.html">btw_tool_cran_search()</a></code></td><td>Search for an R package on CRAN.</td></tr><tr><td><code><a href="btw_tool_cran_versions.html">btw_tool_cran_versions()</a></code></td><td>List a CRAN package's release versions and dates.</td></tr></table></div>
 
 <div class="section">
 <h3 id="group-docs">Group: docs<a class="anchor" aria-label="anchor" href="#group-docs"></a></h3>
@@ -468,7 +470,7 @@ place. The <code>chat</code> input is returned invisibly.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># requires an ANTHROPIC_API_KEY</span></span></span>
 <span class="r-in"><span><span class="va">ch</span> <span class="op">&lt;-</span> <span class="fu">ellmer</span><span class="fu">::</span><span class="fu"><a href="https://ellmer.tidyverse.org/reference/chat_anthropic.html" class="external-link">chat_anthropic</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using <span style="color: #00BB00;">model</span> = <span style="color: #0000BB;">"claude-sonnet-4-6"</span>.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using <span style="color: #00BB00;">model</span> = <span style="color: #0000BB;">"claude-sonnet-5"</span>.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># register all of the available tools</span></span></span>
 <span class="r-in"><span><span class="va">ch1</span> <span class="op">&lt;-</span> <span class="va">ch</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span><span class="op">)</span></span></span>

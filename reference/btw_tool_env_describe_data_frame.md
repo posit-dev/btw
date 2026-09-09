@@ -82,7 +82,7 @@ Other env tools:
 ``` r
 btw_tool_env_describe_data_frame(mtcars)
 #> <btw::BtwToolResult>
-#>  @ value  : chr [1:3] "```json" ...
+#>  @ value  : chr "```json\n{\"n_cols\":11,\"n_rows\":32,\"groups\":[],\"class\":\"data.frame\",\"columns\":{\"mpg\":{\"variable\""| __truncated__
 #>  @ error  : NULL
 #>  @ extra  :List of 2
 #>  .. $ data   :'data.frame':  32 obs. of  11 variables:
@@ -97,8 +97,9 @@ btw_tool_env_describe_data_frame(mtcars)
 #>  ..  ..$ am  : num [1:32] 1 1 1 0 0 0 0 0 0 0 ...
 #>  ..  ..$ gear: num [1:32] 4 4 4 3 3 3 3 4 4 4 ...
 #>  ..  ..$ carb: num [1:32] 4 4 1 1 2 1 4 2 2 4 ...
-#>  .. $ display:List of 2
-#>  ..  ..$ title      : chr "View Data Frame"
+#>  .. $ display:List of 3
+#>  ..  ..$ title      : chr "Described data frame"
+#>  ..  ..$ label      : NULL
 #>  ..  ..$ full_screen: logi TRUE
 #>  @ request: NULL
 ```

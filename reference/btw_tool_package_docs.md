@@ -73,13 +73,13 @@ Other docs tools:
 ``` r
 btw_tool_docs_package_help_topics("btw")
 #> <btw::BtwToolResult>
-#>  @ value  : chr [1:3] "```json" ...
+#>  @ value  : chr "```json\n[\n  {\"topic_id\":\"btw\",\"title\":\"Plain-text descriptions of R objects\",\"aliases\":[\"btw\"]},\"| __truncated__
 #>  @ error  : NULL
 #>  @ extra  :List of 2
-#>  .. $ data   : tibble [55 × 3] (S3: tbl_df/tbl/data.frame)
-#>  ..  ..$ topic_id: chr [1:55] "btw" "btw-config" "btw-package" "btw_agent_tool" ...
-#>  ..  ..$ title   : chr [1:55] "Plain-text descriptions of R objects" "Where btw looks for configuration" "btw: A Toolkit for Connecting R and Large Language Models" "Create a custom agent tool from a markdown file" ...
-#>  ..  ..$ aliases :List of 55
+#>  .. $ data   : tibble [58 × 3] (S3: tbl_df/tbl/data.frame)
+#>  ..  ..$ topic_id: chr [1:58] "btw" "btw-config" "btw-package" "btw_agent_tool" ...
+#>  ..  ..$ title   : chr [1:58] "Plain-text descriptions of R objects" "Where btw looks for configuration" "btw: A Toolkit for Connecting R and Large Language Models" "Create a custom agent tool from a markdown file" ...
+#>  ..  ..$ aliases :List of 58
 #>  ..  .. ..$ : 'AsIs' chr "btw"
 #>  ..  .. ..$ : 'AsIs' chr "btw-config"
 #>  ..  .. ..$ : 'AsIs' chr "btw-package"
@@ -88,6 +88,8 @@ btw_tool_docs_package_help_topics("btw")
 #>  ..  .. ..$ : 'AsIs' chr "btw_skill_install_github"
 #>  ..  .. ..$ : 'AsIs' chr "btw_skill_install_package"
 #>  ..  .. ..$ : 'AsIs' chr "btw_skill_install_project"
+#>  ..  .. ..$ : 'AsIs' chr "btw_skill_prompt"
+#>  ..  .. ..$ : 'AsIs' chr "btw_skills_register_slash_commands"
 #>  ..  .. ..$ : 'AsIs' chr "btw_task"
 #>  ..  .. ..$ : 'AsIs' chr "btw_task_create_btw_md"
 #>  ..  .. ..$ : 'AsIs' chr "btw_task_create_readme"
@@ -99,6 +101,7 @@ btw_tool_docs_package_help_topics("btw")
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_agent_subagent"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_cran_package"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_cran_search"
+#>  ..  .. ..$ : 'AsIs' chr "btw_tool_cran_versions"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_docs_package_news"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_env_describe_data_frame"
 #>  ..  .. ..$ : 'AsIs' chr "btw_tool_env_describe_environment"
@@ -135,22 +138,23 @@ btw_tool_docs_package_help_topics("btw")
 #>  ..  .. ..$ : 'AsIs' chr "install_btw_cli"
 #>  ..  .. ..$ : 'AsIs' chr [1:3] "mcp" "btw_mcp_server" "btw_mcp_session"
 #>  ..  .. ..$ : 'AsIs' chr [1:2] "use_btw_md" "edit_btw_md"
-#>  .. $ display:List of 2
-#>  ..  ..$ title   : chr "{btw} Help Topics"
+#>  .. $ display:List of 3
+#>  ..  ..$ title   : chr "Listed help topics"
+#>  ..  ..$ label   : chr "btw"
 #>  ..  ..$ markdown: chr "| topic_id | title | aliases |\n|----------|-------|---------|\n| btw | Plain-text descriptions of R objects | "| __truncated__
 #>  @ request: NULL
 
 btw_tool_docs_help_page("btw", "btw")
 #> <btw::BtwHelpPageToolResult>
-#>  @ value  : chr [1:83] "## `help(package = \"btw\", \"btw\")`" "" ...
+#>  @ value  : chr "## `help(package = \"btw\", \"btw\")`\n\n### Plain-text descriptions of R objects\n\n#### Description\n\nThis f"| __truncated__
 #>  @ error  : NULL
 #>  @ extra  :List of 4
-#>  .. $ help_text: chr [1:82] "" "### Plain-text descriptions of R objects" "" "#### Description" ...
+#>  .. $ help_text: chr [1:93] "" "### Plain-text descriptions of R objects" "" "#### Description" ...
 #>  .. $ topic    : chr "btw"
 #>  .. $ package  : chr "btw"
-#>  .. $ display  :List of 3
-#>  ..  ..$ title      : 'html' chr "<code>?btw::btw</code>"
-#>  ..  .. ..- attr(*, "html")= logi TRUE
+#>  .. $ display  :List of 4
+#>  ..  ..$ title      : chr "Read help page"
+#>  ..  ..$ label      : chr "btw::btw"
 #>  ..  ..$ markdown   : chr "\n### Plain-text descriptions of R objects\n\n#### Description\n\nThis function allows you to quickly describe "| __truncated__
 #>  ..  ..$ full_screen: logi TRUE
 #>  @ request: NULL

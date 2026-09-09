@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">btw</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,39 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/posit-dev/btw/blob/v1.4.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/posit-dev/btw/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.5.0" id="btw-150">btw 1.5.0<a class="anchor" aria-label="anchor" href="#btw-150"></a></h2>
+<div class="section level3">
+<h3 id="new-features-1-5-0">New features<a class="anchor" aria-label="anchor" href="#new-features-1-5-0"></a></h3>
+<ul><li><p>Added <code>btw cran versions &lt;packages...&gt;</code> to look up CRAN release dates and versions, and versioned NEWS through <code><a href="../reference/btw.html">btw()</a></code>, <code><a href="../reference/btw_this.html">btw_this()</a></code>, the btw docs tools, and <code>btw docs news</code>. Use <code>btw("@news dplyr v1.1.4")</code> to paste a specific release’s NEWS into a chat, or <code>btw("@news dplyr")</code> for the full file (<a href="https://github.com/posit-dev/btw/issues/213" class="external-link">#213</a>).</p></li>
+<li><p><code>btw docs</code> and <code>btw pkg src</code> commands now auto-load an in-development package found in the current directory (or its <code>pkg-r/</code>, <code>R/</code> subfolder) with <code><a href="https://pkgload.r-lib.org/reference/load_all.html" class="external-link">pkgload::load_all()</a></code> before running, so results reflect uncommitted local changes. Pass <code>--no-dev</code> to disable this and use the installed package instead (<a href="https://github.com/posit-dev/btw/issues/212" class="external-link">#212</a>).</p></li>
+<li>
+<p>btw now supports shinychat &gt;= 0.5.0 (<a href="https://github.com/posit-dev/btw/issues/215" class="external-link">#215</a>):</p>
+<ul><li><p><code><a href="../reference/btw_client.html">btw_app()</a></code> uses shinychat’s new <code>page_chat()</code> layout, with the tool selection menu and the system prompt editor in offcanvas panels. When shinychat 0.4.x is installed, <code><a href="../reference/btw_client.html">btw_app()</a></code> falls back to the legacy sidebar layout and warns, suggesting you upgrade to shinychat 0.5.0.</p></li>
+<li><p>Conversations are kept in a chat history. Past chats appear in the app’s history drawer, so you can revisit a previous conversation at any time. When duckdb is installed, btw stores this history in a shared database in btw’s user cache directory, with one history per project, so your chats are still there the next time you open the app in the same project. Without duckdb, conversations are not saved between sessions. btw prints a note that suggests installing duckdb.</p></li>
+<li><p>btw’s <code>@</code> commands are also available as <code>/btw-*</code> slash commands, e.g. <code>/btw-help dplyr::across</code>, <code>/btw-news dplyr v1.1.4</code>, or <code>/btw-url https://example.com</code>. A slash command stages its context as an attachment on the chat input and shows a toast while it runs. Nothing is sent to the model until you submit your next message. If a command fails, <code><a href="../reference/btw_client.html">btw_app()</a></code> restores your input text and shows an error toast.</p></li>
+<li><p>Skills are registered as slash commands under their own names, e.g. <code>/skill-creator</code>. Running a skill submits its instructions with your message to the model.</p></li>
+<li><p><code>/new</code> and <code>/clear</code> start a new chat. If chat history is enabled, <code><a href="../reference/btw_client.html">btw_app()</a></code> first saves the current conversation with shinychat’s history-aware <code>chat$new_chat()</code> (posit-dev/shinychat#399), so the conversation isn’t dropped from the history. The token and cost counters follow the active conversation and restore their totals when you load an old chat from the history.</p></li>
+<li><p>Subagent reports use shinychat 0.5.0’s HTML display protocol (<code><a href="https://ellmer.tidyverse.org/reference/contents_text.html" class="external-link">contents_html()</a></code>), with the full subagent conversation in a styled disclosure. <code><a href="../reference/btw_client.html">btw_app()</a></code> escapes untrusted markdown in subagent reports and in error toasts.</p></li>
+<li><p>Tool results survive shinychat’s conversation history serialization, so chats with tool results can be saved and restored. btw collapses multi-element character values to a single string, returns data frame results as JSON, and drops unserializable objects from run-R results.</p></li>
+<li><p>Two new functions make the skill features reusable outside <code><a href="../reference/btw_client.html">btw_app()</a></code>. <code><a href="../reference/btw_skill_prompt.html">btw_skill_prompt()</a></code> renders a skill’s <code>&lt;skill&gt;</code> block, including its name, description, location, and optional compatibility and allowed-tools metadata. <code><a href="../reference/btw_skills_register_slash_commands.html">btw_skills_register_slash_commands()</a></code> registers skills as slash commands on any shinychat <code>chat_server()</code>.</p></li>
+</ul></li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-1-5-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-1-5-0"></a></h3>
+<ul><li>
+<code>btw --version</code> now works without a subcommand. Previously, Rapp’s required top-level switch caused the CLI to print usage and exit before the version flag was ever checked.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="other-changes-1-5-0">Other changes<a class="anchor" aria-label="anchor" href="#other-changes-1-5-0"></a></h3>
+<ul><li><p>Local conversation history and project code-search indexes now use RSQLite, replacing DuckDB. Persistent data is stored in btw’s user cache and separated by project; install RSQLite to enable this storage.</p></li>
+<li><p>btw now requires ellmer (&gt;= 0.4.2). The <code>set_model()</code> compatibility shim was removed, and <code>client_get_models()</code> now delegates to ellmer’s <code>models_list()</code> generic, replacing a bespoke per-provider dispatch table (<a href="https://github.com/posit-dev/btw/issues/214" class="external-link">#214</a>).</p></li>
+<li><p>btw no longer reads the legacy user skills directory used by btw &lt;= 1.2.0 (<code>skills/</code> under <code>tools::R_user_dir("btw", "config")</code>) (<a href="https://github.com/posit-dev/btw/issues/204" class="external-link">#204</a>).</p></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.0" id="btw-140">btw 1.4.0<a class="anchor" aria-label="anchor" href="#btw-140"></a></h2><p class="text-muted">CRAN release: 2026-08-05</p>
 <div class="section level3">

@@ -25,9 +25,7 @@ conflict):
     [`require()`](https://rdrr.io/r/base/library.html)
 
 3.  User-level skills (`~/.btw/skills`, `~/.config/btw/skills`,
-    `tools::R_user_dir("btw")/skills`). For backwards compatibility, the
-    legacy `tools::R_user_dir("btw", "config")/skills` path used by
-    briefly by btw 1.2.0 is also included at lower priority.
+    `tools::R_user_dir("btw")/skills`)
 
 4.  Project-level skills (`.btw/skills/` or `.agents/skills/`)
 
@@ -87,4 +85,6 @@ for the complete list of project and user configuration locations.
 Other skills:
 [`btw_skill_install_github()`](https://posit-dev.github.io/btw/reference/btw_skill_install_github.md),
 [`btw_skill_install_package()`](https://posit-dev.github.io/btw/reference/btw_skill_install_package.md),
-[`btw_skill_install_project()`](https://posit-dev.github.io/btw/reference/btw_skill_install_project.md)
+[`btw_skill_install_project()`](https://posit-dev.github.io/btw/reference/btw_skill_install_project.md),
+[`btw_skill_prompt()`](https://posit-dev.github.io/btw/reference/btw_skill_prompt.md),
+[`btw_skills_register_slash_commands()`](https://posit-dev.github.io/btw/reference/btw_skills_register_slash_commands.md)

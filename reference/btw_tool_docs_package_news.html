@@ -9,7 +9,7 @@ recent package release or release notes matching a search term."><meta property=
 
     <a class="navbar-brand me-2" href="../index.html">btw</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">1.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@ recent package release or release notes matching a search term."><meta property=
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Tool: Package Release Notes</h1>
-      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/v1.4.0/R/tool-docs-news.R" class="external-link"><code>R/tool-docs-news.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/posit-dev/btw/blob/main/R/tool-docs-news.R" class="external-link"><code>R/tool-docs-news.R</code></a></small>
       <div class="d-none name"><code>btw_tool_docs_package_news.Rd</code></div>
     </div>
 
@@ -47,7 +47,12 @@ recent package release or release notes matching a search term.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">btw_tool_docs_package_news</span><span class="op">(</span><span class="va">package_name</span>, search_term <span class="op">=</span> <span class="st">""</span>, `_intent` <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">btw_tool_docs_package_news</span><span class="op">(</span></span>
+<span>  <span class="va">package_name</span>,</span>
+<span>  search_term <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  version <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  `_intent` <span class="op">=</span> <span class="st">""</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -63,6 +68,11 @@ recent package release or release notes matching a search term.</p>
 If empty, the release notes of the current installed version is included.</p></dd>
 
 
+<dt id="arg-version">version<a class="anchor" aria-label="anchor" href="#arg-version"></a></dt>
+<dd><p>An installed package version whose NEWS entries should be
+included. If <code>NULL</code> (the default), the current installed version is used.</p></dd>
+
+
 <dt id="arg--intent">_intent<a class="anchor" aria-label="anchor" href="#arg--intent"></a></dt>
 <dd><p>An optional string describing the intent of the tool use.
 When the tool is used by an LLM, the model will use this argument to
@@ -71,8 +81,9 @@ explain why it called the tool.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Returns the release notes for the currently installed version of the
-package, or the release notes matching the search term.</p>
+    <p>Returns the release notes for the requested version (or the
+currently installed version by default), or matching entries from the NEWS
+file.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -175,7 +186,8 @@ package, or the release notes matching the search term.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ value  : chr "### dplyr v1.2.1\n\n- dplyr is now fully compliant with the R C API (#7819)."</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ error  : NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ extra  :List of 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ display:List of 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ display:List of 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ title      : chr "Read release notes"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ markdown   : chr "### dplyr v1.2.1\n\n- dplyr is now fully compliant with the R C API (#7819)."</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ full_screen: logi TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ request: NULL</span>
@@ -185,8 +197,21 @@ package, or the release notes matching the search term.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ value  : chr "### dplyr v1.1.4\n\n`join_by()` now allows its helper functions to be namespaced with\n`dplyr::`, like `join_by"| __truncated__</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ error  : NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ extra  :List of 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ display:List of 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ display:List of 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ title      : chr "Read release notes"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ markdown   : chr "### dplyr v1.1.4\n\n`join_by()` now allows its helper functions to be namespaced with\n`dplyr::`, like `join_by"| __truncated__</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ full_screen: logi TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  @ request: NULL</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Read the NEWS entries for a specific installed package version</span></span></span>
+<span class="r-in"><span><span class="fu">btw_tool_docs_package_news</span><span class="op">(</span><span class="st">"dplyr"</span>, version <span class="op">=</span> <span class="st">"1.1.4"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;btw::BtwPackageNewsToolResult&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  @ value  : chr "### dplyr v1.1.4\n\n- `join_by()` now allows its helper functions to be namespaced with\n  `dplyr::`, like `joi"| __truncated__</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  @ error  : NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  @ extra  :List of 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ display:List of 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ title      : chr "Read release notes"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ markdown   : chr "### dplyr v1.1.4\n\n- `join_by()` now allows its helper functions to be namespaced with\n  `dplyr::`, like `joi"| __truncated__</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ full_screen: logi TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ request: NULL</span>
 </code></pre></div>

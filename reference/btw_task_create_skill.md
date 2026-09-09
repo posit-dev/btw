@@ -88,7 +88,7 @@ Other task and agent functions:
 withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
   btw_task_create_skill(mode = "tool", client = "anthropic")
 })
-#> Using model = "claude-sonnet-4-6".
+#> Using model = "claude-sonnet-5".
 #> # <ellmer::ToolDef> btw_task_create_skill(prompt, name)
 #> # @name: btw_task_create_skill
 #> # @description: Create a new skill for your project with interactive guidance.
@@ -96,6 +96,6 @@ withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
 #> #
 #> function (prompt, name = NULL) 
 #> btw_task_create_skill_tool(prompt, name)
-#> <bytecode: 0x5581c5b20a20>
-#> <environment: 0x5581c5b21158>
+#> <bytecode: 0x557a2a367008>
+#> <environment: 0x557a2a3668d0>
 ```

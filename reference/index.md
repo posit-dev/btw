@@ -49,6 +49,10 @@
   : Install a skill from an R package
 - [`btw_skill_install_project()`](https://posit-dev.github.io/btw/reference/btw_skill_install_project.md)
   : Install skills from all project dependencies
+- [`btw_skill_prompt()`](https://posit-dev.github.io/btw/reference/btw_skill_prompt.md)
+  : Render a skill's entry for a system prompt
+- [`btw_skills_register_slash_commands()`](https://posit-dev.github.io/btw/reference/btw_skills_register_slash_commands.md)
+  : Register skill slash commands in a chat
 - [`btw_task_create_skill()`](https://posit-dev.github.io/btw/reference/btw_task_create_skill.md)
   : Task: Create a Skill
 
@@ -89,6 +93,8 @@ and to avoid name clashes with other tools.
   : Tool: Describe a CRAN package
 - [`btw_tool_cran_search()`](https://posit-dev.github.io/btw/reference/btw_tool_cran_search.md)
   : Tool: Search for an R package on CRAN
+- [`btw_tool_cran_versions()`](https://posit-dev.github.io/btw/reference/btw_tool_cran_versions.md)
+  : Tool: List CRAN package versions
 - [`btw_tool_docs_package_news()`](https://posit-dev.github.io/btw/reference/btw_tool_docs_package_news.md)
   : Tool: Package Release Notes
 - [`btw_tool_env_describe_data_frame()`](https://posit-dev.github.io/btw/reference/btw_tool_env_describe_data_frame.md)

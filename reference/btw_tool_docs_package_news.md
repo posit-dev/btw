@@ -6,7 +6,12 @@ most recent package release or release notes matching a search term.
 ## Usage
 
 ``` r
-btw_tool_docs_package_news(package_name, search_term = "", `_intent` = "")
+btw_tool_docs_package_news(
+  package_name,
+  search_term = "",
+  version = NULL,
+  `_intent` = ""
+)
 ```
 
 ## Arguments
@@ -20,6 +25,11 @@ btw_tool_docs_package_news(package_name, search_term = "", `_intent` = "")
   A regular expression to search for in the NEWS entries. If empty, the
   release notes of the current installed version is included.
 
+- version:
+
+  An installed package version whose NEWS entries should be included. If
+  `NULL` (the default), the current installed version is used.
+
 - \_intent:
 
   An optional string describing the intent of the tool use. When the
@@ -28,8 +38,8 @@ btw_tool_docs_package_news(package_name, search_term = "", `_intent` = "")
 
 ## Value
 
-Returns the release notes for the currently installed version of the
-package, or the release notes matching the search term.
+Returns the release notes for the requested version (or the currently
+installed version by default), or matching entries from the NEWS file.
 
 ## See also
 
@@ -133,7 +143,8 @@ btw_tool_docs_package_news("dplyr")
 #>  @ value  : chr "### dplyr v1.2.1\n\n- dplyr is now fully compliant with the R C API (#7819)."
 #>  @ error  : NULL
 #>  @ extra  :List of 1
-#>  .. $ display:List of 2
+#>  .. $ display:List of 3
+#>  ..  ..$ title      : chr "Read release notes"
 #>  ..  ..$ markdown   : chr "### dplyr v1.2.1\n\n- dplyr is now fully compliant with the R C API (#7819)."
 #>  ..  ..$ full_screen: logi TRUE
 #>  @ request: NULL
@@ -143,8 +154,21 @@ btw_tool_docs_package_news("dplyr", "join_by")
 #>  @ value  : chr "### dplyr v1.1.4\n\n`join_by()` now allows its helper functions to be namespaced with\n`dplyr::`, like `join_by"| __truncated__
 #>  @ error  : NULL
 #>  @ extra  :List of 1
-#>  .. $ display:List of 2
+#>  .. $ display:List of 3
+#>  ..  ..$ title      : chr "Read release notes"
 #>  ..  ..$ markdown   : chr "### dplyr v1.1.4\n\n`join_by()` now allows its helper functions to be namespaced with\n`dplyr::`, like `join_by"| __truncated__
+#>  ..  ..$ full_screen: logi TRUE
+#>  @ request: NULL
+
+# Read the NEWS entries for a specific installed package version
+btw_tool_docs_package_news("dplyr", version = "1.1.4")
+#> <btw::BtwPackageNewsToolResult>
+#>  @ value  : chr "### dplyr v1.1.4\n\n- `join_by()` now allows its helper functions to be namespaced with\n  `dplyr::`, like `joi"| __truncated__
+#>  @ error  : NULL
+#>  @ extra  :List of 1
+#>  .. $ display:List of 3
+#>  ..  ..$ title      : chr "Read release notes"
+#>  ..  ..$ markdown   : chr "### dplyr v1.1.4\n\n- `join_by()` now allows its helper functions to be namespaced with\n  `dplyr::`, like `joi"| __truncated__
 #>  ..  ..$ full_screen: logi TRUE
 #>  @ request: NULL
 ```

@@ -98,7 +98,9 @@ The package has three main layers:
 **Interactive Copy-Paste
 ([`btw()`](https://posit-dev.github.io/btw/reference/btw.md))**
 
-[`btw`](https://posit-dev.github.io/btw/reference/btw.md)`(``mtcars``, ``"{dplyr}"``, ``?``dplyr``::`[`across`](https://dplyr.tidyverse.org/reference/across.html)`)`` ``# ✔ btw copied to the clipboard!`
+\
+[`btw`](https://posit-dev.github.io/btw/reference/btw.md)`(``mtcars``, ``"{dplyr}"``, ``?``dplyr``::`[`across`](https://dplyr.tidyverse.org/reference/across.html)`)`\
+`# ✔ btw copied to the clipboard!`
 
 Assembles context and copies to clipboard for pasting into any chat
 interface.
@@ -106,7 +108,9 @@ interface.
 **Programmatic Tool Registration
 ([`btw_tools()`](https://posit-dev.github.io/btw/reference/btw_tools.md))**
 
-`chat`` ``<-`` ``ellmer``::`[`chat_anthropic`](https://ellmer.tidyverse.org/reference/chat_anthropic.html)`(``)`` ``chat``$``register_tools``(`[`btw_tools`](https://posit-dev.github.io/btw/reference/btw_tools.md)`(``"docs"``, ``"env"``)``)`` ``# Only doc and environment tools`
+\
+`chat`` ``<-`` ``ellmer``::`[`chat_anthropic`](https://ellmer.tidyverse.org/reference/chat_anthropic.html)`(``)`\
+`chat``$``register_tools``(`[`btw_tools`](https://posit-dev.github.io/btw/reference/btw_tools.md)`(``"docs"``, ``"env"``)``)``  ``# Only doc and environment tools`
 
 Register specific tool groups with ellmer chat clients.
 
@@ -115,7 +119,11 @@ Register specific tool groups with ellmer chat clients.
 /
 [`btw_app()`](https://posit-dev.github.io/btw/reference/btw_client.md))**
 
-`chat`` ``<-`` `[`btw_client`](https://posit-dev.github.io/btw/reference/btw_client.md)`(``mtcars``)`` ``# Starts with mtcars in context`` ``chat``$``chat``(``"Summarize this data"``)`` `` `[`btw_app`](https://posit-dev.github.io/btw/reference/btw_client.md)`(``)`` ``# Launches Shiny chat interface`
+\
+`chat`` ``<-`` `[`btw_client`](https://posit-dev.github.io/btw/reference/btw_client.md)`(``mtcars``)``  ``# Starts with mtcars in context`\
+`chat``$``chat``(``"Summarize this data"``)`\
+\
+[`btw_app`](https://posit-dev.github.io/btw/reference/btw_client.md)`(``)``  ``# Launches Shiny chat interface`
 
 Pre-configured chat clients with btw tools, project context from
 `btw.md`, and initial objects.
@@ -123,7 +131,8 @@ Pre-configured chat clients with btw tools, project context from
 **MCP Server
 ([`btw_mcp_server()`](https://posit-dev.github.io/btw/reference/mcp.md))**
 
-[`btw_mcp_server`](https://posit-dev.github.io/btw/reference/mcp.md)`(``)`` ``# Blocks; run non-interactively`
+\
+[`btw_mcp_server`](https://posit-dev.github.io/btw/reference/mcp.md)`(``)``  ``# Blocks; run non-interactively`
 
 Exposes btw tools to external MCP clients. Configure in Claude Desktop
 or other MCP-compatible tools.
@@ -285,11 +294,31 @@ The `btw_task_*()` pattern provides guided workflows:
 
 ### Getting Started
 
-`# Install development version`` ``pak``::`[`pak`](https://pak.r-lib.org/reference/pak.html)`(``"posit-dev/btw"``)`` `` ``# Load package`` `[`library`](https://rdrr.io/r/base/library.html)`(`[`btw`](https://github.com/posit-dev/btw)`)`` `` ``# Try interactive usage`` `[`btw`](https://posit-dev.github.io/btw/reference/btw.md)`(``mtcars``)`` `` ``# Or start a chat`` ``chat`` ``<-`` `[`btw_client`](https://posit-dev.github.io/btw/reference/btw_client.md)`(``)`` ``chat``$``chat``(``"What tools do you have access to?"``)`
+\
+`# Install development version`\
+`pak``::`[`pak`](https://pak.r-lib.org/reference/pak.html)`(``"posit-dev/btw"``)`\
+\
+`# Load package`\
+[`library`](https://rdrr.io/r/base/library.html)`(`[`btw`](https://github.com/posit-dev/btw)`)`\
+\
+`# Try interactive usage`\
+[`btw`](https://posit-dev.github.io/btw/reference/btw.md)`(``mtcars``)`\
+\
+`# Or start a chat`\
+`chat`` ``<-`` `[`btw_client`](https://posit-dev.github.io/btw/reference/btw_client.md)`(``)`\
+`chat``$``chat``(``"What tools do you have access to?"``)`
 
 ### Running Tests
 
-`# Run all tests`` ``devtools``::`[`test`](https://devtools.r-lib.org/reference/test.html)`(``)`` `` ``# Run specific test file`` ``devtools``::`[`test_active_file`](https://devtools.r-lib.org/reference/test.html)`(``)`` `` ``# Update snapshots when tool output changes (verify changes first!)`` ``testthat``::`[`snapshot_accept`](https://testthat.r-lib.org/reference/snapshot_accept.html)`(``)`
+\
+`# Run all tests`\
+`devtools``::`[`test`](https://devtools.r-lib.org/reference/test.html)`(``)`\
+\
+`# Run specific test file`\
+`devtools``::`[`test_active_file`](https://devtools.r-lib.org/reference/test.html)`(``)`\
+\
+`# Update snapshots when tool output changes (verify changes first!)`\
+`testthat``::`[`snapshot_accept`](https://testthat.r-lib.org/reference/snapshot_accept.html)`(``)`
 
 ### Common Tasks
 
@@ -297,19 +326,42 @@ The `btw_task_*()` pattern provides guided workflows:
 
 1.  Create implementation in `R/tool-<category>.R`:
 
-`btw_tool_example_impl`` ``<-`` ``function``(``arg``)`` ``{`` `` ``# Implementation`` `` ``tool_result``(``output``, extra ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``display ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``...``)``)``)`` ``}`
+\
+`btw_tool_example_impl`` ``<-`` ``function``(``arg``)`` ``{`\
+`  ``# Implementation`\
+`  ``tool_result``(``output``, extra ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``display ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``...``)``)``)`\
+`}`
 
 2.  Add thin exported wrapper:
 
-`#' @export`` ``btw_tool_example`` ``<-`` ``function``(``arg``, ``` `_intent` ```)`` ``{``}`
+\
+`#' @export`\
+`btw_tool_example`` ``<-`` ``function``(``arg``, ``` `_intent` ```)`` ``{``}`
 
 3.  Register with tool system:
 
-`.btw_add_to_tools``(`` `` name ``=`` ``"btw_tool_example"``,`` `` group ``=`` ``"category"``,`` `` tool ``=`` ``function``(``)`` ``{`` `` ``ellmer``::`[`tool`](https://ellmer.tidyverse.org/reference/tool.html)`(`` `` ``btw_tool_example_impl``,`` `` name ``=`` ``"btw_tool_example"``,`` `` description ``=`` ``"..."``,`` `` arguments ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``arg ``=`` ``ellmer``::`[`type_string`](https://ellmer.tidyverse.org/reference/type_boolean.html)`(``"..."``)``)`` `` ``)`` `` ``}`` ``)`
+\
+`.btw_add_to_tools``(`\
+`  name ``=`` ``"btw_tool_example"``,`\
+`  group ``=`` ``"category"``,`\
+`  tool ``=`` ``function``(``)`` ``{`\
+`    ``ellmer``::`[`tool`](https://ellmer.tidyverse.org/reference/tool.html)`(`\
+`      ``btw_tool_example_impl``,`\
+`      name ``=`` ``"btw_tool_example"``,`\
+`      description ``=`` ``"..."``,`\
+`      arguments ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``arg ``=`` ``ellmer``::`[`type_string`](https://ellmer.tidyverse.org/reference/type_boolean.html)`(``"..."``)``)`\
+`    ``)`\
+`  ``}`\
+`)`
 
 **Add a btw_this() method:**
 
-`#' @export`` ``btw_this.new_class`` ``<-`` ``function``(``x``, ``...``)`` ``{`` `` ``# Describe the object as character vector`` `` ``as_btw_capture``(``output_lines``)`` ``}`
+\
+`#' @export`\
+`btw_this.new_class`` ``<-`` ``function``(``x``, ``...``)`` ``{`\
+`  ``# Describe the object as character vector`\
+`  ``as_btw_capture``(``output_lines``)`\
+`}`
 
 **Update system prompts:**
 
