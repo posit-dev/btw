@@ -1,5 +1,7 @@
 # Test btw_tool_pkg_src_list_impl ----------------------------------------------
 
+skip_on_cran()
+
 test_that("btw_tool_pkg_src_list_impl returns exported objects by default", {
   result <- btw_tool_pkg_src_list_impl("tools")
 

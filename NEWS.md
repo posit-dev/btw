@@ -1,4 +1,4 @@
-# btw (development version)
+# btw 1.5.0
 
 ## New features
 
@@ -33,6 +33,8 @@
 * Local conversation history and project code-search indexes now use RSQLite, replacing DuckDB. Persistent data is stored in btw's user cache and separated by project; install RSQLite to enable this storage.
 
 * btw now requires ellmer (>= 0.4.2). The `set_model()` compatibility shim was removed, and `client_get_models()` now delegates to ellmer's `models_list()` generic, replacing a bespoke per-provider dispatch table (#214).
+
+* btw no longer reads the legacy user skills directory used by btw <= 1.2.0 (`skills/` under `tools::R_user_dir("btw", "config")`) (#204).
 
 # btw 1.4.0
 
