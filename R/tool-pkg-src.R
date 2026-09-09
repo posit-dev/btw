@@ -681,7 +681,7 @@ btw_tool_pkg_src_search_impl <- function(
     cli::cli_abort("`terms` must contain at least one search term.")
   }
 
-  check_installed("duckdb")
+  check_installed("RSQLite")
   check_installed("DBI")
 
   path_info <- btw_pkg_src_path_info(package)

@@ -184,4 +184,68 @@ test_that("btw_app_history_options() returns SQLite-backed history options", {
     options$scope,
     btw:::btw_app_history_project_dir()
   )
+  expect_identical(options$restore_mode, "none")
+})
+
+test_that("project active conversation helpers store a project pointer", {
+  db <- local_btw_db()
+  project <- "/path/to/project"
+
+  expect_null(btw:::btw_project_active_conversation_id(project))
+  expect_invisible(
+    btw:::btw_project_set_active_conversation_id(project, "conversation-a")
+  )
+  expect_identical(
+    btw:::btw_project_active_conversation_id(project),
+    "conversation-a"
+  )
+
+  con <- btw_db_open(db, .envir = environment())
+  project_row <- DBI::dbGetQuery(
+    con,
+    "SELECT path, active_conversation_id, last_opened_at FROM projects WHERE path = ?",
+    params = list(project)
+  )
+  expect_identical(project_row$path, project)
+  expect_identical(project_row$active_conversation_id, "conversation-a")
+  expect_true(nzchar(project_row$last_opened_at))
+})
+
+test_that("project pointer lifecycle restores once and follows local changes", {
+  local_btw_db()
+  project <- "/path/to/project"
+  btw:::btw_project_set_active_conversation_id(project, "saved")
+
+  conversation_id <- shiny::reactiveVal(NULL)
+  restored <- character()
+  settled <- logical()
+  controller <- list2env(list(
+    partition = list(scope = project, chat_id = "chat"),
+    on_settled = function(value) settled <<- c(settled, value),
+    get_record = function(partition, id) {
+      if (identical(id, "saved")) list(id = id) else NULL
+    },
+    switch_to = function(id) restored <<- c(restored, id)
+  ))
+  chat <- list(history = list(conversation_id = conversation_id))
+
+  shiny::testServer(
+    function(input, output, session) {
+      btw:::btw_app_history_use_project_pointer(chat, controller, project)
+    },
+    {
+      session$flushReact()
+      controller$on_settled(FALSE)
+      controller$on_settled(FALSE)
+      expect_identical(restored, "saved")
+      expect_identical(settled, c(FALSE, FALSE))
+
+      conversation_id("new-conversation")
+      session$flushReact()
+      expect_identical(
+        btw:::btw_project_active_conversation_id(project),
+        "new-conversation"
+      )
+    }
+  )
 })

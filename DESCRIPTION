@@ -63,7 +63,6 @@ Suggests:
     desc,
     devtools,
     diffviewer,
-    duckdb,
     evaluate,
     fansi,
     gert,
@@ -76,6 +75,7 @@ Suggests:
     Rapp (>= 0.3.0),
     renv,
     roxygen2,
+    RSQLite,
     shiny,
     shinychat (>= 0.5.0),
     testthat (>= 3.0.0),
@@ -101,6 +101,7 @@ Collate:
     'btw_client_app_legacy.R'
     'btw_client_app_slash_commands.R'
     'btw_client_app_v05.R'
+    'btw_project_db.R'
     'btw_task.R'
     'btw_this.R'
     'cli.R'

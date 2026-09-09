@@ -12,11 +12,11 @@
 #' @section Conversation History:
 #'   With shinychat >= 0.5.0, conversations in `btw_app()` are kept in a chat
 #'   history that you can revisit from the app's history drawer. When the
-#'   [duckdb](https://duckdb.r-dbi.org/) package is installed, conversations
-#'   are stored in a single database in btw's user cache directory
+#'   [RSQLite](https://rsqlite.r-dbi.org/) package is installed, conversations
+#'   are stored locally in a SQLite database in btw's user cache directory
 #'   (`tools::R_user_dir("btw", "cache")`), keyed by project directory: the
 #'   directory containing the closest `DESCRIPTION` or `.git` marker, or the
-#'   working directory otherwise. If duckdb is not installed, shinychat's
+#'   working directory otherwise. If RSQLite is not installed, shinychat's
 #'   default history storage is used instead.
 #' @export
 btw_app <- function(

@@ -259,8 +259,129 @@ btw_app_history_options <- function(path_btw = NULL) {
 
   shinychat_history_options(
     store = btw_conversation_store_sqlite$new(),
-    scope = btw_app_history_project_dir(path_btw)
+    scope = btw_app_history_project_dir(path_btw),
+    restore_mode = "none"
   )
+}
+
+btw_project_active_conversation_id <- function(
+  project_path,
+  db_path = btw_db_path()
+) {
+  con <- btw_db_open(db_path, .envir = environment())
+  project <- DBI::dbGetQuery(
+    con,
+    "SELECT active_conversation_id FROM projects WHERE path = ?",
+    params = list(project_path)
+  )
+
+  if (nrow(project) == 0) {
+    return(NULL)
+  }
+
+  project$active_conversation_id[[1]]
+}
+
+btw_project_set_active_conversation_id <- function(
+  project_path,
+  conversation_id,
+  db_path = btw_db_path()
+) {
+  con <- btw_db_open(db_path, .envir = environment())
+  DBI::dbExecute(
+    con,
+    paste0(
+      "INSERT INTO projects (path, active_conversation_id, last_opened_at) ",
+      "VALUES (?, ?, ?) ",
+      "ON CONFLICT(path) DO UPDATE SET ",
+      "active_conversation_id = excluded.active_conversation_id, ",
+      "last_opened_at = excluded.last_opened_at"
+    ),
+    params = list(
+      project_path,
+      conversation_id,
+      format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
+    )
+  )
+  invisible(NULL)
+}
+
+btw_app_history_restore_project_conversation <- function(
+  controller,
+  project_path
+) {
+  conversation_id <- tryCatch(
+    btw_project_active_conversation_id(project_path),
+    error = function(err) {
+      cli::cli_warn(c(
+        "Failed to read the active chat history conversation.",
+        conditionMessage(err)
+      ))
+      NULL
+    }
+  )
+  if (is.null(conversation_id)) {
+    return(FALSE)
+  }
+
+  tryCatch(
+    {
+      record <- controller$get_record(controller$partition, conversation_id)
+      if (is.null(record)) {
+        return(FALSE)
+      }
+      controller$switch_to(conversation_id)
+      TRUE
+    },
+    error = function(err) {
+      cli::cli_warn(c(
+        "Failed to restore the active chat history conversation.",
+        conditionMessage(err)
+      ))
+      FALSE
+    }
+  )
+}
+
+btw_app_history_use_project_pointer <- function(
+  chat,
+  controller,
+  project_path
+) {
+  settled <- FALSE
+  previous_on_settled <- controller$on_settled
+
+  controller$on_settled <- function(restored) {
+    if (!settled) {
+      settled <<- TRUE
+      btw_app_history_restore_project_conversation(controller, project_path)
+    }
+
+    if (!is.null(previous_on_settled)) {
+      previous_on_settled(restored)
+    }
+  }
+
+  shiny::observeEvent(
+    chat$history$conversation_id(),
+    ignoreNULL = TRUE,
+    {
+      tryCatch(
+        btw_project_set_active_conversation_id(
+          project_path,
+          chat$history$conversation_id()
+        ),
+        error = function(err) {
+          cli::cli_warn(c(
+            "Failed to save the active chat history conversation.",
+            conditionMessage(err)
+          ))
+        }
+      )
+    }
+  )
+
+  invisible(NULL)
 }
 
 # nocov end

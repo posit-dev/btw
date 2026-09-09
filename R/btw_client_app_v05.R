@@ -62,6 +62,24 @@ btw_app_shell_page_chat <- function(state) {
     if (length(state$messages)) {
       app_replay_messages(chat, state$messages)
     }
+
+    if (
+      inherits(state$history, "chat_history_config") &&
+        identical(state$history$restore_mode, "none") &&
+        is.character(state$history$scope)
+    ) {
+      controller <- btw_shinychat_050_object(
+        "get_session_chat_bookmark_info"
+      )(shiny::getDefaultReactiveDomain(), "chat.history-controller")
+      if (!is.null(controller)) {
+        btw_app_history_use_project_pointer(
+          chat,
+          controller,
+          state$history$scope
+        )
+      }
+    }
+
     chat
   }
 
