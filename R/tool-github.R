@@ -17,7 +17,7 @@ btw_eval_gh_code <- function(
   method = "evaluate",
   show_last_value = TRUE
 ) {
-  check_installed("gh")
+  rlang::check_installed("gh")
 
   wd_repo_info <- get_github_repo(NULL, NULL)
 
@@ -88,7 +88,7 @@ get_github_repo <- function(owner = NULL, repo = NULL) {
     return(list(owner = owner, repo = repo))
   }
 
-  check_installed("gh")
+  rlang::check_installed("gh")
 
   remote_info <- new_environment()
   gh_tr <- tryCatch(

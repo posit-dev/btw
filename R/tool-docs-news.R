@@ -217,7 +217,7 @@ package_news_search <- function(
 
   r_docs <- r_docs_versions()
   if (!package_name %in% r_docs) {
-    check_installed(package_name)
+    rlang::check_installed(package_name)
   } else {
     if (package_name == sprintf("R-%s", R.version$major)) {
       package_name <- "R"

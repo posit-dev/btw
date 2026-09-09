@@ -400,7 +400,7 @@ btw_this_help <- function(args) {
 }
 
 btw_this_git <- function(args) {
-  check_installed("gert")
+  rlang::check_installed("gert")
 
   # Try to get git info early to provide better error messages
   tryCatch(
@@ -519,7 +519,7 @@ btw_this_github_pr <- function(args) {
 #   - "owner/repo#123"
 #   - "owner/repo 123"
 btw_this_github_item <- function(args, type = c("issue", "pr")) {
-  check_installed("gh")
+  rlang::check_installed("gh")
   type <- match.arg(type)
 
   args <- trimws(args)

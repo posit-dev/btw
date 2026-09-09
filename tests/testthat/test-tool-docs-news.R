@@ -66,7 +66,7 @@ test_that("btw_tool_docs_package_news() selects a requested version", {
 test_that("btw_tool_docs_package_news() with non-existent package", {
   expect_error(
     btw_tool_docs_package_news("nonexistentpackage"),
-    "not installed"
+    "is required"
   )
 })
 

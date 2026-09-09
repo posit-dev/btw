@@ -14,7 +14,7 @@ btw_pkg_src_resolve_ns <- function(package) {
   check_string(package)
 
   if (identical(package, ".")) {
-    check_installed("pkgload")
+    rlang::check_installed("pkgload")
     pkgload::load_all(".", export_all = FALSE, quiet = TRUE)
     name <- pkgload::pkg_name(".")
   } else {
@@ -174,7 +174,7 @@ btw_pkg_src_has_source_tree <- function(r_dir) {
 # a redundant `load_all()`/`loadNamespace()`.
 btw_pkg_src_path_info <- function(package) {
   if (identical(package, ".")) {
-    check_installed("pkgload")
+    rlang::check_installed("pkgload")
     list(path = pkgload::pkg_path("."), source_available = TRUE)
   } else {
     path <- find.package(package)
@@ -681,7 +681,7 @@ btw_tool_pkg_src_search_impl <- function(
     cli::cli_abort("`terms` must contain at least one search term.")
   }
 
-  check_installed("duckdb")
+  rlang::check_installed("RSQLite", version = "2.2.2")
   check_installed("DBI")
 
   path_info <- btw_pkg_src_path_info(package)

@@ -1,4 +1,4 @@
-skip_if_not_installed("duckdb")
+skip_if_not_installed("RSQLite")
 skip_if_no_shinychat_v05()
 
 history_record <- function(
@@ -25,13 +25,12 @@ history_record <- function(
   )
 }
 
-new_history_store <- function() {
-  db <- fs::file_temp(ext = "duckdb")
-  withr::defer(fs::file_delete(db[fs::file_exists(db)]))
-  btw:::btw_conversation_store_duckdb$new(db)
+new_history_store <- function(.env = caller_env()) {
+  db <- local_btw_db(.env)
+  btw:::btw_conversation_store_sqlite()$new(db)
 }
 
-test_that("btw_conversation_store_duckdb round-trips a record", {
+test_that("btw_conversation_store_sqlite round-trips a record", {
   store <- new_history_store()
   partition <- list(chat_id = "chat", scope = "project-a")
   record <- history_record("abc123")
@@ -111,6 +110,44 @@ test_that("delete() removes a conversation and is a no-op for missing ids", {
   expect_invisible(store$delete(partition, "never-existed"))
 })
 
+test_that("put() prunes conversations older than the retention period", {
+  withr::local_envvar(BTW_HISTORY_RETENTION_DAYS = "1")
+  store <- new_history_store()
+  partition <- list(chat_id = "chat", scope = "project-a")
+  old <- format(
+    Sys.time() - 2 * 24 * 60 * 60,
+    "%Y-%m-%dT%H:%M:%SZ",
+    tz = "UTC"
+  )
+  now <- format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
+
+  store$put(partition, history_record("old", created_at = old, updated_at = old))
+  store$put(partition, history_record("new", created_at = now, updated_at = now))
+
+  expect_null(store$get(partition, "old"))
+  expect_identical(store$get(partition, "new")$id, "new")
+})
+
+test_that("history retention can disable recording or retain forever", {
+  partition <- list(chat_id = "chat", scope = "project-a")
+  old <- format(
+    Sys.time() - 366 * 24 * 60 * 60,
+    "%Y-%m-%dT%H:%M:%SZ",
+    tz = "UTC"
+  )
+
+  withr::local_envvar(BTW_HISTORY_RETENTION_DAYS = "0")
+  expect_true(btw:::btw_app_history_options())
+  disabled <- new_history_store()
+  disabled$put(partition, history_record("disabled"))
+  expect_null(disabled$get(partition, "disabled"))
+
+  withr::local_envvar(BTW_HISTORY_RETENTION_DAYS = "-1")
+  forever <- new_history_store()
+  forever$put(partition, history_record("old", created_at = old, updated_at = old))
+  expect_identical(forever$get(partition, "old")$id, "old")
+})
+
 test_that("search() and total_size() work via the base class defaults", {
   store <- new_history_store()
   partition <- list(chat_id = "chat", scope = "project-a")
@@ -138,13 +175,82 @@ test_that("btw_app_history_project_dir() resolves from path_btw", {
     btw:::btw_app_history_project_dir(dir),
     as.character(fs::path_norm(fs::path_abs(dir)))
   )
+
+  expect_identical(
+    btw:::btw_app_history_project_dir(FALSE),
+    btw:::btw_app_history_project_dir()
+  )
 })
 
-test_that("btw_app_history_options() returns duckdb-backed history options", {
+test_that("btw_app_history_options() returns SQLite-backed history options", {
   options <- btw:::btw_app_history_options()
   expect_true(inherits(options$store, "ConversationStore"))
   expect_identical(
     options$scope,
     btw:::btw_app_history_project_dir()
+  )
+  expect_identical(options$restore_mode, "none")
+})
+
+test_that("project active conversation helpers store a project pointer", {
+  db <- local_btw_db()
+  project <- "/path/to/project"
+
+  expect_null(btw:::btw_project_active_conversation_id(project))
+  expect_invisible(
+    btw:::btw_project_set_active_conversation_id(project, "conversation-a")
+  )
+  expect_identical(
+    btw:::btw_project_active_conversation_id(project),
+    "conversation-a"
+  )
+
+  con <- btw_db_open(db, .envir = environment())
+  project_row <- DBI::dbGetQuery(
+    con,
+    "SELECT path, active_conversation_id, last_opened_at FROM projects WHERE path = ?",
+    params = list(project)
+  )
+  expect_identical(project_row$path, project)
+  expect_identical(project_row$active_conversation_id, "conversation-a")
+  expect_true(nzchar(project_row$last_opened_at))
+})
+
+test_that("project pointer lifecycle restores once and follows local changes", {
+  local_btw_db()
+  project <- "/path/to/project"
+  btw:::btw_project_set_active_conversation_id(project, "saved")
+
+  conversation_id <- shiny::reactiveVal(NULL)
+  restored <- character()
+  settled <- logical()
+  controller <- list2env(list(
+    partition = list(scope = project, chat_id = "chat"),
+    on_settled = function(value) settled <<- c(settled, value),
+    get_record = function(partition, id) {
+      if (identical(id, "saved")) list(id = id) else NULL
+    },
+    switch_to = function(id) restored <<- c(restored, id)
+  ))
+  chat <- list(history = list(conversation_id = conversation_id))
+
+  shiny::testServer(
+    function(input, output, session) {
+      btw:::btw_app_history_use_project_pointer(chat, controller, project)
+    },
+    {
+      session$flushReact()
+      controller$on_settled(FALSE)
+      controller$on_settled(FALSE)
+      expect_identical(restored, "saved")
+      expect_identical(settled, c(FALSE, FALSE))
+
+      conversation_id("new-conversation")
+      session$flushReact()
+      expect_identical(
+        btw:::btw_project_active_conversation_id(project),
+        "new-conversation"
+      )
+    }
   )
 })

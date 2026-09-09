@@ -149,8 +149,7 @@
       btw_tool_env_describe_data_frame("skibidi::ohio")
     Condition
       Error in `btw_tool_env_describe_data_frame()`:
-      ! Package skibidi is not installed.
-      i Did you mean "Kifidi", "simIDM", "bib2df", "BiBitR", or "Bioi"?
+      ! The package "skibidi" is required.
 
 # btw_this.tbl() works
 
