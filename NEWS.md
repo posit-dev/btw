@@ -30,9 +30,7 @@
 
 ## Other changes
 
-* Local conversation history and project code-search indexes now use RSQLite,
-  replacing DuckDB. Persistent data is stored in btw's user cache and separated
-  by project; install RSQLite to enable this storage.
+* Local conversation history and project code-search indexes now use RSQLite, replacing DuckDB. Persistent data is stored in btw's user cache and separated by project; install RSQLite to enable this storage.
 
 * btw now requires ellmer (>= 0.4.2). The `set_model()` compatibility shim was removed, and `client_get_models()` now delegates to ellmer's `models_list()` generic, replacing a bespoke per-provider dispatch table (#214).
 
