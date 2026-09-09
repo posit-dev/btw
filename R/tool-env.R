@@ -148,7 +148,7 @@ btw_tool_env_describe_environment_impl <- function(
       name = "btw_tool_env_describe_environment",
       description = "List and describe items in the R session's global environment.",
       annotations = ellmer::tool_annotations(
-        title = "Object in Session",
+        title = "Describing environment",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         btw_can_register = function() TRUE

@@ -85,7 +85,7 @@ The tool returns different information depending on whether you specify a filena
 
 This helps identify untested code and gaps in your test suite.",
       annotations = ellmer::tool_annotations(
-        title = "Package Coverage",
+        title = "Computing package coverage",
         read_only_hint = TRUE,
         idempotent_hint = TRUE,
         btw_can_register = btw_can_register_pkg_coverage

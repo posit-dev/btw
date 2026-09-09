@@ -50,11 +50,11 @@ btw_tool_files_write_impl <- function(path, content) {
       previous_content = previous_content,
       display = list(
         markdown = md_code_block(fs::path_ext(path), content),
-        title = file_result_title("Write", path),
+        title = "Wrote file",
+        label = fs::path_file(path),
         footer = file_result_footer(path),
         full_screen = TRUE,
-        show_request = FALSE,
-        icon = tool_icon("file-save")
+        show_request = FALSE
       )
     )
   )
@@ -82,7 +82,8 @@ This completely overwrites any existing file content.
 To modify an existing file, first read its content using `btw_tool_files_read`, make your changes to the text, then write back the complete modified content.
 ',
       annotations = ellmer::tool_annotations(
-        title = "Write File",
+        title = "Writing file",
+        icon = tool_icon("post-add"),
         read_only_hint = FALSE,
         open_world_hint = FALSE,
         idempotent_hint = TRUE,

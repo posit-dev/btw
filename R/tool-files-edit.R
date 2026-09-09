@@ -182,11 +182,11 @@ btw_tool_files_edit_impl <- function(path, edits) {
       previous_content = previous_content,
       display = list(
         markdown = md_code_block(fs::path_ext(path), new_content),
-        title = file_result_title("Edit", path),
+        title = "Edited file",
+        label = fs::path_file(path),
         footer = file_result_footer(path),
         full_screen = TRUE,
-        show_request = FALSE,
-        icon = tool_icon("file-save")
+        show_request = FALSE
       )
     )
   )
@@ -228,7 +228,8 @@ NOTES:
 - Each element in `content` is one line; do not include trailing newlines.
     )---",
       annotations = ellmer::tool_annotations(
-        title = "Edit File",
+        title = "Editing file",
+        icon = tool_icon("edit-document"),
         read_only_hint = FALSE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE,

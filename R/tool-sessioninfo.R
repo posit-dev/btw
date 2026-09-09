@@ -53,7 +53,7 @@ BtwSessionInfoToolResult <- S7::new_class(
         "for the user's system."
       ),
       annotations = ellmer::tool_annotations(
-        title = "Platform Info",
+        title = "Collecting platform info",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         btw_can_register = function() TRUE
@@ -183,6 +183,7 @@ btw_tool_sessioninfo_package_impl <- function(
     extra = list(
       data = packages_df,
       display = list(
+        title = "Listed installed packages",
         markdown = md_table(packages_df)
       )
     )
@@ -220,7 +221,7 @@ package_info <- function(pkgs = NULL, dependencies = NA) {
         "As a last resort, this function can also list all installed packages."
       ),
       annotations = ellmer::tool_annotations(
-        title = "Package Info",
+        title = "Listing installed packages",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         btw_can_register = function() TRUE

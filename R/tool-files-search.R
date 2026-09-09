@@ -158,6 +158,7 @@ btw_tool_files_search_factory <- function(
       as_json_rowwise(res),
       extra = list(
         display = list(
+          title = "Searched code",
           markdown = paste0(
             md_table(res[1:min(nrow(res), max_display), ]),
             if (nrow(res) > max_display) {
@@ -203,7 +204,7 @@ The tool returns a list of files and lines of code that match the search `term`.
 Use the `btw_tool_files_read` tool, if available, to read the full content of a file found in this search.
       )---",
       annotations = ellmer::tool_annotations(
-        title = "Code Search",
+        title = "Searching code",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE,

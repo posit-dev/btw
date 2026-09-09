@@ -103,7 +103,8 @@ btw_tool_files_read_impl <- function(
       path = fs::path_rel(path),
       display = list(
         markdown = display_md,
-        title = file_result_title("Read", path),
+        title = "Read file",
+        label = fs::path_file(path),
         footer = file_result_footer(path),
         full_screen = TRUE
       )
@@ -154,7 +155,7 @@ BtwTextFileToolResult <- S7::new_class(
         sep = "\n"
       ),
       annotations = ellmer::tool_annotations(
-        title = "Read File",
+        title = "Reading file",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE,
@@ -187,15 +188,6 @@ format_hashlines <- function(lines, start_line = 1L) {
   hashes <- vapply(lines, hashline, character(1), USE.NAMES = FALSE)
   line_nums <- seq(start_line, length.out = length(lines))
   paste0(line_nums, ":", hashes, "|", lines)
-}
-
-file_result_title <- function(verb, path) {
-  path_file <- fs::path_file(path)
-  HTML(sprintf(
-    "%s <code>%s</code>",
-    htmltools::htmlEscape(verb),
-    htmltools::htmlEscape(path_file)
-  ))
 }
 
 file_result_footer <- function(path) {

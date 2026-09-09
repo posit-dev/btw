@@ -497,6 +497,7 @@ btw_tool_agent_subagent_impl <- function(
       model = result$model,
       tokens = result$tokens,
       display = list(
+        title = "Ran subagent",
         html = shiny::HTML(display_md),
         show_request = FALSE,
         full_screen = TRUE
@@ -777,7 +778,7 @@ btw_can_register_subagent_tool <- function() {
       name = "btw_tool_agent_subagent",
       description = subagent_build_description(tools_allowed),
       annotations = ellmer::tool_annotations(
-        title = "Subagent",
+        title = "Running subagent",
         read_only_hint = FALSE,
         open_world_hint = TRUE
         # btw_can_register is propagated from can_register by as_ellmer_tools()

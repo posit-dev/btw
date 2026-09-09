@@ -276,6 +276,7 @@ btw_tool_run_r_impl <- function(
       status = if (had_error) "error" else "success",
       copy_code = TRUE,
       display = list(
+        title = "Ran R code",
         open = !had_error,
         show_request = FALSE,
         full_screen = TRUE
@@ -433,7 +434,7 @@ Executes R code and captures printed values, text output, plots, messages, warni
 - AVOID extremely large outputs; show summaries and return key results
       )---",
       annotations = ellmer::tool_annotations(
-        title = "Run R Code",
+        title = "Running R code",
         read_only_hint = FALSE,
         open_world_hint = FALSE
       ),

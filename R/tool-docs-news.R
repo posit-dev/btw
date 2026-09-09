@@ -80,7 +80,13 @@ btw_tool_docs_package_news_impl <- function(
 
   BtwPackageNewsToolResult(
     result,
-    extra = list(display = list(markdown = result, full_screen = TRUE))
+    extra = list(
+      display = list(
+        title = "Read release notes",
+        markdown = result,
+        full_screen = TRUE
+      )
+    )
   )
 }
 
@@ -103,7 +109,7 @@ btw_tool_docs_package_news_impl <- function(
         "For example, if a user recently updated a package and asks why a function no longer works, you can use this tool to find out what changed in the package release notes."
       ),
       annotations = ellmer::tool_annotations(
-        title = "Package Release Notes",
+        title = "Reading release notes",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         btw_can_register = function() TRUE

@@ -340,7 +340,7 @@ gh("/repos/tidyverse/dplyr/issues/123")
 RETURNS: The result from the GitHub API call, formatted as JSON.
       )---",
       annotations = ellmer::tool_annotations(
-        title = "GitHub API",
+        title = "Calling GitHub API",
         read_only_hint = FALSE, # Can perform writes
         open_world_hint = TRUE,
         idempotent_hint = FALSE

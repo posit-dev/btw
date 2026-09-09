@@ -82,7 +82,8 @@ btw_tool_docs_package_help_topics_impl <- function(package_name) {
     max_cols = Inf
   )
   ret@extra$display <- list(
-    title = sprintf("{%s} Help Topics", package_name),
+    title = "Listed help topics",
+    label = package_name,
     markdown = md_table(res)
   )
   ret
@@ -98,7 +99,7 @@ btw_tool_docs_package_help_topics_impl <- function(package_name) {
       name = "btw_tool_docs_package_help_topics",
       description = "Get available help topics for an R package.",
       annotations = ellmer::tool_annotations(
-        title = "Package Help Topics",
+        title = "Listing help topics",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         btw_can_register = function() TRUE
@@ -195,7 +196,8 @@ btw_tool_docs_help_page_impl <- function(topic, package_name = "") {
       topic = basename(resolved$topic),
       package = resolved$package,
       display = list(
-        title = HTML(sprintf('<code>?%s</code>', help_call)),
+        title = "Read help page",
+        label = help_call,
         markdown = paste(md, collapse = "\n"),
         full_screen = TRUE
       )
@@ -311,7 +313,7 @@ format_help_page_text <- function(help_page) {
       name = "btw_tool_docs_help_page",
       description = "Get help page from package.",
       annotations = ellmer::tool_annotations(
-        title = "Help Page",
+        title = "Reading help page",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         btw_can_register = function() TRUE
@@ -444,7 +446,8 @@ btw_tool_docs_available_vignettes_impl <- function(package_name) {
     value = as_json_rowwise(df),
     data = df,
     display = list(
-      title = sprintf("{%s} Vignettes", package_name),
+      title = "Listed vignettes",
+      label = package_name,
       markdown = md_table(df),
       full_screen = TRUE
     )
@@ -465,7 +468,7 @@ btw_tool_docs_available_vignettes_impl <- function(package_name) {
         "To read a vignette, use `btw_tool_docs_vignette(package_name, vignette)`."
       ),
       annotations = ellmer::tool_annotations(
-        title = "Available Vignettes",
+        title = "Listing vignettes",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         btw_can_register = function() TRUE
@@ -512,7 +515,8 @@ btw_tool_docs_vignette_impl <- function(
     md_vignette,
     data = vignette_info,
     display = list(
-      title = sprintf("{%s} Vignette: %s", package_name, vignette_info$Title),
+      title = "Read vignette",
+      label = sprintf("%s::%s", package_name, vignette),
       markdown = paste(md_vignette, collapse = "\n"),
       full_screen = TRUE
     )
@@ -528,7 +532,7 @@ btw_tool_docs_vignette_impl <- function(
       name = "btw_tool_docs_vignette",
       description = "Get a package vignette in plain text.",
       annotations = ellmer::tool_annotations(
-        title = "Vignette",
+        title = "Reading vignette",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         btw_can_register = function() TRUE

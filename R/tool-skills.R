@@ -70,7 +70,7 @@ btw_tool_skill_impl <- function(name) {
       return(btw_tool_result(
         value = "No skills are currently available.",
         display = list(
-          title = "Available Skills",
+          title = "Listed skills",
           markdown = "No skills are currently available."
         )
       ))
@@ -79,7 +79,7 @@ btw_tool_skill_impl <- function(name) {
     return(btw_tool_result(
       value = prompt,
       data = list(skills = skills),
-      display = list(title = "Available Skills", markdown = prompt)
+      display = list(title = "Listed skills", markdown = prompt)
     ))
   }
 
@@ -95,7 +95,8 @@ btw_tool_skill_impl <- function(name) {
       resources = skill$resources
     ),
     display = list(
-      title = sprintf("Skill: %s", name),
+      title = "Loaded skill",
+      label = name,
       markdown = skill$text
     )
   )
@@ -222,7 +223,7 @@ btw_skill_prompt <- function(skill_name) {
         "scripts into R code."
       ),
       annotations = ellmer::tool_annotations(
-        title = "Load Skill",
+        title = "Loading skill",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         btw_can_register = function() any_skills_exist()

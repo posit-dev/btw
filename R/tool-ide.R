@@ -109,7 +109,7 @@ BtwEditorContextToolResult <- S7::new_class(
         "'@current_file' and '@current_selection' are considered explicit consent."
       ),
       annotations = ellmer::tool_annotations(
-        title = "Editor Contents",
+        title = "Reading editor contents",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE,

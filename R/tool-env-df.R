@@ -113,6 +113,12 @@ btw_tool_env_describe_data_frame_impl <- function(
   check_number_whole(max_rows, allow_infinite = TRUE)
   check_number_whole(max_cols, allow_infinite = TRUE)
 
+  data_name <- if (is.character(data_frame)) {
+    sub("^[^:]+::", "", data_frame)
+  } else {
+    NULL
+  }
+
   if (inherits(data_frame, "character")) {
     .data_name <- data_frame
     data_frame <- get0(.data_name, ifnotfound = missing_arg())
@@ -135,7 +141,8 @@ btw_tool_env_describe_data_frame_impl <- function(
         value = data_frame_md,
         data = data_frame,
         display = list(
-          title = "View Data Frame",
+          title = "Described data frame",
+          label = data_name,
           markdown = data_frame_md,
           full_screen = TRUE
         )
@@ -161,7 +168,8 @@ btw_tool_env_describe_data_frame_impl <- function(
     value = res,
     data = data_frame,
     display = list(
-      title = "View Data Frame",
+      title = "Described data frame",
+      label = data_name,
       full_screen = TRUE
     )
   )
@@ -198,7 +206,7 @@ get_dataset_from_package <- function(name, package = NULL) {
       name = "btw_tool_env_describe_data_frame",
       description = "Show the data frame or table or get information about the structure of a data frame or table.",
       annotations = ellmer::tool_annotations(
-        title = "Show a data frame",
+        title = "Describing data frame",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         btw_can_register = function() TRUE

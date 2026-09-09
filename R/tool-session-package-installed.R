@@ -55,7 +55,7 @@ btw_tool_sessioninfo_is_package_installed_impl <- function(package_name) {
       name = "btw_tool_sessioninfo_is_package_installed",
       description = "Check if a package is installed in the current session.",
       annotations = ellmer::tool_annotations(
-        title = "Package Check",
+        title = "Checking installed packages",
         read_only_hint = TRUE,
         open_world_hint = FALSE,
         idempotent_hint = FALSE,

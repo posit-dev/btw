@@ -41,7 +41,10 @@ btw_tool_web_read_url_impl <- function(
   md <- paste(pandoc_html_simplify(html), collapse = "\n")
   res <- glue_('<web_page_content url="{{url}}">\n{{md}}\n</web_page_content>')
 
-  BtwWebPageResult(res)
+  BtwWebPageResult(
+    res,
+    extra = list(display = list(title = "Read web page", label = url))
+  )
 }
 
 BtwWebPageResult <- S7::new_class(
@@ -68,7 +71,7 @@ This tool fetches the content of a web page and returns it as a simplified Markd
 
 WHEN TO USE: Use this tool when you need to access and analyze the content of a web page, e.g. when the user asks you to read the contents of a webpage.)---',
       annotations = ellmer::tool_annotations(
-        title = "Read Web Page",
+        title = "Reading web page",
         read_only_hint = TRUE,
         open_world_hint = TRUE,
         idempotent_hint = FALSE,
