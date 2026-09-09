@@ -90,7 +90,7 @@ btw_tool_files_search_factory <- function(
   check_character(exclusions, allow_na = FALSE, allow_null = TRUE)
 
   rlang::check_installed("DBI")
-  rlang::check_installed("RSQLite")
+  rlang::check_installed("RSQLite", version = "2.2.2")
 
   project_path <- fs::path_norm(fs::path_abs(fs::path_expand(path)))
   state <- new.env(parent = emptyenv())
@@ -248,7 +248,7 @@ Use the `btw_tool_files_read` tool, if available, to read the full content of a 
         open_world_hint = FALSE,
         idempotent_hint = FALSE,
         btw_can_register = function() {
-          is_installed("RSQLite") && is_installed("DBI")
+          is_installed("RSQLite", version = "2.2.2") && is_installed("DBI")
         }
       ),
       arguments = list(
@@ -406,13 +406,17 @@ btw_search_refresh_index <- function(
   DBI::dbExecute(
     con,
     paste0(
-      "INSERT INTO projects (path, label, last_opened_at) VALUES (?, ?, ?) ",
+      "INSERT INTO projects (path, label, last_opened_at, search_indexed_at) ",
+      "VALUES (?, ?, ?, ?) ",
       "ON CONFLICT(path) DO UPDATE SET ",
-      "label = excluded.label, last_opened_at = excluded.last_opened_at"
+      "label = excluded.label, ",
+      "last_opened_at = excluded.last_opened_at, ",
+      "search_indexed_at = excluded.search_indexed_at"
     ),
     params = list(
       project_path,
       fs::path_file(project_path),
+      format(Sys.time(), tz = "UTC", usetz = TRUE),
       format(Sys.time(), tz = "UTC", usetz = TRUE)
     )
   )
@@ -629,7 +633,10 @@ btw_search_prune_stale_indexes <- function(con) {
   cutoff <- format(Sys.time() - days * 24 * 60 * 60, tz = "UTC", usetz = TRUE)
   stale <- DBI::dbGetQuery(
     con,
-    "SELECT path FROM projects WHERE last_opened_at IS NOT NULL AND last_opened_at < ?",
+    paste0(
+      "SELECT path FROM projects ",
+      "WHERE search_indexed_at IS NOT NULL AND search_indexed_at < ?"
+    ),
     params = list(cutoff)
   )$path
   if (length(stale) == 0) {
@@ -647,6 +654,11 @@ btw_search_prune_stale_indexes <- function(con) {
     DBI::dbExecute(
       con,
       "DELETE FROM files WHERE project_path = ?",
+      params = list(project_path)
+    )
+    DBI::dbExecute(
+      con,
+      "UPDATE projects SET search_indexed_at = NULL WHERE path = ?",
       params = list(project_path)
     )
   }

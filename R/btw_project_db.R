@@ -27,9 +27,16 @@ btw_db_initialize <- function(con) {
       path TEXT PRIMARY KEY,
       label TEXT,
       active_conversation_id TEXT,
-      last_opened_at TEXT
+      last_opened_at TEXT,
+      search_indexed_at TEXT
     )"
   )
+  if (!"search_indexed_at" %in% DBI::dbListFields(con, "projects")) {
+    DBI::dbExecute(
+      con,
+      "ALTER TABLE projects ADD COLUMN search_indexed_at TEXT"
+    )
+  }
   DBI::dbExecute(
     con,
     "CREATE TABLE IF NOT EXISTS state (
@@ -40,7 +47,7 @@ btw_db_initialize <- function(con) {
   DBI::dbExecute(
     con,
     "INSERT OR IGNORE INTO state (key, value) VALUES (?, ?)",
-    params = list("schema_version", "1")
+    params = list("schema_version", "2")
   )
   DBI::dbExecute(
     con,

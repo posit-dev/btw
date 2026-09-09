@@ -213,7 +213,7 @@ test_that("btw docs news guides positional search terms to --search", {
 test_that("btw docs news errors for non-existent package", {
   result <- run_btw_subprocess("docs", "news", "nonexistent_pkg_xyz")
   expect_equal(result$status, 1)
-  expect_match(result$stderr, "not installed|not found", ignore.case = TRUE)
+  expect_match(result$stderr, "is required", ignore.case = TRUE)
 })
 
 # pkg group --------------------------------------------------------------

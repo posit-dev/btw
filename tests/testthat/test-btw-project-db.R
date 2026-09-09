@@ -22,8 +22,27 @@ test_that("btw_db_open() initializes the shared schema", {
       "SELECT value FROM state WHERE key = ?",
       params = list("schema_version")
     )$value,
-    "1"
+    "2"
   )
+  expect_true("search_indexed_at" %in% DBI::dbListFields(con, "projects"))
+})
+
+test_that("btw_db_open() upgrades existing projects tables", {
+  path <- fs::path(withr::local_tempdir(), "btw.sqlite3")
+  con <- DBI::dbConnect(RSQLite::SQLite(), dbname = path)
+  DBI::dbExecute(
+    con,
+    "CREATE TABLE projects (
+      path TEXT PRIMARY KEY,
+      label TEXT,
+      active_conversation_id TEXT,
+      last_opened_at TEXT
+    )"
+  )
+  DBI::dbDisconnect(con)
+
+  con <- btw:::btw_db_open(path, .envir = environment())
+  expect_true("search_indexed_at" %in% DBI::dbListFields(con, "projects"))
 })
 
 test_that("per-project search table names are deterministic and safe", {

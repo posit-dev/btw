@@ -172,8 +172,14 @@ test_that("stale search cleanup is limited to the idle project index", {
 
   DBI::dbExecute(
     con,
-    "INSERT INTO projects (path, label, last_opened_at) VALUES (?, ?, ?), (?, ?, ?)",
-    params = list(idle_path, "idle", old, active_path, "active", now)
+    paste0(
+      "INSERT INTO projects (path, label, last_opened_at, search_indexed_at) ",
+      "VALUES (?, ?, ?, ?), (?, ?, ?, ?)"
+    ),
+    params = list(
+      idle_path, "idle", old, old,
+      active_path, "active", now, now
+    )
   )
   DBI::dbExecute(
     con,
@@ -209,5 +215,13 @@ test_that("stale search cleanup is limited to the idle project index", {
   expect_equal(
     DBI::dbGetQuery(con, "SELECT COUNT(*) AS n FROM conversations")$n,
     1
+  )
+  expect_identical(
+    DBI::dbGetQuery(
+      con,
+      "SELECT search_indexed_at FROM projects WHERE path = ?",
+      params = list(idle_path)
+    )$search_indexed_at,
+    NA_character_
   )
 })
