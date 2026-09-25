@@ -1,13 +1,13 @@
 # Render a skill's entry for a system prompt
 
-Returns the `<skill>` block for one skill: its name, description, and
-location, plus its compatibility notes and allowed tools when present.
-This is the same block that
+Returns a compact YAML-style entry for one skill: its name, description,
+and location, plus compatibility notes and allowed tools when present.
+This is the same entry that
 [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
 writes into its system prompt.
 
-Compose the listing yourself. For example, wrap the blocks for all
-skills in an `<available_skills>` element, the way btw does it.
+Compose the listing yourself by joining the entries under an "Available
+skills:" heading, the way btw does it.
 
 If the skill doesn't exist, the error lists the available skill names.
 
@@ -25,7 +25,7 @@ btw_skill_prompt(skill_name)
 
 ## Value
 
-A single string with the skill's `<skill>` block.
+A single string with the skill's YAML-style entry.
 
 ## See also
 
@@ -45,9 +45,6 @@ Other skills:
 
 ``` r
 cat(btw_skill_prompt("skill-creator"))
-#> <skill>
-#> <name>skill-creator</name>
-#> <description>Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations.</description>
-#> <location>/home/runner/work/_temp/Library/btw/skills/skill-creator/SKILL.md</location>
-#> </skill>
+#> - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations.
+#>   location: /home/runner/work/_temp/Library/btw/skills/skill-creator/SKILL.md
 ```

@@ -2,6 +2,10 @@
 
 ## btw (development version)
 
+- Skill listings in the system prompt now use compact YAML-style entries
+  instead of `<skill>` XML blocks, reducing prompt tokens while
+  conveying the same information.
+
 - Package tests now support a compact reporter that shows per-file
   progress, timing, warning and failure details, and final counts.
   `btw pkg test` uses it by default, while

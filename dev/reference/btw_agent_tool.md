@@ -189,8 +189,8 @@ withr::with_tempdir({
 #>     btw_tool_agent_custom_impl(prompt = prompt, session_id = session_id, 
 #>         agent_config = agent_config)
 #> }
-#> <bytecode: 0x55b917c73a88>
-#> <environment: 0x55b917c73698>
+#> <bytecode: 0x55d0f53721a0>
+#> <environment: 0x55d0f5371db0>
 
 # Create a Claude Code-style agent file (name with hyphens)
 withr::with_tempdir({
@@ -223,6 +223,6 @@ withr::with_tempdir({
 #>     btw_tool_agent_custom_impl(prompt = prompt, session_id = session_id, 
 #>         agent_config = agent_config)
 #> }
-#> <bytecode: 0x55b917c73a88>
-#> <environment: 0x55b916ef4cb0>
+#> <bytecode: 0x55d0f53721a0>
+#> <environment: 0x55d0f519f368>
 ```
