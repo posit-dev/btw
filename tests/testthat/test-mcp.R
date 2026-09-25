@@ -12,6 +12,16 @@ test_that("btw_mcp_server errors informatively with bad `tools`", {
   )
 })
 
+test_that("btw_mcp_server works with a character vector of multiple tool groups", {
+  local_enable_tools()
+  local_mocked_bindings(
+    mcp_server = function(...) "mocked",
+    .package = "mcptools"
+  )
+
+  expect_equal(btw_mcp_server(tools = c("docs", "env")), "mocked")
+})
+
 test_that("btw_mcp_tools() excludes skills group by default", {
   local_enable_tools()
   tools <- btw_mcp_tools()
