@@ -153,17 +153,18 @@ For iterative development, use the `btw_tool_pkg_test` if available or `devtools
 #' Tool: Run package tests
 #'
 #' Run package tests using [devtools::test()]. Optionally filter tests by name
-#' pattern. The default `"compact"` reporter announces each file, prints a
-#' short summary as it finishes, then failures before a final test summary.
-#' Use `"minimal"` for the previous summary-and-failures output, or a testthat
-#' reporter name.
+#' pattern. The default `"minimal"` reporter returns failures and a final
+#' summary without per-file progress, which suits non-streaming tool clients.
+#' Use `"compact"` to include file starts, per-file results, and timings, or
+#' pass a testthat reporter name.
 #'
 #' @param pkg Path to package directory. Defaults to '.'. Must be within
 #'   current working directory.
 #' @param filter Optional regex to filter test files. Example: 'helper' matches
 #'   'test-helper.R'.
-#' @param reporter Either `"compact"` (the default), `"minimal"` (the previous
-#'   behavior), or a testthat reporter name passed to [devtools::test()].
+#' @param reporter Either `"minimal"` (the default), `"compact"` (per-file
+#'   progress and timing), or a testthat reporter name passed to
+#'   [devtools::test()].
 #' @inheritParams btw_tool_docs_package_news
 #'
 #' @returns The output from [devtools::test()].
@@ -171,7 +172,7 @@ For iterative development, use the `btw_tool_pkg_test` if available or `devtools
 #' @seealso [btw_tools()]
 #' @family pkg tools
 #' @export
-btw_tool_pkg_test <- function(pkg = ".", filter = NULL, reporter = "compact", `_intent`) {}
+btw_tool_pkg_test <- function(pkg = ".", filter = NULL, reporter = "minimal", `_intent`) {}
 
 btw_pkg_test_validate <- function(pkg, filter, reporter) {
   check_string(pkg)
@@ -204,7 +205,7 @@ btw_pkg_test_run <- function(pkg = ".", filter = NULL, reporter = "compact") {
   ))
 }
 
-btw_tool_pkg_test_impl <- function(pkg = ".", filter = NULL, reporter = "compact") {
+btw_tool_pkg_test_impl <- function(pkg = ".", filter = NULL, reporter = "minimal") {
   btw_pkg_test_validate(pkg, filter, reporter)
 
   # Use one runner for both the captured tool output and the streaming CLI.
@@ -229,7 +230,8 @@ btw_tool_pkg_test_impl <- function(pkg = ".", filter = NULL, reporter = "compact
 Runs `devtools::test()` which executes the test suite in tests/testthat/ and reports:
 - Number of tests passed, failed, warned, and skipped
 - Detailed failure messages with file locations
-- Test execution time
+
+The `compact` reporter also shows per-file progress and execution time.
 
 The filter parameter accepts a regular expression matched against test file names after stripping the 'test-' prefix and '.R' extension. For example:
 - filter = 'helper' runs test-helper.R
@@ -237,7 +239,7 @@ The filter parameter accepts a regular expression matched against test file name
 - No filter runs all tests
 - It is common to pair `test-{name}.R` with a source `{name}.R` file. To test this file, you can generally use filter = '{name}'.
 
-Use `filter` when working on specific functionality to get faster feedback. The tool always runs all matching tests to completion regardless of failures. `reporter = 'compact'` announces each file as it starts, summarizes it when it finishes, and prints failures at the end; `'minimal'` keeps the previous output. Other testthat reporter names are passed through.",
+Use `filter` when working on specific functionality to get faster feedback. The tool always runs all matching tests to completion regardless of failures. `reporter = 'minimal'` (default) keeps output short for non-streaming clients, with failures and a final summary. Use `'compact'` for per-file progress and timing; the CLI defaults to compact. Other testthat reporter names are passed through.",
       annotations = ellmer::tool_annotations(
         title = "Testing package",
         read_only_hint = FALSE,
@@ -254,7 +256,7 @@ Use `filter` when working on specific functionality to get faster feedback. The 
           required = FALSE
         ),
         reporter = ellmer::type_string(
-          "Reporter: 'compact' (default), 'minimal', or any testthat reporter name.",
+          "Reporter: 'minimal' (default, brief output), 'compact' (per-file progress and timing), or any testthat reporter name.",
           required = FALSE
         )
       )

@@ -7,7 +7,7 @@
 btw_tool_pkg_test(
   pkg = ".",
   filter = NULL,
-  reporter = "compact",
+  reporter = "minimal",
   `_intent` = ""
 )
 }
@@ -18,8 +18,9 @@ current working directory.}
 \item{filter}{Optional regex to filter test files. Example: 'helper' matches
 'test-helper.R'.}
 
-\item{reporter}{Either \code{"compact"} (the default), \code{"minimal"} (the previous
-behavior), or a testthat reporter name passed to \code{\link[devtools:test]{devtools::test()}}.}
+\item{reporter}{Either \code{"minimal"} (the default), \code{"compact"} (per-file
+progress and timing), or a testthat reporter name passed to
+\code{\link[devtools:test]{devtools::test()}}.}
 
 \item{_intent}{An optional string describing the intent of the tool use.
 When the tool is used by an LLM, the model will use this argument to
@@ -30,10 +31,10 @@ The output from \code{\link[devtools:test]{devtools::test()}}.
 }
 \description{
 Run package tests using \code{\link[devtools:test]{devtools::test()}}. Optionally filter tests by name
-pattern. The default \code{"compact"} reporter announces each file, prints a
-short summary as it finishes, then failures before a final test summary.
-Use \code{"minimal"} for the previous summary-and-failures output, or a testthat
-reporter name.
+pattern. The default \code{"minimal"} reporter returns failures and a final
+summary without per-file progress, which suits non-streaming tool clients.
+Use \code{"compact"} to include file starts, per-file results, and timings, or
+pass a testthat reporter name.
 }
 \seealso{
 \code{\link[=btw_tools]{btw_tools()}}

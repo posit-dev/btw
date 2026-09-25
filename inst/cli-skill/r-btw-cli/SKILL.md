@@ -35,6 +35,10 @@ btw pkg load [--path <dir>]                Load package with pkgload
 btw pkg coverage [--file <f>] [--json]     Compute test coverage
 ```
 
+`btw pkg test` defaults to `--reporter compact` for live file progress and
+per-file timings. Use `--reporter minimal` for a short failures-and-summary
+report when you do not need to watch progress.
+
 Use `btw pkg src` to inspect the **R namespace implementations** of installed
 packages (or the dev package via `.`), e.g. to understand behavior the docs
 don't cover. It returns exact source when available and deparsed functions

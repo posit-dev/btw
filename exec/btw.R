@@ -953,11 +953,16 @@ switch(
       },
 
       #| title: Run package tests
+      #| description: >
+      #|   Run testthat tests. compact (default) streams file starts and results
+      #|   with timing; minimal is a good choice for short, non-streaming output.
       test = {
         #| description: Regex to filter test files.
         #| short: 'f'
         filter <- ""
-        #| description: compact, minimal, or a testthat reporter name.
+        #| description: >
+        #|   compact (default) shows per-file progress and timing. minimal shows
+        #|   failures and a final summary. Other testthat reporter names work too.
         reporter <- "compact"
         tryCatch(btw_pkg_test(path, filter, reporter), error = btw_error)
       },

@@ -242,6 +242,14 @@ test_that("btw pkg check calls check impl", {
   expect_equal(env$path, ".")
 })
 
+test_that("btw pkg test help explains reporter trade-offs", {
+  result <- run_btw_subprocess("pkg", "test", "--help")
+  expect_equal(result$status, 0)
+  expect_match(result$stdout, "minimal is a good choice", fixed = TRUE)
+  expect_match(result$stdout, "per-file progress and timing", fixed = TRUE)
+  expect_match(result$stdout, '[default: "compact"]', fixed = TRUE)
+})
+
 test_that("btw pkg test emits file starts and completions by default", {
   args <- NULL
   local_mocked_bindings(

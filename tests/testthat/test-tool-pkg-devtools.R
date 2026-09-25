@@ -155,7 +155,7 @@ test_that("btw_tool_pkg_test constructs correct code without filter", {
   expect_match(result@extra$code, "btw_pkg_test_run")
   expect_match(result@extra$code, 'pkg = "."')
   expect_match(result@extra$code, "filter = NULL")
-  expect_match(result@extra$code, 'reporter = "compact"')
+  expect_match(result@extra$code, 'reporter = "minimal"')
 })
 
 test_that("btw_tool_pkg_test constructs correct code with filter", {
@@ -178,7 +178,7 @@ test_that("btw_tool_pkg_test constructs correct code with filter", {
   expect_match(result@extra$code, "btw_pkg_test_run")
   expect_match(result@extra$code, 'pkg = "."')
   expect_match(result@extra$code, 'filter = "helper"')
-  expect_match(result@extra$code, 'reporter = "compact"')
+  expect_match(result@extra$code, 'reporter = "minimal"')
 })
 
 test_that("btw_tool_pkg_test forwards reporter names", {
@@ -192,6 +192,7 @@ test_that("btw_tool_pkg_test forwards reporter names", {
   )
 
   expect_match(btw_tool_pkg_test_impl(reporter = "minimal")@extra$code, 'reporter = "minimal"')
+  expect_match(btw_tool_pkg_test_impl(reporter = "compact")@extra$code, 'reporter = "compact"')
   expect_match(btw_tool_pkg_test_impl(reporter = "progress")@extra$code, 'reporter = "progress"')
   expect_error(btw_tool_pkg_test_impl(reporter = 1))
 })
