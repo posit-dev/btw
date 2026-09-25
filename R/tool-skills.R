@@ -151,18 +151,18 @@ btw_skill_resolve <- function(skill_name) {
 #' Render a skill's entry for a system prompt
 #'
 #' @description
-#' Returns the `<skill>` block for one skill: its name, description, and
-#' location, plus its compatibility notes and allowed tools when present. This
-#' is the same block that [btw_client()] writes into its system prompt.
+#' Returns a compact YAML-style entry for one skill: its name, description,
+#' and location, plus compatibility notes and allowed tools when present. This
+#' is the same entry that [btw_client()] writes into its system prompt.
 #'
-#' Compose the listing yourself. For example, wrap the blocks for all skills
-#' in an `<available_skills>` element, the way btw does it.
+#' Compose the listing yourself by joining the entries under an
+#' "Available skills:" heading, the way btw does it.
 #'
 #' If the skill doesn't exist, the error lists the available skill names.
 #'
 #' @param skill_name The name of the skill, e.g. `"skill-creator"`.
 #'
-#' @return A single string with the skill's `<skill>` block.
+#' @return A single string with the skill's YAML-style entry.
 #'
 #' @examples
 #' cat(btw_skill_prompt("skill-creator"))
@@ -749,16 +749,6 @@ format_resources_listing <- function(resources, base_dir) {
   paste(parts, collapse = "")
 }
 
-# Escapes &, <, > for use in XML text content. This XML is decorative
-# formatting for LLM system prompts, not parsed by an XML parser, so we
-# intentionally omit attribute-level escapes (" and ').
-xml_escape <- function(x) {
-  x <- gsub("&", "&amp;", x, fixed = TRUE)
-  x <- gsub("<", "&lt;", x, fixed = TRUE)
-  x <- gsub(">", "&gt;", x, fixed = TRUE)
-  x
-}
-
 # R Package Build Ignore ---------------------------------------------------
 
 maybe_use_build_ignore <- function(target_parent, project_dir = getwd()) {
@@ -835,37 +825,36 @@ escape_for_rbuildignore <- function(path) {
 
 # System Prompt ------------------------------------------------------------
 
-# Renders one skill as a <skill> block: name, description, location, plus
-# compatibility notes and allowed tools when present. Callers compose the
-# blocks into their own system prompt; btw_skills_system_prompt() wraps them
-# in <available_skills>, btw_skill_prompt() returns a single block.
+# Keep frontmatter block scalars on one line so each entry stays together.
+skill_prompt_line <- function(x) {
+  gsub("[\r\n]+[ \t]*", " ", x)
+}
+
+# Renders one skill as a compact YAML-style entry. Both the system prompt and
+# btw_skill_prompt() use the same entry format.
 format_skill_prompt <- function(skill) {
   parts <- sprintf(
-    "<skill>\n<name>%s</name>\n<description>%s</description>\n<location>%s</location>",
-    xml_escape(skill$name),
-    xml_escape(skill$description),
-    xml_escape(skill$path)
+    "- %s: %s\n  location: %s",
+    skill_prompt_line(skill$name),
+    skill_prompt_line(skill$description),
+    skill_prompt_line(skill$path)
   )
   if (!is.null(skill$compatibility)) {
     parts <- paste0(
       parts,
-      sprintf(
-        "\n<compatibility>%s</compatibility>",
-        xml_escape(skill$compatibility)
-      )
+      "\n  compatibility: ",
+      skill_prompt_line(skill$compatibility)
     )
   }
   if (!is.null(skill$allowed_tools)) {
     allowed_tools <- paste(skill$allowed_tools, collapse = ", ")
     parts <- paste0(
       parts,
-      sprintf(
-        "\n<allowed-tools>%s</allowed-tools>",
-        xml_escape(allowed_tools)
-      )
+      "\n  allowed-tools: ",
+      skill_prompt_line(allowed_tools)
     )
   }
-  paste0(parts, "\n</skill>")
+  parts
 }
 
 btw_skills_system_prompt <- function() {
@@ -886,9 +875,8 @@ btw_skills_system_prompt <- function() {
 
   paste0(
     explanation,
-    "\n\n<available_skills>\n",
-    paste(skill_items, collapse = "\n"),
-    "\n</available_skills>"
+    "\n\nAvailable skills:\n",
+    paste(skill_items, collapse = "\n")
   )
 }
 
