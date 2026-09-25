@@ -1,3 +1,8 @@
+# Avoid Shiny's attachment banner when these tests first render the app.
+if (requireNamespace("shiny", quietly = TRUE)) {
+  suppressPackageStartupMessages(withr::local_package("shiny"))
+}
+
 test_that("app_set_disabled() namespaces controls and preserves an array payload", {
   message <- NULL
   session <- list(

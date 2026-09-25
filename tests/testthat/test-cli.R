@@ -562,12 +562,12 @@ test_that("btw pkg src list auto-loads a dev package found in cwd", {
   app <- btw_cli_path()
   local_dev_package("devpkgone")
 
-  expect_message(
+  suppressMessages(expect_message(
     output <- capture.output(
       env <- Rapp::run(app, c("pkg", "src", "list", "devpkgone"))
     ),
     "Loaded in-development package"
-  )
+  ))
   expect_match(paste(output, collapse = "\n"), "devpkgone_hello")
 })
 
@@ -584,7 +584,7 @@ test_that("btw pkg src get finds a dev package in an R/ subfolder", {
   app <- btw_cli_path()
   local_dev_package("devpkgthree", subdir = "R")
 
-  expect_message(
+  suppressMessages(expect_message(
     output <- capture.output(
       env <- Rapp::run(
         app,
@@ -592,7 +592,7 @@ test_that("btw pkg src get finds a dev package in an R/ subfolder", {
       )
     ),
     "Loaded in-development package"
-  )
+  ))
   expect_match(paste(output, collapse = "\n"), "devpkgthree_hello")
 })
 
