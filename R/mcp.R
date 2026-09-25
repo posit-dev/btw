@@ -165,7 +165,7 @@
 btw_mcp_server <- function(tools = NULL) {
   # If given a path to an R script, we'll pass it on to mcp_server()
   is_likely_r_file <-
-    is.character(tools) &&
+    is_string(tools) &&
     file.exists(tools) &&
     grepl("[.]r$", tools, ignore.case = TRUE)
 
