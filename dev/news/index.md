@@ -2,6 +2,10 @@
 
 ## btw (development version)
 
+## btw 1.5.0
+
+CRAN release: 2026-09-09
+
 ### New features
 
 - Added `btw cran versions <packages...>` to look up CRAN release dates
@@ -98,6 +102,10 @@
   shim was removed, and `client_get_models()` now delegates to ellmer’s
   `models_list()` generic, replacing a bespoke per-provider dispatch
   table ([\#214](https://github.com/posit-dev/btw/issues/214)).
+
+- btw no longer reads the legacy user skills directory used by btw \<=
+  1.2.0 (`skills/` under `tools::R_user_dir("btw", "config")`)
+  ([\#204](https://github.com/posit-dev/btw/issues/204)).
 
 ## btw 1.4.0
 
