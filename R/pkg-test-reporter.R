@@ -31,19 +31,6 @@ btw_test_type <- function(result) {
   sub("^expectation_", "", class(result)[[1]])
 }
 
-btw_test_color <- function(text, style, enabled) {
-  if (!enabled) {
-    return(text)
-  }
-  switch(
-    style,
-    muted = cli::col_grey(text),
-    pass = cli::col_green(text),
-    fail = cli::col_red(text),
-    warn = cli::col_yellow(text)
-  )
-}
-
 btw_compact_reporter <- function(pkg = ".", filter = NULL) {
   rlang::check_installed("R6")
   test_dir <- file.path(pkg, "tests", "testthat")
@@ -79,6 +66,18 @@ btw_compact_reporter <- function(pkg = ".", filter = NULL) {
       self$counts <- c(P = 0L, F = 0L, S = 0L, W = 0L)
       self$failures <- list()
       self$warnings <- list()
+    },
+    colorize = function(text, style) {
+      if (!self$color) {
+        return(text)
+      }
+      switch(
+        style,
+        muted = cli::col_grey(text),
+        pass = cli::col_green(text),
+        fail = cli::col_red(text),
+        warn = cli::col_yellow(text)
+      )
     },
     start_file = function(name) {
       self$file_id <- name
@@ -131,12 +130,12 @@ btw_compact_reporter <- function(pkg = ".", filter = NULL) {
       }
       summary <- paste(vapply(names(counts), function(key) {
         style <- switch(key, P = "pass", F = "fail", S = "muted", W = "warn")
-        btw_test_color(paste0(key, ":", counts[[key]]), style, self$color)
+        self$colorize(paste0(key, ":", counts[[key]]), style)
       }, ""), collapse = " ")
-      styled_status <- btw_test_color(
-        status, switch(status, "✓" = "pass", "✗" = "fail", "warn"), self$color
+      styled_status <- self$colorize(
+        status, switch(status, "✓" = "pass", "✗" = "fail", "warn")
       )
-      styled_time <- btw_test_color(btw_test_duration(elapsed), "muted", self$color)
+      styled_time <- self$colorize(btw_test_duration(elapsed), "muted")
       self$cat_line(sprintf(
         "%s %-*s  %s  %s",
         styled_status, max(self$name_width, nchar(self$name, type = "width")),
@@ -148,10 +147,10 @@ btw_compact_reporter <- function(pkg = ".", filter = NULL) {
     end_reporter = function() {
       if (length(self$warnings)) {
         self$cat_line()
-        self$cat_line(btw_test_color("======== WARNINGS ========", "warn", self$color))
+        self$cat_line(self$colorize("======== WARNINGS ========", "warn"))
         for (warning in self$warnings) {
           self$cat_line(
-            btw_test_color("WARN", "warn", self$color), ": ",
+            self$colorize("WARN", "warn"), ": ",
             btw_test_location(warning)
           )
           self$cat_line(format(warning))
@@ -160,10 +159,10 @@ btw_compact_reporter <- function(pkg = ".", filter = NULL) {
       }
       if (length(self$failures)) {
         self$cat_line()
-        self$cat_line(btw_test_color("======== FAILURES ========", "fail", self$color))
+        self$cat_line(self$colorize("======== FAILURES ========", "fail"))
         for (failure in self$failures) {
           self$cat_line(
-            btw_test_color(toupper(btw_test_type(failure)), "fail", self$color),
+            self$colorize(toupper(btw_test_type(failure)), "fail"),
             ": ", btw_test_location(failure)
           )
           self$cat_line(format(failure))

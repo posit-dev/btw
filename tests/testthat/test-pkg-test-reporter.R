@@ -53,9 +53,14 @@ test_that("files finishing out of order print only completion lines", {
 })
 
 test_that("color styling is opt-in", {
-  expect_equal(btw_test_color("0.12s", "muted", FALSE), "0.12s")
+  output_file <- withr::local_tempfile()
+  withr::local_options(testthat.output_file = output_file)
+  reporter <- btw_compact_reporter()
+  expect_equal(reporter$colorize("0.12s", "muted"), "0.12s")
+
   withr::local_options(cli.num_colors = 8L)
-  expect_true(grepl("\033[", btw_test_color("0.12s", "muted", TRUE), fixed = TRUE))
+  reporter$color <- TRUE
+  expect_true(grepl("\033[", reporter$colorize("0.12s", "muted"), fixed = TRUE))
 })
 
 test_that("compact duration uses three display digits", {
