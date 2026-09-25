@@ -107,11 +107,11 @@ btw_compact_reporter <- function() {
       elapsed <- proc.time()[[3L]] - file$started
       counts <- file$counts
       status <- if (counts[["F"]] > 0L) {
-        "✗"
+        "\u2717"
       } else if (counts[["W"]] > 0L) {
         "!"
       } else {
-        "✓"
+        "\u2713"
       }
       counts <- counts[counts > 0L]
       if (!length(counts)) {
@@ -122,7 +122,7 @@ btw_compact_reporter <- function() {
         self$colorize(paste0(key, ":", counts[[key]]), style)
       }, ""), collapse = " ")
       styled_status <- self$colorize(
-        status, switch(status, "✓" = "pass", "✗" = "fail", "warn")
+        status, switch(status, "\u2713" = "pass", "\u2717" = "fail", "warn")
       )
       styled_time <- self$colorize(btw_test_duration(elapsed), "muted")
       self$cat_line(sprintf(
