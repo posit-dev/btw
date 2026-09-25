@@ -153,9 +153,10 @@ For iterative development, use the `btw_tool_pkg_test` if available or `devtools
 #' Tool: Run package tests
 #'
 #' Run package tests using [devtools::test()]. Optionally filter tests by name
-#' pattern. The default `"compact"` reporter prints a short summary as each
-#' file finishes, then failures before a final test summary. Use `"minimal"`
-#' for the previous summary-and-failures output, or a testthat reporter name.
+#' pattern. The default `"compact"` reporter announces each file, prints a
+#' short summary as it finishes, then failures before a final test summary.
+#' Use `"minimal"` for the previous summary-and-failures output, or a testthat
+#' reporter name.
 #'
 #' @param pkg Path to package directory. Defaults to '.'. Must be within
 #'   current working directory.
@@ -186,7 +187,7 @@ btw_pkg_test_run <- function(pkg = ".", filter = NULL, reporter = "compact") {
   resolved_reporter <- switch(
     reporter,
     compact = if (utils::packageVersion("testthat") >= "3.1.7") {
-      btw_compact_reporter(pkg, filter)
+      btw_compact_reporter()
     } else {
       # Older testthat versions don't call the per-file reporter hooks.
       "check"
@@ -236,7 +237,7 @@ The filter parameter accepts a regular expression matched against test file name
 - No filter runs all tests
 - It is common to pair `test-{name}.R` with a source `{name}.R` file. To test this file, you can generally use filter = '{name}'.
 
-Use `filter` when working on specific functionality to get faster feedback. The tool always runs all matching tests to completion regardless of failures. `reporter = 'compact'` summarizes each file when it finishes and prints failures at the end; `'minimal'` keeps the previous output. Other testthat reporter names are passed through.",
+Use `filter` when working on specific functionality to get faster feedback. The tool always runs all matching tests to completion regardless of failures. `reporter = 'compact'` announces each file as it starts, summarizes it when it finishes, and prints failures at the end; `'minimal'` keeps the previous output. Other testthat reporter names are passed through.",
       annotations = ellmer::tool_annotations(
         title = "Testing package",
         read_only_hint = FALSE,

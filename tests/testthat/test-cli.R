@@ -242,18 +242,18 @@ test_that("btw pkg check calls check impl", {
   expect_equal(env$path, ".")
 })
 
-test_that("btw pkg test emits completed-file results by default", {
+test_that("btw pkg test emits file starts and completions by default", {
   args <- NULL
   local_mocked_bindings(
     btw_pkg_test_run = function(pkg, filter = NULL, reporter = "compact") {
       args <<- list(pkg = pkg, filter = filter, reporter = reporter)
-      cat("✓ utils  0.10s  P:1\n")
+      cat("@ utils\n✓ utils  0.10s  P:1\n")
     }
   )
   env <- run_btw_quietly("pkg", "test", "-f", "utils")
   expect_equal(env$filter, "utils")
   expect_equal(args, list(pkg = ".", filter = "utils", reporter = "compact"))
-  expect_equal(env$.output, "✓ utils  0.10s  P:1")
+  expect_equal(env$.output, c("@ utils", "✓ utils  0.10s  P:1"))
 })
 
 test_that("btw pkg test forwards the reporter and missing filter", {
@@ -310,7 +310,7 @@ test_that("btw pkg test streams results before all files finish", {
   }
   expect_true(any(grepl("^✓ fast", lines)), info = paste(readLines(error_file, warn = FALSE), collapse = "\n"))
   expect_true(proc$is_alive(), info = "A file result should arrive while another file is running")
-  expect_false(any(grepl("^@ ", lines)))
+  expect_true(any(grepl("^@ slow", lines)))
   expect_false(any(grepl("^✓ slow", lines)))
   file.create(gate)
   proc$wait(timeout = 10000)

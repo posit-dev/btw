@@ -30,9 +30,10 @@ The output from \code{\link[devtools:test]{devtools::test()}}.
 }
 \description{
 Run package tests using \code{\link[devtools:test]{devtools::test()}}. Optionally filter tests by name
-pattern. The default \code{"compact"} reporter prints a short summary as each
-file finishes, then failures before a final test summary. Use \code{"minimal"}
-for the previous summary-and-failures output, or a testthat reporter name.
+pattern. The default \code{"compact"} reporter announces each file, prints a
+short summary as it finishes, then failures before a final test summary.
+Use \code{"minimal"} for the previous summary-and-failures output, or a testthat
+reporter name.
 }
 \seealso{
 \code{\link[=btw_tools]{btw_tools()}}

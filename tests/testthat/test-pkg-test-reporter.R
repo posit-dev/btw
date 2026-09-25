@@ -17,14 +17,15 @@ test_that("compact reporter tracks files and prints a final summary", {
 
   output_file <- withr::local_tempfile()
   withr::local_options(testthat.output_file = output_file)
-  reporter <- btw_compact_reporter(test_dir)
+  reporter <- btw_compact_reporter()
   suppressMessages(testthat::test_dir(scripts, reporter = reporter, stop_on_failure = FALSE))
   output <- readLines(output_file, warn = FALSE)
+  start <- grep("^@ ", output, value = TRUE)
   done <- grep("^[✓✗!] ", output, value = TRUE)
-  expect_false(any(grepl("^@ ", output)))
+  expect_equal(start, c("@ config", "@ tool-run"))
   expect_length(done, 2)
-  expect_match(done[[1]], "^✗ config\\s+[0-9.]+s  F:1 W:1$")
-  expect_match(done[[2]], "^✓ tool-run\\s+[0-9.]+s  P:1 S:1$")
+  expect_match(done[[1]], "^✗ config  [0-9.]+s  F:1 W:1$")
+  expect_match(done[[2]], "^✓ tool-run  [0-9.]+s  P:1 S:1$")
   expect_true("======== FAILURES ========" %in% output)
   expect_true("======== WARNINGS ========" %in% output)
   expect_equal(tail(output, 1), "[ FAIL 1 | WARN 1 | SKIP 1 | PASS 1 ]")
@@ -33,22 +34,22 @@ test_that("compact reporter tracks files and prints a final summary", {
             max(which(grepl("^[✓✗!] ", output))))
 })
 
-test_that("files finishing out of order print only completion lines", {
+test_that("files finishing out of order each get one start and completion", {
   output_file <- withr::local_tempfile()
   withr::local_options(testthat.output_file = output_file)
   reporter <- btw_compact_reporter()
   reporter$start_file("test-a.R")
-  reporter$start_file("test-b.R")
+  reporter$start_file("test-longer.R")
   reporter$start_file("test-a.R") # testthat repeats this callback in parallel mode
   reporter$end_file()
-  reporter$start_file("test-b.R")
+  reporter$start_file("test-longer.R")
   reporter$end_file()
   reporter$end_reporter()
 
   output <- readLines(output_file, warn = FALSE)
-  expect_false(any(grepl("^@ ", output)))
-  expect_match(output[[1]], "^✓ a\\s+[0-9.]+s  P:0$")
-  expect_match(output[[2]], "^✓ b\\s+[0-9.]+s  P:0$")
+  expect_equal(grep("^@ ", output, value = TRUE), c("@ a", "@ longer"))
+  expect_match(output[[3]], "^✓ a  [0-9.]+s  P:0$")
+  expect_match(output[[4]], "^✓ longer  [0-9.]+s  P:0$")
   expect_equal(tail(output, 1), "[ FAIL 0 | WARN 0 | SKIP 0 | PASS 0 ]")
 })
 
@@ -82,7 +83,7 @@ test_that("compact reporter displays empty files and counts errors as failures",
   output_file <- withr::local_tempfile()
   withr::local_options(testthat.output_file = output_file)
   suppressMessages(testthat::test_dir(
-    scripts, reporter = btw_compact_reporter(test_dir), stop_on_failure = FALSE
+    scripts, reporter = btw_compact_reporter(), stop_on_failure = FALSE
   ))
   output <- readLines(output_file, warn = FALSE)
   expect_true(any(grepl("^✓ empty\\s+[0-9.]+s  P:0$", output)))

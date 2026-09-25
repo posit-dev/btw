@@ -31,35 +31,22 @@ btw_test_type <- function(result) {
   sub("^expectation_", "", class(result)[[1]])
 }
 
-btw_compact_reporter <- function(pkg = ".", filter = NULL) {
+btw_compact_reporter <- function() {
   rlang::check_installed("R6")
-  test_dir <- file.path(pkg, "tests", "testthat")
-  files <- if (dir.exists(test_dir)) {
-    testthat::find_test_scripts(test_dir, filter = filter, full.names = FALSE)
-  } else {
-    character()
-  }
-  width <- if (length(files)) {
-    max(nchar(btw_test_name(files), type = "width"))
-  } else {
-    0L
-  }
 
   R6::R6Class("BtwCompactReporter", inherit = testthat::Reporter, public = list(
     name = NULL,
     file_id = NULL,
     files = NULL,
-    name_width = NULL,
     color = NULL,
     counts = NULL,
     failures = NULL,
     warnings = NULL,
 
-    initialize = function(width) {
+    initialize = function() {
       super$initialize()
       self$capabilities$parallel_support <- TRUE
       self$capabilities$parallel_updates <- TRUE
-      self$name_width <- width
       self$files <- list()
       self$color <- identical(self$out, stdout()) &&
         sink.number() == 0L && cli::num_ansi_colors() > 1L
@@ -91,6 +78,8 @@ btw_compact_reporter <- function(pkg = ".", filter = NULL) {
         started = proc.time()[[3L]],
         counts = c(P = 0L, F = 0L, S = 0L, W = 0L)
       )
+      self$cat_line(self$colorize(paste0("@ ", self$name), "muted"))
+      if (identical(self$out, stdout())) flush(stdout())
     },
     add_result = function(context, test, result) {
       type <- btw_test_type(result)
@@ -137,9 +126,8 @@ btw_compact_reporter <- function(pkg = ".", filter = NULL) {
       )
       styled_time <- self$colorize(btw_test_duration(elapsed), "muted")
       self$cat_line(sprintf(
-        "%s %-*s  %s  %s",
-        styled_status, max(self$name_width, nchar(self$name, type = "width")),
-        self$name, styled_time, summary
+        "%s %s  %s  %s",
+        styled_status, self$name, styled_time, summary
       ))
       if (identical(self$out, stdout())) flush(stdout())
       self$files[[self$file_id]] <- NULL
@@ -175,5 +163,5 @@ btw_compact_reporter <- function(pkg = ".", filter = NULL) {
       ))
       if (identical(self$out, stdout())) flush(stdout())
     }
-  ))$new(width = width)
+  ))$new()
 }

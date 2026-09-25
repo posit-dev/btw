@@ -203,7 +203,7 @@ test_that("package test runner resolves built-in and external reporters", {
     .package = "devtools"
   )
   local_mocked_bindings(
-    btw_compact_reporter = function(pkg, filter) "CUSTOM"
+    btw_compact_reporter = function() "CUSTOM"
   )
 
   btw_pkg_test_run(filter = "utils")
