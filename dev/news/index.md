@@ -2,6 +2,14 @@
 
 ## btw (development version)
 
+- Package tests now support a compact reporter that shows per-file
+  progress, timing, warning and failure details, and final counts.
+  `btw pkg test` uses it by default, while
+  [`btw_tool_pkg_test()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_pkg_test.md)
+  defaults to concise output for non-streaming clients; both accept
+  other testthat reporter names
+  ([\#220](https://github.com/posit-dev/btw/issues/220)).
+
 ## btw 1.5.0
 
 CRAN release: 2026-09-09

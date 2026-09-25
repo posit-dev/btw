@@ -2,12 +2,20 @@
 
 Run package tests using
 [`devtools::test()`](https://devtools.r-lib.org/reference/test.html).
-Optionally filter tests by name pattern.
+Optionally filter tests by name pattern. The default `"minimal"`
+reporter returns failures and a final summary without per-file progress,
+which suits non-streaming tool clients. Use `"compact"` to include file
+starts, per-file results, and timings, or pass a testthat reporter name.
 
 ## Usage
 
 ``` r
-btw_tool_pkg_test(pkg = ".", filter = NULL, `_intent` = "")
+btw_tool_pkg_test(
+  pkg = ".",
+  filter = NULL,
+  reporter = "minimal",
+  `_intent` = ""
+)
 ```
 
 ## Arguments
@@ -21,6 +29,12 @@ btw_tool_pkg_test(pkg = ".", filter = NULL, `_intent` = "")
 
   Optional regex to filter test files. Example: 'helper' matches
   'test-helper.R'.
+
+- reporter:
+
+  Either `"minimal"` (the default), `"compact"` (per-file progress and
+  timing), or a testthat reporter name passed to
+  [`devtools::test()`](https://devtools.r-lib.org/reference/test.html).
 
 - \_intent:
 
