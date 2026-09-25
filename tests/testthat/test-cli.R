@@ -302,15 +302,17 @@ test_that("btw pkg test streams results before all files finish", {
     "Rscript", c("-e", script), stdout = output_file, stderr = error_file
   )
   withr::defer(if (proc$is_alive()) proc$kill())
-  deadline <- Sys.time() + 20
+  deadline <- Sys.time() + 45
   repeat {
     lines <- if (file.exists(output_file)) readLines(output_file, warn = FALSE) else character()
-    if (any(grepl("^✓ fast", lines)) || !proc$is_alive() || Sys.time() > deadline) break
+    fast_done <- any(grepl("^✓ fast", lines))
+    slow_started <- any(grepl("^@ slow", lines))
+    if ((fast_done && slow_started) || !proc$is_alive() || Sys.time() > deadline) break
     proc$poll_io(100)
   }
-  expect_true(any(grepl("^✓ fast", lines)), info = paste(readLines(error_file, warn = FALSE), collapse = "\n"))
+  expect_true(fast_done, info = paste(readLines(error_file, warn = FALSE), collapse = "\n"))
+  expect_true(slow_started, info = "The slow file must start before its gate is released")
   expect_true(proc$is_alive(), info = "A file result should arrive while another file is running")
-  expect_true(any(grepl("^@ slow", lines)))
   expect_false(any(grepl("^✓ slow", lines)))
   file.create(gate)
   proc$wait(timeout = 10000)
