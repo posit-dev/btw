@@ -152,12 +152,10 @@ test_that("btw_tool_pkg_test constructs correct code without filter", {
 
   result <- btw_tool_pkg_test_impl(".")
   expect_s7_class(result, BtwRunToolResult)
-  expect_match(result@extra$code, "devtools::test")
+  expect_match(result@extra$code, "btw_pkg_test_run")
   expect_match(result@extra$code, 'pkg = "."')
-  expect_match(result@extra$code, "stop_on_failure = FALSE")
-  expect_match(result@extra$code, "export_all = TRUE")
-  # Should NOT have filter argument
-  expect_false(grepl("filter", result@extra$code))
+  expect_match(result@extra$code, "filter = NULL")
+  expect_match(result@extra$code, 'reporter = "compact"')
 })
 
 test_that("btw_tool_pkg_test constructs correct code with filter", {
@@ -177,11 +175,48 @@ test_that("btw_tool_pkg_test constructs correct code with filter", {
 
   result <- btw_tool_pkg_test_impl(".", filter = "helper")
   expect_s7_class(result, BtwRunToolResult)
-  expect_match(result@extra$code, "devtools::test")
+  expect_match(result@extra$code, "btw_pkg_test_run")
   expect_match(result@extra$code, 'pkg = "."')
   expect_match(result@extra$code, 'filter = "helper"')
-  expect_match(result@extra$code, "stop_on_failure = FALSE")
-  expect_match(result@extra$code, "export_all = TRUE")
+  expect_match(result@extra$code, 'reporter = "compact"')
+})
+
+test_that("btw_tool_pkg_test forwards reporter names", {
+  local_mocked_bindings(
+    btw_tool_run_r_impl = function(code) {
+      BtwRunToolResult(
+        value = list(ContentOutput(text = "Test output")),
+        extra = list(code = code, status = "success", data = NULL, contents = list())
+      )
+    }
+  )
+
+  expect_match(btw_tool_pkg_test_impl(reporter = "minimal")@extra$code, 'reporter = "minimal"')
+  expect_match(btw_tool_pkg_test_impl(reporter = "progress")@extra$code, 'reporter = "progress"')
+  expect_error(btw_tool_pkg_test_impl(reporter = 1))
+})
+
+test_that("package test runner resolves built-in and external reporters", {
+  args <- NULL
+  local_mocked_bindings(
+    test = function(...) args <<- list(...),
+    .package = "devtools"
+  )
+  local_mocked_bindings(
+    btw_compact_reporter = function(pkg, filter) "CUSTOM"
+  )
+
+  btw_pkg_test_run(filter = "utils")
+  expect_equal(args$reporter, "CUSTOM")
+  expect_equal(args$filter, "utils")
+  expect_false(args$stop_on_failure)
+
+  btw_pkg_test_run(reporter = "minimal")
+  expected <- if (utils::packageVersion("testthat") >= "3.3.2") "llm" else "check"
+  expect_equal(args$reporter, expected)
+
+  btw_pkg_test_run(reporter = "progress")
+  expect_equal(args$reporter, "progress")
 })
 
 test_that("btw_tool_pkg_test handles different filter patterns", {
@@ -333,12 +368,9 @@ test_that("btw_tool_pkg_test handles filter with special regex chars", {
 
   result <- btw_tool_pkg_test_impl(".", filter = "test-.*\\.R$")
   expect_s7_class(result, BtwRunToolResult)
-  # deparse() should properly quote the regex
-  expect_true(grepl(
-    'filter = \"test-.*\\.R$\"',
-    result@extra$code,
-    fixed = TRUE
-  ))
+  # Generated R code must preserve regex backslashes when evaluated.
+  expect_match(result@extra$code, "filter = ", fixed = TRUE)
+  expect_match(result@extra$code, "test-.*\\\\.R$", fixed = TRUE)
 })
 
 # Test return values -----------------------------------------------------------

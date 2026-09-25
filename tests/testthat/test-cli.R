@@ -242,29 +242,82 @@ test_that("btw pkg check calls check impl", {
   expect_equal(env$path, ".")
 })
 
-test_that("btw pkg test calls test impl with filter", {
-  mock_filter <- NULL
+test_that("btw pkg test emits completed-file results by default", {
+  args <- NULL
   local_mocked_bindings(
-    btw_tool_pkg_test_impl = function(pkg, filter = NULL) {
-      mock_filter <<- filter
-      "Tests passed."
+    btw_pkg_test_run = function(pkg, filter = NULL, reporter = "compact") {
+      args <<- list(pkg = pkg, filter = filter, reporter = reporter)
+      cat("✓ utils  0.10s  P:1\n")
     }
   )
   env <- run_btw_quietly("pkg", "test", "-f", "utils")
   expect_equal(env$filter, "utils")
-  expect_equal(mock_filter, "utils")
+  expect_equal(args, list(pkg = ".", filter = "utils", reporter = "compact"))
+  expect_equal(env$.output, "✓ utils  0.10s  P:1")
 })
 
-test_that("btw pkg test without filter passes NULL", {
-  mock_filter <- "SENTINEL"
+test_that("btw pkg test forwards the reporter and missing filter", {
+  args <- NULL
   local_mocked_bindings(
-    btw_tool_pkg_test_impl = function(pkg, filter = NULL) {
-      mock_filter <<- filter
-      "Tests passed."
+    btw_pkg_test_run = function(pkg, filter = NULL, reporter = "compact") {
+      args <<- list(pkg = pkg, filter = filter, reporter = reporter)
     }
   )
-  run_btw_quietly("pkg", "test")
-  expect_null(mock_filter)
+  run_btw_quietly("pkg", "test", "--reporter", "minimal")
+  expect_equal(args, list(pkg = ".", filter = NULL, reporter = "minimal"))
+})
+
+test_that("btw pkg test streams results before all files finish", {
+  skip_if_not_installed("processx")
+  pkg <- withr::local_tempdir(tmpdir = getwd())
+  scripts <- file.path(pkg, "tests", "testthat")
+  dir.create(scripts, recursive = TRUE)
+  writeLines(c(
+    "Package: btwtestfixture", "Version: 0.0.1", "Title: Test fixture",
+    "Description: An isolated test package.", "License: MIT",
+    "Suggests: testthat", "Config/testthat/edition: 3",
+    "Config/testthat/parallel: true"
+  ), file.path(pkg, "DESCRIPTION"))
+  writeLines('library(testthat)\ntest_check("btwtestfixture")', file.path(pkg, "tests", "testthat.R"))
+  gate <- file.path(pkg, "continue")
+  writeLines(c(
+    'test_that("slow test", {',
+    sprintf('  while (!file.exists(%s)) Sys.sleep(0.05)',
+            encodeString(gate, quote = '"')),
+    '  expect_true(TRUE)',
+    '})'
+  ), file.path(scripts, "test-slow.R"))
+  writeLines('test_that("fast test", expect_true(TRUE))',
+             file.path(scripts, "test-fast.R"))
+
+  output_file <- withr::local_tempfile()
+  error_file <- withr::local_tempfile()
+  script <- sprintf(
+    'pkgload::load_all(%s, quiet = TRUE); Rapp::run(%s, c("pkg", "test", "--path", %s))',
+    encodeString(btw_pkg_dir_resolved, quote = '"'),
+    encodeString(btw_cli_path(), quote = '"'),
+    encodeString(pkg, quote = '"')
+  )
+  proc <- processx::process$new(
+    "Rscript", c("-e", script), stdout = output_file, stderr = error_file
+  )
+  withr::defer(if (proc$is_alive()) proc$kill())
+  deadline <- Sys.time() + 20
+  repeat {
+    lines <- if (file.exists(output_file)) readLines(output_file, warn = FALSE) else character()
+    if (any(grepl("^✓ fast", lines)) || !proc$is_alive() || Sys.time() > deadline) break
+    proc$poll_io(100)
+  }
+  expect_true(any(grepl("^✓ fast", lines)), info = paste(readLines(error_file, warn = FALSE), collapse = "\n"))
+  expect_true(proc$is_alive(), info = "A file result should arrive while another file is running")
+  expect_false(any(grepl("^@ ", lines)))
+  expect_false(any(grepl("^✓ slow", lines)))
+  file.create(gate)
+  proc$wait(timeout = 10000)
+  expect_false(proc$is_alive())
+  expect_equal(proc$get_exit_status(), 0L, info = paste(readLines(error_file, warn = FALSE), collapse = "\n"))
+  expect_equal(tail(readLines(output_file, warn = FALSE), 1),
+               "[ FAIL 0 | WARN 0 | SKIP 0 | PASS 2 ]")
 })
 
 test_that("btw pkg load calls load impl", {

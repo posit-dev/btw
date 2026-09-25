@@ -113,6 +113,7 @@ Collate:
     'import-standalone-purrr.R'
     'import-standalone-types-check.R'
     'mcp.R'
+    'pkg-test-reporter.R'
     'task_create_btw_md.R'
     'task_create_readme.R'
     'task_create_skill.R'

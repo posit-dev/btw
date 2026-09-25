@@ -4,7 +4,12 @@
 \alias{btw_tool_pkg_test}
 \title{Tool: Run package tests}
 \usage{
-btw_tool_pkg_test(pkg = ".", filter = NULL, `_intent` = "")
+btw_tool_pkg_test(
+  pkg = ".",
+  filter = NULL,
+  reporter = "compact",
+  `_intent` = ""
+)
 }
 \arguments{
 \item{pkg}{Path to package directory. Defaults to '.'. Must be within
@@ -12,6 +17,9 @@ current working directory.}
 
 \item{filter}{Optional regex to filter test files. Example: 'helper' matches
 'test-helper.R'.}
+
+\item{reporter}{Either \code{"compact"} (the default), \code{"minimal"} (the previous
+behavior), or a testthat reporter name passed to \code{\link[devtools:test]{devtools::test()}}.}
 
 \item{_intent}{An optional string describing the intent of the tool use.
 When the tool is used by an LLM, the model will use this argument to
@@ -22,7 +30,9 @@ The output from \code{\link[devtools:test]{devtools::test()}}.
 }
 \description{
 Run package tests using \code{\link[devtools:test]{devtools::test()}}. Optionally filter tests by name
-pattern.
+pattern. The default \code{"compact"} reporter prints a short summary as each
+file finishes, then failures before a final test summary. Use \code{"minimal"}
+for the previous summary-and-failures output, or a testthat reporter name.
 }
 \seealso{
 \code{\link[=btw_tools]{btw_tools()}}

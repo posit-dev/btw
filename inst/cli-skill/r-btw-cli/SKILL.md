@@ -30,7 +30,7 @@ Use `btw pkg` to run development tasks on an R package under active development.
 ```
 btw pkg document [--path <dir>]            Generate roxygen2 docs
 btw pkg check [--path <dir>]               Run R CMD check
-btw pkg test [-f <filter>] [--path <dir>]  Run testthat tests
+btw pkg test [-f <filter>] [--reporter compact|minimal|<testthat-reporter>] [--path <dir>]  Run testthat tests with live per-file progress by default
 btw pkg load [--path <dir>]                Load package with pkgload
 btw pkg coverage [--file <f>] [--json]     Compute test coverage
 ```

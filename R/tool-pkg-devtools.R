@@ -153,12 +153,16 @@ For iterative development, use the `btw_tool_pkg_test` if available or `devtools
 #' Tool: Run package tests
 #'
 #' Run package tests using [devtools::test()]. Optionally filter tests by name
-#' pattern.
+#' pattern. The default `"compact"` reporter prints a short summary as each
+#' file finishes, then failures before a final test summary. Use `"minimal"`
+#' for the previous summary-and-failures output, or a testthat reporter name.
 #'
 #' @param pkg Path to package directory. Defaults to '.'. Must be within
 #'   current working directory.
 #' @param filter Optional regex to filter test files. Example: 'helper' matches
 #'   'test-helper.R'.
+#' @param reporter Either `"compact"` (the default), `"minimal"` (the previous
+#'   behavior), or a testthat reporter name passed to [devtools::test()].
 #' @inheritParams btw_tool_docs_package_news
 #'
 #' @returns The output from [devtools::test()].
@@ -166,29 +170,49 @@ For iterative development, use the `btw_tool_pkg_test` if available or `devtools
 #' @seealso [btw_tools()]
 #' @family pkg tools
 #' @export
-btw_tool_pkg_test <- function(pkg = ".", filter = NULL, `_intent`) {}
+btw_tool_pkg_test <- function(pkg = ".", filter = NULL, reporter = "compact", `_intent`) {}
 
-btw_tool_pkg_test_impl <- function(pkg = ".", filter = NULL) {
+btw_pkg_test_validate <- function(pkg, filter, reporter) {
   check_string(pkg)
   check_path_within_current_wd(pkg)
+  check_string(filter, allow_null = TRUE)
+  check_string(reporter)
+}
 
-  filter_arg <- if (!is.null(filter)) {
-    check_string(filter)
-    sprintf(', filter = "%s"', filter)
-  } else {
-    ""
-  }
-
-  rptr <- if (utils::packageVersion("testthat") >= "3.3.2") "llm" else "check"
-
-  code <- sprintf(
-    'devtools::test(pkg = "%s"%s, stop_on_failure = FALSE, export_all = TRUE, reporter = "%s")',
-    pkg,
-    filter_arg,
-    rptr
-  )
-
+btw_pkg_test_run <- function(pkg = ".", filter = NULL, reporter = "compact") {
+  btw_pkg_test_validate(pkg, filter, reporter)
   withr::local_envvar(TESTTHAT_PROBLEMS = "false")
+
+  resolved_reporter <- switch(
+    reporter,
+    compact = if (utils::packageVersion("testthat") >= "3.1.7") {
+      btw_compact_reporter(pkg, filter)
+    } else {
+      # Older testthat versions don't call the per-file reporter hooks.
+      "check"
+    },
+    minimal = if (utils::packageVersion("testthat") >= "3.3.2") "llm" else "check",
+    reporter
+  )
+  invisible(devtools::test(
+    pkg = pkg,
+    filter = filter,
+    stop_on_failure = FALSE,
+    export_all = TRUE,
+    reporter = resolved_reporter
+  ))
+}
+
+btw_tool_pkg_test_impl <- function(pkg = ".", filter = NULL, reporter = "compact") {
+  btw_pkg_test_validate(pkg, filter, reporter)
+
+  # Use one runner for both the captured tool output and the streaming CLI.
+  code <- sprintf(
+    "btw:::btw_pkg_test_run(pkg = %s, filter = %s, reporter = %s)",
+    encodeString(pkg, quote = '"'),
+    if (is.null(filter)) "NULL" else encodeString(filter, quote = '"'),
+    encodeString(reporter, quote = '"')
+  )
   btw_tool_run_r_impl(code)
 }
 
@@ -212,7 +236,7 @@ The filter parameter accepts a regular expression matched against test file name
 - No filter runs all tests
 - It is common to pair `test-{name}.R` with a source `{name}.R` file. To test this file, you can generally use filter = '{name}'.
 
-Use `filter` when working on specific functionality to get faster feedback. The tool always runs all matching tests to completion regardless of failures.",
+Use `filter` when working on specific functionality to get faster feedback. The tool always runs all matching tests to completion regardless of failures. `reporter = 'compact'` summarizes each file when it finishes and prints failures at the end; `'minimal'` keeps the previous output. Other testthat reporter names are passed through.",
       annotations = ellmer::tool_annotations(
         title = "Testing package",
         read_only_hint = FALSE,
@@ -226,6 +250,10 @@ Use `filter` when working on specific functionality to get faster feedback. The 
         ),
         filter = ellmer::type_string(
           "Optional regex to filter test files. Example: 'helper' matches 'test-helper.R'.",
+          required = FALSE
+        ),
+        reporter = ellmer::type_string(
+          "Reporter: 'compact' (default), 'minimal', or any testthat reporter name.",
           required = FALSE
         )
       )
