@@ -5,27 +5,11 @@
     Output
       ## Skills
       
-      You have access to specialized skills that provide detailed guidance for specific tasks. Skills are loaded on-demand to provide domain-specific expertise without consuming context until needed.
+      When a task matches an available skill, call `btw_tool_skill(name)` to load its instructions. Don't reload skills already loaded. Resolve relative paths in a skill against the directory containing its SKILL.md. Use file read tools for bundled references; bundled scripts are for reference or adaptation into R, not directly executable by btw.
       
-      ### Using Skills
-      
-      1. **Check available skills**: Review the `<available_skills>` listing below
-      2. **Load when relevant**: When you recognize that a task matches a skill's description, call `btw_tool_skill(name)` to load the full skill instructions
-      3. **Don't reload**: If a skill has already been loaded in this conversation, follow its instructions directly without loading it again
-      4. **Access resources**: After loading, use file read tools to access references
-      
-      Skills may include bundled resources:
-      - **Scripts**: Code bundled with the skill. Scripts are not directly executable by btw; read them for reference or adapt their logic into R code for use with the R code execution tool.
-      - **References**: Additional documentation to consult as needed
-      - **Assets**: Templates and files for use in outputs
-      
-      <available_skills>
-      <skill>
-      <name>skill-creator</name>
-      <description>Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations.</description>
-      <location>SKILL_PATH</location>
-      </skill>
-      </available_skills>
+      Available skills:
+      - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations.
+        location: SKILL_PATH
 
 # btw_skill_prompt() errors for unknown or invalid skills
 

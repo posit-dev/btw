@@ -10,15 +10,15 @@ btw_skill_prompt(skill_name)
 \item{skill_name}{The name of the skill, e.g. \code{"skill-creator"}.}
 }
 \value{
-A single string with the skill's \verb{<skill>} block.
+A single string with the skill's YAML-style entry.
 }
 \description{
-Returns the \verb{<skill>} block for one skill: its name, description, and
-location, plus its compatibility notes and allowed tools when present. This
-is the same block that \code{\link[=btw_client]{btw_client()}} writes into its system prompt.
+Returns a compact YAML-style entry for one skill: its name, description,
+and location, plus compatibility notes and allowed tools when present. This
+is the same entry that \code{\link[=btw_client]{btw_client()}} writes into its system prompt.
 
-Compose the listing yourself. For example, wrap the blocks for all skills
-in an \verb{<available_skills>} element, the way btw does it.
+Compose the listing yourself by joining the entries under an
+"Available skills:" heading, the way btw does it.
 
 If the skill doesn't exist, the error lists the available skill names.
 }

@@ -807,9 +807,9 @@ test_that("btw_skills_system_prompt() includes skill metadata", {
   local_skill_dirs(dir)
 
   prompt <- btw_skills_system_prompt()
-  expect_match(prompt, "<name>prompt-test</name>")
-  expect_match(prompt, "A skill for testing prompts.")
-  expect_match(prompt, "<compatibility>Needs R 4.2</compatibility>")
+  expect_match(prompt, "- prompt-test: A skill for testing prompts.", fixed = TRUE)
+  expect_match(prompt, "  location: ", fixed = TRUE)
+  expect_match(prompt, "  compatibility: Needs R 4.2", fixed = TRUE)
 })
 
 # select_skill_dir ----------------------------------------------------------
@@ -1291,7 +1291,7 @@ test_that("btw_skills_system_prompt() works", {
   expect_snapshot(
     cat(btw_skills_system_prompt()),
     transform = function(x) {
-      gsub("<location>.*?</location>", "<location>SKILL_PATH</location>", x)
+      gsub("  location: .*SKILL\\.md", "  location: SKILL_PATH", x)
     }
   )
 })
@@ -1384,9 +1384,9 @@ test_that("install_skill_from_dir() overwrites with overwrite = TRUE", {
   expect_true(any(grepl("Version 2", content)))
 })
 
-# xml_escape() in system prompt ---------------------------------------------
+# Description formatting in skill listing ----------------------------------
 
-test_that("btw_skills_system_prompt() escapes XML special characters", {
+test_that("btw_skills_system_prompt() preserves special characters", {
   dir <- withr::local_tempdir()
   create_temp_skill(
     name = "esc-test",
@@ -1396,9 +1396,21 @@ test_that("btw_skills_system_prompt() escapes XML special characters", {
   local_skill_dirs(dir)
 
   prompt <- btw_skills_system_prompt()
-  expect_match(prompt, "&lt;tags&gt;", fixed = TRUE)
-  expect_match(prompt, "&amp; ampersands", fixed = TRUE)
-  expect_no_match(prompt, "<tags>", fixed = TRUE)
+  expect_match(prompt, "Uses <tags> & ampersands.", fixed = TRUE)
+})
+
+test_that("btw_skills_system_prompt() keeps multiline descriptions in one entry", {
+  dir <- withr::local_tempdir()
+  create_temp_skill(
+    name = "multiline-test",
+    description = "First line.\nSecond line.",
+    dir = dir
+  )
+  local_skill_dirs(dir)
+
+  prompt <- btw_skills_system_prompt()
+  expect_match(prompt, "- multiline-test: First line. Second line.", fixed = TRUE)
+  expect_match(prompt, "  location: .*multiline-test.*SKILL\\.md")
 })
 
 # maybe_use_build_ignore() -------------------------------------------------
@@ -1570,9 +1582,9 @@ test_that("skills prompt is included in btw_client() system prompt", {
   system_prompt <- chat$get_system_prompt()
 
   expect_match(system_prompt, "## Skills", fixed = TRUE)
-  expect_match(system_prompt, "<name>skill-creator</name>", fixed = TRUE)
+  expect_match(system_prompt, "- skill-creator:", fixed = TRUE)
 })
-test_that("btw_skill_prompt() renders the <skill> block for one skill", {
+test_that("btw_skill_prompt() renders a YAML-style entry for one skill", {
   dir <- withr::local_tempdir()
   create_temp_skill(
     "demo-skill",
@@ -1589,22 +1601,13 @@ test_that("btw_skill_prompt() renders the <skill> block for one skill", {
   expect_type(text, "character")
   expect_length(text, 1)
 
-  # the block carries the same fields as the btw_client() system prompt
-  expect_match(text, "<name>demo-skill</name>", fixed = TRUE)
-  expect_match(
-    text,
-    "<description>A test skill for unit testing.</description>",
-    fixed = TRUE
-  )
-  expect_match(text, "<location>.*SKILL\\.md</location>")
-  expect_match(
-    text,
-    "<compatibility>Requires Python 3</compatibility>",
-    fixed = TRUE
-  )
-  expect_match(text, "<allowed-tools>Read Bash</allowed-tools>", fixed = TRUE)
+  # the entry carries the same fields as the btw_client() system prompt
+  expect_match(text, "- demo-skill: A test skill for unit testing.", fixed = TRUE)
+  expect_match(text, "  location: .*SKILL\\.md")
+  expect_match(text, "  compatibility: Requires Python 3", fixed = TRUE)
+  expect_match(text, "  allowed-tools: Read Bash", fixed = TRUE)
 
-  # the skill body is not part of the block
+  # the skill body is not part of the entry
   expect_false(grepl("Do the thing.", text, fixed = TRUE))
 })
 
@@ -1614,8 +1617,8 @@ test_that("btw_skill_prompt() omits optional fields when absent", {
   local_skill_dirs(dir)
 
   text <- btw_skill_prompt("demo-skill")
-  expect_false(grepl("<compatibility>", text, fixed = TRUE))
-  expect_false(grepl("<allowed-tools>", text, fixed = TRUE))
+  expect_false(grepl("  compatibility:", text, fixed = TRUE))
+  expect_false(grepl("  allowed-tools:", text, fixed = TRUE))
 })
 
 test_that("btw_skill_prompt() errors for unknown or invalid skills", {
