@@ -294,12 +294,13 @@ btw_pkg_check <- function(path) {
   btw_output(btw:::btw_tool_pkg_check_impl(path))
 }
 
-btw_pkg_test <- function(path, filter) {
-  btw_output(
-    btw:::btw_tool_pkg_test_impl(
-      path,
-      if (has_value(filter)) filter else NULL
-    )
+btw_pkg_test <- function(path, filter, reporter) {
+  # Run directly rather than via the capturing tool, so file starts are visible
+  # to tail -f while tests are still running.
+  btw:::btw_pkg_test_run(
+    path,
+    if (has_value(filter)) filter else NULL,
+    reporter
   )
 }
 
@@ -952,11 +953,18 @@ switch(
       },
 
       #| title: Run package tests
+      #| description: >
+      #|   Run testthat tests. compact (default) streams file starts and results
+      #|   with timing; minimal is a good choice for short, non-streaming output.
       test = {
         #| description: Regex to filter test files.
         #| short: 'f'
         filter <- ""
-        tryCatch(btw_pkg_test(path, filter), error = btw_error)
+        #| description: >
+        #|   compact (default) shows per-file progress and timing. minimal shows
+        #|   failures and a final summary. Other testthat reporter names work too.
+        reporter <- "compact"
+        tryCatch(btw_pkg_test(path, filter, reporter), error = btw_error)
       },
 
       #| title: Load package with pkgload

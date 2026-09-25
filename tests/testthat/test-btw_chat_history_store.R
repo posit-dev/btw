@@ -1,5 +1,7 @@
 skip_if_not_installed("RSQLite")
 skip_if_no_shinychat_v05()
+# Avoid Shiny's attachment banner when the history tests first use Shinychat.
+suppressPackageStartupMessages(withr::local_package("shiny"))
 
 history_record <- function(
   id,

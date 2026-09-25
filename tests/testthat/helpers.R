@@ -62,7 +62,9 @@ scrub_system_info <- function(x) {
   x <- sub(
     sprintf(
       "Anthropic/%s",
-      ellmer::chat_anthropic(credentials = \() "not-a-real-key")$get_model()
+      suppressMessages(
+        ellmer::chat_anthropic(credentials = \() "not-a-real-key")
+      )$get_model()
     ),
     "Anthropic/DEFAULT_MODEL",
     x,

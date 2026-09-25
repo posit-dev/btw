@@ -1,5 +1,7 @@
 # btw (development version)
 
+* Package tests now support a compact reporter that shows per-file progress, timing, warning and failure details, and final counts. `btw pkg test` uses it by default, while `btw_tool_pkg_test()` defaults to concise output for non-streaming clients; both accept other testthat reporter names (#220).
+
 # btw 1.5.0
 
 ## New features

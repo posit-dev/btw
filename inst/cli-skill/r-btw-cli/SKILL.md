@@ -30,10 +30,14 @@ Use `btw pkg` to run development tasks on an R package under active development.
 ```
 btw pkg document [--path <dir>]            Generate roxygen2 docs
 btw pkg check [--path <dir>]               Run R CMD check
-btw pkg test [-f <filter>] [--path <dir>]  Run testthat tests
+btw pkg test [-f <filter>] [--reporter compact|minimal|<testthat-reporter>] [--path <dir>]  Run testthat tests with live per-file progress by default
 btw pkg load [--path <dir>]                Load package with pkgload
 btw pkg coverage [--file <f>] [--json]     Compute test coverage
 ```
+
+`btw pkg test` defaults to `--reporter compact` for live file progress and
+per-file timings. Use `--reporter minimal` for a short failures-and-summary
+report when you do not need to watch progress.
 
 Use `btw pkg src` to inspect the **R namespace implementations** of installed
 packages (or the dev package via `.`), e.g. to understand behavior the docs
