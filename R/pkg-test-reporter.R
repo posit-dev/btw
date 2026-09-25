@@ -148,7 +148,7 @@ btw_compact_reporter <- function(pkg = ".", filter = NULL) {
     end_reporter = function() {
       if (length(self$warnings)) {
         self$cat_line()
-        self$cat_line(btw_test_color("WARNINGS ========", "warn", self$color))
+        self$cat_line(btw_test_color("======== WARNINGS ========", "warn", self$color))
         for (warning in self$warnings) {
           self$cat_line(
             btw_test_color("WARN", "warn", self$color), ": ",
@@ -160,7 +160,7 @@ btw_compact_reporter <- function(pkg = ".", filter = NULL) {
       }
       if (length(self$failures)) {
         self$cat_line()
-        self$cat_line(btw_test_color("FAILURES ========", "fail", self$color))
+        self$cat_line(btw_test_color("======== FAILURES ========", "fail", self$color))
         for (failure in self$failures) {
           self$cat_line(
             btw_test_color(toupper(btw_test_type(failure)), "fail", self$color),

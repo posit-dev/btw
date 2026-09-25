@@ -25,11 +25,11 @@ test_that("compact reporter tracks files and prints a final summary", {
   expect_length(done, 2)
   expect_match(done[[1]], "^✗ config\\s+[0-9.]+s  F:1 W:1$")
   expect_match(done[[2]], "^✓ tool-run\\s+[0-9.]+s  P:1 S:1$")
-  expect_true("FAILURES ========" %in% output)
-  expect_true("WARNINGS ========" %in% output)
+  expect_true("======== FAILURES ========" %in% output)
+  expect_true("======== WARNINGS ========" %in% output)
   expect_equal(tail(output, 1), "[ FAIL 1 | WARN 1 | SKIP 1 | PASS 1 ]")
   expect_false(any(grepl("\033", output, fixed = TRUE)))
-  expect_gt(which(output == "FAILURES ========"),
+  expect_gt(which(output == "======== FAILURES ========"),
             max(which(grepl("^[✓✗!] ", output))))
 })
 
