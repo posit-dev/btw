@@ -25,7 +25,7 @@ install_btw_cli <- function(destdir = NULL, ...) {
     "pkgload",
     "callr",
     "covr",
-    "testthat",
+    "testthat (>= 3.1.7)",
     "rmarkdown",
     "pkgsearch"
   ))

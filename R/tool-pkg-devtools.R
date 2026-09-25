@@ -206,6 +206,7 @@ btw_pkg_test_run <- function(pkg = ".", filter = NULL, reporter = "compact") {
 }
 
 btw_tool_pkg_test_impl <- function(pkg = ".", filter = NULL, reporter = "minimal") {
+  rlang::check_installed("testthat", version = "3.1.7")
   btw_pkg_test_validate(pkg, filter, reporter)
 
   # Use one runner for both the captured tool output and the streaming CLI.

@@ -158,6 +158,21 @@ test_that("btw_tool_pkg_test constructs correct code without filter", {
   expect_match(result@extra$code, 'reporter = "minimal"')
 })
 
+test_that("btw_tool_pkg_test requires testthat 3.1.7", {
+  requirement <- NULL
+  local_mocked_bindings(
+    check_installed = function(pkg, ..., version = NULL) {
+      requirement <<- c(pkg = pkg, version = version)
+    },
+    .package = "rlang"
+  )
+  local_mocked_bindings(btw_tool_run_r_impl = function(code) code)
+
+  btw_tool_pkg_test_impl()
+
+  expect_equal(requirement, c(pkg = "testthat", version = "3.1.7"))
+})
+
 test_that("btw_tool_pkg_test constructs correct code with filter", {
   local_mocked_bindings(
     btw_tool_run_r_impl = function(code) {

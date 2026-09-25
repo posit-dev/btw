@@ -79,7 +79,7 @@ Suggests:
     RSQLite (>= 2.2.2),
     shiny,
     shinychat (>= 0.4.0),
-    testthat (>= 3.0.0),
+    testthat (>= 3.1.7),
     tibble,
     usethis
 Config/Needs/website: brand.yml, tidyverse/tidytemplate
