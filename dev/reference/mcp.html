@@ -82,7 +82,9 @@ environment.</p>
 to the tools provided by <code><a href="btw_tools.html">btw_tools()</a></code>. Use <code><a href="btw_tools.html">btw_tools()</a></code> to subset to
 specific list of <span class="pkg">btw</span> tools that can be augmented with additional
 tools. Alternatively, you can pass a path to an R script that returns a
-list of tools as supported by <code><a href="https://posit-dev.github.io/mcptools/reference/server.html" class="external-link">mcptools::mcp_server()</a></code>.</p></dd>
+list of tools as supported by <code><a href="https://posit-dev.github.io/mcptools/reference/server.html" class="external-link">mcptools::mcp_server()</a></code>. In that case the
+script provides the complete set of tools – btw's tools are not included
+unless the script itself adds them with <code><a href="btw_tools.html">btw_tools()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -108,6 +110,29 @@ duplicating file or code execution capabilities the agent may already have.</p>
 </ul><p></p><div class="sourceCode r"><pre><code><span><span class="fu"><a href="../reference/mcp.html">btw_mcp_server</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"docs"</span>, <span class="st">"pkg"</span>, <span class="st">"env"</span>, <span class="st">"sessioninfo"</span>, <span class="st">"cran"</span><span class="op">)</span><span class="op">)</span></span></code></pre><p></p></div>
 <p>See <code><a href="btw_tools.html">btw_tools()</a></code> for a complete list of available tool groups and their
 contents.</p>
+<p>To combine btw's tools with your own custom tools, we recommend writing a
+small R script that returns the combined list of tools and passing its path
+to <code>btw_mcp_server()</code>.</p>
+<p>MCP servers are usually launched by your coding harness, e.g. via
+<code>Rscript -e "btw::btw_mcp_server(...)"</code> in a client configuration file.
+Composing the tool list in an R script is much easier to read and maintain
+than cramming the same code into an inline <code>Rscript</code> command. The script
+below combines btw's tools with your own custom tools:</p>
+<p></p><div class="sourceCode r"><pre><code><span><span class="co"># tools.R</span></span>
+<span><span class="va">my_custom_tool</span> <span class="op">&lt;-</span> <span class="fu">ellmer</span><span class="fu">::</span><span class="fu"><a href="https://ellmer.tidyverse.org/reference/tool.html" class="external-link">tool</a></span><span class="op">(</span></span>
+<span>  <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="va">R.version.string</span>,</span>
+<span>  <span class="st">"Report the version of R running the MCP server"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="../reference/btw_tools.html">btw_tools</a></span><span class="op">(</span><span class="st">"docs"</span>, <span class="st">"pkg"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">my_custom_tool</span><span class="op">)</span><span class="op">)</span></span></code></pre><p></p></div>
+<p>The script is responsible for the complete list of tools, so include
+<code><a href="btw_tools.html">btw_tools()</a></code> calls in the script to pull in btw's tools.</p>
+<p>Use an absolute path to the script in most cases, e.g.
+<code>btw_mcp_server("/path/to/tools.R")</code>. Relative paths are resolved against
+the working directory of the process launched by the coding harness, which
+is usually the project directory but isn't guaranteed. A project-specific
+tools script in the project directory is a reasonable use of a relative
+path, but absolute paths are the safest choice otherwise.</p>
     </div>
     <div class="section level2">
     <h2 id="configuration">Configuration<a class="anchor" aria-label="anchor" href="#configuration"></a></h2>

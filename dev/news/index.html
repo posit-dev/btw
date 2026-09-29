@@ -41,6 +41,7 @@
 <h2 class="pkg-version" data-toc-text="development version" id="btw-development-version">btw (development version)<a class="anchor" aria-label="anchor" href="#btw-development-version"></a></h2>
 <ul><li><p>Skill listings in the system prompt now use compact YAML-style entries instead of <code>&lt;skill&gt;</code> XML blocks, reducing prompt tokens while conveying the same information.</p></li>
 <li><p>Package tests now support a compact reporter that shows per-file progress, timing, warning and failure details, and final counts. <code>btw pkg test</code> uses it by default, while <code><a href="../reference/btw_tool_pkg_test.html">btw_tool_pkg_test()</a></code> defaults to concise output for non-streaming clients; both accept other testthat reporter names (<a href="https://github.com/posit-dev/btw/issues/220" class="external-link">#220</a>).</p></li>
+<li><p><code><a href="../reference/mcp.html">btw_mcp_server()</a></code> no longer errors when <code>tools</code> is a character vector naming more than one tool group, e.g. <code>btw_mcp_server(c("docs", "env", "sessioninfo"))</code> (<a href="https://github.com/taekop" class="external-link">@taekop</a>, <a href="https://github.com/posit-dev/btw/issues/206" class="external-link">#206</a>).</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.5.0" id="btw-150">btw 1.5.0<a class="anchor" aria-label="anchor" href="#btw-150"></a></h2><p class="text-muted">CRAN release: 2026-09-09</p>
@@ -162,9 +163,9 @@
 <li>
 <p><code>btw.md</code> now supports configuring multiple client options. When <code><a href="../reference/btw_client.html">btw_client()</a></code> is called interactively, you’ll be presented with a menu to choose which client to use. Clients can be specified as an array:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">client</span><span class="kw">:</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> anthropic/claude-sonnet-4</span></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> openai/gpt-4.1</span></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> aws_bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0</span></span></code></pre></div>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="at">  </span><span class="kw">- </span><span class="at">anthropic/claude-sonnet-4</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="at">  </span><span class="kw">- </span><span class="at">openai/gpt-4.1</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="at">  </span><span class="kw">- </span><span class="at">aws_bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0</span></span></code></pre></div>
 <p>Or as named aliases:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">client</span><span class="kw">:</span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="at">  </span><span class="fu">haiku</span><span class="kw">:</span><span class="at"> aws_bedrock/us.anthropic.claude-haiku-4-5-20251001-v1:0</span></span>

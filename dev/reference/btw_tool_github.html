@@ -236,10 +236,10 @@ merging PRs or deleting repositories) are blocked.</p>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">options</span><span class="kw">:</span></span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="at">  </span><span class="fu">github</span><span class="kw">:</span></span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="at">    </span><span class="fu">allow</span><span class="kw">:</span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"PATCH /repos/*/*/pulls/*"</span><span class="co"> # Allow converting PRs to/from draft</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"POST /repos/*/*/git/refs"</span><span class="co"> # Allow creating branches</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="at">      </span><span class="kw">- </span><span class="st">"PATCH /repos/*/*/pulls/*"</span><span class="at"> </span><span class="co"># Allow converting PRs to/from draft</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="at">      </span><span class="kw">- </span><span class="st">"POST /repos/*/*/git/refs"</span><span class="at"> </span><span class="co"># Allow creating branches</span></span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="at">    </span><span class="fu">block</span><span class="kw">:</span></span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="st">"DELETE /repos/**"</span><span class="co"> # Block any delete action under /repos</span></span></code></pre><p></p></div>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="at">      </span><span class="kw">- </span><span class="st">"DELETE /repos/**"</span><span class="at"> </span><span class="co"># Block any delete action under /repos</span></span></code></pre><p></p></div>
 <p>The precedence order for rules is:</p><ol><li><p>User block rules (checked first, highest priority)</p></li>
 <li><p>User allow rules</p></li>
 <li><p>Built-in block rules</p></li>

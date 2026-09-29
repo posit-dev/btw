@@ -14,6 +14,12 @@
   other testthat reporter names
   ([\#220](https://github.com/posit-dev/btw/issues/220)).
 
+- [`btw_mcp_server()`](https://posit-dev.github.io/btw/dev/reference/mcp.md)
+  no longer errors when `tools` is a character vector naming more than
+  one tool group, e.g. `btw_mcp_server(c("docs", "env", "sessioninfo"))`
+  ([@taekop](https://github.com/taekop),
+  [\#206](https://github.com/posit-dev/btw/issues/206)).
+
 ## btw 1.5.0
 
 CRAN release: 2026-09-09
