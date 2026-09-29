@@ -809,7 +809,7 @@ test_that("btw_skills_system_prompt() includes skill metadata", {
   prompt <- btw_skills_system_prompt()
   expect_match(prompt, "- prompt-test: A skill for testing prompts.", fixed = TRUE)
   expect_match(prompt, "  location: ", fixed = TRUE)
-  expect_match(prompt, "  compatibility: Needs R 4.2", fixed = TRUE)
+  expect_false(grepl("  compatibility:", prompt, fixed = TRUE))
 })
 
 # select_skill_dir ----------------------------------------------------------
@@ -1403,13 +1403,17 @@ test_that("btw_skills_system_prompt() keeps multiline descriptions in one entry"
   dir <- withr::local_tempdir()
   create_temp_skill(
     name = "multiline-test",
-    description = "First line.\nSecond line.",
+    description = "First line.\n\nSecond line.",
     dir = dir
   )
   local_skill_dirs(dir)
 
   prompt <- btw_skills_system_prompt()
-  expect_match(prompt, "- multiline-test: First line. Second line.", fixed = TRUE)
+  expect_match(
+    prompt,
+    "- multiline-test: |\n    First line.\n    Second line.\n  location: ",
+    fixed = TRUE
+  )
   expect_match(prompt, "  location: .*multiline-test.*SKILL\\.md")
 })
 
@@ -1604,21 +1608,30 @@ test_that("btw_skill_prompt() renders a YAML-style entry for one skill", {
   # the entry carries the same fields as the btw_client() system prompt
   expect_match(text, "- demo-skill: A test skill for unit testing.", fixed = TRUE)
   expect_match(text, "  location: .*SKILL\\.md")
-  expect_match(text, "  compatibility: Requires Python 3", fixed = TRUE)
-  expect_match(text, "  allowed-tools: Read Bash", fixed = TRUE)
+
+  # fields beyond name, description and location are not part of the entry
+  expect_false(grepl("  compatibility:", text, fixed = TRUE))
+  expect_false(grepl("  allowed-tools:", text, fixed = TRUE))
 
   # the skill body is not part of the entry
   expect_false(grepl("Do the thing.", text, fixed = TRUE))
 })
 
-test_that("btw_skill_prompt() omits optional fields when absent", {
+test_that("btw_skill_prompt() uses block scalar for multi-line descriptions", {
   dir <- withr::local_tempdir()
-  create_temp_skill("demo-skill", dir = dir)
+  create_temp_skill(
+    "demo-skill",
+    dir = dir,
+    description = "First line.\nSecond line."
+  )
   local_skill_dirs(dir)
 
   text <- btw_skill_prompt("demo-skill")
-  expect_false(grepl("  compatibility:", text, fixed = TRUE))
-  expect_false(grepl("  allowed-tools:", text, fixed = TRUE))
+  expect_match(
+    text,
+    "- demo-skill: |\n    First line.\n    Second line.\n  location: ",
+    fixed = TRUE
+  )
 })
 
 test_that("btw_skill_prompt() errors for unknown or invalid skills", {

@@ -14,8 +14,8 @@ A single string with the skill's YAML-style entry.
 }
 \description{
 Returns a compact YAML-style entry for one skill: its name, description,
-and location, plus compatibility notes and allowed tools when present. This
-is the same entry that \code{\link[=btw_client]{btw_client()}} writes into its system prompt.
+and location. This is the same entry that \code{\link[=btw_client]{btw_client()}} writes into its
+system prompt.
 
 Compose the listing yourself by joining the entries under an
 "Available skills:" heading, the way btw does it.
