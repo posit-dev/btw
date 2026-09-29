@@ -152,8 +152,8 @@ btw_skill_resolve <- function(skill_name) {
 #'
 #' @description
 #' Returns a compact YAML-style entry for one skill: its name, description,
-#' and location, plus compatibility notes and allowed tools when present. This
-#' is the same entry that [btw_client()] writes into its system prompt.
+#' and location. This is the same entry that [btw_client()] writes into its
+#' system prompt.
 #'
 #' Compose the listing yourself by joining the entries under an
 #' "Available skills:" heading, the way btw does it.
@@ -825,36 +825,35 @@ escape_for_rbuildignore <- function(path) {
 
 # System Prompt ------------------------------------------------------------
 
-# Keep frontmatter block scalars on one line so each entry stays together.
 skill_prompt_line <- function(x) {
   gsub("[\r\n]+[ \t]*", " ", x)
 }
 
-# Renders one skill as a compact YAML-style entry. Both the system prompt and
-# btw_skill_prompt() use the same entry format.
+# Multi-line descriptions use a YAML literal block scalar (`|`) so the entry
+# stays together; blank lines are dropped to keep the listing compact.
+skill_description_lines <- function(x) {
+  lines <- strsplit(gsub("\r", "", x), "\n", fixed = TRUE)[[1]]
+  lines <- trimws(lines)
+  lines[nzchar(lines)]
+}
+
+# Renders one skill as a compact YAML-style entry with only name, description
+# and location. Both the system prompt and btw_skill_prompt() use this format.
 format_skill_prompt <- function(skill) {
-  parts <- sprintf(
+  lines <- skill_description_lines(skill$description)
+
+  description <- if (length(lines) > 1) {
+    paste0("|\n", paste0("    ", lines, collapse = "\n"))
+  } else {
+    lines
+  }
+
+  sprintf(
     "- %s: %s\n  location: %s",
     skill_prompt_line(skill$name),
-    skill_prompt_line(skill$description),
+    description,
     skill_prompt_line(skill$path)
   )
-  if (!is.null(skill$compatibility)) {
-    parts <- paste0(
-      parts,
-      "\n  compatibility: ",
-      skill_prompt_line(skill$compatibility)
-    )
-  }
-  if (!is.null(skill$allowed_tools)) {
-    allowed_tools <- paste(skill$allowed_tools, collapse = ", ")
-    parts <- paste0(
-      parts,
-      "\n  allowed-tools: ",
-      skill_prompt_line(allowed_tools)
-    )
-  }
-  parts
 }
 
 btw_skills_system_prompt <- function() {
