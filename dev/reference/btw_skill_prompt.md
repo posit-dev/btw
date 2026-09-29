@@ -1,8 +1,7 @@
 # Render a skill's entry for a system prompt
 
 Returns a compact YAML-style entry for one skill: its name, description,
-and location, plus compatibility notes and allowed tools when present.
-This is the same entry that
+and location. This is the same entry that
 [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
 writes into its system prompt.
 
