@@ -15,7 +15,9 @@ btw_mcp_session()
 to the tools provided by \code{\link[=btw_tools]{btw_tools()}}. Use \code{\link[=btw_tools]{btw_tools()}} to subset to
 specific list of \pkg{btw} tools that can be augmented with additional
 tools. Alternatively, you can pass a path to an R script that returns a
-list of tools as supported by \code{\link[mcptools:mcp_server]{mcptools::mcp_server()}}.}
+list of tools as supported by \code{\link[mcptools:mcp_server]{mcptools::mcp_server()}}. In that case the
+script provides the complete set of tools -- btw's tools are not included
+unless the script itself adds them with \code{\link[=btw_tools]{btw_tools()}}.}
 }
 \value{
 Returns the result of \code{\link[mcptools:mcp_server]{mcptools::mcp_server()}} or
@@ -59,6 +61,35 @@ Depending on your workflow, you may also want to include:
 
 See \code{\link[=btw_tools]{btw_tools()}} for a complete list of available tool groups and their
 contents.
+
+To combine btw's tools with your own custom tools, we recommend writing a
+small R script that returns the combined list of tools and passing its path
+to \code{btw_mcp_server()}.
+
+MCP servers are usually launched by your coding harness, e.g. via
+\verb{Rscript -e "btw::btw_mcp_server(...)"} in a client configuration file.
+Composing the tool list in an R script is much easier to read and maintain
+than cramming the same code into an inline \code{Rscript} command. The script
+below combines btw's tools with your own custom tools:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{# tools.R
+my_custom_tool <- ellmer::tool(
+  function() R.version.string,
+  "Report the version of R running the MCP server"
+)
+
+c(btw_tools("docs", "pkg"), list(my_custom_tool))
+}\if{html}{\out{</div>}}
+
+The script is responsible for the complete list of tools, so include
+\code{\link[=btw_tools]{btw_tools()}} calls in the script to pull in btw's tools.
+
+Use an absolute path to the script in most cases, e.g.
+\code{btw_mcp_server("/path/to/tools.R")}. Relative paths are resolved against
+the working directory of the process launched by the coding harness, which
+is usually the project directory but isn't guaranteed. A project-specific
+tools script in the project directory is a reasonable use of a relative
+path, but absolute paths are the safest choice otherwise.
 }
 
 \section{Configuration}{
