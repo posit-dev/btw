@@ -41,8 +41,8 @@ Imports:
     fs,
     jsonlite,
     lifecycle,
-    methods,
     mcptools,
+    methods,
     pkgsearch,
     rlang (>= 1.1.0),
     rmarkdown,
@@ -68,11 +68,12 @@ Suggests:
     gert,
     gh,
     htmltools,
+    knitr,
     pandoc,
     pkgload,
     processx,
-    ragg,
     R6,
+    ragg,
     Rapp (>= 0.3.0),
     renv,
     roxygen2,
@@ -82,6 +83,8 @@ Suggests:
     testthat (>= 3.1.7),
     tibble,
     usethis
+VignetteBuilder: 
+    knitr
 Config/Needs/website: brand.yml, tidyverse/tidytemplate
 Config/roxygen2/version: 8.1.0
 Config/testthat/edition: 3
