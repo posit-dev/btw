@@ -1,0 +1,260 @@
+---
+title: "Configure btw with btw.md"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Configure chats with btw.md}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, echo = FALSE}
+library(btw)
+```
+
+A **`btw.md` file** is a Markdown file that saves how btw should set up a chat, so each chat in your project starts already set up: the right model, the right tools, and instructions you'd otherwise repeat.
+
+A `btw.md` file has two parts.
+The YAML front matter at the top chooses the model and tools, and the Markdown body below it gives the model instructions about your project.
+`btw_app()` and `btw_client()` find the file in your project or home directory and apply it automatically.
+
+If you use other coding agents, you may already keep project instructions in an [`AGENTS.md`](https://agents.md/) or [`CLAUDE.md`](https://code.claude.com/docs/en/memory) file.
+A `btw.md` file plays the same role for btw, and btw falls back to those files when a project doesn't have one (see [Where btw looks for `btw.md`](#where-btw-looks)).
+Using `btw.md` gives you a few things those files don't:
+
+- **It configures the chat, not just the instructions.** The front matter chooses the model, tools, and options. btw ignores front matter in `CLAUDE.md`, and the other tools that read `AGENTS.md` don't expect front matter there.
+- **It has a user-level version.** btw combines a `btw.md` in your home directory, such as `~/.btw/btw.md`, with each project's file. btw doesn't look for `AGENTS.md` or `CLAUDE.md` in your home directory.
+- **It keeps btw-specific instructions separate.** Instructions about btw's tools or your R workflow don't end up in the files that other coding agents read.
+
+In this vignette, we'll set up a chat by hand, save that setup in a `btw.md` file, and then learn how btw decides which file to use.
+Custom agents are written in the same format, so this vignette is also the groundwork for [Custom agents](custom-agents.html).
+To follow along, you'll need btw, an [ellmer](https://ellmer.tidyverse.org/) chat provider you can use, and [shinychat](https://posit-dev.github.io/shinychat/) to run the chat app.
+
+## Start with a chat you set up by hand
+
+`btw_app()` starts a chat app in your R session.
+Its `client` argument takes an ellmer chat object, which chooses the provider and model.
+This example uses `ellmer::chat_posit()`; substitute the `chat_*()` function for the provider you use.
+
+```{r, eval = FALSE}
+library(btw)
+btw_app(client = ellmer::chat_posit())
+```
+
+Inside the app, you can customize which tools the model can use in the chat.
+The tool menu lists all available tools, and you can turn each one on or off.
+Similarly, you can also edit the system prompt (the set of instructions sent to the model at the start of a chat).
+Together, the model, the tools, and the system prompt make up the chat's configuration.
+
+Those choices last only as long as the app is open, but you can use a `btw.md` file to save those choices so that every btw chat in the project starts from the same place.
+
+## Save the setup in `btw.md`
+
+Suppose you're working on a research project and want the chat to read your files, look up R documentation, check installed packages, and run R code.
+Create a file named `btw.md` at the root of the project with this content:
+
+``` text
+---
+client: posit
+tools: [files, docs, sessioninfo, run]
+---
+
+You are a research data science assistant.
+Inspect the project files before answering.
+```
+
+The two `---` lines mark the start and end of the front matter.
+The front matter configures the chat: `client: posit` chooses the provider, the same way `ellmer::chat_posit()` did above, and `tools` chooses which btw tools the chat can use.
+The body gives the model instructions to steer its behavior.
+In short, the YAML configures btw and the markdown configures the model.
+
+Once you've created `btw.md`, you can start `btw_app()` without any arguments from the project directory:
+
+```{r, eval = FALSE}
+btw_app()
+```
+
+btw finds `btw.md`, creates the client and the tools it describes, and adds the body to the system prompt.
+If you open the system prompt in the app, you'll find the body under a "Project Context" heading, after btw's own instructions about your R session and tools.
+Because the setup now lives in a file, you can read it, edit it, commit it, and share it with collaborators.
+
+## Create and edit the file
+
+You can write `btw.md` by hand, or let btw start it for you.
+
+`use_btw_md()` creates a `btw.md` file from a template at the project root, and in an R package it also adds the file to `.Rbuildignore`.
+`use_btw_md("user")` creates the user-level file.
+`edit_btw_md()` opens the file that `btw_client()` would use, so you can check which one is in effect.
+
+```{r, eval = FALSE}
+use_btw_md()
+edit_btw_md()
+```
+
+To draft the instructions for an existing project, `btw_task_create_btw_md()` starts a chat in which the model explores the project and writes a `btw.md` with you.
+
+The rest of this vignette covers each part of the file in more detail.
+
+## Choose the model with `client`
+
+The `client` field takes the same `provider` or `provider/model` strings as `ellmer::chat()`.
+`client: posit` uses the provider's default model; add a model name after a slash to choose a specific one:
+
+``` text
+---
+client: posit/claude-sonnet-5-5
+---
+```
+
+For more control, write `client` as a mapping.
+`provider` chooses the `ellmer::chat_*()` function, `model` becomes its `model` argument, and any other keys are passed to that function as arguments.
+This example points `ellmer::chat_ollama()` at a server on another machine:
+
+``` text
+---
+client:
+  provider: ollama
+  model: "gpt-oss:20b"
+  base_url: "http://my-company.example.com:11434"
+---
+```
+
+You can also list several clients.
+When you start `btw_client()` interactively, btw shows a menu of the choices; in non-interactive code, it uses the first one.
+If you name the entries, you can pass a name to the `client` argument, as in `btw_client(client = "local")`:
+
+``` text
+---
+client:
+  sonnet: posit/claude-sonnet-5-5
+  local:
+    provider: ollama
+    model: "gpt-oss:20b"
+---
+```
+
+```{r, eval = FALSE}
+btw_app()
+#>
+#> ── Select a client ──
+#>
+#> 1. sonnet: posit/claude-sonnet-5-5 [default]
+#> 2. local: ollama/gpt-oss:20b
+#>
+#> Enter choice [1-2, alias name, or 0 to exit]: sonnet
+```
+
+The `client` field is a default, not a requirement.
+A `client` argument to `btw_app()` or `btw_client()` takes priority over it, and so does the `btw.client` R option.
+
+## Choose tools with `tools`
+
+The `tools` field lists tool groups, individual tool names, or both.
+A group name such as `files` includes every tool in that group.
+To see which tools a group contains, pass the same names to `btw_tools()`:
+
+```{r}
+names(btw_tools("files"))
+```
+
+The `files` group includes tools that write and edit files, not only ones that read them.
+When the chat only needs to read, name the individual tools instead.
+You can drop the `btw_tool_` prefix from tool names in `btw.md`:
+
+``` text
+---
+tools: [docs, files_read, files_search, files_list]
+---
+```
+
+If you leave `tools` out, the chat gets btw's default set of tools.
+The R code tool in the `run` group isn't part of that default, because it runs code in your R session without asking you first.
+Naming `run` in `tools` turns it on for that chat; see `?btw_tool_run_r` before you do.
+
+As with `client`, a `tools` argument to `btw_app()` or `btw_client()`, or the `btw.tools` R option, takes priority over the field in `btw.md`.
+
+## Set btw options with `options`
+
+Some btw settings are R options whose names start with `btw.`, and the `options` field sets them for chats in this project.
+Write each option name without the `btw.` prefix, nesting one level for each remaining part of the name.
+For example, `btw.subagent.client` chooses the model for **subagents**, the separate chat sessions that your chat can start through a tool call:
+
+``` text
+---
+client: posit/claude-sonnet-5-5
+options:
+  subagent:
+    client: posit/zai-org/GLM-5.3-Flash
+---
+```
+
+With this file, the main chat uses Claude Sonnet and its subagents use the smaller, faster GLM 5.3 Flash model.
+You can learn more about custom agents in `vignette("custom-agents")`.
+Because options are tool-specific, they are listed in each tool's help page, such as `?btw_tool_agent_subagent`.
+
+## Write instructions in the body
+
+Everything after the front matter becomes part of the system prompt.
+Use the body for what you'd otherwise repeat at the start of every conversation: your coding style, terms that mean something specific in your field, the goals of the project, or where to find important files.
+Write it in whatever structure suits the project; btw doesn't require particular headings.
+
+Sometimes the file holds notes that you want to keep but don't want the model to read, such as finished tasks in a project plan.
+Wrap those lines in `<!-- HIDE -->` and `<!-- /HIDE -->` comments:
+
+``` text
+## Current task
+
+Add a sensitivity analysis to `analysis.qmd`.
+
+<!-- HIDE -->
+## Done
+
+- Cleaned the survey data.
+<!-- /HIDE -->
+```
+
+btw removes the hidden lines before adding the body to the system prompt.
+A `<!-- HIDE -->` without a closing `<!-- /HIDE -->` hides everything to the end of the file.
+
+## Where btw looks for `btw.md` {#where-btw-looks}
+
+When you start a chat, btw looks for a project file first.
+It starts in the working directory and moves up through its parents, stopping at the project root, which btw recognizes by a file such as `DESCRIPTION`, `.git`, or an `.Rproj` file.
+btw uses the closest `btw.md` it finds.
+If there isn't one, it uses an [`AGENTS.md`](https://agents.md/) file, and then a `CLAUDE.md` file.
+btw reads the front matter in `AGENTS.md` like `btw.md`, but ignores the front matter in `CLAUDE.md`.
+btw reads only one of these files, so if your project has both `btw.md` and `AGENTS.md`, btw uses `btw.md` and ignores `AGENTS.md`.
+
+btw also reads a **user-level** `btw.md` that applies to all of your projects, such as `~/.btw/btw.md`.
+The two files are combined:
+
+- The project's `client` and `tools` fields are used when they're present; otherwise the user-level fields are used.
+- The `options` from both files are combined, and the project's value wins when both set the same option.
+- Both bodies are included in the system prompt, the user-level instructions first.
+
+This lets you keep your general preferences, such as a default model or coding style, in the user-level file and keep project details in the project file.
+See `?btw-config` for every location btw checks.
+
+To use a particular file instead of searching, pass its path to `path_btw`.
+To start a chat without any `btw.md` file, use `path_btw = FALSE`:
+
+```{r, eval = FALSE}
+btw_app(path_btw = "analysis/btw.md")
+
+btw_client(path_btw = FALSE)
+```
+
+## Next: the same format for agents
+
+You now have a `btw.md` file that chooses the model, the tools, and the instructions for the chat you talk to, and you know how btw finds and combines these files.
+
+A custom agent file uses the same format.
+Add a `name` and a `description` to the front matter and save the file in `.btw/agents/`, and btw turns it into a tool your chat can call.
+Each call starts a subagent session configured by that file.
+`vignette("custom-agents")` builds three of these agents, starting from the `btw.md` file in this vignette.

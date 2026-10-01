@@ -24,9 +24,9 @@ offers to migrate an existing user-level configuration found elsewhere.
 }
 
 For \code{edit_btw_md()}, \code{scope = NULL} (default) will find and open the
-context file that \code{\link[=btw_client]{btw_client()}} would use, searching first for \code{btw.md}
-and then \code{AGENTS.md} in the project directory and then for \code{btw.md} in your
-home directory.}
+context file that \code{\link[=btw_client]{btw_client()}} would use, searching first for \code{btw.md},
+then \code{AGENTS.md}, then \code{CLAUDE.md} in the project directory and then for a
+user-level \code{btw.md}.}
 }
 \value{
 \code{use_btw_md()} returns the path to the context file, invisibly.
@@ -80,8 +80,9 @@ You can use a \code{btw.md} or \href{https://agents.md/}{\code{AGENTS.md}} file 
 track of project-specific rules, guidance and context in your project. Either
 file name will work, so we'll refer primarily to \code{btw.md}. These files are
 used automatically by \code{\link[=btw_client]{btw_client()}} and \code{\link[=btw_app]{btw_app()}}: they look first for
-\code{btw.md} and then for \code{AGENTS.md}. If both files are present, only the
-\code{btw.md} file will be used.
+\code{btw.md}, then for \code{AGENTS.md}, and finally for \code{CLAUDE.md}. Only the first
+of these files found in your project is used. (\code{CLAUDE.md} files are
+included as instructions, but their YAML front matter is ignored.)
 
 Any time you start a chat client with \code{btw_client()} or launch a chat session
 with \code{btw_app()}, btw will automatically find and include the contents of the
@@ -166,8 +167,8 @@ available tools and tool groups.
 Here's an example \code{btw.md} file:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{---
-client: claude/claude-4-5-sonnet-latest
-tools: [docs, env, files, git, ide, search, session, web]
+client: posit/claude-sonnet-5-5
+tools: [cran, docs, env, files, git, ide, sessioninfo, web]
 ---
 
 Follow these important style rules when writing R code:
@@ -217,11 +218,25 @@ picture, including skills and agents). \code{use_btw_md("user")} creates new
 configuration in the recommended \verb{~/.btw/} directory, and offers to migrate
 an existing user-level configuration found elsewhere. When more than one
 user-level \code{btw.md} file exists, \code{edit_btw_md("user")} asks which one to open.
-Whichever user-level \code{btw.md} file is found is
-used by default when a project-specific \code{btw.md} file is not found. Note that
-\pkg{btw} only looks for a user-level \code{btw.md} if no project-specific
-\code{btw.md} or \code{AGENTS.md} file is present. It also does not look for
-\code{AGENTS.md} in your home directory.
+Note that \pkg{btw} does not look for \code{AGENTS.md} in your home directory.
+
+The user-level \code{btw.md} file is used alongside your project's context file,
+not only when a project file is missing. When both are present,
+\code{\link[=btw_client]{btw_client()}} and \code{\link[=btw_app]{btw_app()}} combine them:
+\itemize{
+\item \code{client} and \code{tools} from the project file are used when present;
+otherwise the user-level values are used.
+\item \code{options} from both files are merged, with project-level values taking
+precedence.
+\item The instructions in both files are included in the system prompt, with
+the user-level instructions first.
+}
+
+This lets you keep general preferences, such as a default model or coding
+style, in your user-level file and project details in the project file. The
+user-level file is also combined with a file you pass to the \code{path_btw}
+argument of \code{\link[=btw_client]{btw_client()}} or \code{\link[=btw_app]{btw_app()}}. Use \code{path_btw = FALSE} to start a
+chat without either file.
 }
 
 \section{Interactive Setup}{

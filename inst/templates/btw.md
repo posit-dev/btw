@@ -1,14 +1,14 @@
 ---
 client: {{ PROVIDER }}/{{ MODEL }}
 tools:
+  - cran
   - docs
   - env
   - files
   - git
   - github
   - ide
-  - search
-  - session
+  - sessioninfo
   - web
 ---
 
