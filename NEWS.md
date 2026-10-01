@@ -1,5 +1,7 @@
 # btw (development version)
 
+* `?use_btw_md` now correctly describes how a user-level `btw.md` is combined with a project's context file: `client` and `tools` fall back to user-level values, `options` are merged, and both sets of instructions are included.
+
 * Skill listings in the system prompt now use compact YAML-style entries instead of `<skill>` XML blocks, reducing prompt tokens while conveying the same information.
 
 * Package tests now support a compact reporter that shows per-file progress, timing, warning and failure details, and final counts. `btw pkg test` uses it by default, while `btw_tool_pkg_test()` defaults to concise output for non-streaming clients; both accept other testthat reporter names (#220).

@@ -37,8 +37,9 @@
 #' track of project-specific rules, guidance and context in your project. Either
 #' file name will work, so we'll refer primarily to `btw.md`. These files are
 #' used automatically by [btw_client()] and [btw_app()]: they look first for
-#' `btw.md` and then for `AGENTS.md`. If both files are present, only the
-#' `btw.md` file will be used.
+#' `btw.md`, then for `AGENTS.md`, and finally for `CLAUDE.md`. Only the first
+#' of these files found in your project is used. (`CLAUDE.md` files are
+#' included as instructions, but their YAML front matter is ignored.)
 #'
 #' Any time you start a chat client with `btw_client()` or launch a chat session
 #' with `btw_app()`, btw will automatically find and include the contents of the
@@ -128,8 +129,8 @@
 #'
 #' ````
 #' ---
-#' client: claude/claude-4-5-sonnet-latest
-#' tools: [docs, env, files, git, ide, search, session, web]
+#' client: posit/claude-sonnet-5-5
+#' tools: [cran, docs, env, files, git, ide, sessioninfo, web]
 #' ---
 #'
 #' Follow these important style rules when writing R code:
@@ -175,11 +176,24 @@
 #' configuration in the recommended `~/.btw/` directory, and offers to migrate
 #' an existing user-level configuration found elsewhere. When more than one
 #' user-level `btw.md` file exists, `edit_btw_md("user")` asks which one to open.
-#' Whichever user-level `btw.md` file is found is
-#' used by default when a project-specific `btw.md` file is not found. Note that
-#' \pkg{btw} only looks for a user-level `btw.md` if no project-specific
-#' `btw.md` or `AGENTS.md` file is present. It also does not look for
-#' `AGENTS.md` in your home directory.
+#' Note that \pkg{btw} does not look for `AGENTS.md` in your home directory.
+#'
+#' The user-level `btw.md` file is used alongside your project's context file,
+#' not only when a project file is missing. When both are present,
+#' [btw_client()] and [btw_app()] combine them:
+#'
+#' * `client` and `tools` from the project file are used when present;
+#'   otherwise the user-level values are used.
+#' * `options` from both files are merged, with project-level values taking
+#'   precedence.
+#' * The instructions in both files are included in the system prompt, with
+#'   the user-level instructions first.
+#'
+#' This lets you keep general preferences, such as a default model or coding
+#' style, in your user-level file and project details in the project file. The
+#' user-level file is also combined with a file you pass to the `path_btw`
+#' argument of [btw_client()] or [btw_app()]. Use `path_btw = FALSE` to start a
+#' chat without either file.
 #'
 #' @section Interactive Setup:
 #'
@@ -207,9 +221,9 @@
 #'   - A file path: Creates/opens that specific file
 #'
 #'   For `edit_btw_md()`, `scope = NULL` (default) will find and open the
-#'   context file that [btw_client()] would use, searching first for `btw.md`
-#'   and then `AGENTS.md` in the project directory and then for `btw.md` in your
-#'   home directory.
+#'   context file that [btw_client()] would use, searching first for `btw.md`,
+#'   then `AGENTS.md`, then `CLAUDE.md` in the project directory and then for a
+#'   user-level `btw.md`.
 #'
 #' @return `use_btw_md()` returns the path to the context file, invisibly.
 #'   `edit_btw_md()` is called for its side effect of opening the file.
