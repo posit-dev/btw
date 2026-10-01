@@ -51,8 +51,9 @@ edit_btw_md(scope = NULL)
   For `edit_btw_md()`, `scope = NULL` (default) will find and open the
   context file that
   [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
-  would use, searching first for `btw.md` and then `AGENTS.md` in the
-  project directory and then for `btw.md` in your home directory.
+  would use, searching first for `btw.md`, then `AGENTS.md`, then
+  `CLAUDE.md` in the project directory and then for a user-level
+  `btw.md`.
 
 ## Value
 
@@ -93,8 +94,10 @@ files are used automatically by
 [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
 and
 [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md):
-they look first for `btw.md` and then for `AGENTS.md`. If both files are
-present, only the `btw.md` file will be used.
+they look first for `btw.md`, then for `AGENTS.md`, and finally for
+`CLAUDE.md`. Only the first of these files found in your project is
+used. (`CLAUDE.md` files are included as instructions, but their YAML
+front matter is ignored.)
 
 Any time you start a chat client with
 [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
@@ -182,8 +185,8 @@ for a list of available tools and tool groups.
 Here's an example `btw.md` file:
 
     ---
-    client: claude/claude-4-5-sonnet-latest
-    tools: [docs, env, files, git, ide, search, session, web]
+    client: posit/claude-sonnet-5-5
+    tools: [cran, docs, env, files, git, ide, sessioninfo, web]
     ---
 
     Follow these important style rules when writing R code:
@@ -232,11 +235,33 @@ for the full picture, including skills and agents). `use_btw_md("user")`
 creates new configuration in the recommended `~/.btw/` directory, and
 offers to migrate an existing user-level configuration found elsewhere.
 When more than one user-level `btw.md` file exists,
-`edit_btw_md("user")` asks which one to open. Whichever user-level
-`btw.md` file is found is used by default when a project-specific
-`btw.md` file is not found. Note that btw only looks for a user-level
-`btw.md` if no project-specific `btw.md` or `AGENTS.md` file is present.
-It also does not look for `AGENTS.md` in your home directory.
+`edit_btw_md("user")` asks which one to open. Note that btw does not
+look for `AGENTS.md` in your home directory.
+
+The user-level `btw.md` file is used alongside your project's context
+file, not only when a project file is missing. When both are present,
+[`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+and
+[`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+combine them:
+
+- `client` and `tools` from the project file are used when present;
+  otherwise the user-level values are used.
+
+- `options` from both files are merged, with project-level values taking
+  precedence.
+
+- The instructions in both files are included in the system prompt, with
+  the user-level instructions first.
+
+This lets you keep general preferences, such as a default model or
+coding style, in your user-level file and project details in the project
+file. The user-level file is also combined with a file you pass to the
+`path_btw` argument of
+[`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+or
+[`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md).
+Use `path_btw = FALSE` to start a chat without either file.
 
 ## Interactive Setup
 
@@ -265,7 +290,7 @@ withr::with_tempdir({
     use_btw_md(btw_md_tmp)
   })
 })
-#> ✔ Created /tmp/RtmpZ0MpUn/file211c62408f20.md
+#> ✔ Created /tmp/RtmpWqz7Fd/file24855b271e89.md
 #> ℹ See `?btw::btw_client()` for format details
 #> ℹ See `?btw::btw_tools()` for available tools
 #> ℹ Call `btw::btw_task_create_btw_md()` to use an LLM to help you initialize the

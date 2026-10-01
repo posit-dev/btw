@@ -304,3 +304,11 @@ and to avoid name clashes with other tools.
 - [`btw_tool_web_read_url()`](https://posit-dev.github.io/btw/dev/reference/btw_tool_web_read_url.md)
   : Tool: Read a Web Page as Markdown
 
+# Articles
+
+### All vignettes
+
+- [Configure btw with
+  btw.md](https://posit-dev.github.io/btw/dev/articles/btw-md.md):
+- [Custom
+  Agents](https://posit-dev.github.io/btw/dev/articles/custom-agents.md):

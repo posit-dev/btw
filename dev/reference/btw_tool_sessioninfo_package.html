@@ -22,6 +22,11 @@ determine which packages are already in use in a session."><meta property="og:im
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/btw-md.html">Configure btw with btw.md</a></li>
+    <li><a class="dropdown-item" href="../articles/custom-agents.html">Custom Agents</a></li>
+  </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -97,7 +102,7 @@ explain why it called the tool.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">btw_tool_sessioninfo_package</span><span class="op">(</span><span class="st">"btw"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;btw::BtwPackageInfoToolResult&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  @ value  : chr "```\n package * version    date (UTC) lib source\n btw     * 1.5.0.9000 2026-09-29 [1] local\n\n [1] /home/runn"| __truncated__</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  @ value  : chr "```\n package * version    date (UTC) lib source\n btw     * 1.5.0.9000 2026-10-01 [1] local\n\n [1] /home/runn"| __truncated__</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ error  : NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  @ extra  :List of 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  .. $ data   :Classes ‘packages_info’ and 'data.frame':	1 obs. of  11 variables:</span>
@@ -108,7 +113,7 @@ explain why it called the tool.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ loadedpath   : chr "/home/runner/work/_temp/Library/btw"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ attached     : logi TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ is_base      : logi FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ date         : chr "2026-09-29"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ date         : chr "2026-10-01"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ source       : chr "local"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ md5ok        : logi NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ..  ..$ library      : Factor w/ 3 levels "/home/runner/work/_temp/Library",..: 1</span>
