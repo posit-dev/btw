@@ -139,7 +139,7 @@ client:
 ---
 ```
 
-```{r}
+```{r, eval = FALSE}
 btw_app()
 #>
 #> ── Select a client ──
