@@ -1,5 +1,7 @@
 # btw (development version)
 
+* The `btw.md` template created by `use_btw_md()` now uses the current `cran` and `sessioninfo` tool group names instead of the deprecated `search` and `session` aliases.
+
 * `?use_btw_md` now correctly describes how a user-level `btw.md` is combined with a project's context file: `client` and `tools` fall back to user-level values, `options` are merged, and both sets of instructions are included.
 
 * Skill listings in the system prompt now use compact YAML-style entries instead of `<skill>` XML blocks, reducing prompt tokens while conveying the same information.
