@@ -1,5 +1,11 @@
 # btw (development version)
 
+* `path_find_in_project()` now stops its upward search when it reaches the home directory (either `fs::path_home()` or `fs::path_home_r()`, which differ on Windows) and never treats files there as project files, so `~/AGENTS.md` or `~/CLAUDE.md` are no longer picked up as project context when the working directory is under `~` but outside a project. Home-level files are handled only by the user-level lookup. This also fixes `~/btw.md` instructions being included twice — once as the project file and once as the user-level config (#225).
+
+* `btw_client(path_btw = ...)` no longer duplicates instructions when `path_btw` is set explicitly to the same file as the user-level `btw.md` (#225).
+
+* The project-root detection in `path_find_in_project()` now checks for `*.Rproj` files in the directory being searched. Previously, a stray `*.Rproj` file in the session's working directory could stop the search early, and project roots marked only by an `*.Rproj` file could be walked past (#225).
+
 * New vignettes: `vignette("btw-md")` explains the `btw.md` configuration format, and `vignette("custom-agents")` builds on it to create custom agents.
 
 * The `btw.md` template created by `use_btw_md()` now uses the current `cran` and `sessioninfo` tool group names instead of the deprecated `search` and `session` aliases.

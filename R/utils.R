@@ -133,7 +133,36 @@ as_json_rowwise <- function(x, ...) {
   gsub("\\},\\{", "},\n  {", json)
 }
 
+# The home directory is never a project root. Both fs::path_home() and
+# fs::path_home_r() are considered, which differ on Windows (user profile
+# vs R's "~", typically Documents); on macOS/Linux they are identical.
+path_is_home <- function(path) {
+  homes <- normalizePath(c(fs::path_home(), fs::path_home_r()), mustWork = FALSE)
+  path <- normalizePath(path, mustWork = FALSE)
+  if (.Platform$OS.type == "windows") {
+    homes <- tolower(homes)
+    path <- tolower(path)
+  }
+  path %in% homes
+}
+
+# Compare two paths for equality after normalization, without requiring the
+# paths to exist or to use the same notation (e.g. "~/.btw/btw.md").
+path_same <- function(a, b) {
+  if (is.null(a) || is.null(b)) {
+    return(FALSE)
+  }
+  identical(normalizePath(a, mustWork = FALSE), normalizePath(b, mustWork = FALSE))
+}
+
 path_find_in_project <- function(filename, dir = getwd()) {
+  # Stop the upward search when it reaches the home directory, without
+  # checking the home directory itself for `filename`: home-level files are
+  # handled only by the user-level lookup (path_find_user()).
+  if (path_is_home(dir)) {
+    return(NULL)
+  }
+
   if (file.exists(file.path(dir, filename))) {
     return(normalizePath(file.path(dir, filename)))
   }
@@ -142,7 +171,7 @@ path_find_in_project <- function(filename, dir = getwd()) {
 
   at_project_root <-
     any(file.exists(file.path(dir, root_files))) ||
-    length(dir(pattern = ".[.]Rproj$")) > 0 ||
+    length(dir(path = dir, pattern = "[.]Rproj$")) > 0 ||
     dirname(dir) == dir
 
   if (at_project_root) {
