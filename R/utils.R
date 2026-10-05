@@ -133,17 +133,24 @@ as_json_rowwise <- function(x, ...) {
   gsub("\\},\\{", "},\n  {", json)
 }
 
+# Normalize a path for comparison, without requiring it to exist or to use
+# the same notation (e.g. "~/.btw/btw.md"). Windows paths are case-folded.
+path_normalize_for_compare <- function(path) {
+  path <- normalizePath(path, mustWork = FALSE)
+  if (.Platform$OS.type == "windows") {
+    tolower(path)
+  } else {
+    path
+  }
+}
+
 # The home directory is never a project root. Both fs::path_home() and
 # fs::path_home_r() are considered, which differ on Windows (user profile
 # vs R's "~", typically Documents); on macOS/Linux they are identical.
 path_is_home <- function(path) {
-  homes <- normalizePath(c(fs::path_home(), fs::path_home_r()), mustWork = FALSE)
-  path <- normalizePath(path, mustWork = FALSE)
-  if (.Platform$OS.type == "windows") {
-    homes <- tolower(homes)
-    path <- tolower(path)
-  }
-  path %in% homes
+  path_normalize_for_compare(path) %in% path_normalize_for_compare(
+    c(fs::path_home(), fs::path_home_r())
+  )
 }
 
 # Compare two paths for equality after normalization, without requiring the
@@ -152,7 +159,7 @@ path_same <- function(a, b) {
   if (is.null(a) || is.null(b)) {
     return(FALSE)
   }
-  identical(normalizePath(a, mustWork = FALSE), normalizePath(b, mustWork = FALSE))
+  identical(path_normalize_for_compare(a), path_normalize_for_compare(b))
 }
 
 path_find_in_project <- function(filename, dir = getwd()) {

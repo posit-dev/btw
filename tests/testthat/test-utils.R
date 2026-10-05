@@ -387,19 +387,22 @@ test_that("path_find_in_project() honors project roots below home", {
   user_dir <- withr::local_tempdir()
   local_user_home(user_dir)
 
-  proj <- fs::dir_create(fs::path(user_dir, "scratch", "proj"))
-  fs::dir_create(fs::path(proj, ".git"))
-  fs::file_create(fs::path(proj, "AGENTS.md"))
+  # An AGENTS.md above a project root marker is not found: the .git marker
+  # stops the search before it reaches home
+  fs::file_create(fs::path(user_dir, "AGENTS.md"))
+  root <- fs::dir_create(fs::path(user_dir, "scratch", "proj"))
+  fs::dir_create(fs::path(root, ".git"))
+  sub <- fs::dir_create(fs::path(root, "sub"))
+
+  expect_null(path_find_in_project("AGENTS.md", sub))
 
   # Files in a project root below home are still found
+  fs::file_create(fs::path(root, "AGENTS.md"))
+  src <- fs::dir_create(fs::path(root, "src"))
   expect_equal(
-    path_find_in_project("AGENTS.md", fs::path(proj, "src")),
-    normalizePath(fs::path(proj, "AGENTS.md"))
+    path_find_in_project("AGENTS.md", src),
+    normalizePath(fs::path(root, "AGENTS.md"))
   )
-
-  # A project root marker below home still stops the search there
-  sub_dir <- fs::dir_create(fs::path(user_dir, "scratch", "sub"))
-  expect_null(path_find_in_project("AGENTS.md", sub_dir))
 })
 
 test_that("path_find_in_project() stops at either home root (Windows)", {
