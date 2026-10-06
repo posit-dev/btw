@@ -270,6 +270,15 @@
     Code
       withr::with_options(list(btw.client.path_btw_user = 1), normalize_path_btw(NULL))
     Condition
-      Error in `btw_user_path_default()`:
+      Error in `btw_path_scope_default()`:
       ! `btw.client.path_btw_user` must be a single string, not the number 1.
+
+---
+
+    Code
+      withr::with_options(list(btw.client.path_btw_project = 1), normalize_path_btw(
+        NULL))
+    Condition
+      Error in `btw_path_scope_default()`:
+      ! `btw.client.path_btw_project` must be a single string, not the number 1.
 

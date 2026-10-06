@@ -29,7 +29,7 @@ A `btw.md` file plays the same role for btw, and btw falls back to those files w
 Using `btw.md` gives you a few things those files don't:
 
 - **It configures the chat, not just the instructions.** The front matter chooses the model, tools, and options. btw ignores front matter in `CLAUDE.md`, and the other tools that read `AGENTS.md` don't expect front matter there.
-- **It has a user-level version.** btw combines a `btw.md` in your home directory, such as `~/.btw/btw.md`, with each project's file. If there's no user-level `btw.md`, btw falls back to a user-level `AGENTS.md` in the cross-tool `~/.agents/` directory. A user-level `CLAUDE.md` is never used.
+- **It has a user-level version.** btw combines a `btw.md` in your home directory, such as `~/.btw/btw.md`, with each project's file. If there's no user-level `btw.md`, btw falls back to a user-level `AGENTS.md` in the cross-tool `~/.agents/` directory.
 - **It keeps btw-specific instructions separate.** Instructions about btw's tools or your R workflow don't end up in the files that other coding agents read.
 
 In this vignette, we'll set up a chat by hand, save that setup in a `btw.md` file, and then learn how btw decides which file to use.

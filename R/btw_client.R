@@ -28,8 +28,8 @@
 #' is `~/btw.md` if present, otherwise `~/.btw/btw.md`, `~/.config/btw/btw.md`,
 #' or `tools::R_user_dir("btw")`, in that order. If no user-level `btw.md`
 #' exists anywhere, btw falls back to a user-level `AGENTS.md` in the
-#' cross-tool `~/.agents/` directory; a user-level `CLAUDE.md` is never used.
-#' See `?btw-config` for the complete list of user-level locations.
+#' cross-tool `~/.agents/` directory. See `?btw-config` for the complete list
+#' of user-level locations.
 #' Project-level btw tool options under
 #' the `options` key are merged with user-level options, with project-level
 #' options taking precedence.
@@ -49,8 +49,11 @@
 #' * `btw.tools`: The btw tools to include by default when starting a new
 #'   btw chat, see [btw_tools()] for details.`
 #'
-#' One additional option is consulted when resolving context files:
+#' Two additional options are consulted when resolving context files:
 #'
+#' * `btw.client.path_btw_project`: `TRUE` (default) to search the default
+#'   project locations, `FALSE` to skip them, or a path to a specific project
+#'   context file. This is the default for the `project` field of `path_btw`.
 #' * `btw.client.path_btw_user`: `TRUE` (default) to include user-level context
 #'   in new chats, `FALSE` to skip it, or a path to a specific user-level
 #'   context file. This is the default for the `user` field of `path_btw`.
@@ -117,17 +120,17 @@
 #'   control project-level and user-level context independently. Each field
 #'   can be `TRUE` (search the default locations), `FALSE` (skip that scope),
 #'   or a path to a specific file; a missing (or `NULL`) field keeps the
-#'   default for that scope: `project` searches the project locations, and
-#'   `user` follows the `btw.client.path_btw_user` option described below.
+#'   default for that scope, set by the `btw.client.path_btw_project` and
+#'   `btw.client.path_btw_user` options described below.
 #'   If `NULL`, btw will find a
 #'   project-specific context file by walking up the parents of the current
 #'   working directory, preferring `btw.md`, then `AGENTS.md`, then
 #'   `CLAUDE.md`, and always combines it with the user-level context file:
 #'   the highest-priority user-level `btw.md`, or if none exists, a
-#'   user-level `AGENTS.md` (a user-level `CLAUDE.md` is never used). The
-#'   default for the `user` scope can be changed globally with the
-#'   `btw.client.path_btw_user` option, e.g. `options(btw.client.path_btw_user
-#'   = FALSE)`. A scalar path uses only that file, skipping user-level context
+#'   user-level `AGENTS.md`. The defaults for each scope can be changed globally
+#'   with the `btw.client.path_btw_project` and `btw.client.path_btw_user`
+#'   options, e.g. `options(btw.client.path_btw_user = FALSE)`. A scalar path
+#'   uses only that file, skipping user-level context
 #'   (equivalent to `list(project = path, user = FALSE)`), and a scalar `FALSE`
 #'   skips all context files. See `?btw-config` for the complete list of
 #'   locations.
@@ -579,30 +582,31 @@ maybe_find_in_project <- function(path, file_name, arg = "path") {
   path
 }
 
-# Default for the `user` scope of `path_btw` when it isn't specified: an R
-# option so users can opt out of (or pin) user-level context globally, e.g.
+# Default for a scope of `path_btw` when it isn't specified: an R option so
+# users can opt out of (or pin) a scope globally, e.g.
 # `options(btw.client.path_btw_user = FALSE)` in ~/.Rprofile.
-btw_user_path_default <- function() {
-  user <- getOption("btw.client.path_btw_user", TRUE)
-  if (isTRUE(user) || isFALSE(user)) {
-    return(user)
+btw_path_scope_default <- function(scope) {
+  option <- paste0("btw.client.path_btw_", scope)
+  value <- getOption(option, TRUE)
+  if (isTRUE(value) || isFALSE(value)) {
+    return(value)
   }
-  check_string(user, arg = "btw.client.path_btw_user")
-  user
+  check_string(value, arg = option)
+  value
 }
 
 # Normalize the `path_btw` argument of btw_client()/btw_app() into a list with
 # `project` and `user` fields, each TRUE (search the default locations), FALSE
 # (skip that scope), or a path to a specific file.
 #
-# Scalar values: NULL/TRUE search project and user locations (with the user
-# default from `btw.client.path_btw_user`), FALSE skips context entirely, and
-# a string uses only that file as the project context, skipping user-level
-# context -- a shortcut for list(project = path, user = FALSE).
+# Scalar values: NULL/TRUE search project and user locations (each scope's
+# default comes from its `btw.client.path_btw_*` option), FALSE skips context
+# entirely, and a string uses only that file as the project context, skipping
+# user-level context -- a shortcut for list(project = path, user = FALSE).
 #
 # A named list controls each scope independently: a missing (or NULL) field
-# keeps the default for that scope -- `project` searches project locations,
-# and `user` uses the `btw.client.path_btw_user` option default.
+# keeps the default for that scope, from the corresponding
+# `btw.client.path_btw_*` option.
 normalize_path_btw <- function(path_btw, arg = "path_btw") {
   if (is.list(path_btw)) {
     nms <- names(path_btw)
@@ -618,15 +622,23 @@ normalize_path_btw <- function(path_btw, arg = "path_btw") {
       ))
     }
     return(list(
-      project = normalize_path_btw_field(path_btw$project, TRUE, paste0(arg, "$project")),
-      user = normalize_path_btw_field(path_btw$user, btw_user_path_default(), paste0(arg, "$user"))
+      project = normalize_path_btw_field(
+        path_btw$project,
+        btw_path_scope_default("project"),
+        paste0(arg, "$project")
+      ),
+      user = normalize_path_btw_field(
+        path_btw$user,
+        btw_path_scope_default("user"),
+        paste0(arg, "$user")
+      )
     ))
   }
 
   if (is.null(path_btw) || isTRUE(path_btw)) {
     return(list(
-      project = TRUE,
-      user = btw_user_path_default()
+      project = btw_path_scope_default("project"),
+      user = btw_path_scope_default("user")
     ))
   }
 
@@ -704,9 +716,6 @@ read_btw_file <- function(path = NULL) {
     maybe_find_in_project(paths$project, "btw.md", "path_btw")
   }
 
-  # Locate the user-level context file: the highest-priority user-level
-  # btw.md, or if none exists anywhere, the highest-priority user-level
-  # AGENTS.md (a user-level CLAUDE.md is never used)
   user_path <- if (isTRUE(paths$user)) {
     path_find_user_context()
   } else if (isFALSE(paths$user)) {

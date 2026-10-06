@@ -53,16 +53,17 @@ context file, or a named list with \code{project} and/or \code{user} fields to
 control project-level and user-level context independently. Each field
 can be \code{TRUE} (search the default locations), \code{FALSE} (skip that scope),
 or a path to a specific file; a missing (or \code{NULL}) field keeps the
-default for that scope: \code{project} searches the project locations, and
-\code{user} follows the \code{btw.client.path_btw_user} option described below.
+default for that scope, set by the \code{btw.client.path_btw_project} and
+\code{btw.client.path_btw_user} options described below.
 If \code{NULL}, btw will find a
 project-specific context file by walking up the parents of the current
 working directory, preferring \code{btw.md}, then \code{AGENTS.md}, then
 \code{CLAUDE.md}, and always combines it with the user-level context file:
 the highest-priority user-level \code{btw.md}, or if none exists, a
-user-level \code{AGENTS.md} (a user-level \code{CLAUDE.md} is never used). The
-default for the \code{user} scope can be changed globally with the
-\code{btw.client.path_btw_user} option, e.g. \code{options(btw.client.path_btw_user = FALSE)}. A scalar path uses only that file, skipping user-level context
+user-level \code{AGENTS.md}. The defaults for each scope can be changed globally
+with the \code{btw.client.path_btw_project} and \code{btw.client.path_btw_user}
+options, e.g. \code{options(btw.client.path_btw_user = FALSE)}. A scalar path
+uses only that file, skipping user-level context
 (equivalent to \code{list(project = path, user = FALSE)}), and a scalar \code{FALSE}
 skips all context files. See \code{?btw-config} for the complete list of
 locations.}
@@ -113,8 +114,8 @@ setting, btw will fall back to settings in a user-level \code{btw.md} file. This
 is \verb{~/btw.md} if present, otherwise \verb{~/.btw/btw.md}, \verb{~/.config/btw/btw.md},
 or \code{tools::R_user_dir("btw")}, in that order. If no user-level \code{btw.md}
 exists anywhere, btw falls back to a user-level \code{AGENTS.md} in the
-cross-tool \verb{~/.agents/} directory; a user-level \code{CLAUDE.md} is never used.
-See \code{?btw-config} for the complete list of user-level locations.
+cross-tool \verb{~/.agents/} directory. See \code{?btw-config} for the complete list
+of user-level locations.
 Project-level btw tool options under
 the \code{options} key are merged with user-level options, with project-level
 options taking precedence.
@@ -136,8 +137,11 @@ take precedence over settings in a \code{btw.md} file:
 btw chat, see \code{\link[=btw_tools]{btw_tools()}} for details.`
 }
 
-One additional option is consulted when resolving context files:
+Two additional options are consulted when resolving context files:
 \itemize{
+\item \code{btw.client.path_btw_project}: \code{TRUE} (default) to search the default
+project locations, \code{FALSE} to skip them, or a path to a specific project
+context file. This is the default for the \code{project} field of \code{path_btw}.
 \item \code{btw.client.path_btw_user}: \code{TRUE} (default) to include user-level context
 in new chats, \code{FALSE} to skip it, or a path to a specific user-level
 context file. This is the default for the \code{user} field of \code{path_btw}.

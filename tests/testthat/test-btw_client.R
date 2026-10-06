@@ -608,6 +608,31 @@ describe("normalize_path_btw()", {
     expect_equal(normalize_path_btw("x.md"), list(project = "x.md", user = FALSE))
   })
 
+  it("reads the btw.client.path_btw_project option as the project default", {
+    withr::local_options(btw.client.path_btw_project = FALSE)
+    expect_equal(normalize_path_btw(NULL), list(project = FALSE, user = TRUE))
+    expect_equal(
+      normalize_path_btw(list(user = FALSE)),
+      list(project = FALSE, user = FALSE)
+    )
+
+    withr::local_options(btw.client.path_btw_project = "p.md")
+    expect_equal(normalize_path_btw(NULL), list(project = "p.md", user = TRUE))
+    expect_equal(
+      normalize_path_btw(list(user = FALSE)),
+      list(project = "p.md", user = FALSE)
+    )
+
+    # An explicit project field wins over the option
+    expect_equal(
+      normalize_path_btw(list(project = TRUE)),
+      list(project = TRUE, user = TRUE)
+    )
+
+    # A scalar path never consults the option: it uses only that file
+    expect_equal(normalize_path_btw("x.md"), list(project = "x.md", user = FALSE))
+  })
+
   it("rejects malformed values", {
     expect_snapshot(error = TRUE, normalize_path_btw(list()))
     expect_snapshot(error = TRUE, normalize_path_btw(list("x.md")))
@@ -617,6 +642,10 @@ describe("normalize_path_btw()", {
     expect_snapshot(
       error = TRUE,
       withr::with_options(list(btw.client.path_btw_user = 1), normalize_path_btw(NULL))
+    )
+    expect_snapshot(
+      error = TRUE,
+      withr::with_options(list(btw.client.path_btw_project = 1), normalize_path_btw(NULL))
     )
   })
 })
