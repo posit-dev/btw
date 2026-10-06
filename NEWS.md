@@ -1,6 +1,6 @@
 # btw (development version)
 
-* `btw_client()` and `btw_app()` now fall back to a user-level `AGENTS.md` in the cross-tool `~/.agents/` directory when no user-level `btw.md` exists, mirroring the project-level precedence `btw.md` > `AGENTS.md`. A user-level `CLAUDE.md` is never used. `edit_btw_md()` and `use_btw_md()` are aware of the new fallback, e.g. `use_btw_md("user")` asks before creating a `btw.md` that would take priority over an existing `AGENTS.md` (#226).
+* `btw_client()` and `btw_app()` now fall back to a user-level `AGENTS.md` in the cross-tool `~/.agents/` directory when no user-level `btw.md` exists, mirroring the project-level precedence `btw.md` > `AGENTS.md`. `edit_btw_md()` and `use_btw_md()` are aware of the new fallback, e.g. `use_btw_md("user")` asks before creating a `btw.md` that would take priority over an existing `AGENTS.md` (#226).
 
 * The `path_btw` argument of `btw_client()` and `btw_app()` now also accepts a named list with `project` and/or `user` fields, each `TRUE` (search the default locations), `FALSE` (skip that scope), or a path to a specific file; a missing field keeps the default for that scope. For example, `path_btw = list(user = FALSE)` skips user-level context for a single chat. A scalar path now uses only that file, no longer combining it with user-level context; pass `list(project = "path")` to keep the user-level context. The new `btw.client.path_btw_user` option sets the global default for the user scope (#226).
 
