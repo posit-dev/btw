@@ -41,10 +41,8 @@ user-level \code{btw.md} exists, the highest-priority one is used and btw warns
 once per session.
 
 If no user-level \code{btw.md} exists anywhere, \code{\link[=btw_client]{btw_client()}} and \code{\link[=btw_app]{btw_app()}}
-fall back to a user-level \code{AGENTS.md}, searched in each of the directories
-above (\verb{~/.btw/AGENTS.md}, \verb{~/.config/btw/AGENTS.md},
-\code{tools::R_user_dir("btw")/AGENTS.md}) followed by \verb{~/.agents/AGENTS.md}, a
-cross-tool convention shared with other coding agents. This mirrors the
+fall back to a user-level \code{AGENTS.md} in the cross-tool \verb{~/.agents/}
+directory, a convention shared with other coding agents. This mirrors the
 project-level precedence \code{btw.md} > \code{AGENTS.md} > \code{CLAUDE.md}, except a
 user-level \code{CLAUDE.md} is never used.
 

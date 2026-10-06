@@ -112,10 +112,10 @@ Client settings in \code{client} and \code{tools} from a project-level \code{btw
 setting, btw will fall back to settings in a user-level \code{btw.md} file. This
 is \verb{~/btw.md} if present, otherwise \verb{~/.btw/btw.md}, \verb{~/.config/btw/btw.md},
 or \code{tools::R_user_dir("btw")}, in that order. If no user-level \code{btw.md}
-exists anywhere, btw falls back to a user-level \code{AGENTS.md} in \verb{~/.btw/},
-\verb{~/.config/btw/}, \code{tools::R_user_dir("btw")}, or \verb{~/.agents/}, in that
-order; a user-level \code{CLAUDE.md} is never used. See \code{?btw-config} for the
-complete list of user-level locations. Project-level btw tool options under
+exists anywhere, btw falls back to a user-level \code{AGENTS.md} in the
+cross-tool \verb{~/.agents/} directory; a user-level \code{CLAUDE.md} is never used.
+See \code{?btw-config} for the complete list of user-level locations.
+Project-level btw tool options under
 the \code{options} key are merged with user-level options, with project-level
 options taking precedence.
 
@@ -223,10 +223,8 @@ user-level \code{btw.md} exists, the highest-priority one is used and btw warns
 once per session.
 
 If no user-level \code{btw.md} exists anywhere, \code{\link[=btw_client]{btw_client()}} and \code{\link[=btw_app]{btw_app()}}
-fall back to a user-level \code{AGENTS.md}, searched in each of the directories
-above (\verb{~/.btw/AGENTS.md}, \verb{~/.config/btw/AGENTS.md},
-\code{tools::R_user_dir("btw")/AGENTS.md}) followed by \verb{~/.agents/AGENTS.md}, a
-cross-tool convention shared with other coding agents. This mirrors the
+fall back to a user-level \code{AGENTS.md} in the cross-tool \verb{~/.agents/}
+directory, a convention shared with other coding agents. This mirrors the
 project-level precedence \code{btw.md} > \code{AGENTS.md} > \code{CLAUDE.md}, except a
 user-level \code{CLAUDE.md} is never used.
 

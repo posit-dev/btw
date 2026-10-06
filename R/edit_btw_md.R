@@ -173,10 +173,8 @@
 #' looks in `~/.btw/btw.md`, `~/.config/btw/btw.md`, and
 #' `tools::R_user_dir("btw")`, in that order (see [btw-config] for the full
 #' picture, including skills and agents). If no user-level `btw.md` exists
-#' anywhere, btw falls back to a user-level `AGENTS.md`, searched in
-#' `~/.btw/`, `~/.config/btw/`, `tools::R_user_dir("btw")`, and the
-#' cross-tool `~/.agents/` directory, in that order. A user-level `CLAUDE.md`
-#' is never used. `use_btw_md("user")` creates new configuration in the
+#' anywhere, btw falls back to a user-level `AGENTS.md` in the cross-tool
+#' `~/.agents/` directory. A user-level `CLAUDE.md` is never used. `use_btw_md("user")` creates new configuration in the
 #' recommended `~/.btw/` directory, offers to migrate an existing user-level
 #' configuration found elsewhere, and asks for confirmation when creating a
 #' `btw.md` would take priority over an existing user-level `AGENTS.md`. When

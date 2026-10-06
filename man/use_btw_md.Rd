@@ -218,10 +218,8 @@ directly in your home directory (\verb{~/btw.md}) takes precedence; otherwise bt
 looks in \verb{~/.btw/btw.md}, \verb{~/.config/btw/btw.md}, and
 \code{tools::R_user_dir("btw")}, in that order (see \link{btw-config} for the full
 picture, including skills and agents). If no user-level \code{btw.md} exists
-anywhere, btw falls back to a user-level \code{AGENTS.md}, searched in
-\verb{~/.btw/}, \verb{~/.config/btw/}, \code{tools::R_user_dir("btw")}, and the
-cross-tool \verb{~/.agents/} directory, in that order. A user-level \code{CLAUDE.md}
-is never used. \code{use_btw_md("user")} creates new configuration in the
+anywhere, btw falls back to a user-level \code{AGENTS.md} in the cross-tool
+\verb{~/.agents/} directory. A user-level \code{CLAUDE.md} is never used. \code{use_btw_md("user")} creates new configuration in the
 recommended \verb{~/.btw/} directory, offers to migrate an existing user-level
 configuration found elsewhere, and asks for confirmation when creating a
 \code{btw.md} would take priority over an existing user-level \code{AGENTS.md}. When

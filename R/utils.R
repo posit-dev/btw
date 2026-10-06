@@ -245,23 +245,21 @@ path_find_user <- function(filename, paths = user_config_paths(filename)) {
 }
 
 # Ordered user-level candidate paths for AGENTS.md, in decreasing priority.
-# Mirrors btw.md's directory locations (via btw_user_dirs()) and adds the
-# cross-tool ~/.agents/ convention shared with other coding agents. Unlike
-# btw.md, a loose AGENTS.md in the home root is not searched: no tool reads
-# one there, and btw's project search no longer walks through the home
-# directory, so a loose ~/AGENTS.md is never picked up by accident either.
+# Unlike btw.md, which is searched in btw's own config directories, a
+# user-level AGENTS.md lives in the cross-tool ~/.agents/ convention shared
+# with other coding agents. A loose AGENTS.md in the home root is not
+# searched: no tool reads one there, and btw's project search no longer walks
+# through the home directory, so a loose ~/AGENTS.md is never picked up by
+# accident either.
 user_agents_md_paths <- function() {
   homes <- unique(c(fs::path_home(), fs::path_home_r()))
-  unique(as.character(c(
-    file.path(btw_user_dirs(), "AGENTS.md"),
-    fs::path(homes, ".agents", "AGENTS.md")
-  )))
+  unique(as.character(fs::path(homes, ".agents", "AGENTS.md")))
 }
 
 # The active user-level context file, mirroring the project-level precedence
 # btw.md > AGENTS.md > CLAUDE.md, except CLAUDE.md is never considered at user
 # level: the highest-priority existing user-level btw.md, or if none exists
-# anywhere, the highest-priority existing user-level AGENTS.md.
+# anywhere, a user-level AGENTS.md in ~/.agents/.
 path_find_user_context <- function() {
   path_find_user("btw.md") %||%
     path_find_user("AGENTS.md", paths = user_agents_md_paths())
@@ -271,7 +269,12 @@ path_find_user_context <- function() {
 # user editing a now-shadowed file has a hint about which one btw reads.
 warn_multiple_user_config <- function(paths, filename = basename(paths[[1]])) {
   shown <- path_home_display(paths)
-  target <- path_home_display(fs::path(btw_user_dir_preferred(), filename))
+  recommended <- if (identical(filename, "AGENTS.md")) {
+    user_agents_md_paths()[[1]]
+  } else {
+    fs::path(btw_user_dir_preferred(), filename)
+  }
+  target <- path_home_display(recommended)
   cli::cli_warn(
     c(
       "!" = "Found more than one user-level {.file {filename}} config file.",

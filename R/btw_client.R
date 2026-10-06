@@ -27,10 +27,10 @@
 #' setting, btw will fall back to settings in a user-level `btw.md` file. This
 #' is `~/btw.md` if present, otherwise `~/.btw/btw.md`, `~/.config/btw/btw.md`,
 #' or `tools::R_user_dir("btw")`, in that order. If no user-level `btw.md`
-#' exists anywhere, btw falls back to a user-level `AGENTS.md` in `~/.btw/`,
-#' `~/.config/btw/`, `tools::R_user_dir("btw")`, or `~/.agents/`, in that
-#' order; a user-level `CLAUDE.md` is never used. See `?btw-config` for the
-#' complete list of user-level locations. Project-level btw tool options under
+#' exists anywhere, btw falls back to a user-level `AGENTS.md` in the
+#' cross-tool `~/.agents/` directory; a user-level `CLAUDE.md` is never used.
+#' See `?btw-config` for the complete list of user-level locations.
+#' Project-level btw tool options under
 #' the `options` key are merged with user-level options, with project-level
 #' options taking precedence.
 #'

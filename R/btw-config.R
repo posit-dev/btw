@@ -36,10 +36,8 @@
 #' once per session.
 #'
 #' If no user-level `btw.md` exists anywhere, [btw_client()] and [btw_app()]
-#' fall back to a user-level `AGENTS.md`, searched in each of the directories
-#' above (`~/.btw/AGENTS.md`, `~/.config/btw/AGENTS.md`,
-#' `tools::R_user_dir("btw")/AGENTS.md`) followed by `~/.agents/AGENTS.md`, a
-#' cross-tool convention shared with other coding agents. This mirrors the
+#' fall back to a user-level `AGENTS.md` in the cross-tool `~/.agents/`
+#' directory, a convention shared with other coding agents. This mirrors the
 #' project-level precedence `btw.md` > `AGENTS.md` > `CLAUDE.md`, except a
 #' user-level `CLAUDE.md` is never used.
 #'

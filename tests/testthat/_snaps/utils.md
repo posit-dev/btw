@@ -26,8 +26,8 @@
     Condition
       Warning:
       ! Found more than one user-level 'AGENTS.md' config file.
-      i Using '~/.btw/AGENTS.md'.
+      i Using '<home>/.agents/AGENTS.md'.
       i Ignoring lower-priority: '~/.agents/AGENTS.md'.
-      i Consider consolidating your btw configuration into '~/.btw/AGENTS.md'.
+      i Consider consolidating your btw configuration into '<home>/.agents/AGENTS.md'.
       This warning is displayed once per session.
 
