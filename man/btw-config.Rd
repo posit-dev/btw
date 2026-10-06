@@ -49,7 +49,9 @@ user-level \code{CLAUDE.md} is never used.
 User-level context is combined with the project-level context file by
 default; use \code{path_btw = list(user = FALSE)} in \code{\link[=btw_client]{btw_client()}} or
 \code{\link[=btw_app]{btw_app()}} to skip it for a single chat, or set the
-\code{btw.client.path_btw_user} option to \code{FALSE} to change the default.
+\code{btw.client.path_btw_user} option to \code{FALSE} to change the default. The
+\code{project} scope of \code{path_btw} has a matching
+\code{btw.client.path_btw_project} option.
 
 On Windows, R's notion of your home directory (\code{fs::path_home_r()},
 typically your \code{Documents} folder) can differ from your user profile
