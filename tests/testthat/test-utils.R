@@ -368,6 +368,95 @@ test_that("find_project_agent_files() returns agents/ subdir files before flat a
 
 # Regression tests for path_find_user() -------------------------------------
 
+# Tests for path_find_in_project() -------------------------------------------
+
+test_that("path_find_in_project() stops at the home directory", {
+  user_dir <- withr::local_tempdir()
+  local_user_home(user_dir)
+  fs::file_create(fs::path(user_dir, "AGENTS.md"))
+
+  # Directories under home but outside a project don't see ~/AGENTS.md
+  sub_dir <- fs::dir_create(fs::path(user_dir, "scratch", "sub"))
+  expect_null(path_find_in_project("AGENTS.md", sub_dir))
+
+  # The home directory itself is never checked
+  expect_null(path_find_in_project("AGENTS.md", user_dir))
+})
+
+test_that("path_find_in_project() honors project roots below home", {
+  user_dir <- withr::local_tempdir()
+  local_user_home(user_dir)
+
+  scratch <- fs::dir_create(fs::path(user_dir, "scratch"))
+  fs::file_create(fs::path(scratch, "AGENTS.md"))
+  proj <- fs::dir_create(fs::path(scratch, "proj"))
+  sub <- fs::dir_create(fs::path(proj, "sub"))
+
+  # Without a root marker, the walk from `sub` finds `scratch`'s AGENTS.md
+  expect_equal(
+    path_find_in_project("AGENTS.md", sub),
+    normalizePath(fs::path(scratch, "AGENTS.md"))
+  )
+
+  # The .git marker in `proj` stops the search before it reaches `scratch`
+  fs::dir_create(fs::path(proj, ".git"))
+  expect_null(path_find_in_project("AGENTS.md", sub))
+
+  # Files inside the project root are still found
+  fs::file_create(fs::path(proj, "AGENTS.md"))
+  src <- fs::dir_create(fs::path(proj, "src"))
+  expect_equal(
+    path_find_in_project("AGENTS.md", src),
+    normalizePath(fs::path(proj, "AGENTS.md"))
+  )
+})
+
+test_that("path_find_in_project() stops at either home root (Windows)", {
+  profile <- withr::local_tempdir("profile")
+  docs <- withr::local_tempdir("docs")
+  local_mocked_bindings(
+    path_home = function(...) fs::path(profile, ...),
+    path_home_r = function(...) fs::path(docs, ...),
+    .package = "fs"
+  )
+  fs::file_create(fs::path(profile, "btw.md"))
+  fs::file_create(fs::path(docs, "btw.md"))
+
+  expect_null(path_find_in_project("btw.md", fs::dir_create(fs::path(profile, "sub"))))
+  expect_null(path_find_in_project("btw.md", fs::dir_create(fs::path(docs, "sub"))))
+})
+
+test_that("path_find_in_project() honors .Rproj project roots", {
+  root <- withr::local_tempdir()
+  parent <- fs::dir_create(fs::path(root, "parent"))
+  proj <- fs::dir_create(fs::path(parent, "proj"))
+  fs::file_create(fs::path(proj, "btw.Rproj"))
+  fs::file_create(fs::path(parent, "AGENTS.md"))
+  sub <- fs::dir_create(fs::path(proj, "src"))
+
+  # The .Rproj file makes `proj` a project root, so the search must stop
+  # there instead of continuing to `parent`
+  expect_null(path_find_in_project("AGENTS.md", sub))
+})
+
+test_that("path_find_in_project() .Rproj check uses the searched directory", {
+  # A stray *.Rproj in the session cwd must not mark unrelated directories
+  # as project roots
+  decoy_dir <- withr::local_tempdir()
+  fs::file_create(fs::path(decoy_dir, "decoy.Rproj"))
+
+  parent <- withr::local_tempdir()
+  fs::file_create(fs::path(parent, "AGENTS.md"))
+  sub <- fs::dir_create(fs::path(parent, "sub"))
+
+  withr::with_dir(decoy_dir, {
+    expect_equal(
+      path_find_in_project("AGENTS.md", sub),
+      normalizePath(fs::path(parent, "AGENTS.md"))
+    )
+  })
+})
+
 test_that("path_find_user() finds btw.md under a home root", {
   user_dir <- withr::local_tempdir()
   local_user_home(user_dir)

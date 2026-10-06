@@ -609,6 +609,12 @@ read_btw_file <- function(path = NULL) {
   project_path <- find_btw_context_file(path, search_user = FALSE)
   user_path <- path_find_user("btw.md")
 
+  # If the project path was set explicitly to the same file as the user-level
+  # config, don't read it twice.
+  if (!is.null(user_path) && path_same(user_path, project_path)) {
+    user_path <- NULL
+  }
+
   # If no files found, return empty config
   if (is.null(project_path) && is.null(user_path)) {
     return(list())

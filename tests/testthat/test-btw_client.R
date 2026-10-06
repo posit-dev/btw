@@ -473,6 +473,17 @@ describe("btw_client() project vs user settings", {
     expect_equal(config$options$btw.feature_x, TRUE) # From project
   })
 
+  it("doesn't read the user-level file twice when path_btw points at it", {
+    writeLines(
+      c("home btw instructions"),
+      path_user_btw
+    )
+    withr::defer(unlink(path_user_btw))
+
+    config <- read_btw_file(path_user_btw)
+    expect_equal(config$btw_system_prompt, "home btw instructions")
+  })
+
   it("uses only project tools when defined", {
     writeLines(
       c(
