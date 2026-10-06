@@ -222,3 +222,54 @@
       
       
 
+# normalize_path_btw() / rejects malformed values
+
+    Code
+      normalize_path_btw(list())
+    Condition
+      Error in `normalize_path_btw()`:
+      ! `path_btw` must be a named list with `project` and/or `user` fields.
+      i Each field can be `TRUE` (search the default locations), `FALSE` (skip), or a path to a file.
+
+---
+
+    Code
+      normalize_path_btw(list("x.md"))
+    Condition
+      Error in `normalize_path_btw()`:
+      ! `path_btw` must be a named list with `project` and/or `user` fields.
+      i Each field can be `TRUE` (search the default locations), `FALSE` (skip), or a path to a file.
+
+---
+
+    Code
+      normalize_path_btw(list(other = TRUE))
+    Condition
+      Error in `normalize_path_btw()`:
+      ! `path_btw` must be a named list with `project` and/or `user` fields.
+      i Each field can be `TRUE` (search the default locations), `FALSE` (skip), or a path to a file.
+
+---
+
+    Code
+      normalize_path_btw(list(project = 1))
+    Condition
+      Error in `normalize_path_btw_field()`:
+      ! `path_btw$project` must be a single string, not the number 1.
+
+---
+
+    Code
+      normalize_path_btw(1)
+    Condition
+      Error in `normalize_path_btw()`:
+      ! `path_btw` must be a single string, not the number 1.
+
+---
+
+    Code
+      withr::with_options(list(btw.client.path_btw_user = 1), normalize_path_btw(NULL))
+    Condition
+      Error in `btw_user_path_default()`:
+      ! `btw.client.path_btw_user` must be a single string, not the number 1.
+

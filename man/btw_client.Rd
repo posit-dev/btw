@@ -48,13 +48,24 @@ alternatively in the shorter form \code{tools = "docs_help_page"}. Finally,
 set \code{tools = FALSE} to skip registering \pkg{btw} tools with the chat
 client.}
 
-\item{path_btw}{A path to a \code{btw.md}, \code{AGENTS.md}, or \code{CLAUDE.md} project
-context file. If \code{NULL}, btw will find a project-specific context file by
-walking up the parents of the current working directory, preferring
-\code{btw.md}, then \code{AGENTS.md}, then \code{CLAUDE.md}, with fallback to a
-user-level \code{btw.md} file if no project file is found. See \code{?btw-config}
-for the complete list of locations. Set \code{path_btw = FALSE} to create a
-chat client without using a \code{btw.md} file.}
+\item{path_btw}{Path to a \code{btw.md}, \code{AGENTS.md}, or \code{CLAUDE.md} project
+context file, or a named list with \code{project} and/or \code{user} fields to
+control project-level and user-level context independently. Each field
+can be \code{TRUE} (search the default locations), \code{FALSE} (skip that scope),
+or a path to a specific file; a missing (or \code{NULL}) field keeps the
+default for that scope: \code{project} searches the project locations, and
+\code{user} follows the \code{btw.client.path_btw_user} option described below.
+If \code{NULL}, btw will find a
+project-specific context file by walking up the parents of the current
+working directory, preferring \code{btw.md}, then \code{AGENTS.md}, then
+\code{CLAUDE.md}, and always combines it with the user-level context file:
+the highest-priority user-level \code{btw.md}, or if none exists, a
+user-level \code{AGENTS.md} (a user-level \code{CLAUDE.md} is never used). The
+default for the \code{user} scope can be changed globally with the
+\code{btw.client.path_btw_user} option, e.g. \code{options(btw.client.path_btw_user = FALSE)}. A scalar path uses only that file, skipping user-level context
+(equivalent to \code{list(project = path, user = FALSE)}), and a scalar \code{FALSE}
+skips all context files. See \code{?btw-config} for the complete list of
+locations.}
 
 \item{path_llms_txt}{A path to an \code{llms.txt} file containing context about
 the current project. By default, btw will look for an \code{llms.txt} file in
@@ -100,7 +111,10 @@ Client settings in \code{client} and \code{tools} from a project-level \code{btw
 \code{AGENTS.md} file take precedence. If a project file doesn't specify a
 setting, btw will fall back to settings in a user-level \code{btw.md} file. This
 is \verb{~/btw.md} if present, otherwise \verb{~/.btw/btw.md}, \verb{~/.config/btw/btw.md},
-or \code{tools::R_user_dir("btw")}, in that order. See \code{?btw-config} for the
+or \code{tools::R_user_dir("btw")}, in that order. If no user-level \code{btw.md}
+exists anywhere, btw falls back to a user-level \code{AGENTS.md} in \verb{~/.btw/},
+\verb{~/.config/btw/}, \code{tools::R_user_dir("btw")}, or \verb{~/.agents/}, in that
+order; a user-level \code{CLAUDE.md} is never used. See \code{?btw-config} for the
 complete list of user-level locations. Project-level btw tool options under
 the \code{options} key are merged with user-level options, with project-level
 options taking precedence.
@@ -120,6 +134,13 @@ take precedence over settings in a \code{btw.md} file:
 \code{btw_app()} chats.
 \item \code{btw.tools}: The btw tools to include by default when starting a new
 btw chat, see \code{\link[=btw_tools]{btw_tools()}} for details.`
+}
+
+One additional option is consulted when resolving context files:
+\itemize{
+\item \code{btw.client.path_btw_user}: \code{TRUE} (default) to include user-level context
+in new chats, \code{FALSE} to skip it, or a path to a specific user-level
+context file. This is the default for the \code{user} field of \code{path_btw}.
 }
 }
 
@@ -200,6 +221,19 @@ takes precedence, followed by \code{btw.md} in each of the directories above
 configuration in the recommended \verb{~/.btw/} directory. If more than one
 user-level \code{btw.md} exists, the highest-priority one is used and btw warns
 once per session.
+
+If no user-level \code{btw.md} exists anywhere, \code{\link[=btw_client]{btw_client()}} and \code{\link[=btw_app]{btw_app()}}
+fall back to a user-level \code{AGENTS.md}, searched in each of the directories
+above (\verb{~/.btw/AGENTS.md}, \verb{~/.config/btw/AGENTS.md},
+\code{tools::R_user_dir("btw")/AGENTS.md}) followed by \verb{~/.agents/AGENTS.md}, a
+cross-tool convention shared with other coding agents. This mirrors the
+project-level precedence \code{btw.md} > \code{AGENTS.md} > \code{CLAUDE.md}, except a
+user-level \code{CLAUDE.md} is never used.
+
+User-level context is combined with the project-level context file by
+default; use \code{path_btw = list(user = FALSE)} in \code{\link[=btw_client]{btw_client()}} or
+\code{\link[=btw_app]{btw_app()}} to skip it for a single chat, or set the
+\code{btw.client.path_btw_user} option to \code{FALSE} to change the default.
 
 On Windows, R's notion of your home directory (\code{fs::path_home_r()},
 typically your \code{Documents} folder) can differ from your user profile

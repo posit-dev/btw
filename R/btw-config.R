@@ -35,6 +35,19 @@
 #' user-level `btw.md` exists, the highest-priority one is used and btw warns
 #' once per session.
 #'
+#' If no user-level `btw.md` exists anywhere, [btw_client()] and [btw_app()]
+#' fall back to a user-level `AGENTS.md`, searched in each of the directories
+#' above (`~/.btw/AGENTS.md`, `~/.config/btw/AGENTS.md`,
+#' `tools::R_user_dir("btw")/AGENTS.md`) followed by `~/.agents/AGENTS.md`, a
+#' cross-tool convention shared with other coding agents. This mirrors the
+#' project-level precedence `btw.md` > `AGENTS.md` > `CLAUDE.md`, except a
+#' user-level `CLAUDE.md` is never used.
+#'
+#' User-level context is combined with the project-level context file by
+#' default; use `path_btw = list(user = FALSE)` in [btw_client()] or
+#' [btw_app()] to skip it for a single chat, or set the
+#' `btw.client.path_btw_user` option to `FALSE` to change the default.
+#'
 #' On Windows, R's notion of your home directory (`fs::path_home_r()`,
 #' typically your `Documents` folder) can differ from your user profile
 #' directory (`fs::path_home()`); btw searches both.

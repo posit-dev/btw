@@ -452,3 +452,106 @@ test_that("btw_md_template() selects correct template", {
   template <- btw_md_template("custom.md")
   expect_match(basename(template), "^btw.*\\.md$")
 })
+
+test_that("edit_btw_md('user') opens a user-level AGENTS.md when no btw.md exists", {
+  wd <- withr::local_tempdir()
+  local_user_home(wd)
+  local_mocked_bindings(is_interactive = function() TRUE)
+
+  fs::dir_create(fs::path(wd, ".agents"))
+  fs::file_create(fs::path(wd, ".agents", "AGENTS.md"))
+
+  local_mocked_bindings(
+    menu = function(...) stop("menu should not be called"),
+    .package = "utils"
+  )
+  local_mocked_bindings(
+    is_installed = function(pkg) pkg != "rstudioapi",
+    .package = "rlang"
+  )
+
+  edited <- NULL
+  with_mocked_bindings(
+    file.edit = function(file) edited <<- file,
+    .package = "utils",
+    suppressMessages(path <- edit_btw_md("user"))
+  )
+
+  expect_equal(edited, fs::path(wd, ".agents", "AGENTS.md"))
+})
+
+test_that("edit_btw_md('user') prefers btw.md files over AGENTS.md files", {
+  wd <- withr::local_tempdir()
+  local_user_home(wd)
+  local_mocked_bindings(is_interactive = function() FALSE)
+
+  fs::dir_create(fs::path(wd, ".btw"))
+  fs::file_create(fs::path(wd, ".btw", "AGENTS.md"))
+  fs::file_create(fs::path(wd, "btw.md"))
+
+  local_mocked_bindings(
+    is_installed = function(pkg) pkg != "rstudioapi",
+    .package = "rlang"
+  )
+
+  edited <- NULL
+  with_mocked_bindings(
+    file.edit = function(file) edited <<- file,
+    .package = "utils",
+    suppressMessages(path <- edit_btw_md("user"))
+  )
+
+  expect_equal(edited, fs::path(wd, "btw.md"))
+})
+
+test_that("use_btw_md('user') warns and creates btw.md when an AGENTS.md exists", {
+  wd <- withr::local_tempdir()
+  local_user_home(wd)
+  local_mocked_bindings(is_interactive = function() FALSE)
+
+  fs::dir_create(fs::path(wd, ".agents"))
+  fs::file_create(fs::path(wd, ".agents", "AGENTS.md"))
+
+  expect_snapshot(
+    path <- use_btw_md("user")
+  )
+
+  expect_equal(path, fs::path(wd, ".btw", "btw.md"))
+  expect_true(fs::file_exists(fs::path(wd, ".btw", "btw.md")))
+  expect_true(fs::file_exists(fs::path(wd, ".agents", "AGENTS.md")))
+})
+
+test_that("use_btw_md('user') creates btw.md over an AGENTS.md when confirmed", {
+  wd <- withr::local_tempdir()
+  local_user_home(wd)
+  local_mocked_bindings(is_interactive = function() TRUE)
+  local_mocked_bindings(menu = function(...) 1L, .package = "utils")
+
+  fs::dir_create(fs::path(wd, ".agents"))
+  fs::file_create(fs::path(wd, ".agents", "AGENTS.md"))
+
+  expect_snapshot(
+    path <- use_btw_md("user")
+  )
+
+  expect_equal(path, fs::path(wd, ".btw", "btw.md"))
+  expect_true(fs::file_exists(fs::path(wd, ".btw", "btw.md")))
+})
+
+test_that("use_btw_md('user') keeps an existing AGENTS.md when creation is declined", {
+  wd <- withr::local_tempdir()
+  local_user_home(wd)
+  local_mocked_bindings(is_interactive = function() TRUE)
+  local_mocked_bindings(menu = function(...) 2L, .package = "utils")
+
+  fs::dir_create(fs::path(wd, ".agents"))
+  fs::file_create(fs::path(wd, ".agents", "AGENTS.md"))
+
+  expect_snapshot(
+    path <- use_btw_md("user")
+  )
+
+  expect_equal(path, fs::path(wd, ".agents", "AGENTS.md"))
+  expect_false(fs::file_exists(fs::path(wd, ".btw", "btw.md")))
+  expect_true(fs::file_exists(fs::path(wd, ".agents", "AGENTS.md")))
+})

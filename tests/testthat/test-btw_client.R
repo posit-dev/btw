@@ -308,7 +308,7 @@ describe("btw_client() project vs user settings", {
 
   path_user_btw <- withr::local_tempfile(fileext = ".md")
   local_mocked_bindings(
-    path_find_user = function(filename) {
+    path_find_user = function(filename, ...) {
       if (filename == "btw.md") path_user_btw else NULL
     }
   )
@@ -480,7 +480,7 @@ describe("btw_client() project vs user settings", {
     )
     withr::defer(unlink(path_user_btw))
 
-    config <- read_btw_file(path_user_btw)
+    config <- read_btw_file(list(project = path_user_btw))
     expect_equal(config$btw_system_prompt, "home btw instructions")
   })
 
@@ -556,6 +556,149 @@ describe("btw_client() project vs user settings", {
     tool_names <- names(chat$get_tools())
     # Should have docs tools from user
     expect_true(any(grepl("btw_tool_docs", tool_names)))
+  })
+})
+
+describe("normalize_path_btw()", {
+  it("keeps the meaning of scalar values", {
+    expect_equal(normalize_path_btw(NULL), list(project = TRUE, user = TRUE))
+    expect_equal(normalize_path_btw(TRUE), list(project = TRUE, user = TRUE))
+    expect_equal(normalize_path_btw(FALSE), list(project = FALSE, user = FALSE))
+    # A scalar path uses only that file, skipping user-level context
+    expect_equal(normalize_path_btw("x.md"), list(project = "x.md", user = FALSE))
+  })
+
+  it("controls each scope via a named list", {
+    expect_equal(
+      normalize_path_btw(list(project = "x.md")),
+      list(project = "x.md", user = TRUE)
+    )
+    expect_equal(
+      normalize_path_btw(list(user = "u.md")),
+      list(project = TRUE, user = "u.md")
+    )
+    expect_equal(
+      normalize_path_btw(list(project = FALSE, user = TRUE)),
+      list(project = FALSE, user = TRUE)
+    )
+  })
+
+  it("reads the btw.client.path_btw_user option as the user default", {
+    withr::local_options(btw.client.path_btw_user = FALSE)
+    expect_equal(normalize_path_btw(NULL), list(project = TRUE, user = FALSE))
+    expect_equal(
+      normalize_path_btw(list(project = "x.md")),
+      list(project = "x.md", user = FALSE)
+    )
+
+    withr::local_options(btw.client.path_btw_user = "u.md")
+    expect_equal(normalize_path_btw(NULL), list(project = TRUE, user = "u.md"))
+    expect_equal(
+      normalize_path_btw(list(project = "x.md")),
+      list(project = "x.md", user = "u.md")
+    )
+
+    # An explicit user field wins over the option
+    expect_equal(
+      normalize_path_btw(list(user = TRUE)),
+      list(project = TRUE, user = TRUE)
+    )
+
+    # A scalar path never consults the option: it uses only that file
+    expect_equal(normalize_path_btw("x.md"), list(project = "x.md", user = FALSE))
+  })
+
+  it("rejects malformed values", {
+    expect_snapshot(error = TRUE, normalize_path_btw(list()))
+    expect_snapshot(error = TRUE, normalize_path_btw(list("x.md")))
+    expect_snapshot(error = TRUE, normalize_path_btw(list(other = TRUE)))
+    expect_snapshot(error = TRUE, normalize_path_btw(list(project = 1)))
+    expect_snapshot(error = TRUE, normalize_path_btw(1))
+    expect_snapshot(
+      error = TRUE,
+      withr::with_options(list(btw.client.path_btw_user = 1), normalize_path_btw(NULL))
+    )
+  })
+})
+
+describe("read_btw_file() with scoped path_btw", {
+  project_dir <- withr::local_tempdir("btw-test-project-")
+  path_project <- withr::local_tempfile(
+    lines = c("---", "client: openai", "---", "PROJECT CONTEXT")
+  )
+  path_user <- withr::local_tempfile(
+    lines = c("---", "tools: docs", "---", "USER CONTEXT")
+  )
+  path_agents <- withr::local_tempfile(
+    lines = c("---", "client: anthropic", "---", "USER AGENTS CONTEXT")
+  )
+
+  it("combines project and user files by default", {
+    local_btw_md(project = path_project, user = path_user)
+
+    config <- read_btw_file()
+    expect_equal(config$btw_system_prompt, "USER CONTEXT\n\n---\n\nPROJECT CONTEXT")
+    expect_equal(config$client, "openai")
+    expect_equal(config$tools, "docs")
+  })
+
+  it("skips user context with list(user = FALSE)", {
+    local_btw_md(project = path_project, user = path_user)
+
+    config <- read_btw_file(list(user = FALSE))
+    expect_equal(config$btw_system_prompt, "PROJECT CONTEXT")
+    expect_equal(config$client, "openai")
+    expect_null(config$tools)
+  })
+
+  it("keeps user context when the list names only project", {
+    local_btw_md(project = path_project, user = path_user)
+
+    config <- read_btw_file(list(project = path_project))
+    expect_equal(config$btw_system_prompt, "USER CONTEXT\n\n---\n\nPROJECT CONTEXT")
+    expect_equal(config$client, "openai")
+    expect_equal(config$tools, "docs")
+  })
+
+  it("uses only an explicit user file with list(project = FALSE, user = path)", {
+    config <- read_btw_file(list(project = FALSE, user = path_user))
+    expect_equal(config$btw_system_prompt, "USER CONTEXT")
+    expect_equal(config$tools, "docs")
+  })
+
+  it("falls back to a user-level AGENTS.md when no user-level btw.md exists", {
+    local_mocked_bindings(
+      find_btw_context_file = function(...) NULL,
+      path_find_user = function(filename, ...) {
+        if (filename == "btw.md") NULL else path_agents
+      }
+    )
+
+    config <- read_btw_file(list(project = FALSE, user = TRUE))
+    expect_equal(config$btw_system_prompt, "USER AGENTS CONTEXT")
+    expect_equal(config$client, "anthropic")
+  })
+
+  it("a scalar path uses only that file, without user-level context", {
+    local_btw_md(project = path_project, user = path_user)
+
+    config <- read_btw_file(path_project)
+    expect_equal(config$btw_system_prompt, "PROJECT CONTEXT")
+    expect_equal(config$client, "openai")
+    expect_null(config$tools)
+  })
+
+  it("throws for a user path that does not exist", {
+    expect_error(
+      read_btw_file(list(project = FALSE, user = tempfile("missing-"))),
+      "does not exist"
+    )
+  })
+
+  it("returns an empty config when both scopes are skipped", {
+    local_btw_md(project = path_project, user = path_user)
+    config <- read_btw_file(list(project = FALSE, user = FALSE))
+    expect_equal(config, list())
   })
 })
 

@@ -29,7 +29,7 @@ A `btw.md` file plays the same role for btw, and btw falls back to those files w
 Using `btw.md` gives you a few things those files don't:
 
 - **It configures the chat, not just the instructions.** The front matter chooses the model, tools, and options. btw ignores front matter in `CLAUDE.md`, and the other tools that read `AGENTS.md` don't expect front matter there.
-- **It has a user-level version.** btw combines a `btw.md` in your home directory, such as `~/.btw/btw.md`, with each project's file. btw doesn't look for `AGENTS.md` or `CLAUDE.md` in your home directory.
+- **It has a user-level version.** btw combines a `btw.md` in your home directory, such as `~/.btw/btw.md`, with each project's file. If there's no user-level `btw.md`, btw falls back to a user-level `AGENTS.md` in `~/.btw/`, `~/.config/btw/`, or `~/.agents/`. A user-level `CLAUDE.md` is never used.
 - **It keeps btw-specific instructions separate.** Instructions about btw's tools or your R workflow don't end up in the files that other coding agents read.
 
 In this vignette, we'll set up a chat by hand, save that setup in a `btw.md` file, and then learn how btw decides which file to use.
@@ -232,6 +232,7 @@ btw reads the front matter in `AGENTS.md` like `btw.md`, but ignores the front m
 btw reads only one of these files, so if your project has both `btw.md` and `AGENTS.md`, btw uses `btw.md` and ignores `AGENTS.md`.
 
 btw also reads a **user-level** `btw.md` that applies to all of your projects, such as `~/.btw/btw.md`.
+If there's no user-level `btw.md`, btw falls back to a user-level `AGENTS.md` in `~/.btw/`, `~/.config/btw/`, or `~/.agents/`, in that order.
 The two files are combined:
 
 - The project's `client` and `tools` fields are used when they're present; otherwise the user-level fields are used.
@@ -242,12 +243,15 @@ This lets you keep your general preferences, such as a default model or coding s
 See `?btw-config` for every location btw checks.
 
 To use a particular file instead of searching, pass its path to `path_btw`.
-To start a chat without any `btw.md` file, use `path_btw = FALSE`:
+To start a chat without any `btw.md` file, use `path_btw = FALSE`.
+Or pass a named list to control project and user context separately, e.g. `path_btw = list(user = FALSE)`; the `btw.client.path_btw_user` option sets the default for the user scope.
 
 ```{r, eval = FALSE}
 btw_app(path_btw = "analysis/btw.md")
 
 btw_client(path_btw = FALSE)
+
+btw_client(path_btw = list(user = FALSE))
 ```
 
 ## Next: the same format for agents

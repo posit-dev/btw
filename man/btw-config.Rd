@@ -40,6 +40,19 @@ configuration in the recommended \verb{~/.btw/} directory. If more than one
 user-level \code{btw.md} exists, the highest-priority one is used and btw warns
 once per session.
 
+If no user-level \code{btw.md} exists anywhere, \code{\link[=btw_client]{btw_client()}} and \code{\link[=btw_app]{btw_app()}}
+fall back to a user-level \code{AGENTS.md}, searched in each of the directories
+above (\verb{~/.btw/AGENTS.md}, \verb{~/.config/btw/AGENTS.md},
+\code{tools::R_user_dir("btw")/AGENTS.md}) followed by \verb{~/.agents/AGENTS.md}, a
+cross-tool convention shared with other coding agents. This mirrors the
+project-level precedence \code{btw.md} > \code{AGENTS.md} > \code{CLAUDE.md}, except a
+user-level \code{CLAUDE.md} is never used.
+
+User-level context is combined with the project-level context file by
+default; use \code{path_btw = list(user = FALSE)} in \code{\link[=btw_client]{btw_client()}} or
+\code{\link[=btw_app]{btw_app()}} to skip it for a single chat, or set the
+\code{btw.client.path_btw_user} option to \code{FALSE} to change the default.
+
 On Windows, R's notion of your home directory (\code{fs::path_home_r()},
 typically your \code{Documents} folder) can differ from your user profile
 directory (\code{fs::path_home()}); btw searches both.

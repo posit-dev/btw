@@ -19,3 +19,15 @@
       i Consider consolidating your btw configuration into '~/.btw/btw.md'.
       This warning is displayed once per session.
 
+# path_find_user() warns for multiple user-level AGENTS.md files
+
+    Code
+      result <- path_find_user("AGENTS.md", paths = user_agents_md_paths())
+    Condition
+      Warning:
+      ! Found more than one user-level 'AGENTS.md' config file.
+      i Using '~/.btw/AGENTS.md'.
+      i Ignoring lower-priority: '~/.agents/AGENTS.md'.
+      i Consider consolidating your btw configuration into '~/.btw/AGENTS.md'.
+      This warning is displayed once per session.
+

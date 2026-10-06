@@ -172,11 +172,18 @@
 #' directly in your home directory (`~/btw.md`) takes precedence; otherwise btw
 #' looks in `~/.btw/btw.md`, `~/.config/btw/btw.md`, and
 #' `tools::R_user_dir("btw")`, in that order (see [btw-config] for the full
-#' picture, including skills and agents). `use_btw_md("user")` creates new
-#' configuration in the recommended `~/.btw/` directory, and offers to migrate
-#' an existing user-level configuration found elsewhere. When more than one
-#' user-level `btw.md` file exists, `edit_btw_md("user")` asks which one to open.
-#' Note that \pkg{btw} does not look for `AGENTS.md` in your home directory.
+#' picture, including skills and agents). If no user-level `btw.md` exists
+#' anywhere, btw falls back to a user-level `AGENTS.md`, searched in
+#' `~/.btw/`, `~/.config/btw/`, `tools::R_user_dir("btw")`, and the
+#' cross-tool `~/.agents/` directory, in that order. A user-level `CLAUDE.md`
+#' is never used. `use_btw_md("user")` creates new configuration in the
+#' recommended `~/.btw/` directory, offers to migrate an existing user-level
+#' configuration found elsewhere, and asks for confirmation when creating a
+#' `btw.md` would take priority over an existing user-level `AGENTS.md`. When
+#' more than one user-level context file exists, `edit_btw_md("user")` asks
+#' which one to open. To skip user-level context in a specific chat, use
+#' `path_btw = list(user = FALSE)` in [btw_client()] or [btw_app()], or change
+#' the default globally with the `btw.client.path_btw_user` option.
 #'
 #' The user-level `btw.md` file is used alongside your project's context file,
 #' not only when a project file is missing. When both are present,
@@ -212,18 +219,21 @@
 #' @param scope The scope of the context file. Can be:
 #'   - `"project"` (default): Creates/opens `btw.md` (by default) or `AGENTS.md`
 #'     in the project root
-#'   - `"user"`: Opens your user-level `btw.md`. When multiple user-level
-#'     configuration files exist, `edit_btw_md("user")` asks which one to open,
-#'     indicating the file that [btw_client()] and [btw_app()] load. When
-#'     creating, `use_btw_md("user")` uses the recommended `~/.btw/` location and
-#'     offers to migrate an existing user-level configuration found elsewhere.
+#'   - `"user"`: Opens your user-level `btw.md`, or if only a user-level
+#'     `AGENTS.md` exists, that file. When multiple user-level context files
+#'     exist, `edit_btw_md("user")` asks which one to open, indicating the file
+#'     that [btw_client()] and [btw_app()] load. When creating,
+#'     `use_btw_md("user")` uses the recommended `~/.btw/` location, offers to
+#'     migrate an existing user-level configuration found elsewhere, and asks
+#'     for confirmation when creating a `btw.md` would take priority over an
+#'     existing user-level `AGENTS.md`.
 #'   - A directory path: Creates/opens `btw.md` in that directory
 #'   - A file path: Creates/opens that specific file
 #'
 #'   For `edit_btw_md()`, `scope = NULL` (default) will find and open the
 #'   context file that [btw_client()] would use, searching first for `btw.md`,
-#'   then `AGENTS.md`, then `CLAUDE.md` in the project directory and then for a
-#'   user-level `btw.md`.
+#'   then `AGENTS.md`, then `CLAUDE.md` in the project directory and then for
+#'   a user-level `btw.md` (or, if none exists, a user-level `AGENTS.md`).
 #'
 #' @return `use_btw_md()` returns the path to the context file, invisibly.
 #'   `edit_btw_md()` is called for its side effect of opening the file.
@@ -315,12 +325,33 @@ existing_user_btw_md <- function() {
   fs::path(paths[fs::file_exists(paths)])
 }
 
+# Existing user-level AGENTS.md files, in decreasing priority order (empty if
+# none). These are fallbacks for the user-level btw.md: loaded by
+# path_find_user_context() only when no user-level btw.md exists.
+existing_user_agents_md <- function() {
+  paths <- user_agents_md_paths()
+  fs::path(paths[fs::file_exists(paths)])
+}
+
 use_btw_md_user <- function() {
   canonical <- fs::path(btw_user_dir_preferred(), "btw.md")
   existing <- existing_user_btw_md()
 
-  # No user-level config anywhere: create it in the recommended ~/.btw/ location.
+  # No user-level btw.md anywhere: check for a user-level AGENTS.md, which a
+  # new ~/.btw/btw.md would take priority over.
   if (length(existing) == 0) {
+    existing_agents <- existing_user_agents_md()
+    if (length(existing_agents) > 0) {
+      active_agents <- existing_agents[[1]]
+      if (!confirm_btw_md_over_agents_md(active_agents)) {
+        cli::cli_inform(c(
+          "i" = "Keeping {.path {path_home_display(active_agents)}}."
+        ))
+        return(invisible(active_agents))
+      }
+    }
+
+    # Create new configuration in the recommended ~/.btw/ location.
     fs::dir_create(fs::path_dir(canonical))
     fs::file_copy(btw_md_template(canonical), canonical)
     cli::cli_inform(c("v" = "Created {.file {path_display(canonical)}}"))
@@ -347,6 +378,35 @@ use_btw_md_user <- function() {
   path <- maybe_migrate_user_btw_md(active, canonical)
   cli::cli_inform(c("i" = "Call {.run btw::edit_btw_md(\"user\")} to edit it"))
   invisible(path)
+}
+
+# Called by use_btw_md("user") when a user-level AGENTS.md exists but no
+# user-level btw.md does: creating a ~/.btw/btw.md would take priority over
+# the AGENTS.md, so warn (or confirm interactively) and point at
+# edit_btw_md("user") to edit the AGENTS.md instead. Returns TRUE if the
+# btw.md should be created.
+confirm_btw_md_over_agents_md <- function(agents_md) {
+  cli::cli_inform(c(
+    "!" = "Found a user-level {.file AGENTS.md} at {.path {path_home_display(agents_md)}}.",
+    "i" = "A new {.file btw.md} in {.path {path_home_display(btw_user_dir_preferred())}} would take priority over it.",
+    "i" = "Call {.run btw::edit_btw_md(\"user\")} to edit the existing {.file AGENTS.md} instead."
+  ))
+
+  if (!is_interactive()) {
+    return(TRUE)
+  }
+
+  choice <- utils::menu(
+    c("Create user-level btw.md", "Cancel"),
+    graphics = FALSE,
+    title = paste(
+      "Create a btw.md that takes priority over",
+      path_home_display(agents_md),
+      "?"
+    )
+  )
+
+  identical(choice, 1L)
 }
 
 # Offer to move an existing user config to the recommended ~/.btw/ location.
@@ -386,11 +446,16 @@ maybe_migrate_user_btw_md <- function(source, canonical) {
   canonical
 }
 
-# Choose which user-level btw.md edit_btw_md("user") opens. When several exist,
-# prompt interactively, making clear which one btw_client()/btw_app() actually
-# read and nudging toward consolidating in ~/.btw/.
+# Choose which user-level context file edit_btw_md("user") opens: the
+# user-level btw.md files, or if none exist, the user-level AGENTS.md files,
+# in decreasing priority order. When several exist, prompt interactively,
+# making clear which one btw_client()/btw_app() actually read and nudging
+# toward consolidating in ~/.btw/.
 resolve_user_btw_md_for_edit <- function() {
-  existing <- existing_user_btw_md()
+  existing <- fs::path(c(
+    as.character(existing_user_btw_md()),
+    as.character(existing_user_agents_md())
+  ))
   recommended <- fs::path(btw_user_dir_preferred(), "btw.md")
 
   # Nothing exists yet: point at the recommended location so edit_btw_md()
@@ -409,7 +474,7 @@ resolve_user_btw_md_for_edit <- function() {
   labels[[1]] <- paste0(labels[[1]], "  (read by btw_client()/btw_app())")
 
   cli::cli_inform(c(
-    "!" = "You have more than one user-level {.file btw.md} config file.",
+    "!" = "You have more than one user-level context file.",
     "i" = "{.run btw::btw_client()} and {.run btw::btw_app()} read the highest-priority one, marked below.",
     "i" = "Consider consolidating your config into {.path {path_home_display(recommended)}}."
   ))
@@ -417,7 +482,7 @@ resolve_user_btw_md_for_edit <- function() {
   choice <- utils::menu(
     labels,
     graphics = FALSE,
-    title = "Which user-level btw.md do you want to edit?"
+    title = "Which user-level context file do you want to edit?"
   )
 
   # Selection cancelled (0): default to the file btw actually reads.
