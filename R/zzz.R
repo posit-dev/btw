@@ -29,4 +29,6 @@ if (getRversion() < "4.3.0") {
   )
 }
 
-utils::globalVariables("private")
+# R6 binds `self` and `super` at runtime; declare them so codetools doesn't
+# flag them as global variables in R CMD check.
+utils::globalVariables(c("private", "self", "super"))
