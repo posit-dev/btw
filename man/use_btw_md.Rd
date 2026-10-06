@@ -14,19 +14,22 @@ edit_btw_md(scope = NULL)
 \itemize{
 \item \code{"project"} (default): Creates/opens \code{btw.md} (by default) or \code{AGENTS.md}
 in the project root
-\item \code{"user"}: Opens your user-level \code{btw.md}. When multiple user-level
-configuration files exist, \code{edit_btw_md("user")} asks which one to open,
-indicating the file that \code{\link[=btw_client]{btw_client()}} and \code{\link[=btw_app]{btw_app()}} load. When
-creating, \code{use_btw_md("user")} uses the recommended \verb{~/.btw/} location and
-offers to migrate an existing user-level configuration found elsewhere.
+\item \code{"user"}: Opens your user-level \code{btw.md}, or if only a user-level
+\code{AGENTS.md} exists, that file. When multiple user-level context files
+exist, \code{edit_btw_md("user")} asks which one to open, indicating the file
+that \code{\link[=btw_client]{btw_client()}} and \code{\link[=btw_app]{btw_app()}} load. When creating,
+\code{use_btw_md("user")} uses the recommended \verb{~/.btw/} location, offers to
+migrate an existing user-level configuration found elsewhere, and asks
+for confirmation when creating a \code{btw.md} would take priority over an
+existing user-level \code{AGENTS.md}.
 \item A directory path: Creates/opens \code{btw.md} in that directory
 \item A file path: Creates/opens that specific file
 }
 
 For \code{edit_btw_md()}, \code{scope = NULL} (default) will find and open the
 context file that \code{\link[=btw_client]{btw_client()}} would use, searching first for \code{btw.md},
-then \code{AGENTS.md}, then \code{CLAUDE.md} in the project directory and then for a
-user-level \code{btw.md}.}
+then \code{AGENTS.md}, then \code{CLAUDE.md} in the project directory and then for
+a user-level \code{btw.md} (or, if none exists, a user-level \code{AGENTS.md}).}
 }
 \value{
 \code{use_btw_md()} returns the path to the context file, invisibly.
@@ -214,11 +217,16 @@ For global configuration, btw uses a user-level \code{btw.md} file. A \code{btw.
 directly in your home directory (\verb{~/btw.md}) takes precedence; otherwise btw
 looks in \verb{~/.btw/btw.md}, \verb{~/.config/btw/btw.md}, and
 \code{tools::R_user_dir("btw")}, in that order (see \link{btw-config} for the full
-picture, including skills and agents). \code{use_btw_md("user")} creates new
-configuration in the recommended \verb{~/.btw/} directory, and offers to migrate
-an existing user-level configuration found elsewhere. When more than one
-user-level \code{btw.md} file exists, \code{edit_btw_md("user")} asks which one to open.
-Note that \pkg{btw} does not look for \code{AGENTS.md} in your home directory.
+picture, including skills and agents). If no user-level \code{btw.md} exists
+anywhere, btw falls back to a user-level \code{AGENTS.md} in the cross-tool
+\verb{~/.agents/} directory. \code{use_btw_md("user")} creates new configuration in
+the recommended \verb{~/.btw/} directory, offers to migrate an existing user-level
+configuration found elsewhere, and asks for confirmation when creating a
+\code{btw.md} would take priority over an existing user-level \code{AGENTS.md}. When
+more than one user-level context file exists, \code{edit_btw_md("user")} asks
+which one to open. To skip user-level context in a specific chat, use
+\code{path_btw = list(user = FALSE)} in \code{\link[=btw_client]{btw_client()}} or \code{\link[=btw_app]{btw_app()}}, or change
+the default globally with the \code{btw.client.path_btw_user} option.
 
 The user-level \code{btw.md} file is used alongside your project's context file,
 not only when a project file is missing. When both are present,

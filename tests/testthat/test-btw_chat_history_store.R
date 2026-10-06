@@ -256,3 +256,18 @@ test_that("project pointer lifecycle restores once and follows local changes", {
     }
   )
 })
+
+test_that("btw_app_history_project_dir() resolves the project field of a list path_btw", {
+  path <- withr::local_tempfile(lines = "# btw")
+
+  expect_identical(
+    btw:::btw_app_history_project_dir(list(project = path, user = FALSE)),
+    as.character(fs::path_norm(fs::path_dir(fs::path_abs(path))))
+  )
+
+  # A list with only user fields falls back to marker-based detection
+  expect_identical(
+    btw:::btw_app_history_project_dir(list(user = path)),
+    btw:::btw_app_history_project_dir()
+  )
+})

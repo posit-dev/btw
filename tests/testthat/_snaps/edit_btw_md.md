@@ -112,7 +112,7 @@
     Code
       path <- edit_btw_md("user")
     Message
-      ! You have more than one user-level 'btw.md' config file.
+      ! You have more than one user-level context file.
       i `btw::btw_client()` and `btw::btw_app()` read the highest-priority one, marked below.
       i Consider consolidating your config into '~/.btw/btw.md'.
       v Opening '~/.btw/btw.md'
@@ -122,8 +122,44 @@
     Code
       path <- edit_btw_md("user")
     Message
-      ! You have more than one user-level 'btw.md' config file.
+      ! You have more than one user-level context file.
       i `btw::btw_client()` and `btw::btw_app()` read the highest-priority one, marked below.
       i Consider consolidating your config into '~/.btw/btw.md'.
       v Opening '~/btw.md'
+
+# use_btw_md('user') warns and creates btw.md when an AGENTS.md exists
+
+    Code
+      path <- use_btw_md("user")
+    Message
+      ! Found a user-level 'AGENTS.md' at '~/.agents/AGENTS.md'.
+      i A new 'btw.md' in '~/.btw' would take priority over it.
+      i Call `btw::edit_btw_md("user")` to edit the existing 'AGENTS.md' instead.
+      v Created '~/.btw/btw.md'
+      i See `?btw::btw_client()` for format details
+      i See `?btw::btw_tools()` for available tools
+      i Call `btw::btw_task_create_btw_md()` to use an LLM to help you initialize the project context.
+
+# use_btw_md('user') creates btw.md over an AGENTS.md when confirmed
+
+    Code
+      path <- use_btw_md("user")
+    Message
+      ! Found a user-level 'AGENTS.md' at '~/.agents/AGENTS.md'.
+      i A new 'btw.md' in '~/.btw' would take priority over it.
+      i Call `btw::edit_btw_md("user")` to edit the existing 'AGENTS.md' instead.
+      v Created '~/.btw/btw.md'
+      i See `?btw::btw_client()` for format details
+      i See `?btw::btw_tools()` for available tools
+      i Call `btw::btw_task_create_btw_md()` to use an LLM to help you initialize the project context.
+
+# use_btw_md('user') keeps an existing AGENTS.md when creation is declined
+
+    Code
+      path <- use_btw_md("user")
+    Message
+      ! Found a user-level 'AGENTS.md' at '~/.agents/AGENTS.md'.
+      i A new 'btw.md' in '~/.btw' would take priority over it.
+      i Call `btw::edit_btw_md("user")` to edit the existing 'AGENTS.md' instead.
+      i Keeping '~/.agents/AGENTS.md'.
 
