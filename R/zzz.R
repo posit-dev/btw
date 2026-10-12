@@ -32,3 +32,7 @@ if (getRversion() < "4.3.0") {
 # R6 binds `self` and `super` at runtime; declare them so codetools doesn't
 # flag them as global variables in R CMD check.
 utils::globalVariables(c("private", "self", "super"))
+
+if (utils::packageVersion("S7") >= "0.2.2.9000") {
+  S7::S7_on_build()
+}
