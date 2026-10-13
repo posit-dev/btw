@@ -1,6 +1,6 @@
 # btw (development version)
 
-* `btw()` now handles empty context and package NEWS with development S7.
+* Updates for compatibility with S7 > 0.2.2.
 
 * `path_find_in_project()` now stops its upward search when it reaches the home directory (either `fs::path_home()` or `fs::path_home_r()`, which differ on Windows) and never treats files there as project files, so `~/AGENTS.md` or `~/CLAUDE.md` are no longer picked up as project context when the working directory is under `~` but outside a project. Home-level files are handled only by the user-level lookup. This also fixes `~/btw.md` instructions being included twice — once as the project file and once as the user-level config (#225).
 
