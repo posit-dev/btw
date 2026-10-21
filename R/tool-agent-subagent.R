@@ -82,7 +82,7 @@ BtwSubagentResult <- S7::new_class(
 #' # Configure the client and default tools for subagents
 #' withr::with_options(
 #'   list(
-#'     btw.subagent.client = "anthropic/claude-sonnet-4-20250514",
+#'     btw.subagent.client = "anthropic/claude-sonnet-5-5",
 #'     btw.subagent.tools_default = "files"
 #'   ),
 #'   {

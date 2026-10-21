@@ -56,7 +56,7 @@
 #' **Array format** (unnamed list):
 #' ```yaml
 #' client:
-#'   - anthropic/claude-sonnet-4
+#'   - anthropic/claude-sonnet-5-5
 #'   - openai/gpt-4.1
 #'   - aws_bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0
 #' ```
@@ -302,8 +302,8 @@ as_ellmer_client <- function(client) {
 
   cli::cli_abort(c(
     "{.arg client} must be an {.help ellmer::Chat} client, a {.val provider/model} string, or a list with {.field provider} (and optionally {.field model}).",
-    "i" = "Examples: {.or {.val {c('openai/gpt-4.1-mini', 'anthropic/claude-sonnet-4-20250514')}}}.",
-    "i" = "Or as a list: {.code list(provider = 'anthropic', model = 'claude-sonnet-4-20250514')}"
+    "i" = "Examples: {.or {.val {c('openai/gpt-4.1-mini', 'anthropic/claude-sonnet-5-5')}}}.",
+    "i" = "Or as a list: {.code list(provider = 'anthropic', model = 'claude-sonnet-5-5')}"
   ))
 }
 

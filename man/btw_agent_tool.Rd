@@ -11,7 +11,7 @@ btw_agent_tool(path, client = NULL)
 
 \item{client}{Optional. A client specification to override the agent's
 configured client. Can be a string like
-\code{"anthropic/claude-sonnet-4-20250514"}, an \link[ellmer:Chat]{ellmer::Chat} object, or a list
+\code{"anthropic/claude-sonnet-5-5"}, an \link[ellmer:Chat]{ellmer::Chat} object, or a list
 with \code{provider} and \code{model} keys. If \code{NULL} (default), uses the \code{client}
 field from the agent file or falls back to btw's default client resolution.}
 }
@@ -43,7 +43,7 @@ delegation message.
 \item \code{title}: User-facing title for the tool. Defaults to title-cased name.
 \item \code{icon}: Icon specification for the agent (see \strong{Icon Specification}
 below). Defaults to the standard agent icon.
-\item \code{client}: Model specification like \code{"anthropic/claude-sonnet-4-20250514"}.
+\item \code{client}: Model specification like \code{"anthropic/claude-sonnet-5-5"}.
 Falls back to \code{btw.subagent.client} or \code{btw.client} options.
 \item \code{tools}: List of tool names or groups available to this agent. Defaults to
 all non-agent tools.

@@ -14,7 +14,7 @@
 #' ---
 #' client:
 #'   provider: anthropic
-#'   model: claude-sonnet-4
+#'   model: claude-sonnet-5-5
 #' tools: [docs, files]
 #' ---
 #'
