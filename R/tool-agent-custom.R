@@ -27,7 +27,7 @@ NULL
 #' * `title`: User-facing title for the tool. Defaults to title-cased name.
 #' * `icon`: Icon specification for the agent (see **Icon Specification**
 #'   below). Defaults to the standard agent icon.
-#' * `client`: Model specification like `"anthropic/claude-sonnet-4-20250514"`.
+#' * `client`: Model specification like `"anthropic/claude-sonnet-5-5"`.
 #'   Falls back to `btw.subagent.client` or `btw.client` options.
 #' * `tools`: List of tool names or groups available to this agent. Defaults to
 #'   all non-agent tools.
@@ -113,7 +113,7 @@ NULL
 #' @param path Path to an agent markdown file.
 #' @param client Optional. A client specification to override the agent's
 #'   configured client. Can be a string like
-#'   `"anthropic/claude-sonnet-4-20250514"`, an [ellmer::Chat] object, or a list
+#'   `"anthropic/claude-sonnet-5-5"`, an [ellmer::Chat] object, or a list
 #'   with `provider` and `model` keys. If `NULL` (default), uses the `client`
 #'   field from the agent file or falls back to btw's default client resolution.
 #'
