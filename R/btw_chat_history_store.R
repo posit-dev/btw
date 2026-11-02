@@ -221,8 +221,12 @@ btw_conversation_store_sqlite <- function() {
 }
 
 btw_app_history_project_dir <- function(path_btw = NULL) {
-  if (!is.null(path_btw) && !identical(path_btw, FALSE)) {
-    path <- fs::path_abs(fs::path_expand(path_btw))
+  # Only an explicit project path scopes the chat history; TRUE/FALSE fall
+  # through to the marker-based detection below.
+  project <- normalize_path_btw(path_btw)$project
+
+  if (!isTRUE(project) && !isFALSE(project)) {
+    path <- fs::path_abs(fs::path_expand(project))
     if (fs::dir_exists(path)) {
       return(as.character(fs::path_norm(path)))
     }

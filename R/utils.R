@@ -188,13 +188,20 @@ path_find_in_project <- function(filename, dir = getwd()) {
   path_find_in_project(filename, dirname(dir))
 }
 
-# Returns user-level config directories in decreasing priority order.
+# The user's home directories in decreasing priority order.
 # On Windows, fs::path_home() (user profile) and fs::path_home_r() (R's "~",
 # typically Documents) differ, so both are included; on macOS/Linux they are
-# identical and collapse via unique(). Consumers iterate and use the first
-# match, or rev() when building an increasing-priority list.
+# identical and collapse via unique(). Every user-level lookup starts here so
+# the two homes are handled consistently.
+path_homes <- function() {
+  unique(c(fs::path_home(), fs::path_home_r()))
+}
+
+# Returns user-level config directories in decreasing priority order.
+# Consumers iterate and use the first match, or rev() when building an
+# increasing-priority list.
 btw_user_dirs <- function() {
-  homes <- unique(c(fs::path_home(), fs::path_home_r()))
+  homes <- path_homes()
   unique(as.character(c(
     fs::path(homes, ".btw"),
     fs::path(homes, ".config", "btw"),
@@ -224,40 +231,72 @@ user_config_paths <- function(filename) {
   )))
 }
 
-path_find_user <- function(filename) {
+path_find_user <- function(filename, paths = user_config_paths(filename)) {
   if (identical(Sys.getenv("TESTTHAT"), "true")) {
     # In testthat, we don't want to use the home directory
     return(NULL)
   }
 
-  possibilities <- user_config_paths(filename)
-
-  existing <- possibilities[fs::file_exists(possibilities)]
+  existing <- paths[fs::file_exists(paths)]
   if (length(existing) == 0) {
     return(NULL)
   }
 
   if (length(existing) > 1) {
-    warn_multiple_user_config(existing)
+    warn_multiple_user_config(existing, filename)
   }
 
   fs::path_norm(existing[[1]])
 }
 
+# Ordered user-level candidate paths for AGENTS.md, in decreasing priority.
+# Unlike btw.md, which is searched in btw's own config directories, a
+# user-level AGENTS.md lives in the cross-tool ~/.agents/ convention shared
+# with other coding agents. A loose AGENTS.md in the home root is not
+# searched: no tool reads one there, and btw's project search no longer walks
+# through the home directory, so a loose ~/AGENTS.md is never picked up by
+# accident either.
+user_agents_md_paths <- function() {
+  unique(as.character(fs::path(path_homes(), ".agents", "AGENTS.md")))
+}
+
+# The active user-level context file, mirroring the project-level precedence
+# btw.md > AGENTS.md > CLAUDE.md, except CLAUDE.md is never considered at user
+# level: the highest-priority existing user-level btw.md, or if none exists
+# anywhere, a user-level AGENTS.md in ~/.agents/.
+path_find_user_context <- function() {
+  path_find_user("btw.md") %||%
+    path_find_user("AGENTS.md", paths = user_agents_md_paths())
+}
+
+# The location btw recommends for user-level configuration named `filename`.
+# Used by the messages that nudge users toward consolidating shadowed config
+# files. For a btw-owned file that's the preferred btw directory; a file that
+# lives in a cross-tool directory (~/.agents/) has no btw-owned directory, so
+# the canonical location is the highest-priority candidate.
+user_config_recommended_path <- function(filename) {
+  if (identical(filename, "AGENTS.md")) {
+    return(user_agents_md_paths()[[1]])
+  }
+  fs::path(btw_user_dir_preferred(), filename)
+}
+
 # Warn once per session when more than one user-level config file exists, so a
 # user editing a now-shadowed file has a hint about which one btw reads.
-warn_multiple_user_config <- function(paths) {
+warn_multiple_user_config <- function(paths, filename) {
   shown <- path_home_display(paths)
-  target <- path_home_display(fs::path(btw_user_dir_preferred(), "btw.md"))
+  target <- path_home_display(user_config_recommended_path(filename))
   cli::cli_warn(
     c(
-      "!" = "Found more than one user-level {.file btw.md} config file.",
+      "!" = "Found more than one user-level {.file {filename}} config file.",
       "i" = "Using {.path {shown[[1]]}}.",
       "i" = "Ignoring lower-priority: {.path {shown[-1]}}.",
       "i" = "Consider consolidating your btw configuration into {.path {target}}."
     ),
     .frequency = "once",
-    .frequency_id = "btw_multiple_user_config"
+    # Per filename: a suppressed warning about one file must not swallow the
+    # warning about another.
+    .frequency_id = paste0("btw_multiple_user_config_", filename)
   )
 }
 

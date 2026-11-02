@@ -486,3 +486,81 @@ test_that("path_find_user() prefers ~/btw.md and warns on multiple configs", {
   # The loose ~/btw.md takes precedence over ~/.btw/btw.md.
   expect_equal(result, fs::path_norm(fs::path(user_dir, "btw.md")))
 })
+
+test_that("user_agents_md_paths() covers only the cross-tool ~/.agents/", {
+  user_dir <- withr::local_tempdir()
+  local_user_home(user_dir)
+
+  paths <- user_agents_md_paths()
+  expect_equal(
+    paths,
+    unique(as.character(fs::path(user_dir, ".agents", "AGENTS.md")))
+  )
+  # No btw config directory and no loose home-root AGENTS.md candidates
+  expect_false(any(file.path(btw_user_dirs(), "AGENTS.md") %in% paths))
+  expect_false(fs::path(user_dir, "AGENTS.md") %in% paths)
+})
+
+test_that("path_find_user_context() prefers any btw.md over any AGENTS.md", {
+  user_dir <- withr::local_tempdir()
+  local_user_home(user_dir)
+  withr::local_envvar(TESTTHAT = NA)
+
+  expect_null(path_find_user_context())
+
+  # An AGENTS.md in a btw config directory is not a user-level candidate
+  fs::dir_create(fs::path(user_dir, ".btw"))
+  fs::file_create(fs::path(user_dir, ".btw", "AGENTS.md"))
+  expect_null(path_find_user_context())
+
+  # Only one AGENTS.md: it's used
+  fs::dir_create(fs::path(user_dir, ".agents"))
+  fs::file_create(fs::path(user_dir, ".agents", "AGENTS.md"))
+  expect_equal(
+    path_find_user_context(),
+    fs::path_norm(fs::path(user_dir, ".agents", "AGENTS.md"))
+  )
+
+  # A btw.md anywhere beats an AGENTS.md anywhere
+  fs::dir_create(fs::path(user_dir, ".config", "btw"))
+  fs::file_create(fs::path(user_dir, ".config", "btw", "btw.md"))
+  expect_equal(
+    path_find_user_context(),
+    fs::path_norm(fs::path(user_dir, ".config", "btw", "btw.md"))
+  )
+})
+
+test_that("path_find_user_context() never uses a user-level CLAUDE.md", {
+  user_dir <- withr::local_tempdir()
+  local_user_home(user_dir)
+  withr::local_envvar(TESTTHAT = NA)
+
+  fs::file_create(fs::path(user_dir, "CLAUDE.md"))
+  fs::dir_create(fs::path(user_dir, ".btw"))
+  fs::file_create(fs::path(user_dir, ".btw", "CLAUDE.md"))
+  expect_null(path_find_user_context())
+})
+
+test_that("path_find_user() warns for multiple user-level AGENTS.md files", {
+  user_dir <- withr::local_tempdir()
+  local_user_home(user_dir)
+  withr::local_envvar(TESTTHAT = NA)
+  withr::local_options(rlib_warning_verbosity = "verbose")
+
+  # Windows-style: the two notions of home differ, so both are searched
+  local_mocked_bindings(
+    path_home_r = function(...) fs::path(user_dir, "home_r", ...),
+    .package = "fs"
+  )
+
+  fs::dir_create(fs::path(user_dir, ".agents"))
+  fs::file_create(fs::path(user_dir, ".agents", "AGENTS.md"))
+  fs::dir_create(fs::path(user_dir, "home_r", ".agents"))
+  fs::file_create(fs::path(user_dir, "home_r", ".agents", "AGENTS.md"))
+
+  expect_snapshot(
+    result <- path_find_user("AGENTS.md", paths = user_agents_md_paths()),
+    transform = function(lines) gsub(as.character(fs::path_norm(user_dir)), "<home>", lines, fixed = TRUE)
+  )
+  expect_equal(result, fs::path_norm(fs::path(user_dir, ".agents", "AGENTS.md")))
+})

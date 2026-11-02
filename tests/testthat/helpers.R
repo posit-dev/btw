@@ -85,8 +85,13 @@ scrub_system_info <- function(x) {
 }
 
 mock_platform_date <- function() {
+  # Mock in btw's namespace explicitly: without `.package`, testthat resolves
+  # the target with `dev_package()`, which aborts with "No packages loaded with
+  # pkgload" when the package is installed (R CMD check) instead of loaded by
+  # devtools, and whenever a test unsets the TESTTHAT env var.
   local_mocked_bindings(
     platform_date = function() "DAY OF WEEK, MONTH DAY, YEAR (YYYY-MM-DD)",
+    .package = "btw",
     .env = caller_env()
   )
 }
