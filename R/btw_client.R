@@ -236,7 +236,7 @@ btw_client_config <- function(
     lifecycle::deprecate_stop(
       when = "0.0.3",
       what = I("`model`"),
-      details = "Use the `client` field instead, e.g. `client: {model: 'gpt-4.1-mini`}`."
+      details = "Use the `client` field instead, e.g. `client: {model: 'gpt-4.1-mini'}`."
     )
   }
 
