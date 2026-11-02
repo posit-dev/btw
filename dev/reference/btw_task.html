@@ -10,7 +10,7 @@ Task files use the same format as btw.md files:
 ---
 client:
   provider: anthropic
-  model: claude-sonnet-4
+  model: claude-sonnet-5-5
 tools: [docs, files]
 ---
 
@@ -50,7 +50,7 @@ Task files use the same format as btw.md files:
 ---
 client:
   provider: anthropic
-  model: claude-sonnet-4
+  model: claude-sonnet-5-5
 tools: [docs, files]
 ---
 
@@ -135,7 +135,7 @@ the task instructions in the body.</p><div class="section">
 <p></p><div class="sourceCode yaml"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="pp">---</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">client</span><span class="kw">:</span></span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="at">  </span><span class="fu">provider</span><span class="kw">:</span><span class="at"> anthropic</span></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="at">  </span><span class="fu">model</span><span class="kw">:</span><span class="at"> claude-sonnet-4</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="at">  </span><span class="fu">model</span><span class="kw">:</span><span class="at"> claude-sonnet-5-5</span></span>
 <span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">tools</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">docs</span><span class="kw">,</span><span class="at"> files</span><span class="kw">]</span></span>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="pp">---</span></span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a></span>
@@ -233,8 +233,8 @@ YAML frontmatter, falling back to the default client resolution of
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Task with template interpolation</span></span></span>
 <span class="r-in"><span><span class="fu">btw_task</span><span class="op">(</span><span class="va">tmp_task_file</span>, package_name <span class="op">=</span> <span class="st">"dplyr"</span>, mode <span class="op">=</span> <span class="st">"tool"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> # &lt;ellmer::ToolDef&gt; btw_task_file1bb1715ee24(prompt)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> # @name: btw_task_file1bb1715ee24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # &lt;ellmer::ToolDef&gt; btw_task_file1a7113afbfcb(prompt)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # @name: btw_task_file1a7113afbfcb</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # @description: Analyze the dplyr package and create a summary.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # @convert: TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> #</span>
@@ -255,8 +255,8 @@ YAML frontmatter, falling back to the default client resolution of
 <span class="r-out co"><span class="r-pr">#&gt;</span>         this_client$chat("Please complete the task as instructed.")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x564a900cfc30&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x564a900d18e8&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x556ab0069368&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x556ab006b170&gt;</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Include additional context</span></span></span>
 <span class="r-in"><span><span class="fu">btw_task</span><span class="op">(</span></span></span>
@@ -265,8 +265,8 @@ YAML frontmatter, falling back to the default client resolution of
 <span class="r-in"><span>  <span class="va">mtcars</span>,  <span class="co"># Additional context</span></span></span>
 <span class="r-in"><span>  mode <span class="op">=</span> <span class="st">"tool"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> # &lt;ellmer::ToolDef&gt; btw_task_file1bb1715ee24(prompt)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> # @name: btw_task_file1bb1715ee24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # &lt;ellmer::ToolDef&gt; btw_task_file1a7113afbfcb(prompt)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> # @name: btw_task_file1a7113afbfcb</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # @description: Analyze the ggplot2 package and create a summary.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # @convert: TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> #</span>
@@ -287,8 +287,8 @@ YAML frontmatter, falling back to the default client resolution of
 <span class="r-out co"><span class="r-pr">#&gt;</span>         this_client$chat("Please complete the task as instructed.")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x564a900cfc30&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x564a96a61e58&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x556ab0069368&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x556ab8f95048&gt;</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

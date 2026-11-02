@@ -4,6 +4,15 @@
 
 - Updates for compatibility with S7 \> 0.2.2.
 
+- Documentation examples, the `btw.md` front matter in the
+  [`btw_task_create_btw_md()`](https://posit-dev.github.io/btw/dev/reference/btw_task_create_btw_md.md)
+  prompt, and the
+  [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+  error message now use `claude-sonnet-5-5` instead of `claude-sonnet-4`
+  and `claude-sonnet-4-20250514`, which Anthropic retired on 2026-06-15.
+  The Bedrock examples now use current model ids as well
+  ([\#241](https://github.com/posit-dev/btw/issues/241)).
+
 - `path_find_in_project()` now stops its upward search when it reaches
   the home directory (either
   [`fs::path_home()`](https://fs.r-lib.org/reference/path_expand.html)

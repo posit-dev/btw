@@ -140,14 +140,14 @@ for available tools and tool groups
 # Configure the client and default tools for subagents
 withr::with_options(
   list(
-    btw.subagent.client = "anthropic/claude-sonnet-4-20250514",
+    btw.subagent.client = "anthropic/claude-sonnet-5-5",
     btw.subagent.tools_default = "files"
   ),
   {
     getOption("btw.subagent.client")
   }
 )
-#> [1] "anthropic/claude-sonnet-4-20250514"
+#> [1] "anthropic/claude-sonnet-5-5"
 
 # Restrict subagents to only certain tools
 withr::with_options(

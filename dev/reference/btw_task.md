@@ -12,7 +12,7 @@ Task files use the same format as `btw.md` files:
     ---
     client:
       provider: anthropic
-      model: claude-sonnet-4
+      model: claude-sonnet-5-5
     tools: [docs, files]
     ---
 
@@ -123,8 +123,8 @@ Analyze the {{ package_name }} package and create a summary.
 
 # Task with template interpolation
 btw_task(tmp_task_file, package_name = "dplyr", mode = "tool")
-#> # <ellmer::ToolDef> btw_task_file1bb1715ee24(prompt)
-#> # @name: btw_task_file1bb1715ee24
+#> # <ellmer::ToolDef> btw_task_file1a7113afbfcb(prompt)
+#> # @name: btw_task_file1a7113afbfcb
 #> # @description: Analyze the dplyr package and create a summary.
 #> # @convert: TRUE
 #> #
@@ -145,8 +145,8 @@ btw_task(tmp_task_file, package_name = "dplyr", mode = "tool")
 #>         this_client$chat("Please complete the task as instructed.")
 #>     }
 #> }
-#> <bytecode: 0x564a900cfc30>
-#> <environment: 0x564a900d18e8>
+#> <bytecode: 0x556ab0069368>
+#> <environment: 0x556ab006b170>
 
 # Include additional context
 btw_task(
@@ -155,8 +155,8 @@ btw_task(
   mtcars,  # Additional context
   mode = "tool"
 )
-#> # <ellmer::ToolDef> btw_task_file1bb1715ee24(prompt)
-#> # @name: btw_task_file1bb1715ee24
+#> # <ellmer::ToolDef> btw_task_file1a7113afbfcb(prompt)
+#> # @name: btw_task_file1a7113afbfcb
 #> # @description: Analyze the ggplot2 package and create a summary.
 #> # @convert: TRUE
 #> #
@@ -177,6 +177,6 @@ btw_task(
 #>         this_client$chat("Please complete the task as instructed.")
 #>     }
 #> }
-#> <bytecode: 0x564a900cfc30>
-#> <environment: 0x564a96a61e58>
+#> <bytecode: 0x556ab0069368>
+#> <environment: 0x556ab8f95048>
 ```

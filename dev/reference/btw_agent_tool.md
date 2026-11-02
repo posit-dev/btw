@@ -30,9 +30,8 @@ named `agent-{name}.md`.
 - `icon`: Icon specification for the agent (see **Icon Specification**
   below). Defaults to the standard agent icon.
 
-- `client`: Model specification like
-  `"anthropic/claude-sonnet-4-20250514"`. Falls back to
-  `btw.subagent.client` or `btw.client` options.
+- `client`: Model specification like `"anthropic/claude-sonnet-5-5"`.
+  Falls back to `btw.subagent.client` or `btw.client` options.
 
 - `tools`: List of tool names or groups available to this agent.
   Defaults to all non-agent tools.
@@ -136,8 +135,8 @@ btw_agent_tool(path, client = NULL)
 - client:
 
   Optional. A client specification to override the agent's configured
-  client. Can be a string like `"anthropic/claude-sonnet-4-20250514"`,
-  an [ellmer::Chat](https://ellmer.tidyverse.org/reference/Chat.html)
+  client. Can be a string like `"anthropic/claude-sonnet-5-5"`, an
+  [ellmer::Chat](https://ellmer.tidyverse.org/reference/Chat.html)
   object, or a list with `provider` and `model` keys. If `NULL`
   (default), uses the `client` field from the agent file or falls back
   to btw's default client resolution.
@@ -189,8 +188,8 @@ withr::with_tempdir({
 #>     btw_tool_agent_custom_impl(prompt = prompt, session_id = session_id, 
 #>         agent_config = agent_config)
 #> }
-#> <bytecode: 0x564a8ebde850>
-#> <environment: 0x564a8ebde460>
+#> <bytecode: 0x556ab0e69040>
+#> <environment: 0x556ab0e68c50>
 
 # Create a Claude Code-style agent file (name with hyphens)
 withr::with_tempdir({
@@ -223,6 +222,6 @@ withr::with_tempdir({
 #>     btw_tool_agent_custom_impl(prompt = prompt, session_id = session_id, 
 #>         agent_config = agent_config)
 #> }
-#> <bytecode: 0x564a8ebde850>
-#> <environment: 0x564a90287a28>
+#> <bytecode: 0x556ab0e69040>
+#> <environment: 0x556ab2c40750>
 ```

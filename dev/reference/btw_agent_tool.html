@@ -27,7 +27,7 @@ delegation message.
 title: User-facing title for the tool. Defaults to title-cased name.
 icon: Icon specification for the agent (see Icon Specification
 below). Defaults to the standard agent icon.
-client: Model specification like &quot;anthropic/claude-sonnet-4-20250514&quot;.
+client: Model specification like &quot;anthropic/claude-sonnet-5-5&quot;.
 Falls back to btw.subagent.client or btw.client options.
 tools: List of tool names or groups available to this agent. Defaults to
 all non-agent tools.
@@ -154,7 +154,7 @@ delegation message.
 title: User-facing title for the tool. Defaults to title-cased name.
 icon: Icon specification for the agent (see Icon Specification
 below). Defaults to the standard agent icon.
-client: Model specification like &quot;anthropic/claude-sonnet-4-20250514&quot;.
+client: Model specification like &quot;anthropic/claude-sonnet-5-5&quot;.
 Falls back to btw.subagent.client or btw.client options.
 tools: List of tool names or groups available to this agent. Defaults to
 all non-agent tools.
@@ -322,7 +322,7 @@ delegation message.</p></li>
 <li><p><code>title</code>: User-facing title for the tool. Defaults to title-cased name.</p></li>
 <li><p><code>icon</code>: Icon specification for the agent (see <strong>Icon Specification</strong>
 below). Defaults to the standard agent icon.</p></li>
-<li><p><code>client</code>: Model specification like <code>"anthropic/claude-sonnet-4-20250514"</code>.
+<li><p><code>client</code>: Model specification like <code>"anthropic/claude-sonnet-5-5"</code>.
 Falls back to <code>btw.subagent.client</code> or <code>btw.client</code> options.</p></li>
 <li><p><code>tools</code>: List of tool names or groups available to this agent. Defaults to
 all non-agent tools.</p></li>
@@ -416,7 +416,7 @@ the model for any agent file.</p></li>
 <dt id="arg-client">client<a class="anchor" aria-label="anchor" href="#arg-client"></a></dt>
 <dd><p>Optional. A client specification to override the agent's
 configured client. Can be a string like
-<code>"anthropic/claude-sonnet-4-20250514"</code>, an <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> object, or a list
+<code>"anthropic/claude-sonnet-5-5"</code>, an <a href="https://ellmer.tidyverse.org/reference/Chat.html" class="external-link">ellmer::Chat</a> object, or a list
 with <code>provider</code> and <code>model</code> keys. If <code>NULL</code> (default), uses the <code>client</code>
 field from the agent file or falls back to btw's default client resolution.</p></dd>
 
@@ -464,8 +464,8 @@ creating chat clients with tools.</p></div>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     btw_tool_agent_custom_impl(prompt = prompt, session_id = session_id, </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         agent_config = agent_config)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x564a8ebde850&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x564a8ebde460&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x556ab0e69040&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x556ab0e68c50&gt;</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Create a Claude Code-style agent file (name with hyphens)</span></span></span>
 <span class="r-in"><span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_tempfile.html" class="external-link">with_tempdir</a></span><span class="op">(</span><span class="op">{</span></span></span>
@@ -498,8 +498,8 @@ creating chat clients with tools.</p></div>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     btw_tool_agent_custom_impl(prompt = prompt, session_id = session_id, </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         agent_config = agent_config)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x564a8ebde850&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x564a90287a28&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x556ab0e69040&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x556ab2c40750&gt;</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

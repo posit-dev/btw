@@ -295,14 +295,14 @@ automatically by the ellmer framework when tools are called by LLMs.</p></dd>
 <span class="r-in"><span><span class="co"># Configure the client and default tools for subagents</span></span></span>
 <span class="r-in"><span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_options.html" class="external-link">with_options</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    btw.subagent.client <span class="op">=</span> <span class="st">"anthropic/claude-sonnet-4-20250514"</span>,</span></span>
+<span class="r-in"><span>    btw.subagent.client <span class="op">=</span> <span class="st">"anthropic/claude-sonnet-5-5"</span>,</span></span>
 <span class="r-in"><span>    btw.subagent.tools_default <span class="op">=</span> <span class="st">"files"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span>,</span></span>
 <span class="r-in"><span>  <span class="op">{</span></span></span>
 <span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"btw.subagent.client"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">}</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "anthropic/claude-sonnet-4-20250514"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "anthropic/claude-sonnet-5-5"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Restrict subagents to only certain tools</span></span></span>
 <span class="r-in"><span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_options.html" class="external-link">with_options</a></span><span class="op">(</span></span></span>

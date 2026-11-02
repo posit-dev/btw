@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   btw-md: btw-md.html
   custom-agents: custom-agents.html
-last_built: 2026-11-02T16:54Z
+last_built: 2026-11-02T17:39Z
 urls:
   reference: https://posit-dev.github.io/btw/reference
   article: https://posit-dev.github.io/btw/articles

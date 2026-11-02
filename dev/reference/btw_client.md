@@ -64,9 +64,9 @@ contexts, the first client is used automatically.
 **Array format** (unnamed list):
 
     client:
-      - anthropic/claude-sonnet-4
+      - anthropic/claude-sonnet-5-5
       - openai/gpt-4.1
-      - aws_bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0
+      - aws_bedrock/us.anthropic.claude-sonnet-5-5
 
 **Alias format** (named list):
 
