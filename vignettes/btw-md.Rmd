@@ -242,7 +242,8 @@ The two files are combined:
 This lets you keep your general preferences, such as a default model or coding style, in the user-level file and keep project details in the project file.
 See `?btw-config` for every location btw checks.
 
-To use a particular file instead of searching, pass its path to `path_btw`.
+To use a particular file instead of searching, pass its path to `path_btw`; the user-level file is still combined with it.
+To use only that file, pass `path_btw = list(project = "analysis/btw.md", user = FALSE)`.
 To start a chat without any `btw.md` file, use `path_btw = FALSE`.
 Or pass a named list to control project and user context separately, e.g. `path_btw = list(user = FALSE)`; the `btw.client.path_btw_user` option sets the default for the user scope.
 

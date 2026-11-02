@@ -197,8 +197,9 @@
 #' This lets you keep general preferences, such as a default model or coding
 #' style, in your user-level file and project details in the project file. The
 #' user-level file is also combined with a file you pass to the `path_btw`
-#' argument of [btw_client()] or [btw_app()]. Use `path_btw = FALSE` to start a
-#' chat without either file.
+#' argument of [btw_client()] or [btw_app()]; use
+#' `path_btw = list(project = path, user = FALSE)` to use only that file. Use
+#' `path_btw = FALSE` to start a chat without either file.
 #'
 #' @section Interactive Setup:
 #'
@@ -315,20 +316,24 @@ edit_btw_md <- function(scope = NULL) {
 
 # Helpers -----------------------------------------------------------------
 
+# Existing user-level files from an ordered candidate list, in the same
+# decreasing-priority order (empty if none exist).
+existing_user_files <- function(paths) {
+  fs::path(paths[fs::file_exists(paths)])
+}
+
 # Existing user-level btw.md files, in decreasing priority order (empty if
 # none). Uses the same search order btw_client()/btw_app() load with, so
 # use_btw_md("user") never creates a file that silently shadows an existing one.
 existing_user_btw_md <- function() {
-  paths <- user_config_paths("btw.md")
-  fs::path(paths[fs::file_exists(paths)])
+  existing_user_files(user_config_paths("btw.md"))
 }
 
 # Existing user-level AGENTS.md files, in decreasing priority order (empty if
 # none). These are fallbacks for the user-level btw.md: loaded by
 # path_find_user_context() only when no user-level btw.md exists.
 existing_user_agents_md <- function() {
-  paths <- user_agents_md_paths()
-  fs::path(paths[fs::file_exists(paths)])
+  existing_user_files(user_agents_md_paths())
 }
 
 use_btw_md_user <- function() {
@@ -339,14 +344,11 @@ use_btw_md_user <- function() {
   # new ~/.btw/btw.md would take priority over.
   if (length(existing) == 0) {
     existing_agents <- existing_user_agents_md()
-    if (length(existing_agents) > 0) {
-      active_agents <- existing_agents[[1]]
-      if (!confirm_btw_md_over_agents_md(active_agents)) {
-        cli::cli_inform(c(
-          "i" = "Keeping {.path {path_home_display(active_agents)}}."
-        ))
-        return(invisible(active_agents))
-      }
+    if (
+      length(existing_agents) > 0 &&
+        !confirm_btw_md_over_agents_md(existing_agents[[1]])
+    ) {
+      return(invisible(existing_agents[[1]]))
     }
 
     # Create new configuration in the recommended ~/.btw/ location.
@@ -380,19 +382,25 @@ use_btw_md_user <- function() {
 
 # Called by use_btw_md("user") when a user-level AGENTS.md exists but no
 # user-level btw.md does: creating a ~/.btw/btw.md would take priority over
-# the AGENTS.md, so warn (or confirm interactively) and point at
-# edit_btw_md("user") to edit the AGENTS.md instead. Returns TRUE if the
-# btw.md should be created.
+# the AGENTS.md. Warns (non-interactive) or asks (interactive) before
+# shadowing it, and returns TRUE if the btw.md should be created.
 confirm_btw_md_over_agents_md <- function(agents_md) {
-  cli::cli_inform(c(
+  found <- c(
     "!" = "Found a user-level {.file AGENTS.md} at {.path {path_home_display(agents_md)}}.",
-    "i" = "A new {.file btw.md} in {.path {path_home_display(btw_user_dir_preferred())}} would take priority over it.",
-    "i" = "Call {.run btw::edit_btw_md(\"user\")} to edit the existing {.file AGENTS.md} instead."
-  ))
+    "i" = "A new {.file btw.md} in {.path {path_home_display(btw_user_dir_preferred())}} would take priority over it."
+  )
 
+  # Nothing to ask: make it a warning so scripts see that btw's context
+  # precedence is about to change, and say how to undo it.
   if (!is_interactive()) {
+    cli::cli_warn(c(
+      found,
+      "i" = "Creating it anyway. Delete that {.file btw.md} to go back to the {.file AGENTS.md}."
+    ))
     return(TRUE)
   }
+
+  cli::cli_inform(found)
 
   choice <- utils::menu(
     c("Create user-level btw.md", "Cancel"),
@@ -404,7 +412,15 @@ confirm_btw_md_over_agents_md <- function(agents_md) {
     )
   )
 
-  identical(choice, 1L)
+  if (!identical(choice, 1L)) {
+    cli::cli_inform(c(
+      "i" = "Keeping {.path {path_home_display(agents_md)}}.",
+      "i" = "Call {.run btw::edit_btw_md(\"user\")} to edit it instead."
+    ))
+    return(FALSE)
+  }
+
+  TRUE
 }
 
 # Offer to move an existing user config to the recommended ~/.btw/ location.

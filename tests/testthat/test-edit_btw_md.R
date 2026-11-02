@@ -555,3 +555,23 @@ test_that("use_btw_md('user') keeps an existing AGENTS.md when creation is decli
   expect_false(fs::file_exists(fs::path(wd, ".btw", "btw.md")))
   expect_true(fs::file_exists(fs::path(wd, ".agents", "AGENTS.md")))
 })
+
+test_that("use_btw_md('user') leaves a shadowed AGENTS.md alone when btw.md exists", {
+  wd <- withr::local_tempdir()
+  local_user_home(wd)
+  local_mocked_bindings(is_interactive = function() FALSE)
+
+  # A btw.md outside the recommended location already takes priority, so the
+  # AGENTS.md is never mentioned and no second btw.md is created.
+  fs::file_create(fs::path(wd, "btw.md"))
+  fs::dir_create(fs::path(wd, ".agents"))
+  fs::file_create(fs::path(wd, ".agents", "AGENTS.md"))
+
+  expect_snapshot(
+    path <- use_btw_md("user")
+  )
+
+  expect_equal(path, fs::path(wd, "btw.md"))
+  expect_false(fs::file_exists(fs::path(wd, ".btw", "btw.md")))
+  expect_true(fs::file_exists(fs::path(wd, ".agents", "AGENTS.md")))
+})

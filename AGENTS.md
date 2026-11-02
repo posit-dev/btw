@@ -340,7 +340,7 @@ Edit files in `inst/prompts/`. These are assembled in `btw_client()` based on co
 - **Git and GitHub commands** - `@git` and `@issue`/`@pr` commands require gert and gh packages respectively, plus appropriate repository access
 - **MCP server blocks** the R process - run non-interactively
 - **Test snapshots require frequent updates** as output formatting evolves
-- **`btw_user_dirs()` is the single source of truth** for user-level config locations (`~/.btw`, `~/.config/btw`, `tools::R_user_dir("btw")`). Any code that discovers or installs user-level skills, agents, or `btw.md` files must use this helper — never hardcode individual paths
+- **`btw_user_dirs()` is the single source of truth** for user-level config locations (`~/.btw`, `~/.config/btw`, `tools::R_user_dir("btw")`). Any code that discovers or installs user-level skills, agents, or `btw.md` files must use this helper — never hardcode individual paths. The one deliberate exception is the user-level context file fallback: `AGENTS.md` is read from `~/.agents/AGENTS.md` (see `user_agents_md_paths()`), because that path is a cross-tool convention shared with other coding agents rather than a btw-owned directory
 
 ## Resources
 

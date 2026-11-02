@@ -39,7 +39,9 @@
 #' fall back to a user-level `AGENTS.md` in the cross-tool `~/.agents/`
 #' directory, a convention shared with other coding agents. This mirrors the
 #' project-level precedence `btw.md` > `AGENTS.md` > `CLAUDE.md`, except a
-#' user-level `CLAUDE.md` is never used.
+#' user-level `CLAUDE.md` is never used. Unlike `~/btw.md`, a loose
+#' `~/AGENTS.md` is not searched: a user-level `AGENTS.md` is only read from
+#' `~/.agents/`.
 #'
 #' User-level context is combined with the project-level context file by
 #' default; use `path_btw = list(user = FALSE)` in [btw_client()] or

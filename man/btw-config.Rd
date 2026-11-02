@@ -44,7 +44,9 @@ If no user-level \code{btw.md} exists anywhere, \code{\link[=btw_client]{btw_cli
 fall back to a user-level \code{AGENTS.md} in the cross-tool \verb{~/.agents/}
 directory, a convention shared with other coding agents. This mirrors the
 project-level precedence \code{btw.md} > \code{AGENTS.md} > \code{CLAUDE.md}, except a
-user-level \code{CLAUDE.md} is never used.
+user-level \code{CLAUDE.md} is never used. Unlike \verb{~/btw.md}, a loose
+\verb{~/AGENTS.md} is not searched: a user-level \code{AGENTS.md} is only read from
+\verb{~/.agents/}.
 
 User-level context is combined with the project-level context file by
 default; use \code{path_btw = list(user = FALSE)} in \code{\link[=btw_client]{btw_client()}} or

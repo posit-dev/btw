@@ -243,8 +243,9 @@ the user-level instructions first.
 This lets you keep general preferences, such as a default model or coding
 style, in your user-level file and project details in the project file. The
 user-level file is also combined with a file you pass to the \code{path_btw}
-argument of \code{\link[=btw_client]{btw_client()}} or \code{\link[=btw_app]{btw_app()}}. Use \code{path_btw = FALSE} to start a
-chat without either file.
+argument of \code{\link[=btw_client]{btw_client()}} or \code{\link[=btw_app]{btw_app()}}; use
+\code{path_btw = list(project = path, user = FALSE)} to use only that file. Use
+\code{path_btw = FALSE} to start a chat without either file.
 }
 
 \section{Interactive Setup}{

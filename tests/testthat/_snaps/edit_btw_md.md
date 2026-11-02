@@ -131,10 +131,12 @@
 
     Code
       path <- use_btw_md("user")
-    Message
+    Condition
+      Warning:
       ! Found a user-level 'AGENTS.md' at '~/.agents/AGENTS.md'.
       i A new 'btw.md' in '~/.btw' would take priority over it.
-      i Call `btw::edit_btw_md("user")` to edit the existing 'AGENTS.md' instead.
+      i Creating it anyway. Delete that 'btw.md' to go back to the 'AGENTS.md'.
+    Message
       v Created '~/.btw/btw.md'
       i See `?btw::btw_client()` for format details
       i See `?btw::btw_tools()` for available tools
@@ -147,7 +149,6 @@
     Message
       ! Found a user-level 'AGENTS.md' at '~/.agents/AGENTS.md'.
       i A new 'btw.md' in '~/.btw' would take priority over it.
-      i Call `btw::edit_btw_md("user")` to edit the existing 'AGENTS.md' instead.
       v Created '~/.btw/btw.md'
       i See `?btw::btw_client()` for format details
       i See `?btw::btw_tools()` for available tools
@@ -160,6 +161,16 @@
     Message
       ! Found a user-level 'AGENTS.md' at '~/.agents/AGENTS.md'.
       i A new 'btw.md' in '~/.btw' would take priority over it.
-      i Call `btw::edit_btw_md("user")` to edit the existing 'AGENTS.md' instead.
       i Keeping '~/.agents/AGENTS.md'.
+      i Call `btw::edit_btw_md("user")` to edit it instead.
+
+# use_btw_md('user') leaves a shadowed AGENTS.md alone when btw.md exists
+
+    Code
+      path <- use_btw_md("user")
+    Message
+      ! Your user config is at '~/btw.md'.
+      i The recommended location is now '~/.btw/btw.md'.
+      i Move it there when convenient; btw reads '~/btw.md' for now.
+      i Call `btw::edit_btw_md("user")` to edit it
 

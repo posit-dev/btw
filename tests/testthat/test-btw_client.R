@@ -564,8 +564,8 @@ describe("normalize_path_btw()", {
     expect_equal(normalize_path_btw(NULL), list(project = TRUE, user = TRUE))
     expect_equal(normalize_path_btw(TRUE), list(project = TRUE, user = TRUE))
     expect_equal(normalize_path_btw(FALSE), list(project = FALSE, user = FALSE))
-    # A scalar path uses only that file, skipping user-level context
-    expect_equal(normalize_path_btw("x.md"), list(project = "x.md", user = FALSE))
+    # A scalar path sets the project file and keeps the user-level default
+    expect_equal(normalize_path_btw("x.md"), list(project = "x.md", user = TRUE))
   })
 
   it("controls each scope via a named list", {
@@ -590,6 +590,8 @@ describe("normalize_path_btw()", {
       normalize_path_btw(list(project = "x.md")),
       list(project = "x.md", user = FALSE)
     )
+    # A scalar path follows the option for the user scope
+    expect_equal(normalize_path_btw("x.md"), list(project = "x.md", user = FALSE))
 
     withr::local_options(btw.client.path_btw_user = "u.md")
     expect_equal(normalize_path_btw(NULL), list(project = TRUE, user = "u.md"))
@@ -597,15 +599,13 @@ describe("normalize_path_btw()", {
       normalize_path_btw(list(project = "x.md")),
       list(project = "x.md", user = "u.md")
     )
+    expect_equal(normalize_path_btw("x.md"), list(project = "x.md", user = "u.md"))
 
     # An explicit user field wins over the option
     expect_equal(
       normalize_path_btw(list(user = TRUE)),
       list(project = TRUE, user = TRUE)
     )
-
-    # A scalar path never consults the option: it uses only that file
-    expect_equal(normalize_path_btw("x.md"), list(project = "x.md", user = FALSE))
   })
 
   it("reads the btw.client.path_btw_project option as the project default", {
@@ -628,20 +628,27 @@ describe("normalize_path_btw()", {
       normalize_path_btw(list(project = TRUE)),
       list(project = TRUE, user = TRUE)
     )
-
-    # A scalar path never consults the option: it uses only that file
-    expect_equal(normalize_path_btw("x.md"), list(project = "x.md", user = FALSE))
   })
 
   it("rejects malformed values", {
     expect_snapshot(error = TRUE, normalize_path_btw(list()))
     expect_snapshot(error = TRUE, normalize_path_btw(list("x.md")))
     expect_snapshot(error = TRUE, normalize_path_btw(list(other = TRUE)))
+    expect_snapshot(
+      error = TRUE,
+      normalize_path_btw(list(project = "a.md", project = "b.md"))
+    )
     expect_snapshot(error = TRUE, normalize_path_btw(list(project = 1)))
+    expect_snapshot(error = TRUE, normalize_path_btw(list(project = "")))
     expect_snapshot(error = TRUE, normalize_path_btw(1))
+    expect_snapshot(error = TRUE, normalize_path_btw(""))
     expect_snapshot(
       error = TRUE,
       withr::with_options(list(btw.client.path_btw_user = 1), normalize_path_btw(NULL))
+    )
+    expect_snapshot(
+      error = TRUE,
+      withr::with_options(list(btw.client.path_btw_user = ""), normalize_path_btw(NULL))
     )
     expect_snapshot(
       error = TRUE,
@@ -708,18 +715,39 @@ describe("read_btw_file() with scoped path_btw", {
     expect_equal(config$client, "anthropic")
   })
 
-  it("a scalar path uses only that file, without user-level context", {
+  it("a scalar path still combines the user-level context", {
     local_btw_md(project = path_project, user = path_user)
 
     config <- read_btw_file(path_project)
-    expect_equal(config$btw_system_prompt, "PROJECT CONTEXT")
+    expect_equal(config$btw_system_prompt, "USER CONTEXT\n\n---\n\nPROJECT CONTEXT")
     expect_equal(config$client, "openai")
-    expect_null(config$tools)
+    expect_equal(config$tools, "docs")
   })
 
-  it("throws for a user path that does not exist", {
+  it("throws for a project path that does not exist, naming the field", {
     expect_error(
-      read_btw_file(list(project = FALSE, user = tempfile("missing-"))),
+      read_btw_file(list(project = "missing-btw.md", user = FALSE)),
+      "path_btw\\$project"
+    )
+    expect_error(
+      read_btw_file("missing-btw.md"),
+      "Invalid `path_btw`"
+    )
+  })
+
+  it("throws for a user path that is not an existing file", {
+    expect_error(
+      read_btw_file(list(project = FALSE, user = "missing-user.md")),
+      "does not exist"
+    )
+    # An empty path must not fall through to a directory read
+    expect_error(
+      read_btw_file(list(project = FALSE, user = "")),
+      "empty string"
+    )
+    # A directory is not a context file
+    expect_error(
+      read_btw_file(list(project = FALSE, user = withr::local_tempdir())),
       "does not exist"
     )
   })
@@ -728,6 +756,32 @@ describe("read_btw_file() with scoped path_btw", {
     local_btw_md(project = path_project, user = path_user)
     config <- read_btw_file(list(project = FALSE, user = FALSE))
     expect_equal(config, list())
+  })
+
+  it("btw_client() puts a user-level AGENTS.md in the system prompt", {
+    home <- withr::local_tempdir()
+    local_user_home(home)
+    # Let path_find_user() look at the (mocked) home directory
+    withr::local_envvar(TESTTHAT = NA)
+
+    fs::dir_create(fs::path(home, ".agents"))
+    writeLines(
+      "USER LEVEL AGENTS INSTRUCTIONS",
+      fs::path(home, ".agents", "AGENTS.md")
+    )
+
+    with_mocked_platform(ide = "rstudio", {
+      chat <- btw_client(path_btw = list(project = FALSE), tools = FALSE)
+    })
+
+    expect_match(chat$get_system_prompt(), "USER LEVEL AGENTS INSTRUCTIONS")
+
+    # ... and skipping the user scope keeps it out
+    with_mocked_platform(ide = "rstudio", {
+      chat <- btw_client(path_btw = FALSE, tools = FALSE)
+    })
+
+    expect_no_match(chat$get_system_prompt(), "USER LEVEL AGENTS INSTRUCTIONS")
   })
 })
 
@@ -1355,6 +1409,32 @@ describe("app_resolve_model_choices()", {
 
   it("returns NULL for model_choices = 'none'", {
     expect_null(app_resolve_model_choices("none", path_btw = FALSE))
+  })
+
+  it("resolves the project field of a list path_btw", {
+    btw_md <- withr::local_tempfile(fileext = ".md")
+    writeLines(
+      con = btw_md,
+      c(
+        "---",
+        "client:",
+        "  fast: openai/gpt-4.1-mini",
+        "  smart: anthropic/claude-sonnet-4",
+        "---"
+      )
+    )
+
+    result <- app_resolve_model_choices(
+      "auto",
+      path_btw = list(project = btw_md, user = FALSE)
+    )
+    expect_named(result, c("fast", "smart"))
+
+    # Skipping the project scope means there is nothing to resolve
+    expect_equal(
+      app_resolve_model_choices("auto", path_btw = list(project = FALSE)),
+      "provider"
+    )
   })
 
   it("returns 'provider' when no btw.md is found", {
