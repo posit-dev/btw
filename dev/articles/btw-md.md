@@ -26,8 +26,9 @@ those files don’t:
   in `CLAUDE.md`, and the other tools that read `AGENTS.md` don’t expect
   front matter there.
 - **It has a user-level version.** btw combines a `btw.md` in your home
-  directory, such as `~/.btw/btw.md`, with each project’s file. btw
-  doesn’t look for `AGENTS.md` or `CLAUDE.md` in your home directory.
+  directory, such as `~/.btw/btw.md`, with each project’s file. If
+  there’s no user-level `btw.md`, btw falls back to a user-level
+  `AGENTS.md` in the cross-tool `~/.agents/` directory.
 - **It keeps btw-specific instructions separate.** Instructions about
   btw’s tools or your R workflow don’t end up in the files that other
   coding agents read.
@@ -296,7 +297,9 @@ one of these files, so if your project has both `btw.md` and
 `AGENTS.md`, btw uses `btw.md` and ignores `AGENTS.md`.
 
 btw also reads a **user-level** `btw.md` that applies to all of your
-projects, such as `~/.btw/btw.md`. The two files are combined:
+projects, such as `~/.btw/btw.md`. If there’s no user-level `btw.md`,
+btw falls back to a user-level `AGENTS.md` in the cross-tool
+`~/.agents/` directory. The two files are combined:
 
 - The project’s `client` and `tools` fields are used when they’re
   present; otherwise the user-level fields are used.
@@ -310,13 +313,20 @@ coding style, in the user-level file and keep project details in the
 project file. See `?btw-config` for every location btw checks.
 
 To use a particular file instead of searching, pass its path to
-`path_btw`. To start a chat without any `btw.md` file, use
-`path_btw = FALSE`:
+`path_btw`; the user-level file is still combined with it. To use only
+that file, pass
+`path_btw = list(project = "analysis/btw.md", user = FALSE)`. To start a
+chat without any `btw.md` file, use `path_btw = FALSE`. Or pass a named
+list to control project and user context separately,
+e.g. `path_btw = list(user = FALSE)`; the `btw.client.path_btw_user`
+option sets the default for the user scope.
 
 \
 [`btw_app`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)`(``path_btw ``=`` ``"analysis/btw.md"``)`\
 \
-[`btw_client`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)`(``path_btw ``=`` ``FALSE``)`
+[`btw_client`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)`(``path_btw ``=`` ``FALSE``)`\
+\
+[`btw_client`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)`(``path_btw ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``user ``=`` ``FALSE``)``)`
 
 ## Next: the same format for agents
 

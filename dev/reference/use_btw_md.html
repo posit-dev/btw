@@ -82,17 +82,20 @@ arguments, it opens the same file that <code><a href="btw_client.html">btw_clien
 <dl><dt id="arg-scope">scope<a class="anchor" aria-label="anchor" href="#arg-scope"></a></dt>
 <dd><p>The scope of the context file. Can be:</p><ul><li><p><code>"project"</code> (default): Creates/opens <code>btw.md</code> (by default) or <code>AGENTS.md</code>
 in the project root</p></li>
-<li><p><code>"user"</code>: Opens your user-level <code>btw.md</code>. When multiple user-level
-configuration files exist, <code>edit_btw_md("user")</code> asks which one to open,
-indicating the file that <code><a href="btw_client.html">btw_client()</a></code> and <code><a href="btw_client.html">btw_app()</a></code> load. When
-creating, <code>use_btw_md("user")</code> uses the recommended <code>~/.btw/</code> location and
-offers to migrate an existing user-level configuration found elsewhere.</p></li>
+<li><p><code>"user"</code>: Opens your user-level <code>btw.md</code>, or if only a user-level
+<code>AGENTS.md</code> exists, that file. When multiple user-level context files
+exist, <code>edit_btw_md("user")</code> asks which one to open, indicating the file
+that <code><a href="btw_client.html">btw_client()</a></code> and <code><a href="btw_client.html">btw_app()</a></code> load. When creating,
+<code>use_btw_md("user")</code> uses the recommended <code>~/.btw/</code> location, offers to
+migrate an existing user-level configuration found elsewhere, and asks
+for confirmation when creating a <code>btw.md</code> would take priority over an
+existing user-level <code>AGENTS.md</code>.</p></li>
 <li><p>A directory path: Creates/opens <code>btw.md</code> in that directory</p></li>
 <li><p>A file path: Creates/opens that specific file</p></li>
 </ul><p>For <code>edit_btw_md()</code>, <code>scope = NULL</code> (default) will find and open the
 context file that <code><a href="btw_client.html">btw_client()</a></code> would use, searching first for <code>btw.md</code>,
-then <code>AGENTS.md</code>, then <code>CLAUDE.md</code> in the project directory and then for a
-user-level <code>btw.md</code>.</p></dd>
+then <code>AGENTS.md</code>, then <code>CLAUDE.md</code> in the project directory and then for
+a user-level <code>btw.md</code> (or, if none exists, a user-level <code>AGENTS.md</code>).</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -248,11 +251,16 @@ different sub-projects or sub-directories within a larger project.</p>
 directly in your home directory (<code>~/btw.md</code>) takes precedence; otherwise btw
 looks in <code>~/.btw/btw.md</code>, <code>~/.config/btw/btw.md</code>, and
 <code>tools::R_user_dir("btw")</code>, in that order (see <a href="btw-config.html">btw-config</a> for the full
-picture, including skills and agents). <code>use_btw_md("user")</code> creates new
-configuration in the recommended <code>~/.btw/</code> directory, and offers to migrate
-an existing user-level configuration found elsewhere. When more than one
-user-level <code>btw.md</code> file exists, <code>edit_btw_md("user")</code> asks which one to open.
-Note that <span class="pkg">btw</span> does not look for <code>AGENTS.md</code> in your home directory.</p>
+picture, including skills and agents). If no user-level <code>btw.md</code> exists
+anywhere, btw falls back to a user-level <code>AGENTS.md</code> in the cross-tool
+<code>~/.agents/</code> directory. <code>use_btw_md("user")</code> creates new configuration in
+the recommended <code>~/.btw/</code> directory, offers to migrate an existing user-level
+configuration found elsewhere, and asks for confirmation when creating a
+<code>btw.md</code> would take priority over an existing user-level <code>AGENTS.md</code>. When
+more than one user-level context file exists, <code>edit_btw_md("user")</code> asks
+which one to open. To skip user-level context in a specific chat, use
+<code>path_btw = list(user = FALSE)</code> in <code><a href="btw_client.html">btw_client()</a></code> or <code><a href="btw_client.html">btw_app()</a></code>, or change
+the default globally with the <code>btw.client.path_btw_user</code> option.</p>
 <p>The user-level <code>btw.md</code> file is used alongside your project's context file,
 not only when a project file is missing. When both are present,
 <code><a href="btw_client.html">btw_client()</a></code> and <code><a href="btw_client.html">btw_app()</a></code> combine them:</p><ul><li><p><code>client</code> and <code>tools</code> from the project file are used when present;
@@ -264,8 +272,9 @@ the user-level instructions first.</p></li>
 </ul><p>This lets you keep general preferences, such as a default model or coding
 style, in your user-level file and project details in the project file. The
 user-level file is also combined with a file you pass to the <code>path_btw</code>
-argument of <code><a href="btw_client.html">btw_client()</a></code> or <code><a href="btw_client.html">btw_app()</a></code>. Use <code>path_btw = FALSE</code> to start a
-chat without either file.</p>
+argument of <code><a href="btw_client.html">btw_client()</a></code> or <code><a href="btw_client.html">btw_app()</a></code>; use
+<code>path_btw = list(project = path, user = FALSE)</code> to use only that file. Use
+<code>path_btw = FALSE</code> to start a chat without either file.</p>
     </div>
     <div class="section level2">
     <h2 id="interactive-setup">Interactive Setup<a class="anchor" aria-label="anchor" href="#interactive-setup"></a></h2>
@@ -292,7 +301,7 @@ user configuration locations.</p></div>
 <span class="r-in"><span>    <span class="fu">use_btw_md</span><span class="op">(</span><span class="va">btw_md_tmp</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">}</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Created <span style="color: #0000BB;">/tmp/RtmpuroQUN/file1a7146e6b222.md</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Created <span style="color: #0000BB;">/tmp/Rtmp26lK81/file19653e2a087.md</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> See `?btw::btw_client()` for format details</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> See `?btw::btw_tools()` for available tools</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Call `btw::btw_task_create_btw_md()` to use an LLM to help you initialize the</span>

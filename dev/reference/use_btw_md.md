@@ -34,15 +34,18 @@ edit_btw_md(scope = NULL)
   - `"project"` (default): Creates/opens `btw.md` (by default) or
     `AGENTS.md` in the project root
 
-  - `"user"`: Opens your user-level `btw.md`. When multiple user-level
-    configuration files exist, `edit_btw_md("user")` asks which one to
-    open, indicating the file that
+  - `"user"`: Opens your user-level `btw.md`, or if only a user-level
+    `AGENTS.md` exists, that file. When multiple user-level context
+    files exist, `edit_btw_md("user")` asks which one to open,
+    indicating the file that
     [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
     and
     [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
     load. When creating, `use_btw_md("user")` uses the recommended
-    `~/.btw/` location and offers to migrate an existing user-level
-    configuration found elsewhere.
+    `~/.btw/` location, offers to migrate an existing user-level
+    configuration found elsewhere, and asks for confirmation when
+    creating a `btw.md` would take priority over an existing user-level
+    `AGENTS.md`.
 
   - A directory path: Creates/opens `btw.md` in that directory
 
@@ -53,7 +56,7 @@ edit_btw_md(scope = NULL)
   [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
   would use, searching first for `btw.md`, then `AGENTS.md`, then
   `CLAUDE.md` in the project directory and then for a user-level
-  `btw.md`.
+  `btw.md` (or, if none exists, a user-level `AGENTS.md`).
 
 ## Value
 
@@ -231,12 +234,21 @@ For global configuration, btw uses a user-level `btw.md` file. A
 otherwise btw looks in `~/.btw/btw.md`, `~/.config/btw/btw.md`, and
 `tools::R_user_dir("btw")`, in that order (see
 [btw-config](https://posit-dev.github.io/btw/dev/reference/btw-config.md)
-for the full picture, including skills and agents). `use_btw_md("user")`
-creates new configuration in the recommended `~/.btw/` directory, and
-offers to migrate an existing user-level configuration found elsewhere.
-When more than one user-level `btw.md` file exists,
-`edit_btw_md("user")` asks which one to open. Note that btw does not
-look for `AGENTS.md` in your home directory.
+for the full picture, including skills and agents). If no user-level
+`btw.md` exists anywhere, btw falls back to a user-level `AGENTS.md` in
+the cross-tool `~/.agents/` directory. `use_btw_md("user")` creates new
+configuration in the recommended `~/.btw/` directory, offers to migrate
+an existing user-level configuration found elsewhere, and asks for
+confirmation when creating a `btw.md` would take priority over an
+existing user-level `AGENTS.md`. When more than one user-level context
+file exists, `edit_btw_md("user")` asks which one to open. To skip
+user-level context in a specific chat, use
+`path_btw = list(user = FALSE)` in
+[`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+or
+[`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md),
+or change the default globally with the `btw.client.path_btw_user`
+option.
 
 The user-level `btw.md` file is used alongside your project's context
 file, not only when a project file is missing. When both are present,
@@ -260,8 +272,9 @@ file. The user-level file is also combined with a file you pass to the
 `path_btw` argument of
 [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
 or
-[`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md).
-Use `path_btw = FALSE` to start a chat without either file.
+[`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md);
+use `path_btw = list(project = path, user = FALSE)` to use only that
+file. Use `path_btw = FALSE` to start a chat without either file.
 
 ## Interactive Setup
 
@@ -290,7 +303,7 @@ withr::with_tempdir({
     use_btw_md(btw_md_tmp)
   })
 })
-#> ✔ Created /tmp/RtmpuroQUN/file1a7146e6b222.md
+#> ✔ Created /tmp/Rtmp26lK81/file19653e2a087.md
 #> ℹ See `?btw::btw_client()` for format details
 #> ℹ See `?btw::btw_tools()` for available tools
 #> ℹ Call `btw::btw_task_create_btw_md()` to use an LLM to help you initialize the

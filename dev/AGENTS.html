@@ -426,7 +426,7 @@
 <li>
 <strong>Test snapshots require frequent updates</strong> as output formatting evolves</li>
 <li>
-<strong><code>btw_user_dirs()</code> is the single source of truth</strong> for user-level config locations (<code>~/.btw</code>, <code>~/.config/btw</code>, <code>tools::R_user_dir("btw")</code>). Any code that discovers or installs user-level skills, agents, or <code>btw.md</code> files must use this helper — never hardcode individual paths</li>
+<strong><code>btw_user_dirs()</code> is the single source of truth</strong> for user-level config locations (<code>~/.btw</code>, <code>~/.config/btw</code>, <code>tools::R_user_dir("btw")</code>). Any code that discovers or installs user-level skills, agents, or <code>btw.md</code> files must use this helper — never hardcode individual paths. The one deliberate exception is the user-level context file fallback: <code>AGENTS.md</code> is read from <code>~/.agents/AGENTS.md</code> (see <code>user_agents_md_paths()</code>), because that path is a cross-tool convention shared with other coding agents rather than a btw-owned directory</li>
 </ul></div>
 <div class="section level2">
 <h2 id="resources">Resources<a class="anchor" aria-label="anchor" href="#resources"></a></h2>

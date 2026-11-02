@@ -37,6 +37,26 @@ location; `use_btw_md("user")` creates new configuration in the
 recommended `~/.btw/` directory. If more than one user-level `btw.md`
 exists, the highest-priority one is used and btw warns once per session.
 
+If no user-level `btw.md` exists anywhere,
+[`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+and
+[`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+fall back to a user-level `AGENTS.md` in the cross-tool `~/.agents/`
+directory, a convention shared with other coding agents. This mirrors
+the project-level precedence `btw.md` \> `AGENTS.md` \> `CLAUDE.md`,
+except a user-level `CLAUDE.md` is never used. Unlike `~/btw.md`, a
+loose `~/AGENTS.md` is not searched: a user-level `AGENTS.md` is only
+read from `~/.agents/`.
+
+User-level context is combined with the project-level context file by
+default; use `path_btw = list(user = FALSE)` in
+[`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+or
+[`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+to skip it for a single chat, or set the `btw.client.path_btw_user`
+option to `FALSE` to change the default. The `project` scope of
+`path_btw` has a matching `btw.client.path_btw_project` option.
+
 On Windows, R's notion of your home directory
 ([`fs::path_home_r()`](https://fs.r-lib.org/reference/path_expand.html),
 typically your `Documents` folder) can differ from your user profile

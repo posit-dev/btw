@@ -2,6 +2,49 @@
 
 ## btw (development version)
 
+- [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+  and
+  [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+  now fall back to a user-level `AGENTS.md` in the cross-tool
+  `~/.agents/` directory when no user-level `btw.md` exists, mirroring
+  the project-level precedence `btw.md` \> `AGENTS.md`.
+  [`edit_btw_md()`](https://posit-dev.github.io/btw/dev/reference/use_btw_md.md)
+  and
+  [`use_btw_md()`](https://posit-dev.github.io/btw/dev/reference/use_btw_md.md)
+  are aware of the new fallback, e.g. `use_btw_md("user")` asks before
+  creating a `btw.md` that would take priority over an existing
+  `AGENTS.md` ([\#226](https://github.com/posit-dev/btw/issues/226)).
+
+- The `path_btw` argument of
+  [`btw_client()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+  and
+  [`btw_app()`](https://posit-dev.github.io/btw/dev/reference/btw_client.md)
+  now also accepts a named list with `project` and/or `user` fields,
+  each `TRUE` (search the default locations), `FALSE` (skip that scope),
+  or a path to a specific file; a missing field keeps the default for
+  that scope. For example, `path_btw = list(user = FALSE)` skips
+  user-level context for a single chat, and
+  `path_btw = list(project = FALSE)` uses only user-level context. The
+  new `btw.client.path_btw_project` and `btw.client.path_btw_user`
+  options set the global defaults for each scope
+  ([\#226](https://github.com/posit-dev/btw/issues/226)). A scalar path
+  keeps its previous meaning: it selects the project context file and is
+  still combined with the user-level context, equivalent to
+  `list(project = path)`; use `list(project = path, user = FALSE)` to
+  use only that file.
+
+- `path_find_in_project()` now stops its upward search at the home
+  directory
+  ([`fs::path_home()`](https://fs.r-lib.org/reference/path_expand.html)
+  or
+  [`fs::path_home_r()`](https://fs.r-lib.org/reference/path_expand.html),
+  which differ on Windows), so files like `~/AGENTS.md` or `~/CLAUDE.md`
+  are no longer picked up as project context when the working directory
+  is under `~` but outside a project. Home-level files are used only by
+  the user-level lookup, which also fixes `~/btw.md` instructions being
+  included twice — once as the project file and once as the user-level
+  config ([\#225](https://github.com/posit-dev/btw/issues/225)).
+
 - Updates for compatibility with S7 \> 0.2.2.
 
 - Documentation examples, the `btw.md` front matter in the
@@ -12,19 +55,6 @@
   and `claude-sonnet-4-20250514`, which Anthropic retired on 2026-06-15.
   The Bedrock examples now use current model ids as well
   ([\#241](https://github.com/posit-dev/btw/issues/241)).
-
-- `path_find_in_project()` now stops its upward search when it reaches
-  the home directory (either
-  [`fs::path_home()`](https://fs.r-lib.org/reference/path_expand.html)
-  or
-  [`fs::path_home_r()`](https://fs.r-lib.org/reference/path_expand.html),
-  which differ on Windows) and never treats files there as project
-  files, so `~/AGENTS.md` or `~/CLAUDE.md` are no longer picked up as
-  project context when the working directory is under `~` but outside a
-  project. Home-level files are handled only by the user-level lookup.
-  This also fixes `~/btw.md` instructions being included twice — once as
-  the project file and once as the user-level config
-  ([\#225](https://github.com/posit-dev/btw/issues/225)).
 
 - `btw_client(path_btw = ...)` no longer duplicates instructions when
   `path_btw` is set explicitly to the same file as the user-level

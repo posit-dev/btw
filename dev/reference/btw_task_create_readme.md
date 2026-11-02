@@ -43,8 +43,8 @@ btw_task_create_readme(
   calls, or use a `btw.md` project file for default chat client
   settings, like provider and model. We check the `client` argument,
   then the `btw.client` R option, and finally the `btw.md` project file
-  (falling back to user-level `btw.md` if needed), using only the client
-  definition from the first of these that is available.
+  (falling back to the user-level context file if needed), using only
+  the client definition from the first of these that is available.
 
 - mode:
 
@@ -85,6 +85,6 @@ withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
 #> #
 #> function (prompt) 
 #> btw_task_create_readme_tool(prompt)
-#> <bytecode: 0x556ab979a880>
-#> <environment: 0x556ab979a260>
+#> <bytecode: 0x55f54a907d50>
+#> <environment: 0x55f54a907730>
 ```

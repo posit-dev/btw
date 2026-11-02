@@ -29,10 +29,12 @@ Client settings in `client` and `tools` from a project-level `btw.md` or
 `AGENTS.md` file take precedence. If a project file doesn't specify a
 setting, btw will fall back to settings in a user-level `btw.md` file.
 This is `~/btw.md` if present, otherwise `~/.btw/btw.md`,
-`~/.config/btw/btw.md`, or `tools::R_user_dir("btw")`, in that order.
-See `?btw-config` for the complete list of user-level locations.
-Project-level btw tool options under the `options` key are merged with
-user-level options, with project-level options taking precedence.
+`~/.config/btw/btw.md`, or `tools::R_user_dir("btw")`, in that order. If
+no user-level `btw.md` exists anywhere, btw falls back to a user-level
+`AGENTS.md` in the cross-tool `~/.agents/` directory. See `?btw-config`
+for the complete list of user-level locations. Project-level btw tool
+options under the `options` key are merged with user-level options, with
+project-level options taking precedence.
 
 Project-specific instructions from both files are combined with a
 divider, allowing you to maintain global guidelines in your user file
@@ -52,7 +54,17 @@ client and take precedence over settings in a `btw.md` file:
 - `btw.tools`: The btw tools to include by default when starting a new
   btw chat, see
   [`btw_tools()`](https://posit-dev.github.io/btw/dev/reference/btw_tools.md)
-  for details.\`
+  for details.
+
+- `btw.client.path_btw_project`: `TRUE` (default) to search the default
+  project locations, `FALSE` to skip them, or a path to a specific
+  project context file. This is the default for the `project` field of
+  `path_btw`.
+
+- `btw.client.path_btw_user`: `TRUE` (default) to include user-level
+  context in new chats, `FALSE` to skip it, or a path to a specific
+  user-level context file. This is the default for the `user` field of
+  `path_btw`.
 
 ### Multiple Providers and Models
 
@@ -120,8 +132,9 @@ btw_app(
   `btw_client()` calls, or use a `btw.md` project file for default chat
   client settings, like provider and model. We check the `client`
   argument, then the `btw.client` R option, and finally the `btw.md`
-  project file (falling back to user-level `btw.md` if needed), using
-  only the client definition from the first of these that is available.
+  project file (falling back to the user-level context file if needed),
+  using only the client definition from the first of these that is
+  available.
 
 - tools:
 
@@ -143,14 +156,30 @@ btw_app(
 
 - path_btw:
 
-  A path to a `btw.md`, `AGENTS.md`, or `CLAUDE.md` project context
-  file. If `NULL`, btw will find a project-specific context file by
-  walking up the parents of the current working directory, preferring
-  `btw.md`, then `AGENTS.md`, then `CLAUDE.md`, with fallback to a
-  user-level `btw.md` file if no project file is found. See
-  `?btw-config` for the complete list of locations. Set
-  `path_btw = FALSE` to create a chat client without using a `btw.md`
-  file.
+  Path to a `btw.md`, `AGENTS.md`, or `CLAUDE.md` project context file,
+  or a named list with `project` and/or `user` fields to control
+  project-level and user-level context independently. Each field can be
+  `TRUE` (search the default locations), `FALSE` (skip that scope), or a
+  path to a specific file; a missing (or `NULL`) field keeps the default
+  for that scope, set by the `btw.client.path_btw_project` and
+  `btw.client.path_btw_user` options described below.
+
+  If `NULL`, btw will find a project-specific context file by walking up
+  the parents of the current working directory, preferring `btw.md`,
+  then `AGENTS.md`, then `CLAUDE.md`, and combines it with the
+  user-level context file: the highest-priority user-level `btw.md`, or
+  if none exists, a user-level `AGENTS.md`.
+
+  A scalar path selects the project context file and otherwise behaves
+  like the default, i.e. it is equivalent to `list(project = path)`: the
+  user-level context file is still combined with it. Use
+  `list(project = path, user = FALSE)` to use only that file. A scalar
+  `FALSE` skips all context files.
+
+  The defaults for each scope can be changed globally with the
+  `btw.client.path_btw_project` and `btw.client.path_btw_user` options,
+  e.g. `options(btw.client.path_btw_user = FALSE)`. See `?btw-config`
+  for the complete list of locations.
 
 - path_llms_txt:
 
@@ -232,6 +261,21 @@ directories above (`~/.btw/btw.md`, `~/.config/btw/btw.md`,
 location; `use_btw_md("user")` creates new configuration in the
 recommended `~/.btw/` directory. If more than one user-level `btw.md`
 exists, the highest-priority one is used and btw warns once per session.
+
+If no user-level `btw.md` exists anywhere, `btw_client()` and
+`btw_app()` fall back to a user-level `AGENTS.md` in the cross-tool
+`~/.agents/` directory, a convention shared with other coding agents.
+This mirrors the project-level precedence `btw.md` \> `AGENTS.md` \>
+`CLAUDE.md`, except a user-level `CLAUDE.md` is never used. Unlike
+`~/btw.md`, a loose `~/AGENTS.md` is not searched: a user-level
+`AGENTS.md` is only read from `~/.agents/`.
+
+User-level context is combined with the project-level context file by
+default; use `path_btw = list(user = FALSE)` in `btw_client()` or
+`btw_app()` to skip it for a single chat, or set the
+`btw.client.path_btw_user` option to `FALSE` to change the default. The
+`project` scope of `path_btw` has a matching
+`btw.client.path_btw_project` option.
 
 On Windows, R's notion of your home directory
 ([`fs::path_home_r()`](https://fs.r-lib.org/reference/path_expand.html),

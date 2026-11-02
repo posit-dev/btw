@@ -49,8 +49,8 @@ btw_task_create_btw_md(
   calls, or use a `btw.md` project file for default chat client
   settings, like provider and model. We check the `client` argument,
   then the `btw.client` R option, and finally the `btw.md` project file
-  (falling back to user-level `btw.md` if needed), using only the client
-  definition from the first of these that is available.
+  (falling back to the user-level context file if needed), using only
+  the client definition from the first of these that is available.
 
 - mode:
 
@@ -91,6 +91,6 @@ withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
 #> #
 #> function (prompt, path = NULL) 
 #> task_create_btw_md_tool(prompt, path)
-#> <bytecode: 0x556ab03fd748>
-#> <environment: 0x556ab03faef8>
+#> <bytecode: 0x55f543bbb5c8>
+#> <environment: 0x55f543bbbda8>
 ```

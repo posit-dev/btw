@@ -102,8 +102,9 @@ front matter in <code>CLAUDE.md</code>, and the other tools that read
 <li>
 <strong>It has a user-level version.</strong> btw combines a
 <code>btw.md</code> in your home directory, such as
-<code>~/.btw/btw.md</code>, with each project’s file. btw doesn’t look
-for <code>AGENTS.md</code> or <code>CLAUDE.md</code> in your home
+<code>~/.btw/btw.md</code>, with each project’s file. If there’s no
+user-level <code>btw.md</code>, btw falls back to a user-level
+<code>AGENTS.md</code> in the cross-tool <code>~/.agents/</code>
 directory.</li>
 <li>
 <strong>It keeps btw-specific instructions separate.</strong>
@@ -333,8 +334,10 @@ files, so if your project has both <code>btw.md</code> and
 <code>AGENTS.md</code>, btw uses <code>btw.md</code> and ignores
 <code>AGENTS.md</code>.</p>
 <p>btw also reads a <strong>user-level</strong> <code>btw.md</code> that
-applies to all of your projects, such as <code>~/.btw/btw.md</code>. The
-two files are combined:</p>
+applies to all of your projects, such as <code>~/.btw/btw.md</code>. If
+there’s no user-level <code>btw.md</code>, btw falls back to a
+user-level <code>AGENTS.md</code> in the cross-tool
+<code>~/.agents/</code> directory. The two files are combined:</p>
 <ul>
 <li>The project’s <code>client</code> and <code>tools</code> fields are
 used when they’re present; otherwise the user-level fields are
@@ -349,12 +352,21 @@ or coding style, in the user-level file and keep project details in the
 project file. See <code>?btw-config</code> for every location btw
 checks.</p>
 <p>To use a particular file instead of searching, pass its path to
-<code>path_btw</code>. To start a chat without any <code>btw.md</code>
-file, use <code>path_btw = FALSE</code>:</p>
+<code>path_btw</code>; the user-level file is still combined with it. To
+use only that file, pass
+<code>path_btw = list(project = "analysis/btw.md", user = FALSE)</code>.
+To start a chat without any <code>btw.md</code> file, use
+<code>path_btw = FALSE</code>. Or pass a named list to control project
+and user context separately,
+e.g. <code>path_btw = list(user = FALSE)</code>; the
+<code>btw.client.path_btw_user</code> option sets the default for the
+user scope.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/btw_client.html">btw_app</a></span><span class="op">(</span>path_btw <span class="op">=</span> <span class="st">"analysis/btw.md"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/btw_client.html">btw_client</a></span><span class="op">(</span>path_btw <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/btw_client.html">btw_client</a></span><span class="op">(</span>path_btw <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/btw_client.html">btw_client</a></span><span class="op">(</span>path_btw <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>user <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="next-the-same-format-for-agents">Next: the same format for agents<a class="anchor" aria-label="anchor" href="#next-the-same-format-for-agents"></a>
