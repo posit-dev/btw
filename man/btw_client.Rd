@@ -133,9 +133,9 @@ first client is used automatically.
 \strong{Array format} (unnamed list):
 
 \if{html}{\out{<div class="sourceCode yaml">}}\preformatted{client:
-  - anthropic/claude-sonnet-4
+  - anthropic/claude-sonnet-5-5
   - openai/gpt-4.1
-  - aws_bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0
+  - aws_bedrock/us.anthropic.claude-sonnet-5-5
 }\if{html}{\out{</div>}}
 
 \strong{Alias format} (named list):

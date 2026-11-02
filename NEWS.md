@@ -2,6 +2,8 @@
 
 * Updates for compatibility with S7 > 0.2.2.
 
+* Documentation examples, the `btw.md` front matter in the `btw_task_create_btw_md()` prompt, and the `btw_client()` error message now use `claude-sonnet-5-5` instead of `claude-sonnet-4` and `claude-sonnet-4-20250514`, which Anthropic retired on 2026-06-15. The Bedrock examples now use current model ids as well (#241).
+
 * `path_find_in_project()` now stops its upward search when it reaches the home directory (either `fs::path_home()` or `fs::path_home_r()`, which differ on Windows) and never treats files there as project files, so `~/AGENTS.md` or `~/CLAUDE.md` are no longer picked up as project context when the working directory is under `~` but outside a project. Home-level files are handled only by the user-level lookup. This also fixes `~/btw.md` instructions being included twice — once as the project file and once as the user-level config (#225).
 
 * `btw_client(path_btw = ...)` no longer duplicates instructions when `path_btw` is set explicitly to the same file as the user-level `btw.md` (#225).

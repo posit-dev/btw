@@ -52,7 +52,7 @@ Task files use the same format as \code{btw.md} files:
 \if{html}{\out{<div class="sourceCode yaml">}}\preformatted{---
 client:
   provider: anthropic
-  model: claude-sonnet-4
+  model: claude-sonnet-5-5
 tools: [docs, files]
 ---
 
