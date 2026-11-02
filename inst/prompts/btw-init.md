@@ -408,7 +408,7 @@ If you are creating a new file from scratch, add the following front matter bloc
 
 ```md
 ---
-# client: claude/claude-4-5-sonnet-latest
+# client: claude/claude-sonnet-5-5
 tools: [docs, env, files, ide, search, session, web]
 ---
 ```
