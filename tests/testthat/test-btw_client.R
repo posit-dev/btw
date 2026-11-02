@@ -761,8 +761,6 @@ describe("read_btw_file() with scoped path_btw", {
   it("btw_client() puts a user-level AGENTS.md in the system prompt", {
     home <- withr::local_tempdir()
     local_user_home(home)
-    # Let path_find_user() look at the (mocked) home directory
-    withr::local_envvar(TESTTHAT = NA)
 
     fs::dir_create(fs::path(home, ".agents"))
     writeLines(
@@ -770,17 +768,18 @@ describe("read_btw_file() with scoped path_btw", {
       fs::path(home, ".agents", "AGENTS.md")
     )
 
-    with_mocked_platform(ide = "rstudio", {
-      chat <- btw_client(path_btw = list(project = FALSE), tools = FALSE)
+    # path_find_user() deliberately ignores the home directory under testthat,
+    # so unset TESTTHAT for the client construction only, and keep every
+    # testthat call outside that scope: testthat's own package detection keys
+    # off TESTTHAT and fails when the package isn't loaded by pkgload.
+    chat <- withr::with_envvar(c(TESTTHAT = NA), {
+      btw_client(path_btw = list(project = FALSE), tools = FALSE)
     })
 
     expect_match(chat$get_system_prompt(), "USER LEVEL AGENTS INSTRUCTIONS")
 
     # ... and skipping the user scope keeps it out
-    with_mocked_platform(ide = "rstudio", {
-      chat <- btw_client(path_btw = FALSE, tools = FALSE)
-    })
-
+    chat <- btw_client(path_btw = FALSE, tools = FALSE)
     expect_no_match(chat$get_system_prompt(), "USER LEVEL AGENTS INSTRUCTIONS")
   })
 })
