@@ -91,6 +91,6 @@ withr::with_envvar(list(ANTHROPIC_API_KEY = "example"), {
 #> #
 #> function (prompt, path = NULL) 
 #> task_create_btw_md_tool(prompt, path)
-#> <bytecode: 0x55f94e2441a8>
-#> <environment: 0x55f94e244988>
+#> <bytecode: 0x564a906620e8>
+#> <environment: 0x564a90662bd8>
 ```

@@ -71,11 +71,11 @@ btw(
 #> ## Context
 #> 
 #> pkgsearch::pkg_search("network visualization", size = 1)
-#> Found 3858 packages matching `network visualization`, showing 1 result.
+#> Found 3927 packages matching `network visualization`, showing 1 result.
 #> 
 #> | package | title | version | date | url | downloads_last_month |
 #> |---------|-------|---------|------|-----|----------------------|
-#> | DiagrammeR | Graph/Network Visualization | 1.0.12 | 2026-04-27 | https://rich-iannone.github.io/DiagrammeR/, https://github.com/rich-iannone/DiagrammeR | 43,530 |
+#> | DiagrammeR | Graph/Network Visualization | 1.0.12 | 2026-04-27 | https://rich-iannone.github.io/DiagrammeR/, https://github.com/rich-iannone/DiagrammeR | 41,434 |
 btw(
   pkgsearch::pkg_search("network visualization", format = "long", size = 1),
   clipboard = FALSE
@@ -88,14 +88,14 @@ btw(
 #> ## Context
 #> 
 #> pkgsearch::pkg_search(...)
-#> Found 3858 packages matching `network visualization`, showing 1 result.
+#> Found 3927 packages matching `network visualization`, showing 1 result.
 #> 
 #> ### DiagrammeR (v1.0.12) -- Graph/Network Visualization
 #> 
 #> * Maintainer: Richard Iannone
 #> * Homepage: https://rich-iannone.github.io/DiagrammeR/, https://github.com/rich-iannone/DiagrammeR
 #> * Date: 2026-04-27
-#> * Downloads Last Month: 43,530
+#> * Downloads Last Month: 41,434
 #> 
 #> Build graph/network structures using functions for stepwise
 #> addition and deletion of nodes and edges. Work with data available in

@@ -2,6 +2,8 @@
 
 ## btw (development version)
 
+- Updates for compatibility with S7 \> 0.2.2.
+
 - `path_find_in_project()` now stops its upward search when it reaches
   the home directory (either
   [`fs::path_home()`](https://fs.r-lib.org/reference/path_expand.html)

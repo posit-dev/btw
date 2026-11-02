@@ -56,7 +56,7 @@ stay in your project for the next report.
 For this review, we’ll create a `btw.md` file and three files in the
 project’s `.btw/agents/` directory:
 
-```
+```text
 btw.md
 .btw/agents/
   researcher.md
@@ -76,7 +76,7 @@ Starting from the `btw.md` file in
 we make one change: add the `agent` group to `tools`. This file is saved
 at the project root (or your working directory).
 
-```
+```text
 ---
 client: posit
 tools: [files, docs, sessioninfo, run, agent]
@@ -109,7 +109,7 @@ one for the statistician. Its frontmatter chooses tools for reading
 files, looking up documentation, and running R, and its body describes
 the job:
 
-```
+```text
 ---
 tools: [files_read, docs, run]
 ---
@@ -129,7 +129,7 @@ instructions into a subagent, we need two more fields: `name` identifies
 the agent, and `description` tells the main chat when to use it. We’ll
 also add an optional `title` for display.
 
-```
+```text
 ---
 name: statistician
 title: Consulting statistician
@@ -193,7 +193,7 @@ The researcher and the fact checker use the same format. Their jobs only
 require reading, so their `tools` lists leave out `run`. Create
 `.btw/agents/researcher.md`:
 
-```
+```text
 ---
 name: researcher
 title: Researcher
@@ -212,7 +212,7 @@ concerns, and claims the author should revise. Cite the passages you checked.
 Then create `.btw/agents/fact_checker.md`, with the same tools and a
 different job:
 
-```
+```text
 ---
 name: fact_checker
 title: Fact checker
@@ -241,7 +241,7 @@ chat’s. For example, the researcher’s job is narrow, so you could give
 it a smaller, faster model by adding a `client` line to its frontmatter
 and leaving the body as it was:
 
-```
+```text
 ---
 name: researcher
 title: Researcher

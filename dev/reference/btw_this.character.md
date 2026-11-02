@@ -160,5 +160,5 @@ mtcars[1:3, 1:4]
 #> Mazda RX4 Wag 21.0   6  160 110
 #> Datsun 710    22.8   4  108  93
 cat(btw_this("@last_value"))
-#> $Ncpus NULL  $HTTPUserAgent [1] "R/4.6.1 (ubuntu-24.04) R (4.6.1 x86_64-pc-linux-gnu x86_64 linux-gnu)" 
+#> $Ncpus NULL  $HTTPUserAgent [1] "R/4.6.2 (ubuntu-24.04) R (4.6.2 x86_64-pc-linux-gnu x86_64 linux-gnu)" 
 ```

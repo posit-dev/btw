@@ -72,7 +72,7 @@ your files, look up R documentation, check installed packages, and run R
 code. Create a file named `btw.md` at the root of the project with this
 content:
 
-```
+```text
 ---
 client: posit
 tools: [files, docs, sessioninfo, run]
@@ -136,7 +136,7 @@ as
 `client: posit` uses the provider’s default model; add a model name
 after a slash to choose a specific one:
 
-```
+```text
 ---
 client: posit/claude-sonnet-5-5
 ---
@@ -149,7 +149,7 @@ points
 [`ellmer::chat_ollama()`](https://ellmer.tidyverse.org/reference/chat_ollama.html)
 at a server on another machine:
 
-```
+```text
 ---
 client:
   provider: ollama
@@ -164,7 +164,7 @@ interactively, btw shows a menu of the choices; in non-interactive code,
 it uses the first one. If you name the entries, you can pass a name to
 the `client` argument, as in `btw_client(client = "local")`:
 
-```
+```text
 ---
 client:
   sonnet: posit/claude-sonnet-5-5
@@ -209,7 +209,7 @@ ones that read them. When the chat only needs to read, name the
 individual tools instead. You can drop the `btw_tool_` prefix from tool
 names in `btw.md`:
 
-```
+```text
 ---
 tools: [docs, files_read, files_search, files_list]
 ---
@@ -237,7 +237,7 @@ part of the name. For example, `btw.subagent.client` chooses the model
 for **subagents**, the separate chat sessions that your chat can start
 through a tool call:
 
-```
+```text
 ---
 client: posit/claude-sonnet-5-5
 options:
@@ -267,7 +267,7 @@ Sometimes the file holds notes that you want to keep but don’t want the
 model to read, such as finished tasks in a project plan. Wrap those
 lines in `<!-- HIDE -->` and `<!-- /HIDE -->` comments:
 
-```
+```text
 ## Current task
 
 Add a sensitivity analysis to `analysis.qmd`.
